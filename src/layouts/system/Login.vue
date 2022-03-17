@@ -1,0 +1,138 @@
+<template>
+  <div class="login">
+    <div class="logo">
+      <img src="../../assets/logo.png" alt="patpat" />
+      <span>SCM-UI</span>
+    </div>
+    <Form ref="formRef" :model="form" :rules="rules" class="form" @keypress.enter="handleSubmit">
+      <a-form-item name="name">
+        <Input size="large" v-model:value="form.name" placeholder="请输入用户名">
+          <template #prefix>
+            <UserOutlined />
+          </template>
+        </Input>
+      </a-form-item>
+      <a-form-item name="password">
+        <a-input-password size="large" v-model:value="form.password" visibilityToggle placeholder="请输入密码">
+          <template #prefix>
+            <LockOutlined />
+          </template>
+        </a-input-password>
+      </a-form-item>
+      <a-form-item :wrapperCol="{ span: 24 }">
+        <Button type="primary" size="large" block @click.prevent="handleSubmit" :loading="loading">登录</Button>
+      </a-form-item>
+    </Form>
+  </div>
+</template>
+
+<script>
+import { defineComponent, reactive, ref } from 'vue'
+import { UserOutlined, LockOutlined } from '@ant-design/icons-vue'
+import { Form, Input, Alert, Button, notification } from 'ant-design-vue'
+import { useRoute, useRouter } from 'vue-router'
+import { useStore } from 'vuex'
+import setting from '@src/config'
+
+export default defineComponent({
+  name: 'Login',
+  components: {
+    Form,
+    Input,
+    Alert,
+    Button,
+    UserOutlined,
+    LockOutlined
+  },
+  setup() {
+    const router = useRouter()
+    const route = useRoute()
+    const store = useStore()
+    const formRef = ref()
+    const form = reactive({
+      name: '',
+      password: ''
+    })
+    const loading = ref(false)
+
+    const rules = {
+      name: [{ required: true, message: '请输入用户名！', trigger: 'blur' }],
+      password: [{ required: true, message: '请输入密码！', trigger: 'blur' }]
+    }
+
+    const timeTxt = () => {
+      const hour = new Date().getHours()
+      let str
+      if (hour < 8) {
+        str = '早上好'
+      } else if (hour <= 11) {
+        str = '上午好'
+      } else if (hour <= 13) {
+        str = '中午好'
+      } else if (hour <= 18) {
+        str = '下午好'
+      } else {
+        str = '晚上好'
+      }
+      return str
+    }
+
+    const handleSubmit = async () => {
+      try {
+        loading.value = true
+        const { name, password } = await formRef.value.validate()
+        const { token } = await store.dispatch('user/login', {
+          name,
+          password
+        })
+        loading.value = false
+        if (token) {
+          notification.success({ message: timeTxt(), description: `欢迎登录${setting.title}` })
+          const redirect = route.query?.redirect || '/index'
+          await router.push(redirect)
+        }
+      } catch (error) {
+        // console.log(error)
+      }
+    }
+
+    return {
+      form,
+      loading,
+      rules,
+      formRef,
+      handleSubmit
+    }
+  }
+})
+</script>
+
+<style lang="scss" scoped>
+.login {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  .logo {
+    margin-bottom: 20px;
+    img {
+      height: 44px;
+      margin-right: 10px;
+      vertical-align: top;
+    }
+    span {
+      font-size: 30px;
+      font-weight: 500;
+      color: $text-color;
+    }
+  }
+  .form {
+    width: 360px;
+    ::v-deep(.ant-form-item) {
+      width: 100%;
+      display: block;
+    }
+  }
+}
+</style>
