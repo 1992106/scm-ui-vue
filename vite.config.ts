@@ -4,7 +4,7 @@ import vueJsx from '@vitejs/plugin-vue-jsx'
 import legacy from '@vitejs/plugin-legacy'
 // import Components from 'unplugin-vue-components/vite'
 // import { AntDesignVueResolver } from 'unplugin-vue-components/resolvers'
-import ViteHtml from 'vite-plugin-html'
+import { createHtmlPlugin } from 'vite-plugin-html'
 import { resolve } from 'path'
 import setting from './src/config'
 
@@ -21,10 +21,10 @@ const config: UserConfig = {
     //   dts: true,
     //   include: [/\.vue$/, /\.vue\?vue/, /\.md$/],
     // }),
-    ViteHtml({
+    createHtmlPlugin({
       minify: true,
       inject: {
-        injectData: {
+        data: {
           title: setting.title
         }
       }
@@ -80,7 +80,7 @@ export default ({ command, mode }) => {
   if (mode === 'lib') {
     build.lib = {
       entry: pathResolve('src/entry.js'),
-      name: 'ScmUi',
+      name: 'ScmUI',
       formats: ['es', 'cjs', 'umd', 'iife']
     }
     build.rollupOptions = {
