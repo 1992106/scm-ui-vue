@@ -1,5 +1,6 @@
 .my-model-fullscreen {
   overflow: hidden;
+
   .ant-modal {
     top: 0 !important;
     right: 0 !important;
@@ -9,13 +10,16 @@
     height: 100%;
     padding-bottom: 0;
   }
+
   .ant-modal-content {
     height: 100%;
+
     .ant-modal-body {
       overflow-y: auto;
       height: calc(100% - 110px);
     }
   }
+
   .ant-modal-header {
     padding-right: 90px;
   }
@@ -25,8 +29,10 @@
   @include flexRCC;
   height: 100%;
   margin-left: -32px;
+
   &>span {
     width: 40px;
+
     &:last-child {
       margin-right: 10px;
     }

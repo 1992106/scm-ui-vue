@@ -24,6 +24,7 @@ module.exports = {
     'vue/no-v-model-argument': 0,
     'vue/no-multiple-template-root': 0,
     'vue/no-v-for-template-key': 0,
+    'vue/multi-word-component-names': 0,
     '@typescript-eslint/no-var-requires': 0,
     '@typescript-eslint/camelcase': 0,
     '@typescript-eslint/ban-ts-ignore': 0,

@@ -63,6 +63,7 @@ const config: UserConfig = {
     exclude: []
   },
   build: {
+    minify: 'terser',
     terserOptions: {
       compress: {
         keep_infinity: true, // 防止 Infinity 被压缩成 1/0

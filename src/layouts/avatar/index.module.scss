@@ -8,6 +8,7 @@
   cursor: pointer;
   align-items: center;
   transition: background 0.3s;
+
   &:global(.ant-dropdown-open) {
     background-color: $bg-color-hover;
   }

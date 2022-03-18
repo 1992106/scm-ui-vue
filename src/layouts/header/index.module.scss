@@ -10,10 +10,12 @@
   height: $header-height !important;
   line-height: $header-height !important;
   box-shadow: 0 1px 4px rgb(0 21 41 / 8%);
+
   .leftOptions {
     display: flex;
     align-items: center;
     height: 100%;
+
     .menuFold {
       padding: 0 24px 0 0;
       cursor: pointer;

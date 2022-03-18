@@ -1,19 +1,21 @@
 {
   "compilerOptions": {
-    "noEmit": true,
     "allowJs": true,
+    "noEmit": true,
     "skipLibCheck": true,
     "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true,
     "target": "esnext",
     "module": "esnext",
     "moduleResolution": "node",
-    "noImplicitAny": false,
     "strict": true,
+    "noImplicitAny": false,
+    "strictNullChecks": false,
+    "strictPropertyInitialization": false,
     "jsx": "preserve",
     "sourceMap": true,
     "resolveJsonModule": true,
-    "esModuleInterop": false,
+    "esModuleInterop": true,
     "lib": [
       "esnext",
       "dom"
