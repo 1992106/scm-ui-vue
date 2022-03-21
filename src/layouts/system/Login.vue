@@ -114,21 +114,26 @@ export default defineComponent({
   flex-direction: column;
   justify-content: center;
   align-items: center;
+
   .logo {
     margin-bottom: 20px;
+
     img {
       height: 44px;
       margin-right: 10px;
       vertical-align: top;
     }
+
     span {
       font-size: 30px;
       font-weight: 500;
       color: $text-color;
     }
   }
+
   .form {
     width: 360px;
+
     ::v-deep(.ant-form-item) {
       width: 100%;
       display: block;

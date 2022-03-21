@@ -91,9 +91,11 @@ export default defineComponent({
 <style lang="scss" scoped>
 .mrp-print {
   display: flex;
+
   & > div:first-of-type {
     margin-right: 10px;
   }
+
   .print-content {
     display: flex;
     flex-direction: column;

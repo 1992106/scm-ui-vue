@@ -187,6 +187,7 @@ export default defineComponent({
 .my-upload {
   :deep(.ant-upload) {
     position: relative;
+
     .limit {
       position: absolute;
       bottom: 0;
@@ -197,6 +198,7 @@ export default defineComponent({
       user-select: none;
     }
   }
+
   :deep(.ant-upload-select-text) .ant-upload {
     display: inline-block;
   }

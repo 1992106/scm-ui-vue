@@ -94,9 +94,11 @@ export default defineComponent({
   background: $bg-color;
   margin: 0;
   padding-top: 6px;
+
   :deep(.ant-tabs-bar) {
     padding-left: 16px;
     margin-bottom: 0;
+
     .anticon {
       margin: 0 0 0 8px;
       color: rgb(0 0 0 / 45%);
@@ -106,6 +108,7 @@ export default defineComponent({
       overflow: hidden;
       vertical-align: middle;
       transition: all 0.3s;
+
       &:hover {
         color: rgb(0 0 0 / 85%);
       }

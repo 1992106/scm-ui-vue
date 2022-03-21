@@ -35,6 +35,7 @@ export default defineComponent({
   position: relative;
   z-index: 3;
   background: $bg-color;
+
   img {
     height: 32px;
   }

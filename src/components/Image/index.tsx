@@ -72,7 +72,6 @@ const MyImage = defineComponent({
           const h = typeof height === 'string' ? parseFloat(height) : height
           Promise.allSettled(thumbUrls.value.map(url => compressImage(url, w, h, quality)))
             .then(res => {
-              // @ts-ignore
               compressUrls.value = res.map((v, i) => {
                 return v.status === 'fulfilled' ? v.value : previewUrls.value[i]
               })
@@ -101,7 +100,6 @@ const MyImage = defineComponent({
             height={props.height}
             src={src}
             preview={false}
-            // @ts-ignore
             onClick={() => handlePreview(index)}
             fallback={fallUrl}
           />

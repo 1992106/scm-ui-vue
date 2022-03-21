@@ -197,8 +197,10 @@ export default defineComponent({
 <style lang="scss" scoped>
 .mars-grid {
   background-color: #f0f2f5;
+
   :deep(.vxe-grid--form-wrapper) {
     overflow: hidden;
+
     & > .mars-search {
       background-color: #fff;
       border-radius: 2px;
@@ -209,10 +211,12 @@ export default defineComponent({
         display: flex;
         flex-wrap: wrap;
         margin-right: 36px;
+
         .ant-form-item {
           display: inline-flex;
           margin-bottom: 0;
           width: 25%;
+
           .ant-input-affix-wrapper,
           .ant-select,
           .ant-cascader-picker,
@@ -221,20 +225,24 @@ export default defineComponent({
           .tree-select {
             width: 100%;
           }
+
           .ant-calendar-picker {
             span[class='ant-calendar-picker-input ant-input'] {
               width: 100%;
             }
           }
         }
+
         .mars-form-buttons {
           justify-content: flex-end;
         }
       }
     }
   }
+
   :deep(.vxe-grid--toolbar-wrapper) {
     overflow: hidden;
+
     .vxe-buttons--wrapper > .mars-toolbar {
       display: flex;
       flex-wrap: wrap;

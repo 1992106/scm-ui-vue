@@ -23,6 +23,7 @@
     "lint": "npm run lint:eslint & npm run lint:stylelint",
     "lint:eslint": "eslint src --ext .js,.jsx,.ts,.tsx,.vue --fix",
     "lint:stylelint": "stylelint src/**/*.{css,scss,sass,less,vue} --fix",
+    "prettier": "prettier --write .",
     "cz": "git cz",
     "reinstall": "rimraf yarn.lock && rimraf package.lock.json && rimraf node_modules && yarn"
   },
@@ -101,18 +102,12 @@
     "url": "https://github.com/1992106/scm-ui/issues"
   },
   "lint-staged": {
-    "*.{js,ts,jsx,tsx}": [
+    "*.{js,ts,jsx,tsx,vue}": [
       "prettier --write",
       "eslint --fix",
       "git add"
     ],
-    "src/**/*.vue": [
-      "prettier --write",
-      "stylelint --fix",
-      "eslint --fix",
-      "git add"
-    ],
-    "src/**/*.{css,scss,sass,less}": [
+    "src/**/*.{css,scss,sass,less.vue}": [
       "prettier --write",
       "stylelint --fix",
       "git add"

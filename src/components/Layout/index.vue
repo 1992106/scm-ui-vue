@@ -80,35 +80,43 @@ export default defineComponent({
   height: calc(100% + 32px);
   background-color: #f0f2f5;
   margin: -16px;
+
   .ant-layout-sider {
     :deep(.ant-layout-sider-zero-width-trigger) {
       z-index: 99;
       box-shadow: 2px 0 8px 0 rgb(29 35 41 / 5%);
       color: $color-base;
     }
+
     .ant-spin-nested-loading {
       height: 100%;
+
       :deep(.ant-spin-container) {
         height: 100%;
         overflow: hidden;
       }
     }
+
     .ant-menu-vertical {
       height: 100%;
       border-right: none;
       overflow-y: auto;
       padding: 10px 0;
+
       .count {
         float: right;
       }
+
       :deep(.ant-menu-item) {
         height: 36px;
         line-height: 36px;
       }
     }
   }
+
   .ant-layout-content {
     padding: 10px;
+
     :deep(.vxe-grid--toolbar-wrapper) {
       .vxe-toolbar {
         padding: 0 10px;

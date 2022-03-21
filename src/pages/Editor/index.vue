@@ -37,10 +37,12 @@ export default defineComponent({
   :deep(.ql-container) {
     height: 320px;
   }
+
   :deep(.ql-snow) {
     .ql-tooltip[data-mode='link']::before {
       content: '链接';
     }
+
     .ql-tooltip.ql-editing a.ql-action::after {
       content: '保存';
     }
