@@ -11,8 +11,15 @@
 <script>
 import { defineComponent, reactive, toRefs, watch } from 'vue'
 import { useRoute } from 'vue-router'
+import { Tabs } from 'ant-design-vue'
+
 export default defineComponent({
-  name: 'VTabs',
+  name: 'XTabs',
+  inheritAttrs: false,
+  components: {
+    'a-tabs': Tabs,
+    'a-tab-pane': Tabs.TabPane
+  },
   props: {
     list: { type: Array, default: () => [] },
     value: String,

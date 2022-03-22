@@ -24,10 +24,19 @@
 </template>
 <script>
 import { computed, defineComponent, reactive, toRefs, watch } from 'vue'
+import { Layout, Menu, Spin } from 'ant-design-vue'
 
 export default defineComponent({
-  name: 'VLayout',
+  name: 'XLayout',
   inheritAttrs: false,
+  components: {
+    'a-layout': Layout,
+    'a-layout-sider': Layout.Sider,
+    'a-layout-content': Layout.Content,
+    'a-menu': Menu,
+    'a-menu-item': Menu.Item,
+    'a-spin': Spin
+  },
   props: {
     list: { type: Array, default: () => [] }, // { label: '', value: '', count: '' }
     value: String,

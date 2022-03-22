@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
-    "allowJs": true,
     "noEmit": true,
+    "allowJs": true,
     "skipLibCheck": true,
     "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true,
@@ -23,7 +23,7 @@
     "paths": {
       "@src/*": ["src/*"],
       "@components/*": ["src/components/*"],
-      "@pages/*": ["src/pages/*"],
+      "@library/*": ["src/library/*"],
       "@layouts/*": ["src/layouts/*"],
       "@views/*": ["src/views/*"],
       "@hooks/*": ["src/hooks/*"],

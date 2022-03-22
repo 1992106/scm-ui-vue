@@ -1,5 +1,5 @@
 <template>
-  <mars-grid
+  <x-grid
     ref="xGrid"
     v-bind="gridProps"
     v-model:pagination="pagination"
@@ -12,7 +12,7 @@
     <!--搜索栏-->
     <template #searchBar>
       <template v-if="searchBar">
-        <mars-search
+        <x-search
           ref="xSearch"
           v-bind="searchProps"
           @search="handleSearch"
@@ -28,7 +28,7 @@
           <template #shortcut v-if="hasShortcut">
             <slot name="shortcut"></slot>
           </template>
-        </mars-search>
+        </x-search>
       </template>
     </template>
     <!--工具栏-->
@@ -40,26 +40,31 @@
     <template v-for="slot of getSlots" :key="slot" #[slot]="scope">
       <slot :name="slot" v-bind="scope"></slot>
     </template>
-  </mars-grid>
+  </x-grid>
 </template>
 
 <script>
 import { computed, defineComponent, onMounted, reactive, ref, toRef, toRefs, unref, watch, watchEffect } from 'vue'
 import { DownOutlined } from '@ant-design/icons-vue'
+import XGrid from '@components/Grid'
+import XSearch from '@components/Search'
 import { useSearch } from '@src/hooks/useSearch'
 import { isEmpty } from '@src/utils'
 
 export default defineComponent({
-  name: 'VList',
+  name: 'XPage',
+  inheritAttrs: false,
+  components: {
+    DownOutlined,
+    'x-grid': XGrid,
+    'x-search': XSearch
+  },
   props: {
     value: Object,
     searchProps: { type: Object, default: () => ({}) },
     gridProps: { type: Object, default: () => ({}) }
   },
   emits: ['update:value', 'search', 'reset', 'clear'],
-  components: {
-    DownOutlined
-  },
   setup(props, { emit, slots }) {
     const xGrid = ref(null)
     const xSearch = ref(null)

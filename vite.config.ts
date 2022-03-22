@@ -4,7 +4,7 @@ import vueJsx from '@vitejs/plugin-vue-jsx'
 import legacy from '@vitejs/plugin-legacy'
 // import Components from 'unplugin-vue-components/vite'
 // import { AntDesignVueResolver } from 'unplugin-vue-components/resolvers'
-import { createHtmlPlugin } from 'vite-plugin-html'
+import html from 'vite-plugin-html'
 import { resolve } from 'path'
 import setting from './src/config'
 
@@ -21,10 +21,10 @@ const config: UserConfig = {
     //   dts: true,
     //   include: [/\.vue$/, /\.vue\?vue/, /\.md$/],
     // }),
-    createHtmlPlugin({
+    html({
       minify: true,
       inject: {
-        data: {
+        injectData: {
           title: setting.title
         }
       }
@@ -35,7 +35,7 @@ const config: UserConfig = {
     alias: [
       { find: /^@src/, replacement: pathResolve('src') },
       { find: /^@components/, replacement: pathResolve('src/components') },
-      { find: /^@pages/, replacement: pathResolve('src/pages') },
+      { find: /^@library/, replacement: pathResolve('src/library') },
       { find: /^@layouts/, replacement: pathResolve('src/layouts') },
       { find: /^@views/, replacement: pathResolve('src/views') },
       { find: /^@hooks/, replacement: pathResolve('src/hooks') },
@@ -82,7 +82,7 @@ export default ({ command, mode }) => {
     build.lib = {
       entry: pathResolve('src/entry.js'),
       name: 'ScmUI',
-      formats: ['es', 'cjs', 'umd', 'iife']
+      formats: ['es', 'cjs', 'iife', 'umd']
     }
     build.rollupOptions = {
       output: {

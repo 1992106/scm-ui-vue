@@ -19,8 +19,9 @@ const ModalProps = {
   destroyOnClose: Boolean,
   wrapClassName: String
 }
-const MyModal = defineComponent({
-  name: 'VModal',
+
+const XModal = defineComponent({
+  name: 'XModal',
   inheritAttrs: false,
   props: {
     ...ModalProps,
@@ -91,4 +92,4 @@ const MyModal = defineComponent({
   }
 })
 
-export default MyModal
+export default XModal

@@ -4,14 +4,14 @@
   "main": "dist/scm-ui-vue.umd.js",
   "module": "dist/scm-ui-vue.es.js",
   "unpkg": "dist/scm-ui-vue.life.js",
-  "browser": "dist/scm-ui-vue.cjs.js",
+  "browser": "dist/scm-ui-vue.umd.js",
   "files": [
     "dist/*"
   ],
   "exports": {
     ".": {
-      "import": "./dist/scm-ui.es.js",
-      "require": "./dist/scm-ui.cjs.js"
+      "import": "./dist/scm-ui-vue.es.js",
+      "require": "./dist/scm-ui-vue.cjs.js"
     },
     "./dist/style.css": "./dist/style.css"
   },
@@ -29,7 +29,7 @@
   },
   "dependencies": {
     "@ant-design/icons-vue": "^6.1.0",
-    "ant-design-vue": "^3.1.0-rc.0",
+    "ant-design-vue": "^3.1.0-rc.2",
     "axios": "^0.26.1",
     "dayjs": "^1.11.0",
     "jsbarcode": "^3.11.5",
@@ -72,9 +72,9 @@
     "typescript": "^4.6.2",
     "unplugin-vue-components": "^0.18.1",
     "vite": "^2.8.6",
-    "vite-plugin-html": "^3.2.0",
+    "vite-plugin-html": "^2.1.2",
     "vue-eslint-parser": "^8.3.0",
-    "vue-tsc": "^0.33.2-patch.1",
+    "vue-tsc": "^0.33.6",
     "vxe-table-plugin-antd": "^3.0.5"
   },
   "peerDependencies": {

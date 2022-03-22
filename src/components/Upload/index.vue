@@ -7,7 +7,7 @@
     :list-type="listType"
     :show-upload-list="showUploadList"
     :before-upload="beforeUpload"
-    :custom-request="customRequest"
+    :custom-request="handleCustomRequest"
     @change="handleRemove"
     @preview="handlePreview"
     @download="handleDownload"
@@ -19,19 +19,26 @@
       <span v-show="limit" class="limit">({{ files.length }}/{{ limit }})</span>
     </div>
   </a-upload>
-  <Preview v-model:visible="previewVisible" :urls="previewUrls" :current="previewCurrent"></Preview>
+  <x-preview v-model:visible="previewVisible" :urls="previewUrls" :current="previewCurrent"></x-preview>
 </template>
 <script>
 import { defineComponent, reactive, toRefs, watch, watchEffect } from 'vue'
+import { message, Upload } from 'ant-design-vue'
 import { PlusOutlined } from '@ant-design/icons-vue'
-import Preview from '@components/Preview'
-import { downloadFile, uploadFile, isEmpty } from '@src/utils'
-import { message } from 'ant-design-vue'
+import XPreview from '@components/Preview'
+import { isEmpty, downloadFile } from '@src/utils'
 
 export default defineComponent({
-  name: 'VUpload',
+  name: 'XUpload',
+  inheritAttrs: false,
+  components: {
+    PlusOutlined,
+    'a-upload': Upload,
+    'x-preview': XPreview
+  },
   props: {
     fileList: { type: Array, default: () => [], required: true },
+    customRequest: { type: Function, required: true },
     listType: { type: String, default: 'picture-card' },
     showUploadBtn: { type: [Boolean, Object], default: true },
     showUploadList: { type: [Boolean, Object], default: true },
@@ -40,10 +47,6 @@ export default defineComponent({
     accept: { type: String, default: 'image/*' }
   },
   emits: ['update:fileList', 'change'],
-  components: {
-    PlusOutlined,
-    Preview
-  },
   setup(props, { emit }) {
     const state = reactive({
       files: [],
@@ -88,10 +91,10 @@ export default defineComponent({
     }
 
     // 上传图片
-    const customRequest = async options => {
+    const handleCustomRequest = async options => {
       const currentFile = options?.file
       try {
-        const { data } = await uploadFile(currentFile)
+        const { data } = await props.customRequest(currentFile)
         const file = {
           ...data,
           uid: data?.id,
@@ -175,7 +178,7 @@ export default defineComponent({
     return {
       ...toRefs(state),
       beforeUpload,
-      customRequest,
+      handleCustomRequest,
       handleRemove,
       handlePreview,
       handleDownload

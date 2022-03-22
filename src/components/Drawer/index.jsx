@@ -2,8 +2,8 @@ import { computed, defineComponent, unref } from 'vue'
 import { Button, Drawer, Space, Spin } from 'ant-design-vue'
 import './index.scss'
 
-const MyDrawer = defineComponent({
-  name: 'VDrawer',
+const XDrawer = defineComponent({
+  name: 'XDrawer',
   inheritAttrs: false,
   props: {
     visible: { type: Boolean, default: false },
@@ -71,4 +71,4 @@ const MyDrawer = defineComponent({
   }
 })
 
-export default MyDrawer
+export default XDrawer
