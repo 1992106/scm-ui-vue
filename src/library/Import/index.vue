@@ -1,5 +1,5 @@
 <template>
-  <v-modal
+  <x-modal
     v-bind="$attrs"
     v-model:visible="modalVisible"
     :title="title"
@@ -31,16 +31,16 @@
         </div>
       </a-upload>
     </div>
-  </v-modal>
+  </x-modal>
 </template>
 <script>
 import { computed, defineComponent, ref } from 'vue'
 import { UploadOutlined } from '@ant-design/icons-vue'
-import VModal from '@/components/Modal'
+import XModal from '@components/Modal'
 import { importFile } from './import'
 
 export default defineComponent({
-  name: 'Import',
+  name: 'XImport',
   props: {
     title: { type: String, default: '导入数据' },
     width: { type: Number, default: 520 },
@@ -52,8 +52,8 @@ export default defineComponent({
   },
   emits: ['update:visible', 'done'],
   components: {
-    VModal,
-    UploadOutlined
+    UploadOutlined,
+    'x-modal': XModal
   },
   setup(props, { emit }) {
     const modalVisible = computed({

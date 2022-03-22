@@ -1,3 +1,5 @@
+import dayjs from 'dayjs'
+
 /**
  * 获取对象tag
  * @param value
@@ -38,27 +40,6 @@ export const isEmpty = value => {
 }
 
 /**
- * 去除对象/数组空值
- * @param value
- * @returns {*}
- */
-export const omitEmpty = value => {
-  if (getType(value) === 'object') {
-    let newObj = {}
-    Object.keys(value).forEach(key => {
-      if (!isEmpty(value[key])) {
-        newObj[key] = value[key]
-      }
-    })
-    return newObj
-  }
-  if (Array.isArray(value)) {
-    return value.filter(val => !isEmpty(val))
-  }
-  return value
-}
-
-/**
  * 广度递归遍历树
  * @param tree
  * @param callback
@@ -89,4 +70,20 @@ export function polyfill(target, source) {
     }
   })
   return obj
+}
+
+export const dayjsToDate = (value, valueFormat = 'YYYY-MM-DD') => {
+  if (Array.isArray(value)) {
+    return value.map(val => (dayjs.isDayjs(val) ? val.format(valueFormat) : val))
+  } else {
+    return dayjs.isDayjs(value) ? value.format(valueFormat) : value
+  }
+}
+
+export const dateToDayjs = (value, valueFormat = 'YYYY-MM-DD') => {
+  if (Array.isArray(value)) {
+    return value.map(val => (isEmpty(val) ? null : dayjs.isDayjs(val) ? val : dayjs(val, valueFormat)))
+  } else {
+    return isEmpty(value) ? null : dayjs.isDayjs(value) ? value : dayjs(value, valueFormat)
+  }
 }

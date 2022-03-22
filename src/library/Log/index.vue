@@ -1,5 +1,5 @@
 <template>
-  <a-drawer
+  <x-drawer
     v-bind="$attrs"
     v-model:visible="logVisible"
     :title="title"
@@ -19,13 +19,15 @@
         </a-timeline-item>
       </a-timeline>
     </a-spin>
-  </a-drawer>
+  </x-drawer>
 </template>
 <script>
 import { defineComponent, computed, reactive, toRefs } from 'vue'
+import XDrawer from '@components/Drawer'
 import { isFunction } from 'lodash-es'
+
 export default defineComponent({
-  name: 'Log',
+  name: 'XLog',
   inheritAttrs: false,
   props: {
     title: { type: String, default: '操作日志' },
@@ -34,6 +36,9 @@ export default defineComponent({
     customRequest: { type: Function, require: true }
   },
   emits: ['update:visible', 'done'],
+  components: {
+    'x-drawer': XDrawer
+  },
   setup(props, { emit }) {
     const state = reactive({
       data: [],

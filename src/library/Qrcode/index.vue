@@ -5,7 +5,7 @@
 import { defineComponent, nextTick, ref, watch } from 'vue'
 import QRCode from 'qrcodejs2-fix'
 export default defineComponent({
-  name: 'QRCode',
+  name: 'XQrcode',
   props: {
     text: { type: String, require: true },
     width: { type: Number, default: 120 },

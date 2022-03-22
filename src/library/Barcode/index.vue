@@ -1,7 +1,7 @@
 <template>
   <img ref="barcode" alt="条形码" />
   <p v-if="displayValue" style="text-align: center; font-size: 20px; margin-top: -6px; color: #000">
-    {{ text || codeValue }}
+    {{ text || code }}
   </p>
 </template>
 
@@ -9,9 +9,9 @@
 import JsBarcode from 'jsbarcode'
 import { nextTick, watch, ref, defineComponent } from 'vue'
 export default defineComponent({
-  name: 'Barcode',
+  name: 'XBarcode',
   props: {
-    codeValue: { type: String, require: true },
+    code: { type: String, require: true },
     format: { type: String, default: 'CODE128' },
     width: { type: Number, default: 2 },
     height: { type: Number, default: 40 },
@@ -22,7 +22,7 @@ export default defineComponent({
   setup(props) {
     const barcode = ref(null)
     const getBarCode = () => {
-      JsBarcode(barcode.value, props.codeValue, {
+      JsBarcode(barcode.value, props.code, {
         format: props.format,
         width: props.width,
         height: props.height,
@@ -31,9 +31,9 @@ export default defineComponent({
       })
     }
     watch(
-      () => props.codeValue,
-      codeValue => {
-        if (codeValue) {
+      () => props.code,
+      code => {
+        if (code) {
           nextTick(getBarCode)
         }
       },
@@ -48,5 +48,3 @@ export default defineComponent({
   }
 })
 </script>
-
-<style scoped></style>

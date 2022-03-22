@@ -1,4 +1,4 @@
-import { isEmpty } from '@/utils'
+import { isEmpty } from '@src/utils'
 import { omit } from 'lodash-es'
 
 const typeMap = {

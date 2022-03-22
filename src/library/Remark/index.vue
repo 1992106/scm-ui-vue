@@ -1,5 +1,5 @@
 <template>
-  <v-modal
+  <x-modal
     v-bind="$attrs"
     v-model:visible="modalVisible"
     :title="title"
@@ -10,13 +10,13 @@
     @ok="handleOk"
     @cancel="handleCancel"
   >
-    <mars-table v-bind="tableOptions">
+    <x-table v-bind="tableOptions">
       <template #resources="{ record: { resources = {} } }">
         <a-button v-if="resources?.fileName" type="link" @click="handleDownload(resources)">
           {{ resources?.fileName }}
         </a-button>
       </template>
-    </mars-table>
+    </x-table>
     <a-form :label-col="{ span: 0 }">
       <a-form-item v-bind="validateInfos.remark">
         <a-textarea
@@ -28,19 +28,22 @@
         />
       </a-form-item>
       <a-form-item>
-        <v-upload v-model:fileList="modelRef.fileList" :size="size" :limit="limit"></v-upload>
+        <x-upload v-model:fileList="modelRef.fileList" :size="size" :limit="limit"></x-upload>
       </a-form-item>
     </a-form>
-  </v-modal>
+  </x-modal>
 </template>
 
 <script>
 import { reactive, computed, toRefs } from 'vue'
-import { Form } from 'ant-design-vue'
-import { formatTime, isEmpty, download } from '@src/utils'
+import XModal from '@components/Modal'
+import XTable from '@components/Table'
+import XUpload from '@components/Upload'
 import { isFunction } from 'lodash-es'
+import { formatTime, isEmpty, download } from '@src/utils'
+
 export default {
-  name: 'Remark',
+  name: 'XRemark',
   inheritAttrs: false,
   props: {
     title: { type: String, default: '备注' },
@@ -53,6 +56,11 @@ export default {
     limit: { type: Number, default: 1 }
   },
   emits: ['update:visible', 'done'],
+  components: {
+    'x-modal': XModal,
+    'x-table': XTable,
+    'x-upload': XUpload
+  },
   setup(props, { emit }) {
     const modalVisible = computed({
       get: () => {
@@ -154,9 +162,3 @@ export default {
   }
 }
 </script>
-
-<style scoped lang="scss">
-.avatar-uploader {
-  margin-top: 20px;
-}
-</style>

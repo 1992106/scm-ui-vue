@@ -32,6 +32,7 @@ module.exports = {
     'vue/no-v-for-template-key': 0,
     'vue/multi-word-component-names': 0,
     'vue/no-dupe-keys': 0,
+    'vue/valid-v-slot': 0,
     '@typescript-eslint/camelcase': 0,
     '@typescript-eslint/no-var-requires': 0,
     '@typescript-eslint/no-explicit-any': 0,

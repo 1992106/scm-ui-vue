@@ -4,7 +4,7 @@
       <my-icon type="icon-setting" size="18"></my-icon>
     </button>
     <template #title>
-      <div class="mars-grid-setting">
+      <div class="my-grid-setting">
         <div class="setting-head">
           <a-checkbox v-model:checked="checkAll" :indeterminate="indeterminate" @change="handleCheckAll">
             列展示
@@ -264,7 +264,7 @@ export default defineComponent({
 })
 </script>
 <style lang="scss" scoped>
-.mars-grid-setting {
+.my-grid-setting {
   margin: -6px -8px;
   color: $text-color;
   width: 200px;

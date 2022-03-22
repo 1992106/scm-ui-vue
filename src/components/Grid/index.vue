@@ -1,6 +1,6 @@
 <template>
   <vxe-grid
-    class="mars-grid"
+    class="my-grid"
     ref="gridRef"
     border
     auto-resize
@@ -52,7 +52,7 @@
     </template>
     <!--工具栏-->
     <template #toolbar_buttons>
-      <div v-if="hasToolBar" class="mars-toolbar">
+      <div v-if="hasToolBar" class="toolbar">
         <slot name="toolBar"></slot>
       </div>
     </template>
@@ -87,6 +87,8 @@
 </template>
 <script>
 import { defineComponent, reactive, ref, computed, toRefs, unref, mergeProps, watchEffect } from 'vue'
+import { Pagination } from 'ant-design-vue'
+import VXETable from 'vxe-table'
 import ColumnSetting from './ColumnSetting.vue'
 import { columnsToStorage, getField, mergeStorageAndColumns, storageToColumns } from './utils'
 import { cloneDeep } from 'lodash-es'
@@ -164,6 +166,8 @@ export default defineComponent({
     'toggle-tree-expand'
   ],
   components: {
+    'vxe-grid': VXETable,
+    'a-pagination': Pagination,
     ColumnSetting
   },
   setup(props, { emit, slots }) {
@@ -407,10 +411,10 @@ export default defineComponent({
 })
 </script>
 <style lang="scss" scoped>
-.mars-grid {
+.my-grid {
   :deep(.vxe-toolbar) {
     height: auto;
-    .mars-toolbar {
+    .toolbar {
       margin: 10px 0;
     }
     .vxe-tools--wrapper {

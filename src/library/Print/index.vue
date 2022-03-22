@@ -1,10 +1,10 @@
 <template>
-  <div class="mrp-print-wrap">
+  <div class="my-print-wrap">
     <template v-if="showButton">
       <a-button type="default" v-bind="buttonProps" @click="handleClick">{{ buttonText }}</a-button>
     </template>
     <div style="display: none">
-      <div class="mrp-print" ref="printRef">
+      <div class="print-dialog" ref="printRef">
         <QRCode v-if="qrcodeProps" v-bind="qrcodeProps"></QRCode>
         <Barcode v-if="barcodeProps" v-bind="barcodeProps"></Barcode>
         <div class="print-content">
@@ -89,7 +89,7 @@ export default defineComponent({
 })
 </script>
 <style lang="scss" scoped>
-.mrp-print {
+.my-print-dialog {
   display: flex;
 
   & > div:first-of-type {

@@ -18,7 +18,6 @@
           @search="handleSearch"
           @reset="emitReset"
           @clear="emitClear"
-          layout="horizontal"
           :label-col="{ span: 10 }"
           :wrapper-col="{ span: 14 }"
         >
@@ -200,19 +199,19 @@ export default defineComponent({
 })
 </script>
 <style lang="scss" scoped>
-.mars-grid {
+.my-grid {
   background-color: #f0f2f5;
 
   :deep(.vxe-grid--form-wrapper) {
     overflow: hidden;
 
-    & > .mars-search {
+    & > .my-search {
       background-color: #fff;
       border-radius: 2px;
       padding: 10px 0;
       margin-bottom: 10px;
       // 调整搜索栏
-      .mars-form {
+      .form {
         display: flex;
         flex-wrap: wrap;
         margin-right: 36px;
@@ -238,7 +237,7 @@ export default defineComponent({
           }
         }
 
-        .mars-form-buttons {
+        .actions {
           justify-content: flex-end;
         }
       }
@@ -248,7 +247,7 @@ export default defineComponent({
   :deep(.vxe-grid--toolbar-wrapper) {
     overflow: hidden;
 
-    .vxe-buttons--wrapper > .mars-toolbar {
+    .vxe-buttons--wrapper > .toolbar {
       display: flex;
       flex-wrap: wrap;
       background-color: #fff;
