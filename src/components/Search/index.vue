@@ -4,9 +4,9 @@
       <template v-for="column in getColumns" :key="column.slot || column.field">
         <a-form-item :label="column?.title" v-bind="validateInfos[column.field]">
           <template v-if="column.slot">
-            <template #[column.slot]="scope">
+            <!--<template v-slot:[column.slot]="scope">
               <slot :name="column.slot" v-bind="scope"></slot>
-            </template>
+            </template>-->
           </template>
           <template v-else>
             <component
@@ -46,7 +46,7 @@
 </template>
 <script>
 import { computed, defineComponent, mergeProps, nextTick, onMounted, reactive, ref, toRaw, unref } from 'vue'
-import { Button, Form, Space } from 'ant-design-vue'
+import { Form } from 'ant-design-vue'
 import { DownOutlined, UpOutlined } from '@ant-design/icons-vue'
 import { omit, pick } from 'lodash-es'
 import { useFormLayout } from './useFormLayout'
@@ -79,11 +79,7 @@ export default defineComponent({
   emits: ['search', 'reset', 'clear'],
   components: {
     DownOutlined,
-    UpOutlined,
-    'a-form': Form,
-    'a-form-item': Form.Item,
-    'a-button': Button,
-    'a-space': Space
+    UpOutlined
   },
   setup(props, { emit, slots }) {
     // 默认事件

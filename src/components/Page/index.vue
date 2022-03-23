@@ -45,25 +45,25 @@
 <script>
 import { computed, defineComponent, onMounted, reactive, ref, toRef, toRefs, unref, watch, watchEffect } from 'vue'
 import { DownOutlined } from '@ant-design/icons-vue'
-import XGrid from '@components/Grid'
-import XSearch from '@components/Search'
+import XGrid from '@components/Grid/index.vue'
+import XSearch from '@components/Search/index.vue'
 import { useSearch } from '@src/hooks/useSearch'
 import { isEmpty } from '@src/utils'
 
 export default defineComponent({
   name: 'XPage',
   inheritAttrs: false,
-  components: {
-    DownOutlined,
-    'x-grid': XGrid,
-    'x-search': XSearch
-  },
   props: {
     value: Object,
     searchProps: { type: Object, default: () => ({}) },
     gridProps: { type: Object, default: () => ({}) }
   },
   emits: ['update:value', 'search', 'reset', 'clear'],
+  components: {
+    DownOutlined,
+    'x-grid': XGrid,
+    'x-search': XSearch
+  },
   setup(props, { emit, slots }) {
     const xGrid = ref(null)
     const xSearch = ref(null)

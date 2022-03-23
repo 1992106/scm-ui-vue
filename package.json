@@ -25,7 +25,7 @@
     "lint:stylelint": "stylelint src/**/*.{css,scss,sass,less,vue} --fix",
     "prettier": "prettier --write .",
     "cz": "git cz",
-    "reinstall": "rimraf yarn.lock && rimraf package.lock.json && rimraf node_modules && yarn"
+    "reinstall": "rimraf yarn.lock && rimraf package-lock.json && rimraf node_modules && yarn"
   },
   "dependencies": {
     "@ant-design/icons-vue": "^6.1.0",

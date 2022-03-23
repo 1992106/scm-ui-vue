@@ -34,16 +34,16 @@
   </x-modal>
 </template>
 
-<script>
-import { reactive, computed, toRefs } from 'vue'
+<script lang="ts">
+import { reactive, computed, toRefs, defineComponent } from 'vue'
 import { Form } from 'ant-design-vue'
 import XModal from '@components/Modal'
-import XTable from '@components/Table'
-import XUpload from '@components/Upload'
+import XTable from '@components/Table/index.vue'
+import XUpload from '@components/Upload/index.vue'
 import { isFunction } from 'lodash-es'
 import { formatTime, isEmpty, download } from '@src/utils'
 
-export default {
+export default defineComponent({
   name: 'XRemark',
   inheritAttrs: false,
   props: {
@@ -162,5 +162,5 @@ export default {
       handleCancel
     }
   }
-}
+})
 </script>

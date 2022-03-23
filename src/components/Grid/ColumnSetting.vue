@@ -1,7 +1,7 @@
 <template>
   <a-tooltip color="#fff" trigger="click" placement="bottomRight" v-model:visible="visible">
     <button class="vxe-button type--button is--circle" type="button" title="列设置" @click="handleClick">
-      <my-icon type="icon-setting" size="18"></my-icon>
+      <Iconfont type="icon-setting" size="18"></Iconfont>
     </button>
     <template #title>
       <div class="my-grid-setting">
@@ -18,18 +18,18 @@
               <div class="group" v-for="item in leftFixed" :key="item.field">
                 <a-checkbox v-model:checked="item.visible">{{ item.title }}</a-checkbox>
                 <a-space :size="2">
-                  <my-icon
+                  <Iconfont
                     type="icon-to-bottom"
                     size="18"
                     title="固定在列尾"
                     @click="handleClickRight('left', item)"
-                  ></my-icon>
-                  <my-icon
+                  ></Iconfont>
+                  <Iconfont
                     type="icon-to-middle"
                     size="18"
                     title="不固定"
                     @click="handleClickMiddle('left', item)"
-                  ></my-icon>
+                  ></Iconfont>
                 </a-space>
               </div>
             </draggable>
@@ -40,18 +40,18 @@
               <div class="group" v-for="item in middleList" :key="item.field">
                 <a-checkbox v-model:checked="item.visible">{{ item.title }}</a-checkbox>
                 <a-space :size="2">
-                  <my-icon
+                  <Iconfont
                     type="icon-to-top"
                     size="18"
                     title="固定在列头"
                     @click="handleClickLeft('middle', item)"
-                  ></my-icon>
-                  <my-icon
+                  ></Iconfont>
+                  <Iconfont
                     type="icon-to-bottom"
                     size="18"
                     title="固定在列尾"
                     @click="handleClickRight('middle', item)"
-                  ></my-icon>
+                  ></Iconfont>
                 </a-space>
               </div>
             </draggable>
@@ -62,18 +62,18 @@
               <div class="group" v-for="item in rightFixed" :key="item.field">
                 <a-checkbox v-model:checked="item.visible">{{ item.title }}</a-checkbox>
                 <a-space :size="2">
-                  <my-icon
+                  <Iconfont
                     type="icon-to-top"
                     size="18"
                     title="固定在列头"
                     @click="handleClickLeft('right', item)"
-                  ></my-icon>
-                  <my-icon
+                  ></Iconfont>
+                  <Iconfont
                     type="icon-to-middle"
                     size="18"
                     title="不固定"
                     @click="handleClickMiddle('right', item)"
-                  ></my-icon>
+                  ></Iconfont>
                 </a-space>
               </div>
             </draggable>
@@ -91,7 +91,7 @@
 </template>
 <script>
 import { defineComponent, reactive, toRefs, watch } from 'vue'
-import MyIcon from '@/components/Iconfont'
+import Iconfont from '@components/IconFont'
 import { VueDraggableNext } from 'vue-draggable-next'
 import { cloneDeep, omit } from 'lodash-es'
 import { columnsToStorage, storageToColumns } from './utils'
@@ -99,7 +99,7 @@ import { columnsToStorage, storageToColumns } from './utils'
 export default defineComponent({
   name: 'ColumnSetting',
   components: {
-    MyIcon,
+    Iconfont,
     draggable: VueDraggableNext
   },
   props: {

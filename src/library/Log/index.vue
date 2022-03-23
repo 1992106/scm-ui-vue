@@ -21,7 +21,7 @@
     </a-spin>
   </x-drawer>
 </template>
-<script>
+<script lang="ts">
 import { defineComponent, computed, reactive, toRefs } from 'vue'
 import XDrawer from '@components/Drawer'
 import { isFunction } from 'lodash-es'

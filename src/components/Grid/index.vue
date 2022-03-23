@@ -87,8 +87,6 @@
 </template>
 <script>
 import { defineComponent, reactive, ref, computed, toRefs, unref, mergeProps, watchEffect } from 'vue'
-import { Pagination } from 'ant-design-vue'
-import VXETable from 'vxe-table'
 import ColumnSetting from './ColumnSetting.vue'
 import { columnsToStorage, getField, mergeStorageAndColumns, storageToColumns } from './utils'
 import { cloneDeep } from 'lodash-es'
@@ -166,8 +164,6 @@ export default defineComponent({
     'toggle-tree-expand'
   ],
   components: {
-    'vxe-grid': VXETable,
-    'a-pagination': Pagination,
     ColumnSetting
   },
   setup(props, { emit, slots }) {

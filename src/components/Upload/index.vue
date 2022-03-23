@@ -23,7 +23,7 @@
 </template>
 <script>
 import { defineComponent, reactive, toRefs, watch, watchEffect } from 'vue'
-import { message, Upload } from 'ant-design-vue'
+import { message } from 'ant-design-vue'
 import { PlusOutlined } from '@ant-design/icons-vue'
 import XPreview from '@components/Preview'
 import { isEmpty, downloadFile } from '@src/utils'
@@ -31,11 +31,6 @@ import { isEmpty, downloadFile } from '@src/utils'
 export default defineComponent({
   name: 'XUpload',
   inheritAttrs: false,
-  components: {
-    PlusOutlined,
-    'a-upload': Upload,
-    'x-preview': XPreview
-  },
   props: {
     fileList: { type: Array, default: () => [], required: true },
     customRequest: { type: Function, required: true },
@@ -47,6 +42,10 @@ export default defineComponent({
     accept: { type: String, default: 'image/*' }
   },
   emits: ['update:fileList', 'change'],
+  components: {
+    PlusOutlined,
+    'x-preview': XPreview
+  },
   setup(props, { emit }) {
     const state = reactive({
       files: [],

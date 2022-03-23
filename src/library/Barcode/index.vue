@@ -6,8 +6,9 @@
 </template>
 
 <script>
-import JsBarcode from 'jsbarcode'
 import { nextTick, watch, ref, defineComponent } from 'vue'
+import JsBarcode from 'jsbarcode'
+
 export default defineComponent({
   name: 'XBarcode',
   props: {

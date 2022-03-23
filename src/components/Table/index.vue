@@ -47,16 +47,11 @@
 </template>
 <script>
 import { defineComponent, computed, mergeProps, onBeforeUnmount, onMounted, reactive, ref, toRefs, unref } from 'vue'
-import { Pagination, Table } from 'ant-design-vue'
 import { debounce } from 'lodash-es'
 
 export default defineComponent({
   name: 'XTable',
   inheritAttrs: false,
-  components: {
-    'a-table': Table,
-    'a-pagination': Pagination
-  },
   props: {
     // 表格行 key 的取值
     rowKey: { type: [String, Function], default: 'id' },

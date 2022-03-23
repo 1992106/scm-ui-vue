@@ -33,7 +33,7 @@
     </div>
   </x-modal>
 </template>
-<script>
+<script lang="ts">
 import { computed, defineComponent, ref } from 'vue'
 import { UploadOutlined } from '@ant-design/icons-vue'
 import XModal from '@components/Modal'

@@ -8,7 +8,7 @@
     </div>
   </div>
 </template>
-<script>
+<script lang="ts">
 import { defineComponent, ref } from 'vue'
 import jsPDF from './jsPDF'
 import { isFunction } from 'lodash-es'

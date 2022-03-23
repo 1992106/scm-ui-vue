@@ -14,10 +14,10 @@
     </div>
   </div>
 </template>
-<script>
+<script lang="ts">
 import { defineComponent, ref } from 'vue'
-import XQrcode from '../Qrcode'
-import XBarcode from '../Barcode'
+import XQrcode from '@library/Qrcode/index.vue'
+import XBarcode from '@library/Barcode/index.vue'
 import print from './print'
 import { isFunction } from 'lodash-es'
 import { isPromise } from '@src/utils'

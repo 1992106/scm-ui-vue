@@ -96,7 +96,8 @@ export default ({ command, mode }) => {
           'lodash-es': 'lodash-es',
           'vue-draggable-next': 'vue-draggable-next',
           'vxe-table': 'vxe-table'
-        }
+        },
+        inlineDynamicImports: true
       },
       // 确保外部化处理那些你不想打包进库的依赖
       external: [
