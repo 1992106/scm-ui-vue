@@ -1,13 +1,13 @@
 const defaultOptions = {
   el: '', //打印目标dom节点，eg: this.refs.view
-  debug: true, //打开调试模式，会显示iframe,
+  debug: false, //打开调试模式，会显示iframe,
   importCss: true, //引入head 中的link stylesheet
   importStyle: true, //引入style标签中的样式
   loadCss: [], //需要载入的第三方样式表
   title: '', //打印标题
   delay: 300, //延迟打印时间，确保iframe中的静态资源加载完成
-  beforePrintHandle: null, //打开打印窗口前的钩子函数,可以针对打印文档进行自定义调整，接受一个document参数
-  afterPrintHandle: null //打印完成的钩子函数,
+  handleBefore: null, //打开打印窗口前的钩子函数,可以针对打印文档进行自定义调整，接受一个document参数
+  handleAfter: null //打印完成的钩子函数,
 }
 let iframe = null
 let dom = null
@@ -28,14 +28,14 @@ const prinf = options => {
   const op = checkOptions(options)
   dom = op.el.cloneNode(true)
   const handle = createIframe(op)
-  if (op.beforePrintHandle) {
-    op.beforePrintHandle(handle.contentDocument)
-  }
-  if (op.afterPrintHandle) {
-    op.afterPrintHandle()
+  if (op.handleBefore) {
+    op.handleBefore(handle.contentDocument)
   }
   setTimeout(() => {
     handle.print()
+    if (op.handleAfter) {
+      op.handleAfter()
+    }
     if (op.debug === false) {
       removeIframe()
     }

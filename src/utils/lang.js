@@ -40,6 +40,30 @@ export const isEmpty = value => {
 }
 
 /**
+ * 是否是promise
+ * @param obj
+ * @returns {boolean}
+ */
+export const isPromise = obj => {
+  return !!obj && (typeof obj === 'object' || typeof obj === 'function') && typeof obj.then === 'function'
+}
+
+/**
+ * 四舍五入
+ * @param value 需要舍入的数
+ * @param length 保留小数点后位数
+ */
+export function toFixed(value, length = 2) {
+  if (typeof value === 'string') {
+    value = Number(value)
+  }
+  if (typeof value !== 'number') {
+    throw new Error('value不是数字')
+  }
+  return Math.round(Math.pow(10, length) * value) / Math.pow(10, length)
+}
+
+/**
  * 广度递归遍历树
  * @param tree
  * @param callback
@@ -55,21 +79,57 @@ export const recursive = (tree, callback) => {
 }
 
 /**
- * 填充对象
- * @param target
- * @param source
- * @returns {{}}
+ * 对象赋值
+ * @param {Object} target 要赋值的对象
+ * @param {Object} source 获取赋值数据的对象
+ * @return {Object} 返回赋值后的target
  */
 export function polyfill(target, source) {
   const obj = {}
   Object.keys(target).forEach(key => {
-    if (isEmpty(source[key])) {
-      obj[key] = target[key]
+    if (getType(target[key]) === 'object') {
+      obj[key] = isEmpty(source[key]) ? target[key] : polyfill(target[key], source[key])
     } else {
-      obj[key] = getType(target[key]) === 'object' ? polyfill(target[key], source[key]) : source[key]
+      obj[key] = isEmpty(source[key]) ? target[key] : source[key]
     }
   })
   return obj
+}
+
+/**
+ * 格式化时间
+ * @param date
+ * @param fmt
+ * @returns {*}
+ */
+export function dateFormat(date, fmt) {
+  date = new Date(date)
+  const o = {
+    'M+': date.getMonth() + 1, // 月
+    'q+': Math.floor((date.getMonth() + 3) / 3), // 季节
+    'd+': date.getDate(), // 日
+    'H+': date.getHours(), // 时
+    'm+': date.getMinutes(), // 分
+    's+': date.getSeconds(), // 秒
+    S: date.getMilliseconds() // 毫秒
+  }
+  if (/(y+)/.test(fmt)) {
+    fmt = fmt.replace(RegExp.$1, (date.getFullYear() + '').substr(4 - RegExp.$1.length))
+  }
+  for (let k in o) {
+    if (new RegExp('(' + k + ')').test(fmt)) {
+      fmt = fmt.replace(RegExp.$1, RegExp.$1.length === 1 ? o[k] : ('00' + o[k]).substr(('' + o[k]).length))
+    }
+  }
+  return fmt
+}
+
+export function formatDate(value, format) {
+  return dateFormat(value, format || 'yyyy-MM-dd')
+}
+
+export function formatTime(value, format) {
+  return dateFormat(value, format || 'yyyy-MM-dd HH:mm:ss')
 }
 
 export const dayjsToDate = (value, valueFormat = 'YYYY-MM-DD') => {

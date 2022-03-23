@@ -1,50 +1,34 @@
 <template>
-  <div class="my-print">
+  <div class="my-export-pdf">
     <template v-if="showButton">
       <a-button type="default" v-bind="buttonProps" @click="handleClick">{{ buttonText }}</a-button>
     </template>
-    <div style="display: none">
-      <div class="print-dialog" ref="printRef">
-        <x-qrcode v-if="qrcodeProps" v-bind="qrcodeProps"></x-qrcode>
-        <x-barcode v-if="barcodeProps" v-bind="barcodeProps"></x-barcode>
-        <div class="print-content">
-          <slot></slot>
-        </div>
-      </div>
+    <div ref="pdfRef" class="export-pdf-content">
+      <slot></slot>
     </div>
   </div>
 </template>
 <script>
 import { defineComponent, ref } from 'vue'
-import XQrcode from '../Qrcode'
-import XBarcode from '../Barcode'
-import print from './print'
+import jsPDF from './jsPDF'
 import { isFunction } from 'lodash-es'
 import { isPromise } from '@src/utils'
 
 export default defineComponent({
-  name: 'XPrint',
+  name: 'XExportPDF',
   props: {
     // 打印按钮
     showButton: { type: Boolean, default: true },
-    buttonText: { type: String, default: '打印' },
+    buttonText: { type: String, default: '导出PDF' },
     buttonProps: { type: Object },
-    // 打印配置
-    title: { type: String, default: '' },
-    // 二维码
-    qrcodeProps: { type: Object },
-    // 条形码
-    barcodeProps: { type: Object },
-    // 在打印前的回调
+    // PDF配置
+    fileName: { type: String, default: '' },
+    // 在导出前的回调
     onBefore: { type: Function, default: null }
   },
   emits: ['done'],
-  components: {
-    'x-qrcode': XQrcode,
-    'x-barcode': XBarcode
-  },
   setup(props, { emit }) {
-    const printRef = ref(null)
+    const pdfRef = ref(null)
 
     const handleClick = () => {
       let result = null
@@ -55,7 +39,7 @@ export default defineComponent({
         result
           .then(() => {
             setTimeout(() => {
-              printf()
+              handlePDF()
             }, 200)
           })
           .catch(err => {
@@ -63,7 +47,7 @@ export default defineComponent({
           })
       } else {
         setTimeout(() => {
-          printf()
+          handlePDF()
         })
       }
     }
@@ -72,33 +56,28 @@ export default defineComponent({
       emit('done')
     }
 
-    const printf = () => {
-      print({
-        el: printRef.value,
-        title: props.title,
+    const handlePDF = () => {
+      jsPDF({
+        el: pdfRef.value,
+        fileName: props.fileName,
         handleAfter: handleDone
       })
     }
 
     return {
-      printRef,
+      pdfRef,
       handleClick
     }
   }
 })
 </script>
 <style lang="scss" scoped>
-.print-dialog {
-  display: flex;
-
-  & > div:first-of-type {
-    margin-right: 10px;
-  }
-
-  .print-content {
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-  }
+.export-pdf-content {
+  position: fixed;
+  width: 100%;
+  top: -9999px;
+  left: 9999px;
+  background-color: #fff;
+  z-index: -9999;
 }
 </style>

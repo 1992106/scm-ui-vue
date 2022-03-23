@@ -11,9 +11,9 @@
     @cancel="handleCancel"
   >
     <x-table v-bind="tableOptions">
-      <template #resources="{ record: { resources = {} } }">
-        <a-button v-if="resources?.fileName" type="link" @click="handleDownload(resources)">
-          {{ resources?.fileName }}
+      <template #attachments="{ record: { attachments = {} } }">
+        <a-button v-if="attachments?.fileName" type="link" @click="handleDownload(attachments)">
+          {{ attachments?.fileName }}
         </a-button>
       </template>
     </x-table>
@@ -28,7 +28,7 @@
         />
       </a-form-item>
       <a-form-item>
-        <x-upload v-model:fileList="modelRef.fileList" :size="size" :limit="limit"></x-upload>
+        <x-upload v-model:fileList="modelRef.attachments" :size="size" :limit="limit"></x-upload>
       </a-form-item>
     </a-form>
   </x-modal>
@@ -36,6 +36,7 @@
 
 <script>
 import { reactive, computed, toRefs } from 'vue'
+import { Form } from 'ant-design-vue'
 import XModal from '@components/Modal'
 import XTable from '@components/Table'
 import XUpload from '@components/Upload'
@@ -48,8 +49,9 @@ export default {
   props: {
     title: { type: String, default: '备注' },
     width: { type: Number, default: 960 },
+    height: { type: Number, default: 400 },
     visible: { type: Boolean, default: false },
-    customRequest: { type: Function, require: true },
+    customRequest: { type: Function, require: true }, // [{createdUser: '', createdUser: '', remark: '', attachments: []}]
     customSubmit: { type: Function, require: true },
     maxlength: { type: Number, default: 200 },
     size: { type: Number, default: 3 },
@@ -81,7 +83,7 @@ export default {
 
     const tableOptions = reactive({
       scroll: {
-        y: 400
+        y: props.height
       },
       border: true,
       size: 'small',
@@ -94,7 +96,7 @@ export default {
           customRender: ({ text }) => formatTime(text)
         },
         { title: '备注内容', dataIndex: 'remark' },
-        { title: '附件', width: 120, slots: { customRender: 'resources' } }
+        { title: '附件', width: 120, slots: { customRender: 'attachments' } }
       ],
       dataSource: [],
       showPagination: false
@@ -106,17 +108,17 @@ export default {
       state.spinning = true
       const res = await customRequest()
       state.spinning = false
-      tableOptions.dataSource = res?.data
+      tableOptions.dataSource = res?.data || []
     }
 
-    const handleDownload = resources => {
-      const { url, fileName } = resources || {}
+    const handleDownload = attachments => {
+      const { url, fileName } = attachments || {}
       download(url, fileName)
     }
 
     const modelRef = reactive({
       remark: '',
-      fileList: []
+      attachments: []
     })
 
     const rulesRef = reactive({
@@ -133,7 +135,7 @@ export default {
           state.confirmLoading = true
           await customSubmit({
             remark: modelRef.remark,
-            ...(!isEmpty(modelRef.fileList) ? { resourcesId: modelRef.fileList[0]?.id } : {})
+            ...(!isEmpty(modelRef.attachments) ? { ids: modelRef.attachments.map(val => val?.id) } : {})
           })
           state.confirmLoading = false
           modalVisible.value = false
