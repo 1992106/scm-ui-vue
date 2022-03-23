@@ -97,6 +97,43 @@ export function polyfill(target, source) {
 }
 
 /**
+ * 删除【对象/数组】空值
+ * @param object
+ * @returns {*}
+ */
+export const omitEmpty = object => {
+  if (getType(object) === 'object') {
+    let newObj = {}
+    Object.keys(object).forEach(key => {
+      if (!isEmpty(object[key])) {
+        newObj[key] = object[key]
+      }
+    })
+    return newObj
+  }
+  if (Array.isArray(object)) {
+    return object.filter(val => !isEmpty(val))
+  }
+  return object
+}
+
+/**
+ * 深度去前后空格
+ * @param object
+ */
+export const deepTrim = object => {
+  Object.keys(object).forEach(key => {
+    if (['object', 'array'].includes(getType(object[key]))) {
+      deepTrim(object[key])
+    } else {
+      if (getType(object[key]) === 'string') {
+        object[key] = object[key].trim()
+      }
+    }
+  })
+}
+
+/**
  * 格式化时间
  * @param date
  * @param fmt

@@ -268,38 +268,48 @@ export default defineComponent({
   margin: -6px -8px;
   color: $text-color;
   width: 200px;
+
   .setting-head {
     padding: 6px 12px;
     @include flexRAC;
     justify-content: space-between;
     border-bottom: 1px solid $border-color-grey;
   }
+
   .setting-body {
     max-height: 400px;
     padding: 6px 0;
     overflow-y: auto;
+
     .box {
       margin-bottom: 6px;
+
       &:last-child {
         margin-bottom: 0;
       }
+
       .title {
         padding: 0 10px 0 20px;
         font-size: 12px;
         color: $text-color-grey;
       }
+
       .group {
         display: flex;
         align-items: center;
         justify-content: space-between;
         padding: 2px 10px 2px 20px;
+
         .ant-space {
           display: none;
         }
+
         &:hover {
           background-color: #1890ff1a;
+
           > .ant-space {
             display: inline-flex;
+
             .anticon {
               color: $color-base;
             }
@@ -308,6 +318,7 @@ export default defineComponent({
       }
     }
   }
+
   .setting-foot {
     padding: 6px 12px;
     @include flexRAC;

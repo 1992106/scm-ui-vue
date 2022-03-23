@@ -220,15 +220,18 @@ export default defineComponent({
   flex-direction: column;
   background-color: #fff;
   height: 100%;
+
   .my-header {
     .toolbar {
       margin: 10px 0;
     }
   }
+
   .ant-pagination {
     padding: 10px;
     text-align: right;
   }
+
   :deep(.table-striped) {
     background-color: #fafafa;
   }

@@ -264,13 +264,16 @@ export default defineComponent({
   .form {
     .ant-form-item {
       line-height: 40px;
+
       &.hidden {
         display: none !important;
       }
     }
+
     .actions {
       display: flex;
       flex: 1;
+
       :deep(.expand) {
         cursor: pointer;
         min-width: 50px;

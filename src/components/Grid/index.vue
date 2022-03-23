@@ -414,29 +414,35 @@ export default defineComponent({
 .my-grid {
   :deep(.vxe-toolbar) {
     height: auto;
+
     .toolbar {
       margin: 10px 0;
     }
+
     .vxe-tools--wrapper {
       .vxe-button {
         margin: 10px 0 10px 20px;
       }
     }
+
     .vxe-tools--operate {
       .vxe-button {
         margin: 10px 0 10px 10px;
       }
     }
   }
+
   :deep(.vxe-table--header) {
     .vxe-cell {
       display: flex;
       align-items: center;
+
       .vxe-cell--title {
         flex: 1;
       }
     }
   }
+
   .ant-pagination {
     padding: 10px;
     text-align: right;
