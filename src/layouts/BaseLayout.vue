@@ -17,7 +17,7 @@
       <LayoutContent class="layout-content">
         <AppMain />
       </LayoutContent>
-      <!-- <AppFooter /> -->
+      <AppFooter />
     </Layout>
   </Layout>
 </template>
@@ -30,7 +30,7 @@ import AppHeader from './header'
 import SideMenu from './sideMenu/index.vue'
 import MultiTabs from './multiTabs/index.vue'
 import AppMain from './main/index.vue'
-// import AppFooter from './footer'
+import AppFooter from './footer'
 
 export default defineComponent({
   name: 'BaseLayout',
@@ -40,6 +40,7 @@ export default defineComponent({
     SideMenu,
     MultiTabs,
     AppMain,
+    AppFooter,
     Layout,
     LayoutContent: Layout.Content,
     LayoutSider: Layout.Sider
