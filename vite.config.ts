@@ -103,7 +103,7 @@ export default ({ command, mode }) => {
           'vue-draggable-next': 'vue-draggable-next',
           'vxe-table': 'vxe-table'
         },
-        // TODO: Invalid value "iife" for option "output.format" - UMD and IIFE output formats are not supported for code-splitting builds.
+        // TODO: Invalid value "iife&umd" for option "output.format" - UMD and IIFE output formats are not supported for code-splitting builds.
         inlineDynamicImports: true
       },
       // 确保外部化处理那些你不想打包进库的依赖

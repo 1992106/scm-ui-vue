@@ -28,8 +28,7 @@
       :customRow="customRow"
       :customHeaderRow="customHeaderRow"
       :customCell="customCell"
-      :customHeaderCell="customHeaderCell"
-    >
+      :customHeaderCell="customHeaderCell">
       <template v-for="slot of getSlots" :key="slot" #[slot]="scope">
         <slot :name="slot" v-bind="scope"></slot>
       </template>
@@ -41,8 +40,7 @@
       :pageSize="pagination.pageSize"
       :total="total"
       @change="handlePageChange"
-      @showSizeChange="handleShowSizeChange"
-    />
+      @showSizeChange="handleShowSizeChange" />
   </div>
 </template>
 <script>

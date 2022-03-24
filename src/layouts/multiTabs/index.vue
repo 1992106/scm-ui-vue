@@ -6,8 +6,7 @@
       type="editable-card"
       class="multi-tabs-box"
       @edit="onEdit"
-      @tabClick="onTabClick"
-    >
+      @tabClick="onTabClick">
       <a-tab-pane v-for="item in visitedRoutes" :key="item.path" style="height: 0" :closable="visitedRoutes.length > 1">
         <template #tab>
           {{ item.meta.title }}

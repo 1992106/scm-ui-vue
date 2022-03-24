@@ -44,8 +44,7 @@ const XDrawer = defineComponent({
         width={props.width}
         height={props.height}
         title={ctx.slots?.title || ctx.attrs?.title}
-        onClose={handleCancel}
-      >
+        onClose={handleCancel}>
         <Spin {...unref(spinProps)}>{ctx.slots?.default && ctx.slots?.default()}</Spin>
         {ctx.slots?.footer
           ? ctx.slots?.footer()
@@ -59,8 +58,7 @@ const XDrawer = defineComponent({
                     type={props.okType}
                     {...props.okButtonProps}
                     loading={props.confirmLoading}
-                    onClick={handleOk}
-                  >
+                    onClick={handleOk}>
                     {props.okText}
                   </Button>
                 </Space>

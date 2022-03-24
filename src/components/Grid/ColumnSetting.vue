@@ -22,14 +22,12 @@
                     type="icon-to-bottom"
                     size="18"
                     title="固定在列尾"
-                    @click="handleClickRight('left', item)"
-                  ></Iconfont>
+                    @click="handleClickRight('left', item)"></Iconfont>
                   <Iconfont
                     type="icon-to-middle"
                     size="18"
                     title="不固定"
-                    @click="handleClickMiddle('left', item)"
-                  ></Iconfont>
+                    @click="handleClickMiddle('left', item)"></Iconfont>
                 </a-space>
               </div>
             </draggable>
@@ -44,14 +42,12 @@
                     type="icon-to-top"
                     size="18"
                     title="固定在列头"
-                    @click="handleClickLeft('middle', item)"
-                  ></Iconfont>
+                    @click="handleClickLeft('middle', item)"></Iconfont>
                   <Iconfont
                     type="icon-to-bottom"
                     size="18"
                     title="固定在列尾"
-                    @click="handleClickRight('middle', item)"
-                  ></Iconfont>
+                    @click="handleClickRight('middle', item)"></Iconfont>
                 </a-space>
               </div>
             </draggable>
@@ -66,14 +62,12 @@
                     type="icon-to-top"
                     size="18"
                     title="固定在列头"
-                    @click="handleClickLeft('right', item)"
-                  ></Iconfont>
+                    @click="handleClickLeft('right', item)"></Iconfont>
                   <Iconfont
                     type="icon-to-middle"
                     size="18"
                     title="不固定"
-                    @click="handleClickMiddle('right', item)"
-                  ></Iconfont>
+                    @click="handleClickMiddle('right', item)"></Iconfont>
                 </a-space>
               </div>
             </draggable>

@@ -6,8 +6,7 @@
       :zeroWidthTriggerStyle="{ top: '40px' }"
       :width="160"
       theme="light"
-      v-model:collapsed="collapsed"
-    >
+      v-model:collapsed="collapsed">
       <a-spin v-bind="spinProps">
         <a-menu v-model:selectedKeys="selectedKeys" @click="handleClick">
           <a-menu-item v-for="item in menus" :key="item.value">

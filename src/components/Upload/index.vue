@@ -10,8 +10,7 @@
     :custom-request="handleCustomRequest"
     @change="handleRemove"
     @preview="handlePreview"
-    @download="handleDownload"
-  >
+    @download="handleDownload">
     <div v-if="showUploadBtn && (!limit || files.length < limit)">
       <slot>
         <PlusOutlined />

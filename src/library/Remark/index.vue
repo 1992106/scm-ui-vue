@@ -8,8 +8,7 @@
     :spinProps="spinning"
     :confirmLoading="confirmLoading"
     @ok="handleOk"
-    @cancel="handleCancel"
-  >
+    @cancel="handleCancel">
     <x-table v-bind="tableOptions">
       <template #attachments="{ record: { attachments = {} } }">
         <a-button v-if="attachments?.fileName" type="link" @click="handleDownload(attachments)">
@@ -24,8 +23,7 @@
           placeholder="请输入备注"
           showCount
           :rows="4"
-          :maxlength="maxlength"
-        />
+          :maxlength="maxlength" />
       </a-form-item>
       <a-form-item>
         <x-upload v-model:fileList="modelRef.attachments" :size="size" :limit="limit"></x-upload>

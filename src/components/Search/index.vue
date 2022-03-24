@@ -16,8 +16,7 @@
               :is="column.type"
               v-model:[column.modelValue]="modelRef[column.field]"
               v-bind="column.props || {}"
-              v-on="column.events || {}"
-            ></component>
+              v-on="column.events || {}"></component>
           </a-form-item>
         </template>
       </template>

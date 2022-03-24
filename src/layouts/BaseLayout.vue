@@ -7,8 +7,7 @@
       class="layout-sider"
       style="background: #fff"
       :collapsedWidth="48"
-      :width="220"
-    >
+      :width="220">
       <Logo :collapsed="collapsed" />
       <SideMenu :collapsed="collapsed" />
     </LayoutSider>

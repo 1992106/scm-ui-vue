@@ -7,8 +7,7 @@
     customSetting
     align="center"
     @search="handleFilter"
-    @sortChange="handleSort"
-  >
+    @sortChange="handleSort">
     <!--搜索栏-->
     <template #searchBar>
       <template v-if="searchBar">
@@ -19,8 +18,7 @@
           @reset="emitReset"
           @clear="emitClear"
           :label-col="{ span: 10 }"
-          :wrapper-col="{ span: 14 }"
-        >
+          :wrapper-col="{ span: 14 }">
           <template #extra v-if="hasExtra">
             <slot name="extra"></slot>
           </template>

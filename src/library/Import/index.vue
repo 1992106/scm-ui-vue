@@ -6,8 +6,7 @@
     :width="width"
     :spinProps="spinning"
     destroyOnClose
-    :footer="null"
-  >
+    :footer="null">
     <div>
       一、请按照数据模式的格式准备导入数据，模版中的表头名称不可更改及删除，每次限制导入
       {{ limit }}
@@ -23,8 +22,7 @@
         accept=".csv, application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         list-type="picture-card"
         :show-upload-list="false"
-        :customRequest="handleImport"
-      >
+        :customRequest="handleImport">
         <div>
           <UploadOutlined />
           <p>选择导入的文件</p>

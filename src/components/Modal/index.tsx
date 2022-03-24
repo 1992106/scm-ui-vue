@@ -84,8 +84,7 @@ const XModal = defineComponent({
         wrapClassName={unref(wrapClassName)}
         closeIcon={renderIcon()}
         title={ctx.slots?.title || ctx.attrs?.title}
-        footer={ctx.slots?.footer || ctx.attrs?.footer}
-      >
+        footer={ctx.slots?.footer || ctx.attrs?.footer}>
         <Spin {...unref(spinProps)}>{ctx.slots?.default && ctx.slots?.default()}</Spin>
       </Modal>
     )

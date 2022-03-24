@@ -6,8 +6,7 @@
       :selected-keys="selectedKeys"
       :openKeys="openKeys"
       @click="clickMenuItem"
-      @openChange="onOpenChange"
-    >
+      @openChange="onOpenChange">
       <template v-for="item in routes" :key="item.name">
         <MenuItem :menu-info="item" />
       </template>

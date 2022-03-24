@@ -44,8 +44,7 @@
     @checkbox-change="handleCheckboxChange"
     @checkbox-all="handleCheckboxAll"
     @cell-click="handleCellClick"
-    @resizable-change="handleResizableChange"
-  >
+    @resizable-change="handleResizableChange">
     <!--搜索栏-->
     <template #form>
       <slot name="searchBar"></slot>
@@ -61,8 +60,7 @@
         <ColumnSetting
           :columns="customColumns"
           :backupColumns="backupColumns"
-          @change="handleSettingChange"
-        ></ColumnSetting>
+          @change="handleSettingChange"></ColumnSetting>
       </template>
     </template>
     <!--slot-->
@@ -79,8 +77,7 @@
           :pageSize="pagination.pageSize"
           :total="total"
           @change="handlePageChange"
-          @showSizeChange="handleShowSizeChange"
-        />
+          @showSizeChange="handleShowSizeChange" />
       </slot>
     </template>
   </vxe-grid>
