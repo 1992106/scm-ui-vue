@@ -10,7 +10,7 @@
     <a-spin :spinning="spinning">
       <a-timeline>
         <a-timeline-item v-for="item in data" :key="item?.id">
-          <p>{{ item?.createdTime || '-' }}</p>
+          <p>{{ formatTime(item?.createdTime) || '-' }}</p>
           <p>
             {{ item?.createdUser || '-' }}
             <span style="margin: 0 5px">操作了</span>
@@ -25,6 +25,7 @@
 import { defineComponent, computed, reactive, toRefs } from 'vue'
 import XDrawer from '@components/Drawer'
 import { isFunction } from 'lodash-es'
+import { formatTime } from '@src/utils'
 
 export default defineComponent({
   name: 'XLog',
@@ -74,7 +75,8 @@ export default defineComponent({
     return {
       ...toRefs(state),
       logVisible,
-      handleClose
+      handleClose,
+      formatTime
     }
   }
 })

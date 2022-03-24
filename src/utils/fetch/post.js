@@ -1,7 +1,7 @@
 import { message } from 'ant-design-vue'
 import store from '@src/store'
 import router from '@src/router'
-import setting from '@src/config/index'
+import setting from '@src/config'
 import { getAccessStorage } from '@src/utils'
 
 const fetchPost = (url, body) => {

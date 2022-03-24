@@ -2,21 +2,24 @@
   <div class="my-search">
     <a-form class="form" layout="horizontal" :label-col="labelCol" :wrapper-col="wrapperCol">
       <template v-for="column in getColumns" :key="column.slot || column.field">
-        <a-form-item :label="column?.title" v-bind="validateInfos[column.field]">
-          <template v-if="column.slot">
-            <!--<template v-slot:[column.slot]="scope">
+        <!--自定义slot-->
+        <template v-if="column?.slot">
+          <a-form-item :label="column?.title">
+            <template v-slot:[column.slot]="scope">
               <slot :name="column.slot" v-bind="scope"></slot>
-            </template>-->
-          </template>
-          <template v-else>
+            </template>
+          </a-form-item>
+        </template>
+        <template v-else>
+          <a-form-item :label="column?.title" v-bind="validateInfos[column.field]">
             <component
               :is="column.type"
               v-model:[column.modelValue]="modelRef[column.field]"
               v-bind="column.props || {}"
               v-on="column.events || {}"
             ></component>
-          </template>
-        </a-form-item>
+          </a-form-item>
+        </template>
       </template>
       <div class="actions">
         <a-space>
@@ -50,7 +53,7 @@ import { Form } from 'ant-design-vue'
 import { DownOutlined, UpOutlined } from '@ant-design/icons-vue'
 import { omit, pick } from 'lodash-es'
 import { useFormLayout } from './useFormLayout'
-import { defaultState, emitPropsDisabled, mergeEvents, omitEmpty } from './utils'
+import { emitDisabled, mergeEvents, omitEmpty } from './utils'
 import { dateToDayjs, dayjsToDate, isEmpty } from '@src/utils'
 
 export default defineComponent({
@@ -82,7 +85,94 @@ export default defineComponent({
     UpOutlined
   },
   setup(props, { emit, slots }) {
-    // 默认事件
+    // 默认值
+    const defaultState = {
+      AInput: {
+        props: {
+          allowClear: true
+        },
+        events: ['change', 'pressEnter']
+      },
+      ATextarea: {
+        props: {
+          allowClear: true
+        },
+        events: ['change', 'pressEnter']
+      },
+      AInputNumber: {
+        events: ['pressEnter']
+      },
+      AAutoComplete: {
+        props: {
+          allowClear: true
+        },
+        events: ['change']
+      },
+      ASelect: {
+        props: {
+          allowClear: true,
+          showSearch: true,
+          optionFilterProp: 'label'
+        },
+        events: ['clear']
+      },
+      ATreeSelect: {
+        props: {
+          allowClear: true,
+          showSearch: true,
+          treeCheckable: true,
+          maxTagCount: 1
+        },
+        events: ['change']
+      },
+      ACascader: {
+        props: {
+          allowClear: true,
+          showSearch: true,
+          placeholder: ''
+        },
+        events: ['change']
+      },
+      ATimePicker: {
+        props: {
+          allowClear: true
+        },
+        events: ['change']
+      },
+      ADatePicker: {
+        props: {
+          allowClear: true,
+          format: 'YYYY-MM-DD',
+          valueFormat: 'YYYY-MM-DD'
+        },
+        events: ['change']
+      },
+      AWeekPicker: {
+        props: {
+          allowClear: true,
+          format: 'YYYY-wo',
+          valueFormat: 'YYYY-MM-DD'
+        },
+        events: ['change']
+      },
+      AMonthPicker: {
+        props: {
+          allowClear: true,
+          format: 'YYYY-MM',
+          valueFormat: 'YYYY-MM-DD'
+        },
+        events: ['change']
+      },
+      ARangePicker: {
+        props: {
+          allowClear: true,
+          format: 'YYYY-MM-DD',
+          valueFormat: 'YYYY-MM-DD'
+        },
+        events: ['change']
+      }
+    }
+    // 默认事件映射
     const defaultEventsMap = {
       // 实现清除事件
       change: $event => {
@@ -108,7 +198,7 @@ export default defineComponent({
     // 获取格式化后的columns
     const getColumns = computed(() => {
       return props.columns.map(column => {
-        const { props = {}, events = {}, slot } = emitPropsDisabled(column)
+        const { props = {}, events = {}, slot } = emitDisabled(column)
         const defaultAllState = defaultState[column?.type] || {}
         // column
         const allColumn = pick(column, ['type', 'title', 'field', 'rules'])
@@ -173,7 +263,7 @@ export default defineComponent({
     )
 
     const emitData = () => {
-      const params = getColumns.value.reduce((prev, column) => {
+      const params = unref(getColumns).reduce((prev, column) => {
         const value = modelRef[column.field]
         prev[column.field] = hasDate(column) ? dayjsToDate(value, column?.props?.valueFormat) : value
         return prev

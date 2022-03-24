@@ -18,7 +18,7 @@ module.exports = {
   // 大括号内的首尾需要空格
   bracketSpacing: true,
   // 标签的反尖括号不换行
-  bracketSameLine: false,
+  bracketSameLine: true,
   // 箭头函数，只有一个参数的时候，省略括号
   arrowParens: 'avoid',
   // 每个文件格式化的范围是文件的全部内容

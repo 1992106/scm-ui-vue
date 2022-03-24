@@ -33,7 +33,7 @@ const XImage = defineComponent({
       // 处理数组
       const srcs = Array.isArray(props.urls)
         ? props.urls
-            .map(item => (isObject(item) ? item?.src ?? item?.url ?? item?.thumbUrl ?? '' : item))
+            .map(item => (isObject(item as PreviewField) ? item?.src ?? item?.url ?? item?.thumbUrl ?? '' : item))
             .filter(Boolean)
         : []
 
@@ -55,7 +55,7 @@ const XImage = defineComponent({
           ? [props.urls]
           : Array.isArray(props.urls)
           ? props.urls
-              .map(item => (isObject(item) ? item?.thumbUrl ?? item?.src ?? item?.url ?? '' : item))
+              .map(item => (isObject(item as PreviewField) ? item?.thumbUrl ?? item?.src ?? item?.url ?? '' : item))
               .filter(Boolean)
           : []
         : []

@@ -82,7 +82,7 @@ export default ({ command, mode }) => {
     build.lib = {
       entry: pathResolve('src/entry.js'),
       name: 'ScmUI',
-      formats: ['es', 'cjs', 'iife', 'umd']
+      formats: ['es', 'cjs', 'umd']
     }
     build.rollupOptions = {
       output: {
@@ -90,25 +90,24 @@ export default ({ command, mode }) => {
         // 在 UMD 构建模式下为这些外部化的依赖提供一个全局变量
         globals: {
           vue: 'vue',
-          '@ant-design/icons-vue': '@ant-design/icons-vue',
           'ant-design-vue': 'ant-design-vue',
+          '@ant-design/icons-vue': '@ant-design/icons-vue',
           dayjs: 'dayjs',
           'lodash-es': 'lodash-es',
+          '@vueup/vue-quill': '@vueup/vue-quill',
+          echarts: 'echarts',
+          html2canvas: 'html2canvas',
+          jsbarcode: 'jsbarcode',
+          jspdf: 'jspdf',
+          'qrcodejs2-fix': 'qrcodejs2-fix',
           'vue-draggable-next': 'vue-draggable-next',
           'vxe-table': 'vxe-table'
         },
+        // TODO: Invalid value "iife" for option "output.format" - UMD and IIFE output formats are not supported for code-splitting builds.
         inlineDynamicImports: true
       },
       // 确保外部化处理那些你不想打包进库的依赖
-      external: [
-        'vue',
-        '@ant-design/icons-vue',
-        'ant-design-vue',
-        'dayjs',
-        'lodash-es',
-        'vue-draggable-next',
-        'vxe-table'
-      ]
+      external: ['vue', 'ant-design-vue', '@ant-design/icons-vue', 'lodash-es', 'vxe-table']
     }
   }
 
