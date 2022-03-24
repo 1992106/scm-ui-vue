@@ -1,8 +1,8 @@
 import * as components from '@components/index'
-import * as pages from '@library/index'
+import * as library from '@library/index'
 
 const install = function installComponents(app) {
-  const list = [...Object.entries(components), ...Object.entries(pages)]
+  const list = [...Object.entries(components), ...Object.entries(library)]
   list.forEach(([componentName, component]) => {
     app.component(componentName, component)
   })

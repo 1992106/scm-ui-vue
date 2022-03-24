@@ -18,13 +18,13 @@
 </template>
 <script>
 import { defineComponent, unref, watch, computed, ref } from 'vue'
-import { ReloadOutlined } from '@ant-design/icons-vue'
-import { useRouter } from 'vue-router'
-import IconFont from '@components/IconFont'
 import { useStore } from 'vuex'
+import { useRouter } from 'vue-router'
+import { ReloadOutlined } from '@ant-design/icons-vue'
+import IconFont from '@components/IconFont'
 
 export default defineComponent({
-  name: 'MultiTabs',
+  name: 'MyMultiTabs',
   components: {
     IconFont,
     ReloadOutlined

@@ -30,7 +30,7 @@ import { defineComponent } from 'vue'
 import IconFont from '@components/IconFont'
 
 export default defineComponent({
-  name: 'menu-item',
+  name: 'MyMenuItem',
   components: {
     IconFont
   },

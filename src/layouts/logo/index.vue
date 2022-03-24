@@ -10,6 +10,7 @@ import { defineComponent } from 'vue'
 import setting from '@src/config'
 
 export default defineComponent({
+  name: 'MyLogo',
   props: {
     collapsed: {
       type: Boolean

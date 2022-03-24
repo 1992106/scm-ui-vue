@@ -14,7 +14,7 @@ export const routes = [
   {
     path: '/404',
     name: '404',
-    component: () => import('@layouts/system/404.vue'),
+    component: () => import('@src/layouts/system/404.vue'),
     meta: {
       hidden: true
     }
@@ -22,7 +22,7 @@ export const routes = [
   {
     path: '/403',
     name: '403',
-    component: () => import('@layouts/system/403.vue'),
+    component: () => import('@src/layouts/system/403.vue'),
     meta: {
       hidden: true
     }
@@ -30,7 +30,7 @@ export const routes = [
   {
     path: '/login',
     name: 'Login',
-    component: () => import('@layouts/system/Login.vue'),
+    component: () => import('@src/layouts/system/Login.vue'),
     meta: {
       hidden: true
     }
@@ -47,7 +47,7 @@ export const routes = [
       {
         path: '/redirect/:path(.*)',
         name: 'Redirect',
-        component: () => import('@layouts/system/Redirect.vue'),
+        component: () => import('@src/layouts/system/Redirect.vue'),
         meta: {
           title: 'Redirect',
           hidden: true

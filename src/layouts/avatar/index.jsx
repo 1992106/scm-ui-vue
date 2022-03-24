@@ -6,7 +6,7 @@ import { DownOutlined, ExclamationCircleOutlined } from '@ant-design/icons-vue'
 import setting from '@src/config'
 import styles from './index.module.scss'
 
-const PageHeader = defineComponent({
+const MyAvatar = defineComponent({
   name: 'MyAvatar',
   setup() {
     const store = useStore()
@@ -53,4 +53,4 @@ const PageHeader = defineComponent({
   }
 })
 
-export default PageHeader
+export default MyAvatar

@@ -5,7 +5,7 @@ import Breadcrumb from '../breadcrumb/index.vue'
 import Avatar from '../avatar/index.jsx'
 import styles from './index.module.scss'
 
-const PageHeader = defineComponent({
+const MyHeader = defineComponent({
   name: 'MyHeader',
   props: {
     collapsed: {
@@ -27,4 +27,4 @@ const PageHeader = defineComponent({
   }
 })
 
-export default PageHeader
+export default MyHeader

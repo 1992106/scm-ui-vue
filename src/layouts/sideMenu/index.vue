@@ -21,6 +21,7 @@ import MenuItem from './item.vue'
 import { routes as routeList } from '@src/router'
 
 export default defineComponent({
+  name: 'MySideMenu',
   components: {
     MenuItem
   },

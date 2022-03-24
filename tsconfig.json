@@ -24,7 +24,6 @@
       "@src/*": ["src/*"],
       "@components/*": ["src/components/*"],
       "@library/*": ["src/library/*"],
-      "@layouts/*": ["src/layouts/*"],
       "@views/*": ["src/views/*"],
       "@hooks/*": ["src/hooks/*"],
       "@utils/*": ["src/utils/*"]

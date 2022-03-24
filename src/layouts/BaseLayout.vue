@@ -12,12 +12,12 @@
       <SideMenu :collapsed="collapsed" />
     </LayoutSider>
     <Layout>
-      <PageHeader v-model:collapsed="collapsed" />
+      <AppHeader v-model:collapsed="collapsed" />
       <MultiTabs />
       <LayoutContent class="layout-content">
         <AppMain />
       </LayoutContent>
-      <!-- <page-footer /> -->
+      <!-- <AppFooter /> -->
     </Layout>
   </Layout>
 </template>
@@ -26,19 +26,19 @@
 import { defineComponent, ref } from 'vue'
 import { Layout } from 'ant-design-vue'
 import Logo from './logo/index.vue'
-import AppMain from './main/index.vue'
-import SideMenu from './menu/index.vue'
-import PageHeader from './header'
+import AppHeader from './header'
+import SideMenu from './sideMenu/index.vue'
 import MultiTabs from './multiTabs/index.vue'
-// import PageFooter from './footer'
+import AppMain from './main/index.vue'
+// import AppFooter from './footer'
 
 export default defineComponent({
   name: 'BaseLayout',
   components: {
-    PageHeader,
+    Logo,
+    AppHeader,
     SideMenu,
     MultiTabs,
-    Logo,
     AppMain,
     Layout,
     LayoutContent: Layout.Content,

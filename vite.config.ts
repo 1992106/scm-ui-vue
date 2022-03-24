@@ -36,7 +36,6 @@ const config: UserConfig = {
       { find: /^@src/, replacement: pathResolve('src') },
       { find: /^@components/, replacement: pathResolve('src/components') },
       { find: /^@library/, replacement: pathResolve('src/library') },
-      { find: /^@layouts/, replacement: pathResolve('src/layouts') },
       { find: /^@views/, replacement: pathResolve('src/views') },
       { find: /^@hooks/, replacement: pathResolve('src/hooks') },
       { find: /^@utils/, replacement: pathResolve('src/utils') }
@@ -75,7 +74,7 @@ const config: UserConfig = {
 }
 
 // https://vitejs.dev/config/
-export default ({ command, mode }) => {
+export default ({ mode }) => {
   const { plugins = [], build = {} } = config
 
   if (mode === 'lib') {
@@ -111,7 +110,7 @@ export default ({ command, mode }) => {
     }
   }
 
-  if (command === 'serve') {
+  if (mode === 'development') {
     config.server = {
       port: 9999,
       open: true
