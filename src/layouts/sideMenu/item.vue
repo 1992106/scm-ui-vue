@@ -15,7 +15,7 @@
           </a-menu-item>
         </template>
         <template v-else>
-          <menu-item :menu-info="item" :key="item.name" />
+          <MyMenuItem :menu-info="item" :key="item.name" />
         </template>
       </template>
     </a-sub-menu>
