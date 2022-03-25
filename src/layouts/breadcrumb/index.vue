@@ -1,7 +1,7 @@
 <template>
-  <Breadcrumb :routes="routes" separator=">">
-    <template #itemRender="{ route, paths }">
-      <span v-if="routes.indexOf(route) === routes.length - 1">
+  <Breadcrumb :routes="allRoutes" separator=">">
+    <template #itemRender="{ route, routes, paths }">
+      <span v-if="allRoutes.indexOf(route) === routes.length - 1">
         {{ route.meta.title }}
       </span>
       <router-link v-else :to="handlePath(route, paths)">
@@ -20,7 +20,7 @@ export default defineComponent({
   components: { Breadcrumb },
   setup() {
     const router = useRouter()
-    const routes = ref([])
+    const allRoutes = ref([])
 
     const handlePath = (route, paths) => {
       return route.children ? route.redirect || `/${paths.slice(-1)}` : `/${paths.slice(-2).join('/')}`
@@ -30,14 +30,14 @@ export default defineComponent({
       () => router.currentRoute.value.fullPath,
       () => {
         if (['ErrorPage', 'Login', 'Redirect'].includes(router.currentRoute.value.name)) return
-        routes.value = router.currentRoute.value.matched.filter(item => item.path !== '/')
+        allRoutes.value = router.currentRoute.value.matched.filter(item => item.path !== '/')
       },
       { immediate: true }
     )
 
     return {
       handlePath,
-      routes
+      allRoutes
     }
   }
 })
