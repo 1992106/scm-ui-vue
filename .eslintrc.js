@@ -38,6 +38,7 @@ module.exports = {
     'vue/no-dupe-keys': 0,
     '@typescript-eslint/ban-ts-comment': 0,
     '@typescript-eslint/no-explicit-any': 0,
-    'no-empty': 0
+    'no-empty': 0,
+    'no-prototype-builtins': 0
   }
 }

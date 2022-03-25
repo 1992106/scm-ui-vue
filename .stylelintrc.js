@@ -11,6 +11,7 @@ module.exports = {
       }
     ],
     'at-rule-no-unknown': null,
-    'property-no-unknown': null
+    'property-no-unknown': null,
+    'block-no-empty': null
   }
 }
