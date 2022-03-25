@@ -4,9 +4,9 @@
     v-model:visible="modalVisible"
     :title="title"
     :width="width"
-    destroyOnClose
-    :spinProps="spinning"
-    :confirmLoading="confirmLoading"
+    destroy-on-close
+    :spin-props="spinning"
+    :confirm-loading="confirmLoading"
     @ok="handleOk"
     @cancel="handleCancel">
     <x-table v-bind="tableOptions">
@@ -21,7 +21,7 @@
         <a-textarea
           v-model:value="modelRef.remark"
           placeholder="请输入备注"
-          showCount
+          show-count
           :rows="4"
           :maxlength="maxlength" />
       </a-form-item>
@@ -43,6 +43,11 @@ import { formatTime, isEmpty, download } from '@src/utils'
 
 export default defineComponent({
   name: 'XRemark',
+  components: {
+    'x-modal': XModal,
+    'x-table': XTable,
+    'x-upload': XUpload
+  },
   inheritAttrs: false,
   props: {
     title: { type: String, default: '备注' },
@@ -56,11 +61,6 @@ export default defineComponent({
     limit: { type: Number, default: 1 }
   },
   emits: ['update:visible', 'done'],
-  components: {
-    'x-modal': XModal,
-    'x-table': XTable,
-    'x-upload': XUpload
-  },
   setup(props, { emit }) {
     const modalVisible = computed({
       get: () => {

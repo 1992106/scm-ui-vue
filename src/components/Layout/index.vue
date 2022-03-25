@@ -1,17 +1,17 @@
 <template>
   <a-layout class="my-page">
     <a-layout-sider
+      v-model:collapsed="collapsed"
       collapsible
-      :collapsedWidth="0"
-      :zeroWidthTriggerStyle="{ top: '40px' }"
+      :collapsed-width="0"
+      :zero-width-trigger-style="{ top: '40px' }"
       :width="160"
-      theme="light"
-      v-model:collapsed="collapsed">
+      theme="light">
       <a-spin v-bind="spinProps">
         <a-menu v-model:selectedKeys="selectedKeys" @click="handleClick">
           <a-menu-item v-for="item in menus" :key="item.value">
             {{ item.label }}
-            <span class="count" v-if="item.count">{{ item.count }}</span>
+            <span v-if="item.count" class="count">{{ item.count }}</span>
           </a-menu-item>
         </a-menu>
       </a-spin>

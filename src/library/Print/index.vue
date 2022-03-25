@@ -4,7 +4,7 @@
       <a-button type="default" v-bind="buttonProps" @click="handleClick">{{ buttonText }}</a-button>
     </template>
     <div style="display: none">
-      <div class="print-dialog" ref="printRef">
+      <div ref="printRef" class="print-dialog">
         <x-qrcode v-if="qrcodeProps" v-bind="qrcodeProps"></x-qrcode>
         <x-barcode v-if="barcodeProps" v-bind="barcodeProps"></x-barcode>
         <div class="print-content">
@@ -24,6 +24,10 @@ import { isPromise } from '@src/utils'
 
 export default defineComponent({
   name: 'XPrint',
+  components: {
+    'x-qrcode': XQrcode,
+    'x-barcode': XBarcode
+  },
   props: {
     // 打印按钮
     showButton: { type: Boolean, default: true },
@@ -39,10 +43,6 @@ export default defineComponent({
     onBefore: { type: Function, default: null }
   },
   emits: ['done'],
-  components: {
-    'x-qrcode': XQrcode,
-    'x-barcode': XBarcode
-  },
   setup(props, { emit }) {
     const printRef = ref(null)
 

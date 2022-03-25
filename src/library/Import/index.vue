@@ -4,8 +4,8 @@
     v-model:visible="modalVisible"
     :title="title"
     :width="width"
-    :spinProps="spinning"
-    destroyOnClose
+    :spin-props="spinning"
+    destroy-on-close
     :footer="null">
     <div>
       一、请按照数据模式的格式准备导入数据，模版中的表头名称不可更改及删除，每次限制导入
@@ -22,7 +22,7 @@
         accept=".csv, application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         list-type="picture-card"
         :show-upload-list="false"
-        :customRequest="handleImport">
+        :custom-request="handleImport">
         <div>
           <UploadOutlined />
           <p>选择导入的文件</p>
@@ -39,6 +39,10 @@ import { importFile } from './import'
 
 export default defineComponent({
   name: 'XImport',
+  components: {
+    UploadOutlined,
+    'x-modal': XModal
+  },
   props: {
     title: { type: String, default: '导入数据' },
     width: { type: Number, default: 520 },
@@ -49,10 +53,6 @@ export default defineComponent({
     extra: { type: String }
   },
   emits: ['update:visible', 'done'],
-  components: {
-    UploadOutlined,
-    'x-modal': XModal
-  },
   setup(props, { emit }) {
     const modalVisible = computed({
       get: () => {

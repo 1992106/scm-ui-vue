@@ -6,42 +6,37 @@ module.exports = {
   },
   extends: [
     'eslint:recommended',
-    'plugin:vue/vue3-essential',
+    'plugin:vue/vue3-recommended',
     'plugin:@typescript-eslint/recommended',
     'plugin:prettier/recommended',
-    'prettier' // eslint-config-prettier 缩写
+    'prettier' // eslint-config-prettier 的缩写
   ],
   parser: 'vue-eslint-parser',
   parserOptions: {
-    parser: '@typescript-eslint/parser',
     ecmaVersion: 12,
+    parser: '@typescript-eslint/parser',
     sourceType: 'module',
     ecmaFeatures: {
       jsx: true
     }
   },
-  // eslint-plugin-vue @typescript-eslint/eslint-plugin eslint-plugin-prettier 缩写
+  // eslint-plugin-vue @typescript-eslint/eslint-plugin eslint-plugin-prettier的缩写
   plugins: ['vue', '@typescript-eslint', 'prettier'],
-  globals: {},
+  globals: {
+    defineProps: 'readonly',
+    defineEmits: 'readonly',
+    defineExpose: 'readonly',
+    withDefaults: 'readonly'
+  },
   rules: {
-    'prettier/prettier': [2, { endOfLine: 'lf', bracketSameLine: true }],
-    'vue/no-unused-components': 0,
-    'vue/no-unused-vars': 0,
-    'vue/no-v-for-template-key-on-child': 0,
-    'vue/no-v-model-argument': 0,
-    'vue/no-multiple-template-root': 0,
-    'vue/no-v-for-template-key': 0,
+    'prettier/prettier': [2, { endOfLine: 'lf' }],
+    'vue/require-default-prop': 0,
+    'vue/v-on-event-hyphenation': 0,
     'vue/multi-word-component-names': 0,
+    'vue/no-v-html': 0,
     'vue/no-dupe-keys': 0,
-    'vue/valid-v-slot': 0,
-    '@typescript-eslint/camelcase': 0,
-    '@typescript-eslint/no-var-requires': 0,
-    '@typescript-eslint/no-explicit-any': 0,
-    '@typescript-eslint/ban-ts-ignore': 0,
     '@typescript-eslint/ban-ts-comment': 0,
-    'import/extensions': 0,
-    'import/no-extraneous-dependencies': 0,
-    'import/no-unresolved': 0,
-    'no-param-reassign': 0
+    '@typescript-eslint/no-explicit-any': 0,
+    'no-empty': 0
   }
 }

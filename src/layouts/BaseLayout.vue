@@ -6,7 +6,7 @@
       collapsible
       class="layout-sider"
       style="background: #fff"
-      :collapsedWidth="48"
+      :collapsed-width="48"
       :width="220">
       <Logo :collapsed="collapsed" />
       <SideMenu :collapsed="collapsed" />

@@ -4,7 +4,7 @@
       mode="inline"
       style="border: 0 none"
       :selected-keys="selectedKeys"
-      :openKeys="openKeys"
+      :open-keys="openKeys"
       @click="clickMenuItem"
       @openChange="onOpenChange">
       <template v-for="item in routes" :key="item.name">

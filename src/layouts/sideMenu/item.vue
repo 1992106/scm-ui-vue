@@ -9,13 +9,13 @@
       </template>
       <template v-for="item in menuInfo.children">
         <template v-if="!item.children">
-          <a-menu-item :key="item.name" v-if="!item?.meta?.hidden">
+          <a-menu-item v-if="!item?.meta?.hidden" :key="item.name">
             <icon-font v-if="item.meta?.icon" :type="item.meta.icon" />
             <span>{{ item.meta?.title }}</span>
           </a-menu-item>
         </template>
         <template v-else>
-          <MyMenuItem :menu-info="item" :key="item.name" />
+          <MyMenuItem :key="item.name" :menu-info="item" />
         </template>
       </template>
     </a-sub-menu>

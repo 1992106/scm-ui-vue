@@ -12,6 +12,7 @@ const MyHeader = defineComponent({
       type: Boolean
     }
   },
+  emits: ['update:collapsed'],
   setup(props, { emit }) {
     return () => (
       <Layout.Header class={styles.layoutHeader}>

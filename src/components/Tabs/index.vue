@@ -1,6 +1,6 @@
 <template>
-  <a-tabs class="my-tabs" v-model:activeKey="activeKey" size="small" @change="handleChange">
-    <a-tab-pane v-for="item in tabs" :tab="item?.label" :key="item?.value">
+  <a-tabs v-model:activeKey="activeKey" class="my-tabs" size="small" @change="handleChange">
+    <a-tab-pane v-for="item in tabs" :key="item?.value" :tab="item?.label">
       <template v-if="item?.value === activeKey">
         <slot></slot>
       </template>

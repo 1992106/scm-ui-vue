@@ -1,7 +1,7 @@
 <template>
   <vxe-grid
-    class="my-grid"
     ref="gridRef"
+    class="my-grid"
     border
     auto-resize
     show-overflow
@@ -59,7 +59,7 @@
       <template v-if="customSetting">
         <ColumnSetting
           :columns="customColumns"
-          :backupColumns="backupColumns"
+          :backup-columns="backupColumns"
           @change="handleSettingChange"></ColumnSetting>
       </template>
     </template>
@@ -74,7 +74,7 @@
           v-if="showPagination && columns.length"
           v-bind="getPaginationConfig"
           :current="pagination.page"
-          :pageSize="pagination.pageSize"
+          :page-size="pagination.pageSize"
           :total="total"
           @change="handlePageChange"
           @showSizeChange="handleShowSizeChange" />
@@ -91,6 +91,9 @@ import { isEmpty } from '@src/utils'
 
 export default defineComponent({
   name: 'XGrid',
+  components: {
+    ColumnSetting
+  },
   inheritAttrs: false,
   props: {
     // 自定义行数据唯一主键的字段名
@@ -160,9 +163,6 @@ export default defineComponent({
     'clear-filter',
     'toggle-tree-expand'
   ],
-  components: {
-    ColumnSetting
-  },
   setup(props, { emit, slots }) {
     /**
      * 默认值

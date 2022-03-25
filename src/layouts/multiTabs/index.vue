@@ -1,8 +1,8 @@
 <template>
   <div class="multi-tabs">
     <a-tabs
-      hideAdd
       v-model:activeKey="activeKey"
+      hide-add
       type="editable-card"
       class="multi-tabs-box"
       @edit="onEdit"
@@ -21,12 +21,10 @@ import { defineComponent, unref, watch, computed, ref } from 'vue'
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
 import { ReloadOutlined } from '@ant-design/icons-vue'
-import IconFont from '@components/IconFont'
 
 export default defineComponent({
   name: 'MyMultiTabs',
   components: {
-    IconFont,
     ReloadOutlined
   },
   setup() {

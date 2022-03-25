@@ -4,7 +4,7 @@ import vueJsx from '@vitejs/plugin-vue-jsx'
 import legacy from '@vitejs/plugin-legacy'
 // import Components from 'unplugin-vue-components/vite'
 // import { AntDesignVueResolver } from 'unplugin-vue-components/resolvers'
-import html from 'vite-plugin-html'
+import viteHtml from 'vite-plugin-html'
 import { resolve } from 'path'
 import setting from './src/config'
 
@@ -21,7 +21,7 @@ const config: UserConfig = {
     //   dts: true,
     //   include: [/\.vue$/, /\.vue\?vue/, /\.md$/],
     // }),
-    html({
+    viteHtml({
       minify: true,
       inject: {
         injectData: {
@@ -113,7 +113,7 @@ export default ({ mode }) => {
   if (mode === 'development') {
     config.server = {
       port: 9999,
-      open: true
+      force: true
     }
     config.plugins = [...plugins]
   }

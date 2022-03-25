@@ -1,5 +1,5 @@
 <template>
-  <a-tooltip color="#fff" trigger="click" placement="bottomRight" v-model:visible="visible">
+  <a-tooltip v-model:visible="visible" color="#fff" trigger="click" placement="bottomRight">
     <button class="vxe-button type--button is--circle" type="button" title="列设置" @click="handleClick">
       <Iconfont type="icon-setting" size="18"></Iconfont>
     </button>
@@ -12,10 +12,10 @@
           <a-button size="small" type="link" @click="handleReset">重置</a-button>
         </div>
         <div class="setting-body">
-          <div class="box" v-if="leftFixed.length">
+          <div v-if="leftFixed.length" class="box">
             <div class="title">固定在左侧</div>
             <draggable :list="leftFixed">
-              <div class="group" v-for="item in leftFixed" :key="item.field">
+              <div v-for="item in leftFixed" :key="item.field" class="group">
                 <a-checkbox v-model:checked="item.visible">{{ item.title }}</a-checkbox>
                 <a-space :size="2">
                   <Iconfont
@@ -32,10 +32,10 @@
               </div>
             </draggable>
           </div>
-          <div class="box" v-if="middleList.length">
+          <div v-if="middleList.length" class="box">
             <div class="title">不固定</div>
             <draggable :list="middleList">
-              <div class="group" v-for="item in middleList" :key="item.field">
+              <div v-for="item in middleList" :key="item.field" class="group">
                 <a-checkbox v-model:checked="item.visible">{{ item.title }}</a-checkbox>
                 <a-space :size="2">
                   <Iconfont
@@ -52,10 +52,10 @@
               </div>
             </draggable>
           </div>
-          <div class="box" v-if="rightFixed.length">
+          <div v-if="rightFixed.length" class="box">
             <div class="title">固定在右侧</div>
             <draggable :list="rightFixed">
-              <div class="group" v-for="item in rightFixed" :key="item.field">
+              <div v-for="item in rightFixed" :key="item.field" class="group">
                 <a-checkbox v-model:checked="item.visible">{{ item.title }}</a-checkbox>
                 <a-space :size="2">
                   <Iconfont
@@ -266,6 +266,7 @@ export default defineComponent({
   .setting-head {
     padding: 6px 12px;
     @include flexRAC;
+
     justify-content: space-between;
     border-bottom: 1px solid $border-color-grey;
   }
@@ -316,6 +317,7 @@ export default defineComponent({
   .setting-foot {
     padding: 6px 12px;
     @include flexRAC;
+
     justify-content: flex-end;
     border-top: 1px solid $border-color-grey;
   }

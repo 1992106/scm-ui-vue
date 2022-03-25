@@ -3,8 +3,8 @@
     ref="xGrid"
     v-bind="gridProps"
     v-model:pagination="pagination"
-    highlightHoverRow
-    customSetting
+    highlight-hover-row
+    custom-setting
     align="center"
     @search="handleFilter"
     @sortChange="handleSort">
@@ -14,15 +14,15 @@
         <x-search
           ref="xSearch"
           v-bind="searchProps"
+          :label-col="{ span: 10 }"
+          :wrapper-col="{ span: 14 }"
           @search="handleSearch"
           @reset="emitReset"
-          @clear="emitClear"
-          :label-col="{ span: 10 }"
-          :wrapper-col="{ span: 14 }">
-          <template #extra v-if="hasExtra">
+          @clear="emitClear">
+          <template v-if="hasExtra" #extra>
             <slot name="extra"></slot>
           </template>
-          <template #shortcut v-if="hasShortcut">
+          <template v-if="hasShortcut" #shortcut>
             <slot name="shortcut"></slot>
           </template>
         </x-search>
@@ -42,7 +42,6 @@
 
 <script>
 import { computed, defineComponent, onMounted, reactive, ref, toRef, toRefs, unref, watch, watchEffect } from 'vue'
-import { DownOutlined } from '@ant-design/icons-vue'
 import XGrid from '@components/Grid/index.vue'
 import XSearch from '@components/Search/index.vue'
 import { useSearch } from '@src/hooks/useSearch'
@@ -50,6 +49,10 @@ import { isEmpty } from '@src/utils'
 
 export default defineComponent({
   name: 'XPage',
+  components: {
+    'x-grid': XGrid,
+    'x-search': XSearch
+  },
   inheritAttrs: false,
   props: {
     value: Object,
@@ -57,11 +60,6 @@ export default defineComponent({
     gridProps: { type: Object, default: () => ({}) }
   },
   emits: ['update:value', 'search', 'reset', 'clear'],
-  components: {
-    DownOutlined,
-    'x-grid': XGrid,
-    'x-search': XSearch
-  },
   setup(props, { emit, slots }) {
     const xGrid = ref(null)
     const xSearch = ref(null)

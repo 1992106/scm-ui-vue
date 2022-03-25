@@ -1,6 +1,6 @@
 <template>
   <div class="my-editor">
-    <QuillEditor v-bind="$attrs" theme="snow" contentType="html" :toolbar="toolbar" ref="editorRef"></QuillEditor>
+    <QuillEditor v-bind="$attrs" ref="editorRef" theme="snow" content-type="html" :toolbar="toolbar"></QuillEditor>
   </div>
 </template>
 

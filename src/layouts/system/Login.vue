@@ -6,30 +6,30 @@
     </div>
     <Form ref="formRef" :model="form" :rules="rules" class="form" @keypress.enter="handleSubmit">
       <a-form-item name="name">
-        <Input size="large" v-model:value="form.name" placeholder="请输入用户名">
+        <Input v-model:value="form.name" size="large" placeholder="请输入用户名">
           <template #prefix>
             <UserOutlined />
           </template>
         </Input>
       </a-form-item>
       <a-form-item name="password">
-        <a-input-password size="large" v-model:value="form.password" visibilityToggle placeholder="请输入密码">
+        <a-input-password v-model:value="form.password" size="large" visibility-toggle placeholder="请输入密码">
           <template #prefix>
             <LockOutlined />
           </template>
         </a-input-password>
       </a-form-item>
-      <a-form-item :wrapperCol="{ span: 24 }">
-        <Button type="primary" size="large" block @click.prevent="handleSubmit" :loading="loading">登录</Button>
+      <a-form-item :wrapper-col="{ span: 24 }">
+        <Button type="primary" size="large" block :loading="loading" @click.prevent="handleSubmit">登录</Button>
       </a-form-item>
     </Form>
   </div>
 </template>
 
-<script>
+<script lang="ts">
 import { defineComponent, reactive, ref } from 'vue'
 import { UserOutlined, LockOutlined } from '@ant-design/icons-vue'
-import { Form, Input, Alert, Button, notification } from 'ant-design-vue'
+import { Form, Input, Button, notification } from 'ant-design-vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useStore } from 'vuex'
 import setting from '@src/config'
@@ -39,7 +39,6 @@ export default defineComponent({
   components: {
     Form,
     Input,
-    Alert,
     Button,
     UserOutlined,
     LockOutlined
@@ -89,7 +88,7 @@ export default defineComponent({
         if (token) {
           notification.success({ message: timeTxt(), description: `欢迎登录${setting.title}` })
           const redirect = route.query?.redirect || '/index'
-          await router.push(redirect)
+          await router.push(redirect as any)
         }
       } catch (error) {
         // console.log(error)

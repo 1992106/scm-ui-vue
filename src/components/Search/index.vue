@@ -5,7 +5,7 @@
         <!--自定义slot-->
         <template v-if="column?.slot">
           <a-form-item :label="column?.title">
-            <template v-slot:[column.slot]="scope">
+            <template #[column.slot]="scope">
               <slot :name="column.slot" v-bind="scope"></slot>
             </template>
           </a-form-item>
@@ -28,7 +28,7 @@
           <template v-if="showReset">
             <a-button @click="handleReset">{{ resetText }}</a-button>
           </template>
-          <div class="expand" v-if="isShowExpand" @click="handleExpand">
+          <div v-if="isShowExpand" class="expand" @click="handleExpand">
             <template v-if="isExpand">
               <span>收起</span>
               <UpOutlined />
@@ -41,7 +41,7 @@
         </a-space>
       </div>
     </a-form>
-    <div class="shortcut" v-if="showShortcut">
+    <div v-if="showShortcut" class="shortcut">
       <slot name="shortcut"></slot>
     </div>
   </div>
@@ -57,6 +57,10 @@ import { dateToDayjs, dayjsToDate, isEmpty } from '@src/utils'
 
 export default defineComponent({
   name: 'XSearch',
+  components: {
+    DownOutlined,
+    UpOutlined
+  },
   inheritAttrs: false,
   props: {
     // 自定义字段
@@ -79,10 +83,6 @@ export default defineComponent({
     showExpand: { type: Boolean, default: true }
   },
   emits: ['search', 'reset', 'clear'],
-  components: {
-    DownOutlined,
-    UpOutlined
-  },
   setup(props, { emit, slots }) {
     // 默认值
     const defaultState = {

@@ -14,7 +14,7 @@
       ref="tableRef"
       border
       v-bind="$attrs"
-      :rowKey="rowKey"
+      :row-key="rowKey"
       :columns="getColumns"
       :data-source="dataSource"
       :loading="loading"
@@ -23,12 +23,12 @@
       :size="size"
       :locale="locale"
       :row-selection="rowSelection"
-      :rowClassName="handleRowClassName"
-      @change="handleChange"
-      :customRow="customRow"
-      :customHeaderRow="customHeaderRow"
-      :customCell="customCell"
-      :customHeaderCell="customHeaderCell">
+      :row-class-name="handleRowClassName"
+      :custom-row="customRow"
+      :custom-header-row="customHeaderRow"
+      :custom-cell="customCell"
+      :custom-header-cell="customHeaderCell"
+      @change="handleChange">
       <template v-for="slot of getSlots" :key="slot" #[slot]="scope">
         <slot :name="slot" v-bind="scope"></slot>
       </template>
@@ -37,7 +37,7 @@
       v-if="showPagination && getColumns.length"
       v-bind="getPaginationConfig"
       :current="pagination.page"
-      :pageSize="pagination.pageSize"
+      :page-size="pagination.pageSize"
       :total="total"
       @change="handlePageChange"
       @showSizeChange="handleShowSizeChange" />

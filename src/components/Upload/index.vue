@@ -1,8 +1,8 @@
 <template>
   <a-upload
-    class="my-upload"
     v-bind="$attrs"
     v-model:file-list="files"
+    class="my-upload"
     :accept="accept"
     :list-type="listType"
     :show-upload-list="showUploadList"
@@ -29,6 +29,10 @@ import { isEmpty, downloadFile } from '@src/utils'
 
 export default defineComponent({
   name: 'XUpload',
+  components: {
+    PlusOutlined,
+    'x-preview': XPreview
+  },
   inheritAttrs: false,
   props: {
     fileList: { type: Array, default: () => [], required: true },
@@ -41,10 +45,6 @@ export default defineComponent({
     accept: { type: String, default: 'image/*' }
   },
   emits: ['update:fileList', 'change'],
-  components: {
-    PlusOutlined,
-    'x-preview': XPreview
-  },
   setup(props, { emit }) {
     const state = reactive({
       files: [],

@@ -1,5 +1,5 @@
 <template>
-  <router-view #default="{ Component, route }">
+  <router-view v-slot="{ Component, route }">
     <transition mode="out-in" name="fade-slide" appear>
       <keep-alive :include="cachedTabList">
         <component :is="Component" :key="route.fullPath" />

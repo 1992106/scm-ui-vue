@@ -4,7 +4,7 @@
     v-model:visible="logVisible"
     :title="title"
     :width="width"
-    destroyOnClose
+    destroy-on-close
     @afterVisibleChange="handleClose">
     <a-spin :spinning="spinning">
       <a-timeline>
@@ -28,6 +28,9 @@ import { formatTime } from '@src/utils'
 
 export default defineComponent({
   name: 'XLog',
+  components: {
+    'x-drawer': XDrawer
+  },
   inheritAttrs: false,
   props: {
     title: { type: String, default: '操作日志' },
@@ -36,9 +39,6 @@ export default defineComponent({
     customRequest: { type: Function, require: true } // [{createdUser: '', createdUser: '', content: ''}]
   },
   emits: ['update:visible', 'done'],
-  components: {
-    'x-drawer': XDrawer
-  },
   setup(props, { emit }) {
     const state = reactive({
       data: [],

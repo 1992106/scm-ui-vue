@@ -1,6 +1,6 @@
 <template>
   <Breadcrumb :routes="routes" separator=">">
-    <template #itemRender="{ route, routes, paths }">
+    <template #itemRender="{ route, paths }">
       <span v-if="routes.indexOf(route) === routes.length - 1">
         {{ route.meta.title }}
       </span>

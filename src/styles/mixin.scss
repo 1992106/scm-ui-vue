@@ -16,16 +16,19 @@
 
 @mixin flexRAC {
   @include flex-row;
+
   align-items: center;
 }
 
 @mixin flexRJC {
   @include flex-row;
+
   justify-content: center;
 }
 
 @mixin flexRCC {
   @include flexRAC;
+
   justify-content: center;
 }
 
