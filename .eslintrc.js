@@ -32,6 +32,7 @@ module.exports = {
     'prettier/prettier': [2, { endOfLine: 'lf' }],
     'vue/require-default-prop': 0,
     'vue/v-on-event-hyphenation': 0,
+    'vue/attribute-hyphenation': 0,
     'vue/multi-word-component-names': 0,
     'vue/no-v-html': 0,
     'vue/no-dupe-keys': 0,
