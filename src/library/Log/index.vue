@@ -5,7 +5,7 @@
     :title="title"
     :width="width"
     destroyOnClose
-    :afterVisibleChange="handleClose">
+    @afterVisibleChange="handleClose">
     <a-spin :spinning="spinning">
       <a-timeline>
         <a-timeline-item v-for="item in data" :key="item?.id">

@@ -9,7 +9,7 @@ module.exports = {
     'plugin:vue/vue3-essential',
     'plugin:@typescript-eslint/recommended',
     'plugin:prettier/recommended',
-    'prettier' // eslint-config-prettier缩写
+    'prettier' // eslint-config-prettier 缩写
   ],
   parser: 'vue-eslint-parser',
   parserOptions: {
@@ -20,7 +20,8 @@ module.exports = {
       jsx: true
     }
   },
-  plugins: ['vue', '@typescript-eslint', 'prettier'], // eslint-plugin-vue @typescript-eslint/eslint-plugin eslint-plugin-prettier 缩写
+  // eslint-plugin-vue @typescript-eslint/eslint-plugin eslint-plugin-prettier 缩写
+  plugins: ['vue', '@typescript-eslint', 'prettier'],
   globals: {},
   rules: {
     'prettier/prettier': [2, { endOfLine: 'lf', bracketSameLine: true }],

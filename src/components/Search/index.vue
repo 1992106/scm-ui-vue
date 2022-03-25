@@ -52,7 +52,7 @@ import { Form } from 'ant-design-vue'
 import { DownOutlined, UpOutlined } from '@ant-design/icons-vue'
 import { omit, pick } from 'lodash-es'
 import { useFormLayout } from './useFormLayout'
-import { emitDisabled, mergeEvents, omitEmpty } from './utils'
+import { toDisabled, mergeEvents, toEmpty } from './utils'
 import { dateToDayjs, dayjsToDate, isEmpty } from '@src/utils'
 
 export default defineComponent({
@@ -197,7 +197,7 @@ export default defineComponent({
     // 获取格式化后的columns
     const getColumns = computed(() => {
       return props.columns.map(column => {
-        const { props = {}, events = {}, slot } = emitDisabled(column)
+        const { props = {}, events = {}, slot } = toDisabled(column)
         const defaultAllState = defaultState[column?.type] || {}
         // column
         const allColumn = pick(column, ['type', 'title', 'field', 'rules'])
@@ -267,7 +267,7 @@ export default defineComponent({
         prev[column.field] = hasDate(column) ? dayjsToDate(value, column?.props?.valueFormat) : value
         return prev
       }, {})
-      return omitEmpty(params)
+      return toEmpty(params)
     }
 
     const handleSearch = () => {

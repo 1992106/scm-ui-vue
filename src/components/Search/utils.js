@@ -16,7 +16,7 @@ export const mergeEvents = (defaultEventsMap, defaultEvents = [], events = {}) =
   return { ...events, ...newEvents }
 }
 
-export const emitDisabled = column => {
+export const toDisabled = column => {
   const props = column?.props || {}
   const options = cloneDeep(props?.options || [])
   const treeData = cloneDeep(props?.treeData || [])
@@ -43,7 +43,7 @@ export const emitDisabled = column => {
  * @param object
  * @returns {*}
  */
-export const omitEmpty = object => {
+export const toEmpty = object => {
   if (getType(object) === 'object') {
     let newObj = {}
     Object.keys(object).forEach(key => {
