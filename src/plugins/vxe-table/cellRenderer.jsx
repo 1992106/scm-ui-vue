@@ -1,7 +1,7 @@
 import VXETable from 'vxe-table'
-import XEUtils from 'xe-utils'
 import Image from '@components/Image'
 import { get } from 'lodash-es'
+import { formatDate, formatTime } from '@src/utils'
 
 export const cellRenderer = {
   // 链接
@@ -55,8 +55,8 @@ export const cellRenderer = {
         return [<span>--</span>]
       }
 
-      const date = XEUtils.toDateString(val, 'yyyy-MM-dd')
-      const time = XEUtils.toDateString(val, 'HH:mm')
+      const date = formatDate(val, 'yyyy-MM-dd')
+      const time = formatTime(val, 'HH:mm')
 
       return [
         <span style={{ textAlign: 'center' }}>
@@ -73,7 +73,7 @@ export const cellRenderer = {
         return [<span>--</span>]
       }
 
-      const date = XEUtils.toDateString(val, 'yyyy-MM-dd')
+      const date = formatDate(val, 'yyyy-MM-dd')
 
       return [<span style={{ textAlign: 'center' }}>{date}</span>]
     }

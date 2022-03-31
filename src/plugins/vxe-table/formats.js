@@ -1,15 +1,14 @@
 import VXETable from 'vxe-table'
-import XEUtils from 'xe-utils'
-import { isEmpty } from '@src/utils'
+import { formatDate, formatTime, isEmpty } from '@src/utils'
 
 export const formats = {
   formatDate({ cellValue }, format) {
     if (isEmpty(cellValue)) return '--'
-    return XEUtils.toDateString(cellValue, format || 'yyyy-MM-dd')
+    return formatDate(cellValue, format || 'yyyy-MM-dd')
   },
-  formatTime({ cellValue }) {
+  formatTime({ cellValue }, format) {
     if (isEmpty(cellValue)) return '--'
-    return XEUtils.toDateString(cellValue, 'yyyy-MM-dd HH:mm')
+    return formatTime(cellValue, format || 'yyyy-MM-dd HH:mm')
   },
   formatEmpty({ cellValue }, key) {
     if (isEmpty(cellValue)) return '--'
