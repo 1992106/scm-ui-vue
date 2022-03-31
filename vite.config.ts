@@ -66,7 +66,7 @@ const config: UserConfig = {
     terserOptions: {
       compress: {
         keep_infinity: true, // 防止 Infinity 被压缩成 1/0
-        // drop_console: true, // 生产环境去除 console
+        drop_console: true, // 生产环境去除 console
         drop_debugger: true // 生产环境去除 debugger
       }
     }

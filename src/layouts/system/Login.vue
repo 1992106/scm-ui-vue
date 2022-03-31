@@ -94,7 +94,7 @@ export default defineComponent({
           await router.push(redirect as any)
         }
       } catch (error) {
-        // console.log(error)
+        console.log(error)
       }
     }
 
