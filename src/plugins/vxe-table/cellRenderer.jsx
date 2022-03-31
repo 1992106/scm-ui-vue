@@ -38,17 +38,16 @@ export const cellRenderer = {
         props.preview = renderOpts.props.preview
       }
 
-      if (renderOpts.props?.width) {
-        props.width = renderOpts.props.width
-      }
+      props.width = renderOpts.props?.width || 46
+      props.height = renderOpts.props?.height || 46
 
       if (!thumbnail) {
         return '--'
       }
-      return [<Image key={thumbnail} width={46} height={46} thumbnail={thumbnail} urls={urls} {...props} />]
+      return [<Image key={thumbnail} thumbnail={thumbnail} urls={urls} {...props} />]
     }
   },
-  MyDate: {
+  MyTime: {
     renderDefault(renderOpts, params) {
       const { row, column } = params
       const val = get(row, column.field)
@@ -66,7 +65,7 @@ export const cellRenderer = {
       ]
     }
   },
-  MyTime: {
+  MyDate: {
     renderDefault(renderOpts, params) {
       const { row, column } = params
       const val = get(row, column.field)

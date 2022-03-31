@@ -2,6 +2,7 @@
   <x-grid
     ref="xGrid"
     align="center"
+    custom-zoom
     custom-setting
     v-bind="gridProps"
     v-model:pagination="pagination"

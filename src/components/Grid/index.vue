@@ -159,7 +159,7 @@ export default defineComponent({
     // 给单元格附加样式
     cellStyle: [Object, Function],
     // 自定义缩放
-    customZoom: { type: Boolean, default: true },
+    customZoom: { type: Boolean, default: false },
     // 自定义设置
     customSetting: { type: Boolean, default: false },
     // 本地Storage名称（拖拽列和自定义表头时需要本地储存）,
