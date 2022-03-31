@@ -2,15 +2,20 @@ import { computed, defineComponent, unref } from 'vue'
 import { Button, Drawer, Space, Spin } from 'ant-design-vue'
 import './index.scss'
 
+const DrawerProps = {
+  visible: { type: Boolean, default: false },
+  class: String,
+  width: { type: String, default: 'calc(100% - 320px)' },
+  height: String
+}
+
 const XDrawer = defineComponent({
   name: 'XDrawer',
   inheritAttrs: false,
   props: {
-    visible: { type: Boolean, default: false },
+    ...DrawerProps,
     manual: { type: Boolean, default: false },
     spinProps: { type: [Boolean, Object], default: false },
-    width: { type: String, default: 'calc(100% - 320px)' },
-    height: String,
     confirmLoading: { type: Boolean, default: false },
     okText: { type: String, default: '确定' },
     okType: { type: String, default: 'primary' },
@@ -36,34 +41,33 @@ const XDrawer = defineComponent({
       ctx.emit('ok')
     }
 
+    const renderFooter = () => {
+      const footer = ctx.slots?.footer?.() || ctx.attrs?.footer
+      return footer ? (
+        footer
+      ) : footer !== null ? (
+        <Space>
+          <Button {...props.cancelButtonProps} onClick={handleCancel}>
+            {props.cancelText}
+          </Button>
+          <Button type={props.okType} {...props.okButtonProps} loading={props.confirmLoading} onClick={handleOk}>
+            {props.okText}
+          </Button>
+        </Space>
+      ) : null
+    }
+
     return () => (
       <Drawer
         {...ctx.attrs}
         visible={props.visible}
-        class={['my-drawer', ctx.attrs?.footer === null ? '' : 'footer']}
+        class={['my-drawer', props.class]}
         width={props.width}
         height={props.height}
-        title={ctx.slots?.title || ctx.attrs?.title}
+        title={ctx.slots?.title?.() || ctx.attrs?.title}
+        footer={renderFooter()}
         onClose={handleCancel}>
         <Spin {...unref(spinProps)}>{ctx.slots?.default && ctx.slots?.default()}</Spin>
-        {ctx.slots?.footer
-          ? ctx.slots?.footer()
-          : ctx.attrs?.footer !== null && (
-              <div className='my-drawer-button'>
-                <Space>
-                  <Button {...props.cancelButtonProps} onClick={handleCancel}>
-                    {props.cancelText}
-                  </Button>
-                  <Button
-                    type={props.okType}
-                    {...props.okButtonProps}
-                    loading={props.confirmLoading}
-                    onClick={handleOk}>
-                    {props.okText}
-                  </Button>
-                </Space>
-              </div>
-            )}
       </Drawer>
     )
   }

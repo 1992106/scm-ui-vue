@@ -1,5 +1,6 @@
 import { defineComponent, ref, computed, PropType, watch } from 'vue'
-import { Image } from 'ant-design-vue'
+import { Image, Space } from 'ant-design-vue'
+import XPreview from '../Preview'
 import { isObject } from 'lodash-es'
 import { compressImage } from '@src/utils'
 import './index.scss'
@@ -91,7 +92,7 @@ const XImage = defineComponent({
     }
 
     return () => (
-      <>
+      <Space>
         {compressUrls.value.map((src, index) => (
           <Image
             {...ctx.attrs}
@@ -106,21 +107,10 @@ const XImage = defineComponent({
             fallback={fallUrl}
           />
         ))}
-        {props.preview && previewUrls.value.length > 0 ? (
-          <Image.PreviewGroup>
-            {previewUrls.value.map((url, index) => (
-              <Image
-                style={{ display: 'none' }}
-                preview={{
-                  visible: visible.value && current.value === index,
-                  onVisibleChange: () => (visible.value = false)
-                }}
-                src={url}
-              />
-            ))}
-          </Image.PreviewGroup>
-        ) : null}
-      </>
+        {props.preview && (
+          <XPreview v-model={[visible.value, 'visible']} current={current.value} urls={previewUrls.value} />
+        )}
+      </Space>
     )
   }
 })

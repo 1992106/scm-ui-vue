@@ -18,6 +18,7 @@
       :columns="getColumns"
       :data-source="dataSource"
       :loading="loading"
+      :empty-text="emptyText"
       :pagination="false"
       :scroll="getScroll"
       :size="size"
@@ -26,11 +27,46 @@
       :row-class-name="handleRowClassName"
       :custom-row="customRow"
       :custom-header-row="customHeaderRow"
-      :custom-cell="customCell"
-      :custom-header-cell="customHeaderCell"
-      @change="handleChange">
-      <template v-for="slot of getSlots" :key="slot" #[slot]="scope">
-        <slot :name="slot" v-bind="scope"></slot>
+      :transform-cell-text="getTransformCellText"
+      @change="handleChange"
+      @expand="handleExpand"
+      @expandedRowsChange="handleExpandedRowsChange"
+      @resizeColumn="handleResizeColumn">
+      <!--个性化头部单元格-->
+      <template #headerCell="scope">
+        <slot name="headerCell" v-bind="scope"></slot>
+      </template>
+      <!--个性化单元格-->
+      <template #bodyCell="scope">
+        <slot name="bodyCell" v-bind="scope"></slot>
+      </template>
+      <!--自定义筛选菜单，需要配合 column.customFilterDropdown 使用-->
+      <template #customFilterDropdown="scope">
+        <slot name="customFilterDropdown" v-bind="scope"></slot>
+      </template>
+      <!--自定义筛选图标-->
+      <template #customFilterIcon="scope">
+        <slot name="customFilterIcon" v-bind="scope"></slot>
+      </template>
+      <!--自定义展开行-->
+      <template #expandedRowRender="scope">
+        <slot name="expandedRowRender" v-bind="scope"></slot>
+      </template>
+      <!--自定义展开图标-->
+      <template #expandIcon="scope">
+        <slot name="expandIcon" v-bind="scope"></slot>
+      </template>
+      <!--表格标题-->
+      <template #title="scope">
+        <slot name="title" v-bind="scope"></slot>
+      </template>
+      <!--表格尾部-->
+      <template #footer="scope">
+        <slot name="footer" v-bind="scope"></slot>
+      </template>
+      <!--总结栏-->
+      <template #summary="scope">
+        <slot name="summary" v-bind="scope"></slot>
       </template>
     </a-table>
     <a-pagination
@@ -46,6 +82,7 @@
 <script>
 import { defineComponent, computed, mergeProps, onBeforeUnmount, onMounted, reactive, ref, toRefs, unref } from 'vue'
 import { debounce } from 'lodash-es'
+import { isEmpty } from '@src/utils'
 
 export default defineComponent({
   name: 'XTable',
@@ -59,6 +96,7 @@ export default defineComponent({
     dataSource: { type: Array, default: () => [] },
     loading: { type: [Boolean, Object], default: false },
     total: { type: Number, default: 0 },
+    emptyText: { type: String, default: '暂无数据' },
     // 页码
     showPagination: { type: Boolean, default: true },
     pagination: { type: Object, default: () => ({ page: 1, pageSize: 20 }) },
@@ -86,10 +124,9 @@ export default defineComponent({
     locale: { type: Object, default: () => ({ filterConfirm: '筛选', filterReset: '重置', emptyText: '暂无数据' }) },
     customRow: Function,
     customHeaderRow: Function,
-    customCell: Function,
-    customHeaderCell: Function
+    transformCellText: { type: Function, default: null }
   },
-  emits: ['search', 'update:pagination', 'change'],
+  emits: ['search', 'update:pagination', 'change', 'expand', 'expandedRowsChange', 'resizeColumn'],
   setup(props, { emit, slots }) {
     /**
      * 默认值
@@ -118,13 +155,9 @@ export default defineComponent({
      * computed
      */
     const getColumns = computed(() => props.columns.map(column => mergeProps(defaultState.defaultColumn, column)))
-    const getSlots = computed(() =>
-      props.columns
-        .filter(val => val.slots)
-        .flatMap(col =>
-          ['customRender', 'title', 'filterDropdown', 'filterIcon'].map(val => col.slots[val]).filter(Boolean)
-        )
-    )
+    const getTransformCellText = computed(() => {
+      return props.transformCellText ? props.transformCellText : ({ text }) => (isEmpty(text) ? '--' : text)
+    })
     const getScroll = computed(() => mergeProps(state.scroll, props.scroll))
     const getPaginationConfig = computed(() => mergeProps(defaultState.defaultPaginationConfig, props.paginationConfig))
     /**
@@ -190,18 +223,38 @@ export default defineComponent({
       emit('update:pagination', pagination)
       emit('search')
     }
+
+    // 点击展开图标时触发
+    const handleExpand = (expanded, record) => {
+      emit('expand', expanded, record)
+    }
+
+    // 点击展开图标时触发
+    const handleExpandedRowsChange = expandedRows => {
+      emit('expandedRowsChange', expandedRows)
+    }
+
+    // 点击展开图标时触发
+    const handleResizeColumn = (width, column) => {
+      emit('resizeColumn', width, column)
+    }
+
     const hasToolBar = computed(() => !!slots['toolBar'])
+
     return {
       ...toRefs(state),
       getScroll,
       getColumns,
-      getSlots,
+      getTransformCellText,
       getPaginationConfig,
       tableRef,
       handleRowClassName,
       handleChange,
       handlePageChange,
       handleShowSizeChange,
+      handleExpand,
+      handleExpandedRowsChange,
+      handleResizeColumn,
       hasToolBar
     }
   }

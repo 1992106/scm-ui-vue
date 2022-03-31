@@ -1,22 +1,23 @@
 <template>
   <div class="my-search">
-    <a-form class="form" layout="horizontal" :label-col="labelCol" :wrapper-col="wrapperCol">
-      <template v-for="column in getColumns" :key="column.slot || column.field">
-        <!--自定义slot-->
-        <template v-if="column?.slot">
-          <a-form-item :label="column?.title">
-            <template #[column.slot]="scope">
-              <slot :name="column.slot" v-bind="scope"></slot>
-            </template>
-          </a-form-item>
-        </template>
-        <template v-else>
+    <a-form ref="xForm" class="form" layout="horizontal" :label-col="labelCol" :wrapper-col="wrapperCol">
+      <template v-for="column in getColumns" :key="column.field || column.slot">
+        <template v-if="column.type">
           <a-form-item :label="column?.title" v-bind="validateInfos[column.field]">
             <component
               :is="column.type"
               v-model:[column.modelValue]="modelRef[column.field]"
               v-bind="column.props || {}"
               v-on="column.events || {}"></component>
+          </a-form-item>
+        </template>
+        <!--自定义slot-->
+        <template v-else>
+          <a-form-item :label="column?.title">
+            <!--<template #[column.slot]="scope">
+              <slot :name="column.slot" v-bind="scope"></slot>
+            </template>-->
+            <slot :name="column.slot"></slot>
           </a-form-item>
         </template>
       </template>
@@ -84,6 +85,7 @@ export default defineComponent({
   },
   emits: ['search', 'reset', 'clear'],
   setup(props, { emit, slots }) {
+    const xForm = ref(null)
     // 默认值
     const defaultState = {
       AInput: {
@@ -299,11 +301,6 @@ export default defineComponent({
       }
     }
 
-    // 设置表单值
-    const setFieldValue = (field, value) => {
-      Object.assign(modelRef, { [field]: value })
-    }
-
     // 表单布局
     const { updateLayout, hasExpand } = useFormLayout()
     const isExpand = ref(props.defaultExpand)
@@ -311,6 +308,7 @@ export default defineComponent({
       isExpand.value = !isExpand.value
       updateLayout()
     }
+
     const isShowExpand = ref(false)
     onMounted(() => {
       if (props.showExpand === true) {
@@ -327,7 +325,31 @@ export default defineComponent({
     // 是否显示快捷搜索
     const showShortcut = computed(() => !!slots['shortcut'])
 
+    // 搜索方法
+    const onSearch = () => {
+      nextTick(() => {
+        handleSearch()
+      })
+    }
+
+    // 重置方法
+    const onReset = () => {
+      nextTick(() => {
+        handleReset()
+      })
+    }
+
+    // 设置字段和值
+    const onSetFieldValue = obj => {
+      if (!isEmpty(obj)) {
+        Object.keys(obj).forEach(field => {
+          Object.assign(modelRef, { [field]: obj[field] })
+        })
+      }
+    }
+
     return {
+      xForm,
       showShortcut,
       getModelValue,
       getColumns,
@@ -336,7 +358,9 @@ export default defineComponent({
       handleSearch,
       handleReset,
       handleClear,
-      setFieldValue,
+      onSearch,
+      onReset,
+      onSetFieldValue,
       isExpand,
       isShowExpand,
       handleExpand
@@ -352,6 +376,12 @@ export default defineComponent({
 
       &.hidden {
         display: none !important;
+      }
+    }
+
+    .ant-form-item-control-input-content {
+      & > .ant-input-number {
+        width: 100%;
       }
     }
 

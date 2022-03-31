@@ -2,38 +2,49 @@ import JsPDF from 'jspdf'
 import html2canvas from 'html2canvas'
 
 const jsPDF = ({ el, fileName, handleAfter }) => {
+  el.style.paddingLeft = '20px'
+  el.style.paddingRight = '20px'
   html2canvas(el, {
-    scrollY: -document.documentElement.scrollTop
+    dpi: 300,
+    scale: 4,
+    useCORS: true,
+    allowTaint: false,
+    height: el.offsetHeight,
+    width: el.offsetWidth,
+    backgroundColor: '#fff',
+    windowWidth: document.body.scrollWidth,
+    windowHeight: document.body.scrollHeight
   }).then(canvas => {
-    let contentWidth = canvas.width
-    let contentHeight = canvas.height
+    // a4纸的尺寸[841.89,595.28]
+    const a4Width = 841.89
+    const a4Height = 592.28
 
     // 一页pdf显示html页面生成的canvas高度;
-    let pageHeight = (contentWidth / 592.28) * 841.89
+    const pageHeight = Math.floor((canvas.width / a4Width) * a4Height)
     // 未生成pdf的html页面高度
-    let leftHeight = contentHeight
+    let leftHeight = canvas.height
     // 页面偏移
     let position = 0
-    // a4纸的尺寸[841.89,595.28]，html页面生成的canvas在pdf中图片的宽高
-    let imgWidth = 841.89
-    let imgHeight = (592.28 / contentWidth) * contentHeight
+    // html页面生成的canvas在pdf中图片的宽高
+    const imgHeight = Math.floor((a4Width / canvas.width) * canvas.height)
 
-    let pageData = canvas.toDataURL('image/jpeg', 1.0)
+    const pageData = canvas.toDataURL('image/jpeg', 1.0)
 
-    let pdf = new JsPDF('l', 'pt', 'a4')
+    const pdf = new JsPDF('l', 'pt', 'a4')
 
     pdf.setDisplayMode('fullwidth', 'continuous', 'FullScreen')
 
     // 有两个高度需要区分，一个是html页面的实际高度，和生成pdf的页面高度(841.89)
     // 当内容未超过pdf一页显示的范围，无需分页
     if (leftHeight < pageHeight) {
-      pdf.addImage(pageData, 'JPEG', 0, 0, imgWidth, imgHeight)
+      pdf.addImage(pageData, 'JPEG', 0, 0, a4Width, imgHeight)
     } else {
+      // TODO: 多页打印
       while (leftHeight > 0) {
-        pdf.addImage(pageData, 'JPEG', 0, position, imgWidth, imgHeight)
+        pdf.addImage(pageData, 'JPEG', 0, position, a4Width, imgHeight)
         leftHeight -= pageHeight
         position -= 841.89
-        //避免添加空白页
+        // 避免添加空白页
         if (leftHeight > 0) {
           pdf.addPage()
         }

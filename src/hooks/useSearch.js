@@ -19,18 +19,11 @@ export function useSearch(fn, isResize = true, searchProps, gridProps) {
     }
   }
 
-  const handleReset = $event => {
-    searchParams.value = $event
-  }
-
-  const handleClear = $event => {
-    searchParams.value = $event
-  }
-
   // 是否默认首次filter
   const isDefaultFilter = ref(false)
+  const sortParams = ref({})
   const filterParams = ref({})
-  const handleFilter = $event => {
+  const handleFilter = ($event, key) => {
     if (!unref(isDefaultFilter)) {
       isDefaultFilter.value = true
       return init()
@@ -38,16 +31,32 @@ export function useSearch(fn, isResize = true, searchProps, gridProps) {
     const pagination = {}
     if ($event) {
       pagination.page = 1
-      filterParams.value = $event
+      if (key === 'sort') {
+        sortParams.value = $event
+      }
+      if (key === 'filter') {
+        filterParams.value = $event
+      }
     }
     if (isFunction(fn)) {
       fn({ ...unref(paramsRef), ...pagination })
     }
   }
 
+  const handleReset = $event => {
+    searchParams.value = $event
+    sortParams.value = {}
+    filterParams.value = {}
+  }
+
+  const handleClear = $event => {
+    searchParams.value = $event
+  }
+
   const paramsRef = computed(() => {
     return {
       ...unref(searchParams),
+      ...unref(sortParams),
       ...unref(filterParams)
     }
   })

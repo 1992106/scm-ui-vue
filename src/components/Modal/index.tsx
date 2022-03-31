@@ -30,6 +30,7 @@ const XModal = defineComponent({
     fullscreen: { type: Boolean, default: false },
     spinProps: { type: [Boolean, Object] as PropType<boolean | SpinProps>, default: false }
   },
+  emits: ['fullScreen'],
   setup(props, ctx) {
     // 加载
     const spinProps = computed(() => {
@@ -54,6 +55,7 @@ const XModal = defineComponent({
       e?.stopPropagation()
       e?.preventDefault()
       fullScreenRef.value = !unref(fullScreenRef)
+      ctx.emit('fullScreen', fullScreenRef.value)
     }
 
     const renderIcon = () => {
@@ -83,8 +85,8 @@ const XModal = defineComponent({
         {...ctx.attrs}
         wrapClassName={unref(wrapClassName)}
         closeIcon={renderIcon()}
-        title={ctx.slots?.title || ctx.attrs?.title}
-        footer={ctx.slots?.footer || ctx.attrs?.footer}>
+        title={ctx.slots?.title?.() || ctx.attrs?.title}
+        footer={ctx.slots?.footer?.() || ctx.attrs?.footer}>
         <Spin {...unref(spinProps)}>{ctx.slots?.default && ctx.slots?.default()}</Spin>
       </Modal>
     )

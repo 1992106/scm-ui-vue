@@ -1,17 +1,30 @@
 .my-drawer {
-  .my-drawer-button {
+  .ant-drawer-close {
     position: absolute;
+    top: 0;
     right: 0;
-    bottom: 0;
-    width: 100%;
-    border-top: 1px solid #e9e9e9;
-    padding: 10px 16px;
-    background: #fff;
-    text-align: right;
-    z-index: 1;
+    z-index: 10;
+    display: block;
+    width: 56px;
+    height: 56px;
+    padding: 0;
+    color: rgba(0, 0, 0, 0.45);
+    font-weight: 700;
+    font-size: 16px;
+    font-style: normal;
+    line-height: 56px;
+    text-align: center;
+    text-transform: none;
+    text-decoration: none;
+    background: transparent;
+    border: 0;
+    outline: 0;
+    cursor: pointer;
+    transition: color 0.3s;
+    text-rendering: auto;
   }
 
-  &.footer .ant-drawer-content {
-    padding-bottom: 53px;
+  .ant-drawer-footer {
+    text-align: right;
   }
 }

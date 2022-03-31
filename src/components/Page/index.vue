@@ -1,16 +1,14 @@
 <template>
   <x-grid
     ref="xGrid"
+    align="center"
+    custom-setting
     v-bind="gridProps"
     v-model:pagination="pagination"
-    highlight-hover-row
-    custom-setting
-    align="center"
-    @search="handleFilter"
-    @sortChange="handleSort">
+    @search="handleFilter">
     <!--搜索栏-->
     <template #searchBar>
-      <template v-if="searchBar">
+      <template v-if="hasSearchBar">
         <x-search
           ref="xSearch"
           v-bind="searchProps"
@@ -19,8 +17,8 @@
           @search="handleSearch"
           @reset="emitReset"
           @clear="emitClear">
-          <template v-if="hasExtra" #extra>
-            <slot name="extra"></slot>
+          <template v-for="slot of getSearchSlots" :key="slot" #[slot]="scope">
+            <slot :name="slot" v-bind="scope"></slot>
           </template>
           <template v-if="hasShortcut" #shortcut>
             <slot name="shortcut"></slot>
@@ -34,7 +32,7 @@
         <slot name="toolBar"></slot>
       </template>
     </template>
-    <template v-for="slot of getSlots" :key="slot" #[slot]="scope">
+    <template v-for="slot of getTableSlots" :key="slot" #[slot]="scope">
       <slot :name="slot" v-bind="scope"></slot>
     </template>
   </x-grid>
@@ -67,9 +65,7 @@ export default defineComponent({
       pagination: {
         page: 1,
         pageSize: 20
-      },
-      sortBy: '',
-      sortKey: ''
+      }
     })
 
     // 页码默认赋值
@@ -85,6 +81,11 @@ export default defineComponent({
       return typeof _showPagination === 'undefined' ? true : _showPagination
     })
 
+    const getSearchSlots = computed(() => {
+      const columns = props.searchProps.columns
+      return (columns || []).map(col => col.slot).filter(Boolean)
+    })
+
     const generateSlots = (columns = [], slots = []) => {
       columns.forEach(column => {
         slots.push(column)
@@ -93,7 +94,7 @@ export default defineComponent({
       return slots
     }
 
-    const getSlots = computed(() => {
+    const getTableSlots = computed(() => {
       const columns = generateSlots(props.gridProps.columns)
       return (columns || [])
         .filter(col => col.slots)
@@ -111,16 +112,14 @@ export default defineComponent({
       }
       emit('update:value', {
         ...params,
-        ...(state.sortBy ? { sortBy: state.sortBy, sortKey: state.sortKey } : {}),
         ...(unref(showPagination) ? state.pagination : {})
       })
       emit('search', { ...params, ...(unref(showPagination) ? state.pagination : {}) })
     }
 
     const emitReset = $event => {
-      state.sortBy = ''
-      state.sortKey = ''
-      xGrid.value.gridRef.clearSort(state.sortKey)
+      xGrid.value.gridRef.clearFilter()
+      xGrid.value.gridRef.clearSort()
       handleReset($event)
       emit('update:value', { ...$event, ...(unref(showPagination) ? state.pagination : {}) })
       emit('reset', { ...$event, ...(unref(showPagination) ? state.pagination : {}) })
@@ -141,16 +140,9 @@ export default defineComponent({
       toRef(props, 'gridProps')
     )
 
-    const handleSort = ({ property, order }) => {
-      state.sortBy = order ? order.toUpperCase() : ''
-      state.sortKey = property
-      handleSearch()
-    }
-
-    const searchBar = computed(() => !isEmpty(props.searchProps))
+    const hasSearchBar = computed(() => !isEmpty(props['searchProps']))
     const hasToolBar = computed(() => !!slots['toolBar'])
     const hasShortcut = computed(() => !!slots['shortcut'])
-    const hasExtra = computed(() => !!slots['extra'])
 
     // 初始化调用一下，获取查询参数
     const onInit = () => {
@@ -180,16 +172,15 @@ export default defineComponent({
       xGrid,
       xSearch,
       ...toRefs(state),
-      searchBar,
+      hasSearchBar,
       hasToolBar,
       hasShortcut,
-      hasExtra,
-      getSlots,
+      getSearchSlots,
+      getTableSlots,
       handleFilter,
       handleSearch,
       emitReset,
-      emitClear,
-      handleSort
+      emitClear
     }
   }
 })

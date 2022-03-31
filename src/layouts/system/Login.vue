@@ -87,7 +87,10 @@ export default defineComponent({
         loading.value = false
         if (token) {
           notification.success({ message: timeTxt(), description: `欢迎登录${setting.title}` })
-          const redirect = route.query?.redirect || '/index'
+          let redirect = route.query?.redirect
+          if (!redirect || redirect.includes('/login')) {
+            redirect = '/index'
+          }
           await router.push(redirect as any)
         }
       } catch (error) {
