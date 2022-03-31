@@ -9,9 +9,7 @@ export const formats = {
   },
   formatTime({ cellValue }) {
     if (isEmpty(cellValue)) return '--'
-    const date = XEUtils.toDateString(cellValue, 'yyyy-MM-dd')
-    const time = XEUtils.toDateString(cellValue, 'HH:mm')
-    return date + '\r\n' + time
+    return XEUtils.toDateString(cellValue, 'yyyy-MM-dd HH:mm')
   },
   formatEmpty({ cellValue }, key) {
     if (isEmpty(cellValue)) return '--'

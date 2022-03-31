@@ -148,22 +148,6 @@ export default defineComponent({
         },
         events: ['change']
       },
-      AWeekPicker: {
-        props: {
-          allowClear: true,
-          format: 'YYYY-wo',
-          valueFormat: 'YYYY-MM-DD'
-        },
-        events: ['change']
-      },
-      AMonthPicker: {
-        props: {
-          allowClear: true,
-          format: 'YYYY-MM',
-          valueFormat: 'YYYY-MM-DD'
-        },
-        events: ['change']
-      },
       ARangePicker: {
         props: {
           allowClear: true,
@@ -380,7 +364,8 @@ export default defineComponent({
     }
 
     .ant-form-item-control-input-content {
-      & > .ant-input-number {
+      & > .ant-input-number,
+      & > .ant-picker {
         width: 100%;
       }
     }

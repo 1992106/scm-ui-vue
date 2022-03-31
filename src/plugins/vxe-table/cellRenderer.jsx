@@ -3,8 +3,7 @@ import XEUtils from 'xe-utils'
 import Image from '@components/Image'
 import { get } from 'lodash-es'
 
-// VXETable渲染器
-VXETable.renderer.mixin({
+export const cellRenderer = {
   // 链接
   MyLink: {
     renderDefault(renderOpts, params) {
@@ -12,7 +11,7 @@ VXETable.renderer.mixin({
       let { events } = renderOpts
       return [
         <a className='my-link' onClick={() => events?.click(params)}>
-          {get(row, column.property)}
+          {get(row, column.field)}
         </a>
       ]
     }
@@ -30,7 +29,7 @@ VXETable.renderer.mixin({
       const props = {}
       let urls = []
       const { row, column } = params
-      const thumbnail = get(row, column.property) || ''
+      const thumbnail = get(row, column.field) || ''
       if (renderOpts.props?.previewField) {
         urls = get(row, renderOpts.props.previewField) || []
       }
@@ -49,10 +48,10 @@ VXETable.renderer.mixin({
       return [<Image key={thumbnail} width={46} height={46} thumbnail={thumbnail} urls={urls} {...props} />]
     }
   },
-  MyDateTime: {
+  MyDate: {
     renderDefault(renderOpts, params) {
       const { row, column } = params
-      const val = get(row, column.property)
+      const val = get(row, column.field)
       if (!val) {
         return [<span>--</span>]
       }
@@ -66,5 +65,21 @@ VXETable.renderer.mixin({
         </span>
       ]
     }
+  },
+  MyTime: {
+    renderDefault(renderOpts, params) {
+      const { row, column } = params
+      const val = get(row, column.field)
+      if (!val) {
+        return [<span>--</span>]
+      }
+
+      const date = XEUtils.toDateString(val, 'yyyy-MM-dd')
+
+      return [<span style={{ textAlign: 'center' }}>{date}</span>]
+    }
   }
-})
+}
+
+// VXETable渲染器
+VXETable.renderer.mixin(cellRenderer)
