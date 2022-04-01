@@ -1,4 +1,4 @@
-import { UserConfig } from 'vite'
+import { UserConfigExport } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import vueJsx from '@vitejs/plugin-vue-jsx'
 import legacy from '@vitejs/plugin-legacy'
@@ -10,7 +10,7 @@ import setting from './src/config'
 
 const pathResolve = (dir: string) => resolve(__dirname, dir)
 
-const config: UserConfig = {
+const config: UserConfigExport = {
   plugins: [
     vue(),
     vueJsx({}),
@@ -85,6 +85,8 @@ export default ({ mode }) => {
     }
     build.rollupOptions = {
       output: {
+        inlineDynamicImports: true,
+        interop: 'esModule',
         exports: 'named',
         // 在 UMD 构建模式下为这些外部化的依赖提供一个全局变量
         globals: {
@@ -101,9 +103,7 @@ export default ({ mode }) => {
           'qrcodejs2-fix': 'qrcodejs2-fix',
           'vue-draggable-next': 'vue-draggable-next',
           'vxe-table': 'vxe-table'
-        },
-        // TODO: Invalid value "iife&umd" for option "output.format" - UMD and IIFE output formats are not supported for code-splitting builds.
-        inlineDynamicImports: true
+        }
       },
       // 确保外部化处理那些你不想打包进库的依赖
       external: ['vue', 'ant-design-vue', '@ant-design/icons-vue', 'lodash-es', 'vxe-table']

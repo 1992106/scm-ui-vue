@@ -15,7 +15,7 @@
           </a-menu-item>
         </template>
         <template v-else>
-          <MyMenuItem :key="item.name" :menu-info="item" />
+          <MenuItem :key="item.name" :menu-info="item" />
         </template>
       </template>
     </a-sub-menu>
@@ -30,7 +30,7 @@ import { defineComponent } from 'vue'
 import IconFont from '@components/IconFont'
 
 export default defineComponent({
-  name: 'MyMenuItem',
+  name: 'MenuItem',
   components: {
     IconFont
   },

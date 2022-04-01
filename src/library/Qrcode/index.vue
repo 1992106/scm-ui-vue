@@ -7,7 +7,7 @@ import QRCode from 'qrcodejs2-fix'
 export default defineComponent({
   name: 'XQrcode',
   props: {
-    text: { type: String, require: true },
+    code: { type: String, require: true },
     width: { type: Number, default: 120 },
     height: { type: Number, default: 120 },
     colorDark: { type: String, default: '#000' },
@@ -23,7 +23,7 @@ export default defineComponent({
         qrcodeRef.value.innerHTML = ''
       }
       new QRCode(qrcodeRef.value, {
-        text: props.text,
+        text: props.code,
         width: props.width,
         height: props.height,
         colorDark: props.colorDark,
@@ -33,7 +33,7 @@ export default defineComponent({
     }
 
     watch(
-      () => props.text,
+      () => props.code,
       text => {
         if (text) {
           nextTick(generateQRCode)
