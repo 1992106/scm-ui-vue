@@ -3,6 +3,8 @@
     ref="gridRef"
     class="my-grid"
     border
+    align="center"
+    show-header
     auto-resize
     show-overflow
     keep-source
@@ -69,6 +71,14 @@
           :backup-columns="backupColumns"
           @change="handleSettingChange"></ColumnSetting>
       </template>
+    </template>
+    <!--表格头部-->
+    <template #top>
+      <slot name="title"></slot>
+    </template>
+    <!--表格尾部-->
+    <template #bottom>
+      <slot name="footer"></slot>
     </template>
     <!--slot-->
     <template v-for="slot of getSlots" :key="slot" #[slot]="scope">

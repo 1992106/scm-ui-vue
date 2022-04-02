@@ -2,9 +2,9 @@
   <div ref="echartsRef" class="my-echarts"></div>
 </template>
 <script>
-import { defineComponent, onMounted, onUnmounted, ref } from 'vue'
+import { defineComponent, markRaw, onMounted, onUnmounted, ref, watch } from 'vue'
 // 引入 echarts 核心模块，核心模块提供了 echarts 使用必须要的接口。
-import * as echarts from 'echarts/core'
+import { getInstanceByDom, init, use } from 'echarts/core'
 // 引入提示框，标题，直角坐标系，数据集，内置数据转换器组件，组件后缀都为 Component
 import {
   TitleComponent,
@@ -18,22 +18,24 @@ import {
 import { LabelLayout, UniversalTransition } from 'echarts/features'
 // 引入 Canvas 渲染器，注意引入 CanvasRenderer 或者 SVGRenderer 是必须的一步
 import { CanvasRenderer } from 'echarts/renderers'
+// 引入图表组件
+import { BarChart, LineChart, PieChart, ScatterChart } from 'echarts/charts'
 
 export default defineComponent({
   name: 'XEcharts',
   props: {
-    options: { type: Object },
-    components: { type: Array },
+    options: { type: Object, default: () => ({}) },
+    components: { type: Array, default: () => [BarChart, LineChart, PieChart, ScatterChart] },
     width: { type: Number },
-    height: { type: Number, default: 500 },
+    height: { type: Number },
     theme: { type: String }
   },
-  emits: ['done'],
   setup(props) {
     const echartsRef = ref(null)
+    const xEcharts = ref(null)
 
     // 注册必须的组件
-    echarts.use([
+    use([
       TitleComponent,
       TooltipComponent,
       GridComponent,
@@ -44,25 +46,33 @@ export default defineComponent({
       UniversalTransition,
       CanvasRenderer,
       // 图表组件
-      props.components
+      ...markRaw(props.components)
     ])
 
     const initEcharts = () => {
-      const instance = echarts?.getInstanceByDom(echartsRef.value)
+      const instance = getInstanceByDom(echartsRef.value)
       if (instance) {
-        echartsRef.value = instance
+        xEcharts.value = instance
       } else {
         const opts = {
           width: props.width,
           height: props.height
         }
-        echartsRef.value = echarts.init(echartsRef.value, props.theme || null, opts)
+        xEcharts.value = markRaw(init(echartsRef.value, props.theme || null, opts))
+        xEcharts.value?.setOption(props.options)
       }
-      echartsRef.value?.setOption(props.options)
     }
 
+    watch(
+      () => props.options,
+      () => {
+        initEcharts()
+      },
+      { deep: true }
+    )
+
     const handleResize = () => {
-      echartsRef.value?.resize()
+      xEcharts.value?.resize()
     }
 
     onMounted(() => {
@@ -71,11 +81,13 @@ export default defineComponent({
     })
 
     onUnmounted(() => {
+      xEcharts.value?.clear()
       window.removeEventListener('resize', handleResize)
     })
 
     return {
-      echartsRef
+      echartsRef,
+      xEcharts
     }
   }
 })

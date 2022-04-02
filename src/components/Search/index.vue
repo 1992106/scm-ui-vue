@@ -1,6 +1,6 @@
 <template>
   <div class="my-search">
-    <a-form ref="xForm" class="form" layout="horizontal" :label-col="labelCol" :wrapper-col="wrapperCol">
+    <a-form ref="xForm" v-bind="$attrs" :layout="layout" :label-col="labelCol" :wrapper-col="wrapperCol">
       <template v-for="column in getColumns" :key="column.field || column.slot">
         <template v-if="column.type">
           <a-form-item :label="column?.title" v-bind="validateInfos[column.field]">
@@ -70,6 +70,13 @@ export default defineComponent({
     resetSearch: { type: Boolean, default: true },
     // 清空搜索
     clearSearch: { type: Boolean, default: false },
+    // 表单布局
+    layout: {
+      validator(value) {
+        return ['horizontal', 'vertical', 'inline'].includes(value)
+      },
+      default: 'inline'
+    },
     // 标签布局
     labelCol: { type: Object, default: () => ({}) },
     // 控件布局
@@ -80,12 +87,13 @@ export default defineComponent({
     searchText: { type: String, default: '搜索' },
     showReset: { type: Boolean, default: true },
     resetText: { type: String, default: '重置' },
-    defaultExpand: { type: Boolean, default: false },
-    showExpand: { type: Boolean, default: true }
+    showExpand: { type: Boolean, default: false },
+    defaultExpand: { type: Boolean, default: false }
   },
   emits: ['search', 'reset', 'clear'],
   setup(props, { emit, slots }) {
     const xForm = ref(null)
+
     // 默认值
     const defaultState = {
       AInput: {
@@ -354,7 +362,7 @@ export default defineComponent({
 </script>
 <style lang="less" scoped>
 .my-search {
-  .form {
+  .ant-form {
     .ant-form-item {
       line-height: 40px;
 

@@ -1,18 +1,16 @@
 <template>
   <div class="my-table">
-    <div class="my-header">
-      <!--搜索栏-->
+    <!--搜索栏-->
+    <template v-if="hasSearchBar">
       <slot name="searchBar"></slot>
-      <!--工具栏-->
-      <template v-if="hasToolBar">
-        <div class="toolbar">
-          <slot name="toolBar"></slot>
-        </div>
-      </template>
+    </template>
+    <!--工具栏-->
+    <div v-if="hasToolBar" class="toolbar">
+      <slot name="toolBar"></slot>
     </div>
     <a-table
       ref="tableRef"
-      border
+      bordered
       v-bind="$attrs"
       :row-key="rowKey"
       :columns="getColumns"
@@ -32,41 +30,9 @@
       @expand="handleExpand"
       @expandedRowsChange="handleExpandedRowsChange"
       @resizeColumn="handleResizeColumn">
-      <!--个性化头部单元格-->
-      <template #headerCell="scope">
-        <slot name="headerCell" v-bind="scope"></slot>
-      </template>
-      <!--个性化单元格-->
-      <template #bodyCell="scope">
-        <slot name="bodyCell" v-bind="scope"></slot>
-      </template>
-      <!--自定义筛选菜单，需要配合 column.customFilterDropdown 使用-->
-      <template #customFilterDropdown="scope">
-        <slot name="customFilterDropdown" v-bind="scope"></slot>
-      </template>
-      <!--自定义筛选图标-->
-      <template #customFilterIcon="scope">
-        <slot name="customFilterIcon" v-bind="scope"></slot>
-      </template>
-      <!--自定义展开行-->
-      <template #expandedRowRender="scope">
-        <slot name="expandedRowRender" v-bind="scope"></slot>
-      </template>
-      <!--自定义展开图标-->
-      <template #expandIcon="scope">
-        <slot name="expandIcon" v-bind="scope"></slot>
-      </template>
-      <!--表格标题-->
-      <template #title="scope">
-        <slot name="title" v-bind="scope"></slot>
-      </template>
-      <!--表格尾部-->
-      <template #footer="scope">
-        <slot name="footer" v-bind="scope"></slot>
-      </template>
-      <!--总结栏-->
-      <template #summary="scope">
-        <slot name="summary" v-bind="scope"></slot>
+      <!--插槽-->
+      <template v-for="slot of getTableSlots" :key="slot" #[slot]="scope">
+        <slot :name="slot" v-bind="scope"></slot>
       </template>
     </a-table>
     <a-pagination
@@ -118,7 +84,7 @@ export default defineComponent({
       validator(value) {
         return ['default', 'middle', 'small'].includes(value)
       },
-      default: 'default'
+      default: 'middle'
     },
     // 默认文案设置，目前包括排序、过滤、空数据文案
     locale: { type: Object, default: () => ({ filterConfirm: '筛选', filterReset: '重置', emptyText: '暂无数据' }) },
@@ -132,7 +98,7 @@ export default defineComponent({
      * 默认值
      */
     const defaultState = {
-      defaultColumn: { ellipsis: true },
+      defaultColumn: { ellipsis: true, align: 'center' },
       defaultPaginationConfig: {
         defaultPageSize: 20,
         showSizeChanger: true,
@@ -155,6 +121,21 @@ export default defineComponent({
      * computed
      */
     const getColumns = computed(() => props.columns.map(column => mergeProps(defaultState.defaultColumn, column)))
+    const getTableSlots = computed(() => {
+      return Object.keys(slots).filter(val =>
+        [
+          'headerCell',
+          'bodyCell',
+          'customFilterDropdown',
+          'customFilterIcon',
+          'expandedRowRender',
+          'expandIcon',
+          'summary',
+          'title',
+          'footer'
+        ].includes(val)
+      )
+    })
     const getTransformCellText = computed(() => {
       return props.transformCellText ? props.transformCellText : ({ text }) => (isEmpty(text) ? '--' : text)
     })
@@ -239,12 +220,16 @@ export default defineComponent({
       emit('resizeColumn', width, column)
     }
 
+    const hasSearchBar = computed(() => !!slots['searchBar'])
     const hasToolBar = computed(() => !!slots['toolBar'])
+    const hasTitle = computed(() => !!slots['title'])
+    const hasFooter = computed(() => !!slots['footer'])
 
     return {
       ...toRefs(state),
       getScroll,
       getColumns,
+      getTableSlots,
       getTransformCellText,
       getPaginationConfig,
       tableRef,
@@ -255,21 +240,25 @@ export default defineComponent({
       handleExpand,
       handleExpandedRowsChange,
       handleResizeColumn,
-      hasToolBar
+      hasSearchBar,
+      hasToolBar,
+      hasTitle,
+      hasFooter
     }
   }
 })
 </script>
 <style lang="scss" scoped>
 .my-table {
-  display: flex;
-  flex-direction: column;
-  background-color: #fff;
-  height: 100%;
+  .toolbar {
+    padding: 10px;
+    background-color: #fff;
+  }
 
-  .my-header {
-    .toolbar {
-      margin: 10px 0;
+  :deep(.ant-table) {
+    .ant-table-title,
+    .ant-table-footer {
+      padding: 0;
     }
   }
 
