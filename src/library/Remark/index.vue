@@ -141,7 +141,7 @@ export default defineComponent({
           emit('done')
         })
         .catch(err => {
-          console.log('error', err)
+          console.error(err)
         })
     }
 

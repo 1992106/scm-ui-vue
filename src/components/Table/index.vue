@@ -17,7 +17,7 @@
       :data-source="dataSource"
       :loading="loading"
       :empty-text="emptyText"
-      :pagination="false"
+      :pagination="getPaginationConfig"
       :scroll="getScroll"
       :size="size"
       :locale="locale"
@@ -35,19 +35,11 @@
         <slot :name="slot" v-bind="scope"></slot>
       </template>
     </a-table>
-    <a-pagination
-      v-if="showPagination && getColumns.length"
-      v-bind="getPaginationConfig"
-      :current="pagination.page"
-      :page-size="pagination.pageSize"
-      :total="total"
-      @change="handlePageChange"
-      @showSizeChange="handleShowSizeChange" />
   </div>
 </template>
 <script>
-import { defineComponent, computed, mergeProps, onBeforeUnmount, onMounted, reactive, ref, toRefs, unref } from 'vue'
-import { debounce } from 'lodash-es'
+import { defineComponent, computed, mergeProps, ref, reactive, toRef, toRefs } from 'vue'
+import { useScroll } from './useScroll'
 import { isEmpty } from '@src/utils'
 
 export default defineComponent({
@@ -68,7 +60,7 @@ export default defineComponent({
     pagination: { type: Object, default: () => ({ page: 1, pageSize: 20 }) },
     paginationConfig: Object,
     // 自动计算高度
-    resize: { type: Boolean, default: false },
+    autoResize: { type: Boolean, default: false },
     // 横向/纵向滚动
     scroll: { type: Object, default: () => ({ scrollToFirstRowOnChange: true }) },
     // 选择功能的配置
@@ -100,6 +92,7 @@ export default defineComponent({
     const defaultState = {
       defaultColumn: { ellipsis: true, align: 'center' },
       defaultPaginationConfig: {
+        size: 'default',
         defaultPageSize: 20,
         showSizeChanger: true,
         showQuickJumper: true,
@@ -139,70 +132,41 @@ export default defineComponent({
     const getTransformCellText = computed(() => {
       return props.transformCellText ? props.transformCellText : ({ text }) => (isEmpty(text) ? '--' : text)
     })
+    // 自动计算表格的宽高
+    useScroll({ autoResize: props.autoResize, scroll: toRef(state, 'scroll') })
     const getScroll = computed(() => mergeProps(state.scroll, props.scroll))
-    const getPaginationConfig = computed(() => mergeProps(defaultState.defaultPaginationConfig, props.paginationConfig))
+    const getPaginationConfig = computed(() => {
+      return props.showPagination
+        ? mergeProps(defaultState.defaultPaginationConfig, props.paginationConfig, props.pagination)
+        : false
+    })
     /**
      * methods
      */
-    // 监听视窗大小改变
-    let observer
-    const onResize = debounce(() => {
-      // TODO: 待优化
-      const $xTable = unref(tableRef)
-      const $xTableHeader = $xTable?.$el?.querySelector('.ant-table .ant-table-header>table') // TODO: 初始化无法获取
-      const tableHeaderHeight = $xTableHeader?.offsetHeight || 0
-      const pageHeight = $xTable?.$el?.parentNode?.offsetHeight || 0
-      const HeaderHeight = $xTable?.$el?.previousElementSibling?.offsetHeight || 0
-      const paginationHeight = $xTable?.$el?.nextElementSibling?.offsetHeight || 0
-      const height = pageHeight - HeaderHeight - paginationHeight - tableHeaderHeight
-      if (Number.isFinite(height) && height > 0) {
-        state.scroll['y'] = height
-      }
-      // TODO: 可以获取$xTableHeader时，可停止观察。
-      if ($xTableHeader && observer) {
-        observer.disconnect()
-      }
-    }, 200)
-    onMounted(() => {
-      if (props.resize && unref(tableRef)) {
-        // TODO: 由于$xTableHeader在antd中是异步动态生成，初始化时获取不到dom，导致表格高度计算错误。
-        // TODO: 所以使用MutationObserver事件监听动态生成的$xTableHeader。
-        observer = new MutationObserver(onResize)
-        observer.observe(unref(tableRef)?.$el, { attributes: true, childList: true, subtree: true })
-        // onResize()
-        window.addEventListener('resize', onResize)
-      }
-    })
-    onBeforeUnmount(() => {
-      observer && observer.disconnect()
-      window.removeEventListener('resize', onResize)
-    })
     // 行的类名（默认设置斑马纹）
     const handleRowClassName = (record, index) => {
       const result = props.rowClassName ? props.rowClassName(record, index) : null
       return [index % 2 === 1 ? 'table-striped' : null, result].filter(Boolean)
     }
     // 排序、筛选变化时触发
-    const handleChange = (_, filters, sorter, { currentDataSource }) => {
+    const handleChange = (pagination, filters, sorter, { currentDataSource }) => {
       // TODO:
+      // 分页
+      if (!isEmpty(pagination)) {
+        const { current, pageSize } = pagination
+        emit('update:pagination', {
+          page: current,
+          pageSize
+        })
+        emit('search')
+      }
+      // 筛选
+      if (!isEmpty(filters)) {
+      }
+      // 排序
+      if (!isEmpty(sorter)) {
+      }
       emit('change', filters, sorter, { currentDataSource })
-    }
-    // 页码
-    const handlePageChange = (current, pageSize) => {
-      const pagination = {
-        page: current,
-        pageSize
-      }
-      emit('update:pagination', pagination)
-      emit('search')
-    }
-    const handleShowSizeChange = (_, pageSize) => {
-      const pagination = {
-        page: 1,
-        pageSize
-      }
-      emit('update:pagination', pagination)
-      emit('search')
     }
 
     // 点击展开图标时触发
@@ -220,13 +184,14 @@ export default defineComponent({
       emit('resizeColumn', width, column)
     }
 
+    // 是否显示插槽
     const hasSearchBar = computed(() => !!slots['searchBar'])
     const hasToolBar = computed(() => !!slots['toolBar'])
-    const hasTitle = computed(() => !!slots['title'])
-    const hasFooter = computed(() => !!slots['footer'])
 
     return {
       ...toRefs(state),
+      hasSearchBar,
+      hasToolBar,
       getScroll,
       getColumns,
       getTableSlots,
@@ -235,15 +200,9 @@ export default defineComponent({
       tableRef,
       handleRowClassName,
       handleChange,
-      handlePageChange,
-      handleShowSizeChange,
       handleExpand,
       handleExpandedRowsChange,
-      handleResizeColumn,
-      hasSearchBar,
-      hasToolBar,
-      hasTitle,
-      hasFooter
+      handleResizeColumn
     }
   }
 })
@@ -262,9 +221,10 @@ export default defineComponent({
     }
   }
 
-  .ant-pagination {
+  :deep(.ant-table-pagination.ant-pagination) {
+    margin: 0;
     padding: 10px;
-    text-align: right;
+    background-color: #fff;
   }
 
   :deep(.table-striped) {

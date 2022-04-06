@@ -1,6 +1,6 @@
 {
   "name": "scm-ui-vue",
-  "version": "0.0.6",
+  "version": "0.0.6-1",
   "main": "dist/scm-ui-vue.umd.js",
   "module": "dist/scm-ui-vue.es.js",
   "unpkg": "dist/scm-ui-vue.umd.js",
@@ -30,7 +30,7 @@
   "dependencies": {
     "@ant-design/icons-vue": "^6.1.0",
     "@vueup/vue-quill": "^1.0.0-alpha.1",
-    "ant-design-vue": "^3.1.0-rc.2",
+    "ant-design-vue": "^3.1.0-rc.6",
     "axios": "^0.26.1",
     "dayjs": "^1.11.0",
     "echarts": "^5.3.1",
@@ -51,6 +51,7 @@
   "devDependencies": {
     "@commitlint/cli": "^16.2.1",
     "@commitlint/config-conventional": "^16.2.1",
+    "@types/lodash-es": "^4.17.6",
     "@typescript-eslint/eslint-plugin": "^5.17.0",
     "@typescript-eslint/parser": "^5.17.0",
     "@vitejs/plugin-legacy": "^1.7.1",
@@ -85,7 +86,7 @@
   "peerDependencies": {
     "@ant-design/icons-vue": "^6.1.0",
     "@vueup/vue-quill": "^1.0.0-alpha.1",
-    "ant-design-vue": "^3.1.0-rc.2",
+    "ant-design-vue": "^3.1.0-rc.6",
     "dayjs": "^1.11.0",
     "echarts": "^5.3.1",
     "html2canvas": "^1.4.1",

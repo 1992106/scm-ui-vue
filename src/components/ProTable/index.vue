@@ -1,29 +1,30 @@
 <template>
-  <x-table ref="xTable" v-bind="tableProps" v-model:pagination="pagination" @search="handleFilter">
+  <x-table ref="xTable" v-bind="tableProps" v-model:pagination="pagination" auto-resize @search="handleFilter">
     <!--搜索栏-->
-    <template #searchBar>
-      <template v-if="hasSearchBar">
-        <x-search
-          ref="xSearch"
-          show-expand
-          layout="horizontal"
-          :label-col="{ span: 10 }"
-          :wrapper-col="{ span: 14 }"
-          v-bind="searchProps"
-          @search="handleSearch"
-          @reset="emitReset"
-          @clear="emitClear">
-          <template v-for="slot of getSearchSlots" :key="slot" #[slot]="scope">
-            <slot :name="slot" v-bind="scope"></slot>
-          </template>
-          <template #shortcut>
-            <slot name="shortcut"></slot>
-          </template>
-        </x-search>
-      </template>
+    <template v-if="hasSearchBar" #searchBar>
+      <x-search
+        ref="xSearch"
+        show-expand
+        layout="horizontal"
+        :label-col="{ span: 10 }"
+        :wrapper-col="{ span: 14 }"
+        v-bind="searchProps"
+        @search="handleSearch"
+        @reset="emitReset"
+        @clear="emitClear">
+        <template v-for="slot of getSearchSlots" :key="slot" #[slot]="scope">
+          <slot :name="slot" v-bind="scope"></slot>
+        </template>
+        <template v-if="showExtra" #extra>
+          <slot name="extra"></slot>
+        </template>
+        <template v-if="hasShortcut" #shortcut>
+          <slot name="shortcut"></slot>
+        </template>
+      </x-search>
     </template>
     <!--工具栏-->
-    <template #toolBar>
+    <template v-if="hasToolBar" #toolBar>
       <slot name="toolBar"></slot>
     </template>
     <!--插槽-->
@@ -135,16 +136,18 @@ export default defineComponent({
       emit('clear', { ...$event, ...(unref(showPagination) ? state.pagination : {}) })
     }
 
-    const isResize = computed(() => props.tableProps.height === 'auto')
-
     const { paramsRef, handleFilter, handleSearch, handleReset, handleClear } = useSearch(
       emitSearch,
-      unref(isResize),
+      props.tableProps.autoResize,
       toRef(props, 'searchProps'),
       toRef(props, 'tableProps')
     )
 
+    // 是否显示插槽
     const hasSearchBar = computed(() => !isEmpty(props['searchProps']))
+    const showExtra = computed(() => !!slots['extra'])
+    const hasShortcut = computed(() => !!slots['shortcut'])
+    const hasToolBar = computed(() => !!slots['toolBar'])
 
     // 初始化调用一下，获取查询参数
     const onInit = () => {
@@ -165,6 +168,9 @@ export default defineComponent({
       xSearch,
       ...toRefs(state),
       hasSearchBar,
+      showExtra,
+      hasShortcut,
+      hasToolBar,
       getSearchSlots,
       getTableSlots,
       handleFilter,
@@ -216,6 +222,10 @@ export default defineComponent({
       .actions {
         justify-content: flex-end;
       }
+    }
+
+    .extra {
+      margin: 0 10px 10px 10px;
     }
 
     .shortcut {

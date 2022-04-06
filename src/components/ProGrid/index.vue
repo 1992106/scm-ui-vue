@@ -1,38 +1,39 @@
 <template>
   <x-grid
     ref="xGrid"
-    custom-zoom
-    custom-setting
     v-bind="gridProps"
     v-model:pagination="pagination"
+    custom-zoom
+    custom-setting
+    auto-resize
+    height="auto"
     @search="handleFilter">
     <!--搜索栏-->
-    <template #searchBar>
-      <template v-if="hasSearchBar">
-        <x-search
-          ref="xSearch"
-          show-expand
-          layout="horizontal"
-          :label-col="{ span: 10 }"
-          :wrapper-col="{ span: 14 }"
-          v-bind="searchProps"
-          @search="handleSearch"
-          @reset="emitReset"
-          @clear="emitClear">
-          <template v-for="slot of getSearchSlots" :key="slot" #[slot]="scope">
-            <slot :name="slot" v-bind="scope"></slot>
-          </template>
-          <template v-if="hasShortcut" #shortcut>
-            <slot name="shortcut"></slot>
-          </template>
-        </x-search>
-      </template>
+    <template v-if="hasSearchBar" #searchBar>
+      <x-search
+        ref="xSearch"
+        show-expand
+        layout="horizontal"
+        :label-col="{ span: 10 }"
+        :wrapper-col="{ span: 14 }"
+        v-bind="searchProps"
+        @search="handleSearch"
+        @reset="emitReset"
+        @clear="emitClear">
+        <template v-for="slot of getSearchSlots" :key="slot" #[slot]="scope">
+          <slot :name="slot" v-bind="scope"></slot>
+        </template>
+        <template v-if="showExtra" #extra>
+          <slot name="extra"></slot>
+        </template>
+        <template v-if="hasShortcut" #shortcut>
+          <slot name="shortcut"></slot>
+        </template>
+      </x-search>
     </template>
     <!--工具栏-->
-    <template #toolBar>
-      <template v-if="hasToolBar">
-        <slot name="toolBar"></slot>
-      </template>
+    <template v-if="hasToolBar" #toolBar>
+      <slot name="toolBar"></slot>
     </template>
     <!--插槽-->
     <template v-for="slot of getGridSlots" :key="slot" #[slot]="scope">
@@ -145,7 +146,7 @@ export default defineComponent({
       emit('clear', { ...$event, ...(unref(showPagination) ? state.pagination : {}) })
     }
 
-    const isResize = computed(() => props.gridProps.height === 'auto')
+    const isResize = computed(() => props.gridProps.height === 'auto' && props.gridProps.autoResize)
 
     const { paramsRef, handleFilter, handleSearch, handleReset, handleClear } = useSearch(
       emitSearch,
@@ -154,9 +155,11 @@ export default defineComponent({
       toRef(props, 'gridProps')
     )
 
+    // 是否显示插槽
     const hasSearchBar = computed(() => !isEmpty(props['searchProps']))
-    const hasToolBar = computed(() => !!slots['toolBar'])
+    const showExtra = computed(() => !!slots['extra'])
     const hasShortcut = computed(() => !!slots['shortcut'])
+    const hasToolBar = computed(() => !!slots['toolBar'])
 
     // 初始化调用一下，获取查询参数
     const onInit = () => {
@@ -177,8 +180,9 @@ export default defineComponent({
       xSearch,
       ...toRefs(state),
       hasSearchBar,
-      hasToolBar,
+      showExtra,
       hasShortcut,
+      hasToolBar,
       getSearchSlots,
       getGridSlots,
       handleFilter,
@@ -232,6 +236,10 @@ export default defineComponent({
         .actions {
           justify-content: flex-end;
         }
+      }
+
+      .extra {
+        margin: 0 10px 10px 10px;
       }
 
       .shortcut {

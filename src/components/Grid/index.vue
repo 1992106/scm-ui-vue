@@ -2,10 +2,8 @@
   <vxe-grid
     ref="gridRef"
     class="my-grid"
-    border
     align="center"
-    show-header
-    auto-resize
+    border
     show-overflow
     keep-source
     v-bind="$attrs"
@@ -55,7 +53,7 @@
     @cell-click="handleCellClick"
     @resizable-change="handleResizableChange">
     <!--搜索栏-->
-    <template #form>
+    <template v-if="hasSearchBar" #form>
       <slot name="searchBar"></slot>
     </template>
     <!--工具栏-->
@@ -434,10 +432,14 @@ export default defineComponent({
       }
     }
 
+    // 是否显示插槽
+    const hasSearchBar = computed(() => !!slots['searchBar'])
     const hasToolBar = computed(() => !!slots['toolBar'])
 
     return {
       ...toRefs(state),
+      hasSearchBar,
+      hasToolBar,
       getSlots,
       getPaginationConfig,
       getRowConfig,
@@ -466,8 +468,7 @@ export default defineComponent({
       handleToggleRowExpand,
       handleToggleTreeExpand,
       handleResizableChange,
-      handleSettingChange,
-      hasToolBar
+      handleSettingChange
     }
   }
 })

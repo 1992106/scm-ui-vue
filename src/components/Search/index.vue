@@ -1,5 +1,8 @@
 <template>
   <div class="my-search">
+    <div v-if="showExtra" class="extra">
+      <slot name="extra"></slot>
+    </div>
     <a-form ref="xForm" v-bind="$attrs" :layout="layout" :label-col="labelCol" :wrapper-col="wrapperCol">
       <template v-for="column in getColumns" :key="column.field || column.slot">
         <template v-if="column.type">
@@ -314,7 +317,8 @@ export default defineComponent({
       })
     })
 
-    // 是否显示快捷搜索
+    // 是否显示插槽
+    const showExtra = computed(() => !!slots['extra'])
     const showShortcut = computed(() => !!slots['shortcut'])
 
     // 搜索方法
@@ -342,6 +346,7 @@ export default defineComponent({
 
     return {
       xForm,
+      showExtra,
       showShortcut,
       getModelValue,
       getColumns,
