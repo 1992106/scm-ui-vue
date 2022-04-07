@@ -1,5 +1,5 @@
 <template>
-  <x-table ref="xTable" v-bind="tableProps" v-model:pagination="pagination" auto-resize @search="handleFilter">
+  <x-table ref="xTable" auto-resize v-bind="tableProps" v-model:pagination="pagination" @search="handleFilter">
     <!--搜索栏-->
     <template v-if="hasSearchBar" #searchBar>
       <x-search

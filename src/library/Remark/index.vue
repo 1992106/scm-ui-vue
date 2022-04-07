@@ -10,10 +10,12 @@
     @ok="handleOk"
     @cancel="handleCancel">
     <x-table v-bind="tableOptions">
-      <template #attachments="{ record: { attachments = {} } }">
-        <a-button v-if="attachments?.fileName" type="link" @click="handleDownload(attachments)">
-          {{ attachments?.fileName }}
-        </a-button>
+      <template #bodyCell="{ column, record: { attachments = {} } }">
+        <template v-if="column.key === 'attachments'">
+          <a-button v-if="attachments?.fileName" type="link" @click="handleDownload(attachments)">
+            {{ attachments?.fileName }}
+          </a-button>
+        </template>
       </template>
     </x-table>
     <a-form :label-col="{ span: 0 }">
@@ -25,8 +27,12 @@
           :rows="4"
           :maxlength="maxlength" />
       </a-form-item>
-      <a-form-item>
-        <x-upload v-model:fileList="modelRef.attachments" :size="size" :limit="limit"></x-upload>
+      <a-form-item v-if="customUpload">
+        <x-upload
+          v-model:fileList="modelRef.attachments"
+          :customRequest="customUpload"
+          :size="size"
+          :limit="limit"></x-upload>
       </a-form-item>
     </a-form>
   </x-modal>
@@ -56,6 +62,7 @@ export default defineComponent({
     visible: { type: Boolean, default: false },
     customRequest: { type: Function, require: true }, // [{createdUser: '', createdUser: '', remark: '', attachments: []}]
     customSubmit: { type: Function, require: true },
+    customUpload: { type: Function },
     maxlength: { type: Number, default: 200 },
     size: { type: Number, default: 3 },
     limit: { type: Number, default: 1 }
@@ -83,7 +90,6 @@ export default defineComponent({
       scroll: {
         y: props.height
       },
-      border: true,
       size: 'small',
       columns: [
         { title: '备注人', width: 100, dataIndex: 'createdUser' },
@@ -94,7 +100,7 @@ export default defineComponent({
           customRender: ({ text }) => formatTime(text)
         },
         { title: '备注内容', dataIndex: 'remark' },
-        { title: '附件', width: 120, slots: { customRender: 'attachments' } }
+        { title: '附件', width: 120 }
       ],
       dataSource: [],
       showPagination: false
@@ -104,9 +110,9 @@ export default defineComponent({
       const { customRequest } = props
       if (!isFunction(customRequest)) return
       state.spinning = true
-      const res = await customRequest()
+      const data = await customRequest()
       state.spinning = false
-      tableOptions.dataSource = res?.data || []
+      tableOptions.dataSource = data || []
     }
 
     const handleDownload = attachments => {

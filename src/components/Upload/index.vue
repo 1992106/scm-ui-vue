@@ -25,6 +25,7 @@ import { defineComponent, reactive, toRefs, watch, watchEffect } from 'vue'
 import { message } from 'ant-design-vue'
 import { PlusOutlined } from '@ant-design/icons-vue'
 import XPreview from '@components/Preview'
+import { isFunction } from 'lodash-es'
 import { isEmpty, downloadFile } from '@src/utils'
 
 export default defineComponent({
@@ -36,7 +37,7 @@ export default defineComponent({
   inheritAttrs: false,
   props: {
     fileList: { type: Array, default: () => [], required: true },
-    customRequest: { type: Function, required: true },
+    customRequest: { type: Function },
     listType: { type: String, default: 'picture-card' },
     showUploadBtn: { type: [Boolean, Object], default: true },
     showUploadList: { type: [Boolean, Object], default: true },
@@ -90,9 +91,11 @@ export default defineComponent({
 
     // 上传图片
     const handleCustomRequest = async options => {
+      const { customRequest } = props
+      if (!isFunction(customRequest)) return
       const currentFile = options?.file
       try {
-        const { data } = await props.customRequest(currentFile)
+        const { data } = await customRequest(currentFile)
         const file = {
           ...data,
           uid: data?.id,
