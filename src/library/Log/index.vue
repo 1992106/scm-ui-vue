@@ -34,7 +34,7 @@ export default defineComponent({
   inheritAttrs: false,
   props: {
     title: { type: String, default: '操作日志' },
-    width: { type: Number, default: 360 },
+    width: { type: [String, Number], default: 360 },
     visible: { type: Boolean, default: false },
     customRequest: { type: Function, require: true } // [{createdUser: '', createdUser: '', content: ''}]
   },

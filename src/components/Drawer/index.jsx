@@ -5,8 +5,8 @@ import './index.scss'
 const DrawerProps = {
   visible: { type: Boolean, default: false },
   class: String,
-  width: { type: String, default: 'calc(100% - 320px)' },
-  height: String
+  width: { type: [String, Number], default: 'calc(100% - 320px)' },
+  height: [String, Number]
 }
 
 const XDrawer = defineComponent({

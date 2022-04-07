@@ -17,9 +17,6 @@
         <!--自定义slot-->
         <template v-else>
           <a-form-item :label="column?.title">
-            <!--<template #[column.slot]="scope">
-              <slot :name="column.slot" v-bind="scope"></slot>
-            </template>-->
             <slot :name="column.slot"></slot>
           </a-form-item>
         </template>
@@ -194,10 +191,10 @@ export default defineComponent({
     // 获取格式化后的columns
     const getColumns = computed(() => {
       return props.columns.map(column => {
-        const { props = {}, events = {}, slot } = toDisabled(column)
+        const { props = {}, events = {} } = toDisabled(column)
         const defaultAllState = defaultState[column?.type] || {}
         // column
-        const allColumn = pick(column, ['type', 'title', 'field', 'rules'])
+        const allColumn = pick(column, ['type', 'title', 'field', 'slot', 'rules'])
         // props
         const defaultProps = defaultAllState.props || {}
         const otherProps = omit(column, ['type', 'title', 'field', 'slot', 'rules', 'props', 'events'])
@@ -205,7 +202,7 @@ export default defineComponent({
         // events
         const defaultEvents = defaultAllState.events || []
         const allEvents = mergeEvents(defaultEventsMap, defaultEvents, events)
-        return { ...allColumn, modelValue: getModelValue(column?.type), props: allProps, events: allEvents, slot }
+        return { ...allColumn, modelValue: getModelValue(column?.type), props: allProps, events: allEvents }
       })
     })
     // 是否是多选框
