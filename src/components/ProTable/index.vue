@@ -1,5 +1,5 @@
 <template>
-  <x-table ref="xTable" auto-resize v-bind="tableProps" v-model:pagination="pagination" @search="handleFilter">
+  <x-table ref="xTable" auto-resize v-bind="tableProps" v-model:pagination="pagination" @search="handleQuery">
     <!--搜索栏-->
     <template v-if="hasSearchBar" #searchBar>
       <x-search
@@ -15,7 +15,7 @@
         <template v-for="slot of getSearchSlots" :key="slot" #[slot]="scope">
           <slot :name="slot" v-bind="scope"></slot>
         </template>
-        <template v-if="showExtra" #extra>
+        <template v-if="hasExtra" #extra>
           <slot name="extra"></slot>
         </template>
         <template v-if="hasShortcut" #shortcut>
@@ -47,7 +47,7 @@ export default defineComponent({
     'x-table': XTable,
     'x-search': XSearch
   },
-  inheritAttrs: false,
+  inheritAttrs: true,
   props: {
     value: Object,
     searchProps: { type: Object, default: () => ({}) },
@@ -55,7 +55,7 @@ export default defineComponent({
   },
   emits: ['update:value', 'search', 'reset', 'clear'],
   setup(props, { emit, slots }) {
-    const xGrid = ref(null)
+    const xTable = ref(null)
     const xSearch = ref(null)
     const state = reactive({
       pagination: {
@@ -123,8 +123,6 @@ export default defineComponent({
     }
 
     const emitReset = $event => {
-      xGrid.value.gridRef.clearFilter()
-      xGrid.value.gridRef.clearSort()
       handleReset($event)
       emit('update:value', { ...$event, ...(unref(showPagination) ? state.pagination : {}) })
       emit('reset', { ...$event, ...(unref(showPagination) ? state.pagination : {}) })
@@ -136,7 +134,7 @@ export default defineComponent({
       emit('clear', { ...$event, ...(unref(showPagination) ? state.pagination : {}) })
     }
 
-    const { paramsRef, handleFilter, handleSearch, handleReset, handleClear } = useSearch(
+    const { paramsRef, handleQuery, handleSearch, handleReset, handleClear } = useSearch(
       emitSearch,
       props.tableProps.autoResize,
       toRef(props, 'searchProps'),
@@ -145,14 +143,14 @@ export default defineComponent({
 
     // 是否显示插槽
     const hasSearchBar = computed(() => !isEmpty(props['searchProps']))
-    const showExtra = computed(() => !!slots['extra'])
+    const hasExtra = computed(() => !!slots['extra'])
     const hasShortcut = computed(() => !!slots['shortcut'])
     const hasToolBar = computed(() => !!slots['toolBar'])
 
     // 初始化调用一下，获取查询参数
     const onInit = () => {
       handleSearch()
-      handleFilter()
+      handleQuery()
       emit('update:value', {
         ...unref(paramsRef),
         ...(unref(showPagination) ? state.pagination : {})
@@ -164,16 +162,16 @@ export default defineComponent({
     })
 
     return {
-      xGrid,
+      xTable,
       xSearch,
       ...toRefs(state),
       hasSearchBar,
-      showExtra,
+      hasExtra,
       hasShortcut,
       hasToolBar,
       getSearchSlots,
       getTableSlots,
-      handleFilter,
+      handleQuery,
       handleSearch,
       emitReset,
       emitClear
@@ -185,52 +183,5 @@ export default defineComponent({
 .my-table {
   background-color: #f0f2f5;
   position: relative;
-
-  // 调整搜索栏
-  & > :deep(.my-search) {
-    background-color: #fff;
-    border-radius: 2px;
-    padding: 10px 0;
-    margin-bottom: 10px;
-
-    .ant-form {
-      display: flex;
-      flex-wrap: wrap;
-      margin-right: 36px;
-
-      .ant-form-item {
-        display: inline-flex;
-        margin-bottom: 0;
-        width: 25%;
-
-        .ant-input-affix-wrapper,
-        .ant-select,
-        .ant-cascader-picker,
-        .ant-calendar-picker,
-        .ant-time-picker,
-        .tree-select {
-          width: 100%;
-        }
-
-        .ant-calendar-picker {
-          span[class='ant-calendar-picker-input ant-input'] {
-            width: 100%;
-          }
-        }
-      }
-
-      .actions {
-        justify-content: flex-end;
-      }
-    }
-
-    .extra {
-      margin: 0 10px 10px 10px;
-    }
-
-    .shortcut {
-      margin: 0 10px;
-    }
-  }
 }
 </style>

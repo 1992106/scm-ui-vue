@@ -23,7 +23,7 @@ export function useSearch(fn, isResize = true, searchProps, gridProps) {
   const isDefaultFilter = ref(false)
   const sortParams = ref({})
   const filterParams = ref({})
-  const handleFilter = ($event, key) => {
+  const handleQuery = ($event, key) => {
     if (!unref(isDefaultFilter)) {
       isDefaultFilter.value = true
       return init()
@@ -75,7 +75,7 @@ export function useSearch(fn, isResize = true, searchProps, gridProps) {
     handleSearch,
     handleReset,
     handleClear,
-    handleFilter
+    handleQuery
   }
 }
 

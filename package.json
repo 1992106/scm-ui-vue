@@ -1,6 +1,6 @@
 {
   "name": "scm-ui-vue",
-  "version": "0.0.6-1",
+  "version": "0.0.6-2",
   "main": "dist/scm-ui-vue.umd.js",
   "module": "dist/scm-ui-vue.es.js",
   "unpkg": "dist/scm-ui-vue.umd.js",
@@ -44,7 +44,7 @@
     "vue-draggable-next": "^2.1.1",
     "vue-router": "^4.0.14",
     "vuex": "^4.0.2",
-    "vxe-table": "^4.2.0",
+    "vxe-table": "4.2.0",
     "xe-ajax": "^4.0.5",
     "xe-utils": "^3.5.4"
   },
@@ -96,7 +96,7 @@
     "qrcodejs2-fix": "^0.0.1",
     "vue": "^3.2.31",
     "vue-draggable-next": "^2.1.1",
-    "vxe-table": "^4.2.0"
+    "vxe-table": "4.2.0"
   },
   "repository": {
     "type": "git",

@@ -55,6 +55,7 @@ export default defineComponent({
     loading: { type: [Boolean, Object], default: false },
     total: { type: Number, default: 0 },
     emptyText: { type: String, default: '暂无数据' },
+    transformCellText: { type: Function, default: null },
     // 页码
     showPagination: { type: Boolean, default: true },
     pagination: { type: Object, default: () => ({ page: 1, pageSize: 20 }) },
@@ -81,10 +82,17 @@ export default defineComponent({
     // 默认文案设置，目前包括排序、过滤、空数据文案
     locale: { type: Object, default: () => ({ filterConfirm: '筛选', filterReset: '重置', emptyText: '暂无数据' }) },
     customRow: Function,
-    customHeaderRow: Function,
-    transformCellText: { type: Function, default: null }
+    customHeaderRow: Function
   },
-  emits: ['search', 'update:pagination', 'change', 'expand', 'expandedRowsChange', 'resizeColumn'],
+  emits: [
+    'search',
+    'update:pagination',
+    // 'update:selected-value',
+    'change',
+    'expand',
+    'expandedRowsChange',
+    'resizeColumn'
+  ],
   setup(props, { emit, slots }) {
     /**
      * 默认值
@@ -210,6 +218,8 @@ export default defineComponent({
 <style lang="scss" scoped>
 .my-table {
   .toolbar {
+    display: flex;
+    flex-wrap: wrap;
     padding: 10px;
     background-color: #fff;
   }

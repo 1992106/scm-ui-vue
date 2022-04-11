@@ -26,7 +26,7 @@
   </div>
 </template>
 
-<script lang="ts">
+<script>
 import { defineComponent, reactive, ref } from 'vue'
 import { UserOutlined, LockOutlined } from '@ant-design/icons-vue'
 import { Form, Input, Button, notification } from 'ant-design-vue'
@@ -91,7 +91,7 @@ export default defineComponent({
           if (!redirect || redirect.includes('/login')) {
             redirect = '/index'
           }
-          await router.push(redirect as any)
+          await router.push(redirect)
         }
       } catch (error) {
         console.log(error)

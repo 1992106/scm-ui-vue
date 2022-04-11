@@ -4,17 +4,29 @@ export function useFormLayout() {
   const { proxy } = getCurrentInstance()
 
   const updateLayout = () => {
-    const childNodes = Array.from(proxy.$refs['xForm'].$el.children)
+    const formEl = proxy.$refs['xForm'].$el
+    const childNodes = Array.from(formEl.children)
     if (childNodes < 2) return
     const lastNode = childNodes.pop() // 删除最后一个（搜索按钮组）
     const firstNode = childNodes[0]
     const { top: firstTop } = firstNode.getBoundingClientRect()
-    const lastLeft = getLastNodeLeft(lastNode) // 搜索按钮组left
-    const paddingRight = hasClass(proxy.$el, 'ant-form-inline') ? 16 : 0 // padding-right: 16px
-    const index = childNodes.findIndex(node => {
-      const { top, left, width } = node.getBoundingClientRect()
-      return top === firstTop && left + width + paddingRight > lastLeft
-    })
+    let index
+    if (hasClass(formEl, 'ant-form-inline')) {
+      const { top: lastTop } = lastNode.getBoundingClientRect()
+      // 行内布局
+      index = childNodes.findIndex(node => {
+        const { top } = node.getBoundingClientRect()
+        return top !== firstTop && top === lastTop
+      })
+    } else {
+      // 水平布局、垂直布局
+      const lastLeft = getLastNodeLeft(lastNode) // 搜索按钮组left
+      index = childNodes.findIndex(node => {
+        const { top, right } = node.getBoundingClientRect()
+        return top === firstTop && right > lastLeft
+      })
+    }
+
     if (index !== -1) {
       const rest = childNodes.slice(index)
       rest.forEach(node => {

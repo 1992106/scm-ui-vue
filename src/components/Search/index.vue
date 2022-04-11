@@ -1,6 +1,6 @@
 <template>
-  <div class="my-search">
-    <div v-if="showExtra" class="extra">
+  <div :class="['my-search', showExpand ? 'show-expand' : '']">
+    <div v-if="hasExtra" class="extra">
       <slot name="extra"></slot>
     </div>
     <a-form ref="xForm" v-bind="$attrs" :layout="layout" :label-col="labelCol" :wrapper-col="wrapperCol">
@@ -42,7 +42,7 @@
         </a-space>
       </div>
     </a-form>
-    <div v-if="showShortcut" class="shortcut">
+    <div v-if="hasShortcut" class="shortcut">
       <slot name="shortcut"></slot>
     </div>
   </div>
@@ -93,7 +93,6 @@ export default defineComponent({
   emits: ['search', 'reset', 'clear'],
   setup(props, { emit, slots }) {
     const xForm = ref(null)
-
     // 默认值
     const defaultState = {
       AInput: {
@@ -315,8 +314,8 @@ export default defineComponent({
     })
 
     // 是否显示插槽
-    const showExtra = computed(() => !!slots['extra'])
-    const showShortcut = computed(() => !!slots['shortcut'])
+    const hasExtra = computed(() => !!slots['extra'])
+    const hasShortcut = computed(() => !!slots['shortcut'])
 
     // 搜索方法
     const onSearch = () => {
@@ -343,8 +342,8 @@ export default defineComponent({
 
     return {
       xForm,
-      showExtra,
-      showShortcut,
+      hasExtra,
+      hasShortcut,
       getModelValue,
       getColumns,
       modelRef,
@@ -364,29 +363,78 @@ export default defineComponent({
 </script>
 <style lang="less" scoped>
 .my-search {
+  background-color: #fff;
+  border-radius: 2px;
+  padding: 10px 0;
+  margin-bottom: 10px;
+
   .ant-form {
     .ant-form-item {
       line-height: 40px;
-
-      &.hidden {
-        display: none !important;
-      }
-    }
-
-    .ant-form-item-control-input-content {
-      & > .ant-input-number,
-      & > .ant-picker {
-        width: 100%;
-      }
     }
 
     .actions {
       display: flex;
       flex: 1;
+      justify-content: flex-end;
 
       :deep(.expand) {
         cursor: pointer;
         min-width: 50px;
+      }
+    }
+  }
+
+  .extra {
+    margin: 0 10px 6px 10px;
+  }
+
+  .shortcut {
+    margin: 6px 10px 0 10px;
+  }
+
+  // 展开收起
+  &.show-expand {
+    .ant-form {
+      // 显示、隐藏
+      .ant-form-item.hidden {
+        display: none !important;
+      }
+
+      // 水平布局、垂直布局
+      &.ant-form-horizontal,
+      &.ant-form-vertical {
+        display: flex;
+        flex-wrap: wrap;
+        margin-right: 36px;
+
+        .ant-form-item {
+          display: inline-flex;
+          margin-bottom: 0;
+          width: 25%;
+
+          .ant-input-affix-wrapper,
+          .ant-select,
+          .ant-cascader-picker,
+          .ant-calendar-picker,
+          .ant-time-picker,
+          .tree-select {
+            width: 100%;
+          }
+
+          .ant-form-item-control-input-content {
+            & > .ant-input-number,
+            & > .ant-picker {
+              width: 100%;
+            }
+          }
+
+          .ant-calendar-picker {
+            span[class='ant-calendar-picker-input ant-input'] {
+              width: 100%;
+            }
+          }
+        }
       }
     }
   }

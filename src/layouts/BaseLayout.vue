@@ -69,10 +69,6 @@ export default defineComponent({
     }
   }
 
-  .ant-layout {
-    overflow: hidden;
-  }
-
   .layout-content {
     overflow-y: auto;
     overflow-x: hidden;

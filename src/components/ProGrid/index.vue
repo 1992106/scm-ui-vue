@@ -7,7 +7,7 @@
     custom-setting
     auto-resize
     height="auto"
-    @search="handleFilter">
+    @search="handleQuery">
     <!--搜索栏-->
     <template v-if="hasSearchBar" #searchBar>
       <x-search
@@ -23,7 +23,7 @@
         <template v-for="slot of getSearchSlots" :key="slot" #[slot]="scope">
           <slot :name="slot" v-bind="scope"></slot>
         </template>
-        <template v-if="showExtra" #extra>
+        <template v-if="hasExtra" #extra>
           <slot name="extra"></slot>
         </template>
         <template v-if="hasShortcut" #shortcut>
@@ -55,7 +55,7 @@ export default defineComponent({
     'x-grid': XGrid,
     'x-search': XSearch
   },
-  inheritAttrs: false,
+  inheritAttrs: true,
   props: {
     value: Object,
     searchProps: { type: Object, default: () => ({}) },
@@ -91,7 +91,7 @@ export default defineComponent({
       return (columns || [])
         .filter(col => col.slots)
         .flatMap(col =>
-          ['default', 'header', 'footer', 'edit', 'filter', 'title', 'checkbox', 'radio', 'content']
+          ['default', 'header', 'footer', 'title', 'content', 'edit', 'filter', 'checkbox', 'radio']
             .map(val => col.slots[val])
             .filter(Boolean)
         )
@@ -148,7 +148,7 @@ export default defineComponent({
 
     const isResize = computed(() => props.gridProps.height === 'auto' && props.gridProps.autoResize)
 
-    const { paramsRef, handleFilter, handleSearch, handleReset, handleClear } = useSearch(
+    const { paramsRef, handleQuery, handleSearch, handleReset, handleClear } = useSearch(
       emitSearch,
       unref(isResize),
       toRef(props, 'searchProps'),
@@ -157,14 +157,14 @@ export default defineComponent({
 
     // 是否显示插槽
     const hasSearchBar = computed(() => !isEmpty(props['searchProps']))
-    const showExtra = computed(() => !!slots['extra'])
+    const hasExtra = computed(() => !!slots['extra'])
     const hasShortcut = computed(() => !!slots['shortcut'])
     const hasToolBar = computed(() => !!slots['toolBar'])
 
     // 初始化调用一下，获取查询参数
     const onInit = () => {
       handleSearch()
-      handleFilter()
+      handleQuery()
       emit('update:value', {
         ...unref(paramsRef),
         ...(unref(showPagination) ? state.pagination : {})
@@ -180,12 +180,12 @@ export default defineComponent({
       xSearch,
       ...toRefs(state),
       hasSearchBar,
-      showExtra,
+      hasExtra,
       hasShortcut,
       hasToolBar,
       getSearchSlots,
       getGridSlots,
-      handleFilter,
+      handleQuery,
       handleSearch,
       emitReset,
       emitClear
@@ -196,67 +196,6 @@ export default defineComponent({
 <style lang="scss" scoped>
 .my-grid {
   background-color: #f0f2f5;
-
-  :deep(.vxe-grid--form-wrapper) {
-    overflow: hidden;
-
-    // 调整搜索栏
-    & > .my-search {
-      background-color: #fff;
-      border-radius: 2px;
-      padding: 10px 0;
-      margin-bottom: 10px;
-
-      .ant-form {
-        display: flex;
-        flex-wrap: wrap;
-        margin-right: 36px;
-
-        .ant-form-item {
-          display: inline-flex;
-          margin-bottom: 0;
-          width: 25%;
-
-          .ant-input-affix-wrapper,
-          .ant-select,
-          .ant-cascader-picker,
-          .ant-calendar-picker,
-          .ant-time-picker,
-          .tree-select {
-            width: 100%;
-          }
-
-          .ant-calendar-picker {
-            span[class='ant-calendar-picker-input ant-input'] {
-              width: 100%;
-            }
-          }
-        }
-
-        .actions {
-          justify-content: flex-end;
-        }
-      }
-
-      .extra {
-        margin: 0 10px 10px 10px;
-      }
-
-      .shortcut {
-        margin: 0 10px;
-      }
-    }
-  }
-
-  :deep(.vxe-grid--toolbar-wrapper) {
-    overflow: hidden;
-
-    .vxe-buttons--wrapper > .toolbar {
-      display: flex;
-      flex-wrap: wrap;
-      background-color: #fff;
-      border-radius: 2px;
-    }
-  }
+  position: relative;
 }
 </style>
