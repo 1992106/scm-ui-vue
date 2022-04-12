@@ -4,20 +4,19 @@
     v-model:visible="logVisible"
     :title="title"
     :width="width"
+    :spin-props="spinning"
     destroy-on-close
     @afterVisibleChange="handleClose">
-    <a-spin :spinning="spinning">
-      <a-timeline>
-        <a-timeline-item v-for="item in data" :key="item?.id">
-          <p>{{ formatTime(item?.createdTime) || '-' }}</p>
-          <p>
-            {{ item?.createdUser || '-' }}
-            <span style="margin: 0 5px">操作了</span>
-            <span style="color: #1890ff" v-html="item?.content"></span>
-          </p>
-        </a-timeline-item>
-      </a-timeline>
-    </a-spin>
+    <a-timeline>
+      <a-timeline-item v-for="item in data" :key="item?.id">
+        <p>{{ formatTime(item?.createAt || item?.createdTime) || '-' }}</p>
+        <p>
+          {{ item?.createUser || item?.createdUser || '-' }}
+          <span style="margin: 0 5px">操作了</span>
+          <span style="color: #1890ff" v-html="item?.content"></span>
+        </p>
+      </a-timeline-item>
+    </a-timeline>
   </x-drawer>
 </template>
 <script lang="ts">
@@ -66,6 +65,7 @@ export default defineComponent({
       const { customRequest } = props
       if (!isFunction(customRequest)) return
       state.spinning = true
+      state.data = []
       const data = await customRequest()
       state.spinning = false
       state.data = data || []

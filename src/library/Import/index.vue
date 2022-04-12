@@ -13,7 +13,9 @@
       行。
       <span v-if="extra" class="color-error">{{ extra }}</span>
       <br />
-      <slot></slot>
+      <slot>
+        <a-button type="link" :loading="loading" @click="handleDownload">下载模版</a-button>
+      </slot>
     </div>
     <div style="margin-top: 20px">
       <p style="margin-bottom: 10px">二、将准备好的数据导入</p>
@@ -32,10 +34,11 @@
   </x-modal>
 </template>
 <script lang="ts">
-import { computed, defineComponent, ref } from 'vue'
+import { computed, defineComponent, reactive, toRefs } from 'vue'
 import { UploadOutlined } from '@ant-design/icons-vue'
 import XModal from '@components/Modal'
 import { importFile } from './import'
+import { download } from '@src/utils'
 
 export default defineComponent({
   name: 'XImport',
@@ -47,8 +50,8 @@ export default defineComponent({
     title: { type: String, default: '导入数据' },
     width: { type: Number, default: 520 },
     visible: { type: Boolean, default: false },
-    fileName: { type: String, required: true },
     customRequest: { type: Function, required: true },
+    customDownload: { type: Function },
     limit: { type: Number, default: 500 },
     extra: { type: String }
   },
@@ -63,21 +66,34 @@ export default defineComponent({
       }
     })
 
-    const spinning = ref(false)
+    const state = reactive({
+      spinning: false,
+      loading: false
+    })
+
     const handleImport = async data => {
       if (!props.customRequest) return
-      spinning.value = true
+      state.spinning = true
       await importFile(props.customRequest, data, () => {
         modalVisible.value = false
         emit('done')
       })
-      spinning.value = false
+      state.spinning = false
+    }
+
+    const handleDownload = async () => {
+      if (!props.customDownload) return
+      state.loading = true
+      const data = await props.customDownload()
+      state.loading = false
+      download(data?.url, data?.name)
     }
 
     return {
-      spinning,
+      ...toRefs(state),
       modalVisible,
-      handleImport
+      handleImport,
+      handleDownload
     }
   }
 })

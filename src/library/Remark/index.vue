@@ -61,7 +61,7 @@ export default defineComponent({
     height: { type: Number, default: 400 },
     visible: { type: Boolean, default: false },
     customRequest: { type: Function, require: true }, // [{createdUser: '', createdUser: '', remark: '', attachments: []}]
-    customSubmit: { type: Function, require: true },
+    customSubmit: { type: Function },
     customUpload: { type: Function },
     maxlength: { type: Number, default: 200 },
     size: { type: Number, default: 3 },
@@ -110,6 +110,7 @@ export default defineComponent({
       const { customRequest } = props
       if (!isFunction(customRequest)) return
       state.spinning = true
+      tableOptions.dataSource = []
       const data = await customRequest()
       state.spinning = false
       tableOptions.dataSource = data || []
