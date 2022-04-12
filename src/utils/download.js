@@ -82,6 +82,10 @@ const compressImage = async (src, width, height, quality = 0.5) => {
       if (!isEmpty(height) && isEmpty(width)) {
         width = (height / image.height) * image.width
       }
+      if (isEmpty(width) && isEmpty(height)) {
+        width = image.width
+        height = image.height
+      }
       const canvas = document.createElement('canvas')
       canvas.width = width
       canvas.height = height
