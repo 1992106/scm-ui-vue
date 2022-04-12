@@ -237,9 +237,8 @@ export default defineComponent({
           return storageToColumns(list, sourceColumns)
         }
         return props.columns
-      } else {
-        return props.columns
       }
+      return props.columns
     }
     const state = reactive({
       customColumns: getTransformCellText(getCustomColumns()),

@@ -8,27 +8,15 @@ export function useFormLayout() {
     const childNodes = Array.from(formEl.children)
     if (childNodes < 2) return
     const lastNode = childNodes.pop() // 删除最后一个（搜索按钮组）
-    const firstNode = childNodes[0]
-    const { top: firstTop } = firstNode.getBoundingClientRect()
-    let index
-    if (hasClass(formEl, 'ant-form-inline')) {
-      const { top: lastTop } = lastNode.getBoundingClientRect()
-      // 行内布局
-      index = childNodes.findIndex(node => {
-        const { top } = node.getBoundingClientRect()
-        return top !== firstTop && top === lastTop
-      })
-    } else {
-      // 水平布局、垂直布局
-      const lastLeft = getLastNodeLeft(lastNode) // 搜索按钮组left
-      index = childNodes.findIndex(node => {
-        const { top, right } = node.getBoundingClientRect()
-        return top === firstTop && right > lastLeft
-      })
-    }
+    const lastLeft = getLastNodeLeft(lastNode) // 搜索按钮组left
+    const index = childNodes.findIndex(node => {
+      const { right } = node.getBoundingClientRect()
+      const prevWidth = node.nextElementSibling?.getBoundingClientRect()?.width || 0
+      return prevWidth + right > lastLeft
+    })
 
     if (index !== -1) {
-      const rest = childNodes.slice(index)
+      const rest = childNodes.slice(index + 1)
       rest.forEach(node => {
         node.classList.add('hidden')
       })
@@ -60,11 +48,6 @@ export function useFormLayout() {
     return childNodes.reduce((total, node) => {
       return total + node.offsetWidth
     }, 0)
-  }
-
-  const hasClass = (el, className) => {
-    let reg = new RegExp('(^|\\s)' + className + '(\\s|$)')
-    return reg.test(el.className)
   }
 
   const dispatchResize = () => {

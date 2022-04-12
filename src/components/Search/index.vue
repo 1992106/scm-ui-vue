@@ -377,6 +377,7 @@ export default defineComponent({
       display: flex;
       flex: 1;
       justify-content: flex-end;
+      line-height: 40px;
 
       :deep(.expand) {
         cursor: pointer;
@@ -402,8 +403,7 @@ export default defineComponent({
       }
 
       // 水平布局、垂直布局
-      &.ant-form-horizontal,
-      &.ant-form-vertical {
+      &.ant-form-horizontal {
         display: flex;
         flex-wrap: wrap;
         margin-right: 36px;
