@@ -10,10 +10,10 @@
     @ok="handleOk"
     @cancel="handleCancel">
     <x-table v-bind="tableOptions">
-      <template #bodyCell="{ column, record: { attachments = {} } }">
-        <template v-if="column.key === 'attachments'">
-          <a-button v-if="attachments?.fileName" type="link" @click="handleDownload(attachments)">
-            {{ attachments?.fileName }}
+      <template #bodyCell="{ column, record: { file, attachments } }">
+        <template v-if="column.key === 'files'">
+          <a-button v-if="(file || attachments)?.fileName" type="link" @click="handleDownload(file || attachments)">
+            {{ (file || attachments)?.fileName }}
           </a-button>
         </template>
       </template>
@@ -92,15 +92,23 @@ export default defineComponent({
       },
       size: 'small',
       columns: [
-        { title: '备注人', width: 100, dataIndex: 'createdUser' },
+        {
+          title: '备注人',
+          width: 100,
+          customRender: ({ record }) => {
+            return record?.createUser || record?.createdUser
+          }
+        },
         {
           title: '备注时间',
           width: 160,
-          dataIndex: 'createdTime',
-          customRender: ({ text }) => formatTime(text)
+          customRender: ({ record }) => {
+            const text = record?.createAt || record?.createdTime
+            return formatTime(text)
+          }
         },
         { title: '备注内容', dataIndex: 'remark' },
-        { title: '附件', width: 120 }
+        { title: '附件', width: 120, key: 'files' }
       ],
       dataSource: [],
       showPagination: false
@@ -116,8 +124,8 @@ export default defineComponent({
       tableOptions.dataSource = data || []
     }
 
-    const handleDownload = attachments => {
-      const { url, fileName } = attachments || {}
+    const handleDownload = row => {
+      const { url, fileName } = row || {}
       download(url, fileName)
     }
 
