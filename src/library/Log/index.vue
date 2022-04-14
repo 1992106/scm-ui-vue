@@ -35,7 +35,7 @@ export default defineComponent({
     title: { type: String, default: '操作日志' },
     width: { type: [String, Number], default: 360 },
     visible: { type: Boolean, default: false },
-    customRequest: { type: Function, require: true } // [{createdUser: '', createdUser: '', content: ''}]
+    customRequest: { type: Function, require: true }
   },
   emits: ['update:visible', 'done'],
   setup(props, { emit }) {

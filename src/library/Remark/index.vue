@@ -10,18 +10,18 @@
     @ok="handleOk"
     @cancel="handleCancel">
     <x-table v-bind="tableOptions">
-      <template #bodyCell="{ column, record: { file, attachments } }">
-        <template v-if="column.key === 'files'">
-          <a-button v-if="(file || attachments)?.fileName" type="link" @click="handleDownload(file || attachments)">
-            {{ (file || attachments)?.fileName }}
+      <template #bodyCell="{ column, record: { attachments } }">
+        <template v-if="column.key === 'attachments'">
+          <a-button v-if="attachments" type="link" @click="handleDownload(attachments)">
+            {{ attachments?.fileName }}
           </a-button>
         </template>
       </template>
     </x-table>
     <a-form :label-col="{ span: 0 }">
-      <a-form-item v-bind="validateInfos.remark">
+      <a-form-item v-bind="validateInfos.content">
         <a-textarea
-          v-model:value="modelRef.remark"
+          v-model:value="modelRef.content"
           placeholder="请输入备注"
           show-count
           :rows="4"
@@ -60,7 +60,7 @@ export default defineComponent({
     width: { type: Number, default: 960 },
     height: { type: Number, default: 400 },
     visible: { type: Boolean, default: false },
-    customRequest: { type: Function, require: true }, // [{createdUser: '', createdUser: '', remark: '', attachments: []}]
+    customRequest: { type: Function, require: true },
     customSubmit: { type: Function },
     customUpload: { type: Function },
     maxlength: { type: Number, default: 200 },
@@ -107,8 +107,8 @@ export default defineComponent({
             return formatTime(text)
           }
         },
-        { title: '备注内容', dataIndex: 'remark' },
-        { title: '附件', width: 120, key: 'files' }
+        { title: '备注内容', dataIndex: 'content' },
+        { title: '附件', width: 120, key: 'attachments' }
       ],
       dataSource: [],
       showPagination: false
@@ -121,7 +121,15 @@ export default defineComponent({
       tableOptions.dataSource = []
       const data = await customRequest()
       state.spinning = false
-      tableOptions.dataSource = data || []
+      tableOptions.dataSource = (data || []).map(row => {
+        const attachments = row?.files || row?.fileList || row?.attachments
+        const content = row?.remark || row?.content
+        return {
+          ...row,
+          content,
+          attachments
+        }
+      })
     }
 
     const handleDownload = row => {
@@ -130,12 +138,12 @@ export default defineComponent({
     }
 
     const modelRef = reactive({
-      remark: '',
+      content: '',
       attachments: []
     })
 
     const rulesRef = reactive({
-      remark: [{ required: true, message: '请输入备注' }]
+      content: [{ required: true, message: '请输入备注' }]
     })
 
     const { resetFields, validate, validateInfos } = Form.useForm(modelRef, rulesRef)
@@ -147,8 +155,8 @@ export default defineComponent({
         .then(async () => {
           state.confirmLoading = true
           await customSubmit({
-            remark: modelRef.remark,
-            ...(!isEmpty(modelRef.attachments) ? { ids: modelRef.attachments.map(val => val?.id) } : {})
+            content: modelRef.content,
+            ...(!isEmpty(modelRef.attachments) ? { resourcesIds: modelRef.attachments.map(val => val?.id) } : {})
           })
           state.confirmLoading = false
           modalVisible.value = false
