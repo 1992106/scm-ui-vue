@@ -78,10 +78,14 @@ const router = createRouter({
   routes
 })
 
+// 白名单路由
+export const whiteRoutes = ['ErrorPage', '404', '403', 'Login', 'Redirect']
+
+// 重置路由
 export const resetRouter = () => {
   router.getRoutes().forEach(route => {
     const { name } = route
-    if (name && !['ErrorPage', '404', '403', 'Login', 'Redirect'].includes(name)) {
+    if (name && !whiteRoutes.includes(name)) {
       router.hasRoute(name) && router.removeRoute(name)
     }
   })

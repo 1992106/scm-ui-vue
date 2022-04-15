@@ -1,4 +1,4 @@
-import { resetRouter } from '@src/router'
+// import { resetRouter } from '@src/router'
 import { getAccessStorage, removeAccessStorage, setAccessStorage, isEmpty } from '@src/utils'
 import setting from '@src/config'
 
@@ -34,7 +34,8 @@ const user = {
       commit('router/reset', null, { root: true })
       removeAccessStorage(setting.token_name)
       removeAccessStorage(setting.user_name)
-      resetRouter()
+      // 使用router.addRoute动态添加路由时，需要重置路由
+      // resetRouter()
     }
   }
 }

@@ -18,7 +18,7 @@
 import { defineComponent, reactive, watch, computed, toRefs } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import MenuItem from './item.vue'
-import { routes as routeList } from '@src/router'
+import { routes as routeList, whiteRoutes } from '@src/router'
 
 export default defineComponent({
   name: 'MySideMenu',
@@ -54,7 +54,7 @@ export default defineComponent({
     watch(
       () => [props.collapsed, currentRoute.fullPath],
       ([newCollapsedVal]) => {
-        if (['login', 'Redirect'].includes(currentRoute.name)) return
+        if (whiteRoutes.includes(currentRoute.name)) return
         state.openKeys = newCollapsedVal ? [] : getOpenKeys()
         state.selectedKeys = [currentRoute.name]
       }
