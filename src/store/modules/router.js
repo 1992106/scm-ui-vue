@@ -29,15 +29,13 @@ const routers = {
         state.visitedRoutes.splice(targetIdx, 1, route)
       }
     },
-
     // 添加进keep-alive列表
     addCachedTabList(state, route) {
       if (!route.meta.ignoreKeepAlive && state.cachedTabList.findIndex(val => val.fullPath === route.fullPath) === -1) {
         state.cachedTabList.push(route)
       }
     },
-
-    // 删除顶部tab页
+    // 删除tab页
     delVisitedRoutes(state, { route, key }) {
       const tabLen = state.visitedRoutes.length
       // 始终保留一个tab
@@ -45,7 +43,6 @@ const routers = {
         const idx = state.visitedRoutes.findIndex(val => val.path === key)
         const isCurrentTab = route.path === key
         let target = {}
-
         // 如果关闭的是当前tab页
         if (isCurrentTab) {
           // 如果是最后一个tab页，则需要往前移一个tab
@@ -59,8 +56,7 @@ const routers = {
         state.visitedRoutes.splice(idx, 1)
       }
     },
-
-    // 删除keep-alive列表中的一项
+    // 删除keep-alive列表
     delCachedTabList(state, route) {
       if (!state.cachedTabList?.length) return
       const cachedIdx = state.cachedTabList.findIndex(val => val.path === route.fullPath)
@@ -68,29 +64,27 @@ const routers = {
         state.cachedTabList.splice(cachedIdx, 1)
       }
     },
-
     // 清除
     reset(state) {
       state.visitedRoutes = []
       state.cachedTabList = []
+      // 使用router.addRoute动态添加路由时，需要重置路由
+      // resetRouter()
     }
   },
-
   actions: {
-    // 添加tab页并添加keep-alive
+    // 添加tab页和keep-alive
     addVisitedRoutes({ commit }, route) {
       commit('addVisitedRoutes', route)
       if (setting.keep_alive) {
         commit('addCachedTabList', route)
       }
     },
-
-    // 删除tab页
+    // 删除tab页和keep-alive
     delVisitedRoutes({ commit }, { route, key }) {
       commit('delVisitedRoutes', { route, key })
       commit('delCachedTabList', route)
     },
-
     goToVisitedPage({ state }, _path) {
       const target = state.visitedRoutes.find(item => item.path === _path)
       if (!target) return
