@@ -81,7 +81,7 @@ const router = createRouter({
 export const resetRouter = () => {
   router.getRoutes().forEach(route => {
     const { name } = route
-    if (name && !['ErrorPage', 'Login', 'Redirect'].includes(name)) {
+    if (name && !['ErrorPage', '404', '403', 'Login', 'Redirect'].includes(name)) {
       router.hasRoute(name) && router.removeRoute(name)
     }
   })
