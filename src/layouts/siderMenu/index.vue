@@ -7,7 +7,7 @@
       :open-keys="openKeys"
       @click="clickMenuItem"
       @openChange="onOpenChange">
-      <template v-for="item in routes" :key="item.name">
+      <template v-for="item in allRoutes" :key="item.name">
         <MenuItem :menu-info="item" />
       </template>
     </a-menu>
@@ -18,10 +18,10 @@
 import { defineComponent, reactive, watch, computed, toRefs } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import MenuItem from './item.vue'
-import { routes as routeList, whiteRoutes } from '@src/router'
+import { routes, whiteRoutes } from '@src/router'
 
 export default defineComponent({
-  name: 'MySideMenu',
+  name: 'MySiderMenu',
   components: {
     MenuItem
   },
@@ -39,15 +39,15 @@ export default defineComponent({
     const state = reactive({
       openKeys: [], // menu当前展开的keys
       selectedKeys: [], // menu选中的keys
-      routes: []
+      allRoutes: []
     })
     state.openKeys = getOpenKeys()
     state.selectedKeys = [currentRoute.name]
-    state.routes = routeList.flatMap(val => (val.path === '/' ? val.children : [val]))
+    state.allRoutes = routes.flatMap(val => (val.path === '/' ? val.children : [val]))
 
     // 从routes筛选所有根菜单的名字
     const rootSubmenuKeys = computed(() =>
-      state.routes.filter(item => !!item?.children?.length && item.path !== '/').map(item => item.name)
+      state.allRoutes.filter(item => !!item?.children?.length && item.path !== '/').map(item => item.name)
     )
 
     // 监听菜单收缩状态 && 跟随页面路由变化，切换菜单选中状态

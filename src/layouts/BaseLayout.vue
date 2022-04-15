@@ -9,7 +9,7 @@
       :collapsed-width="48"
       :width="220">
       <Logo :collapsed="collapsed" />
-      <SideMenu :collapsed="collapsed" />
+      <SiderMenu :collapsed="collapsed" />
     </LayoutSider>
     <Layout>
       <AppHeader v-model:collapsed="collapsed" />
@@ -27,7 +27,7 @@ import { defineComponent, ref } from 'vue'
 import { Layout } from 'ant-design-vue'
 import Logo from './logo/index.vue'
 import AppHeader from './header'
-import SideMenu from './sideMenu/index.vue'
+import SiderMenu from './siderMenu/index.vue'
 import MultiTabs from './multiTabs/index.vue'
 import AppMain from './main/index.vue'
 import AppFooter from './footer'
@@ -37,7 +37,7 @@ export default defineComponent({
   components: {
     Logo,
     AppHeader,
-    SideMenu,
+    SiderMenu,
     MultiTabs,
     AppMain,
     AppFooter,

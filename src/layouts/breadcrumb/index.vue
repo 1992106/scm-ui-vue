@@ -14,6 +14,7 @@
 import { defineComponent, ref, watch } from 'vue'
 import { Breadcrumb } from 'ant-design-vue'
 import { useRouter } from 'vue-router'
+import { whiteRoutes } from '@src/router'
 
 export default defineComponent({
   name: 'MyBreadcrumb',
@@ -29,7 +30,7 @@ export default defineComponent({
     watch(
       () => router.currentRoute.value.fullPath,
       () => {
-        if (['ErrorPage', 'Login', 'Redirect'].includes(router.currentRoute.value.name)) return
+        if (whiteRoutes.includes(router.currentRoute.value.name)) return
         allRoutes.value = router.currentRoute.value.matched.filter(item => item.path !== '/')
       },
       { immediate: true }
