@@ -98,7 +98,7 @@ export default defineComponent({
      * 默认值
      */
     const defaultState = {
-      defaultColumn: { ellipsis: true, align: 'center' },
+      defaultColumn: { ellipsis: true, align: 'center', sortDirections: ['asc', 'desc'] },
       defaultPaginationConfig: {
         size: 'default',
         defaultPageSize: 20,
@@ -170,9 +170,13 @@ export default defineComponent({
       }
       // 筛选
       if (!isEmpty(filters)) {
+        emit('search', filters, 'filter')
       }
       // 排序
       if (!isEmpty(sorter)) {
+        const { order, field } = sorter
+        const sorts = order ? { sortBy: order.toUpperCase(), sortKey: field } : {}
+        emit('search', sorts, 'sort')
       }
       emit('change', filters, sorter, { currentDataSource })
     }
