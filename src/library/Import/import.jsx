@@ -3,15 +3,15 @@ import { download } from '@src/utils'
 
 /**
  * 导入文件
- * @param postFn
+ * @param fn
  * @param option
  * @param callback
- * @returns {Promise<unknown>}
+ * @returns {Promise<void>}
  */
-const importFile = async (postFn, option = {}, callback) => {
+const importFile = async (fn, option = {}, callback) => {
   const formData = new FormData()
   formData.append('file', option.file)
-  const res = await postFn(formData, { $msg: 'none', $errorMsg: 'none' })
+  const res = await fn(formData, { $msg: 'none', $errorMsg: 'none' })
   if (res?.status === 200) {
     Modal.success({
       title: '导入成功',

@@ -1,7 +1,12 @@
 <template>
   <div class="my-print">
     <template v-if="showButton">
-      <a-button type="default" v-bind="buttonProps" @click="handleClick">{{ buttonText }}</a-button>
+      <a-button type="default" v-bind="buttonProps" @click="handleClick">
+        {{ buttonText }}
+        <template #icon>
+          <slot name="icon"></slot>
+        </template>
+      </a-button>
     </template>
     <div style="display: none">
       <div ref="printRef" class="print-dialog">

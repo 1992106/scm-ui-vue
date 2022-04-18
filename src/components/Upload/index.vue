@@ -41,9 +41,9 @@ export default defineComponent({
     listType: { type: String, default: 'picture-card' },
     showUploadBtn: { type: [Boolean, Object], default: true },
     showUploadList: { type: [Boolean, Object], default: true },
+    accept: { type: String, default: 'image/*' },
     size: { type: Number },
-    limit: { type: Number },
-    accept: { type: String, default: 'image/*' }
+    limit: { type: Number }
   },
   emits: ['update:fileList', 'change'],
   setup(props, { emit }) {

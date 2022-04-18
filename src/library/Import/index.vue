@@ -14,7 +14,12 @@
       <span v-if="extra" class="color-error">{{ extra }}</span>
       <br />
       <slot>
-        <a-button type="link" :loading="loading" @click="handleDownload">下载模版</a-button>
+        <a-button type="link" :loading="loading" @click="handleDownload">
+          下载模版
+          <template #icon>
+            <slot name="icon"></slot>
+          </template>
+        </a-button>
       </slot>
     </div>
     <div style="margin-top: 20px">
@@ -37,6 +42,7 @@
 import { computed, defineComponent, reactive, toRefs } from 'vue'
 import { UploadOutlined } from '@ant-design/icons-vue'
 import XModal from '@components/Modal'
+import { isFunction } from 'lodash-es'
 import { importFile } from './import'
 import { download } from '@src/utils'
 
@@ -50,7 +56,7 @@ export default defineComponent({
     title: { type: String, default: '导入数据' },
     width: { type: Number, default: 520 },
     visible: { type: Boolean, default: false },
-    customRequest: { type: Function, required: true },
+    customImport: { type: Function, required: true },
     customDownload: { type: Function },
     limit: { type: Number, default: 500 },
     extra: { type: String }
@@ -72,9 +78,10 @@ export default defineComponent({
     })
 
     const handleImport = async data => {
-      if (!props.customRequest) return
+      const { customImport } = props
+      if (!isFunction(customImport)) return
       state.spinning = true
-      await importFile(props.customRequest, data, () => {
+      await importFile(customImport, data, () => {
         modalVisible.value = false
         emit('done')
       })
@@ -82,9 +89,10 @@ export default defineComponent({
     }
 
     const handleDownload = async () => {
-      if (!props.customDownload) return
+      const { customDownload } = props
+      if (!isFunction(customDownload)) return
       state.loading = true
-      const data = await props.customDownload()
+      const data = await customDownload()
       state.loading = false
       download(data?.url, data?.name)
     }

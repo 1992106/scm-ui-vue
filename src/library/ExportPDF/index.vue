@@ -1,7 +1,12 @@
 <template>
   <div class="my-export-pdf">
     <template v-if="showButton">
-      <a-button type="default" v-bind="buttonProps" @click="handleClick">{{ buttonText }}</a-button>
+      <a-button type="default" v-bind="buttonProps" @click="handleClick">
+        {{ buttonText }}
+        <template #icon>
+          <slot name="icon"></slot>
+        </template>
+      </a-button>
     </template>
     <div ref="pdfRef" class="export-pdf-content">
       <slot></slot>
