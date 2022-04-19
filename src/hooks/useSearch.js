@@ -19,13 +19,13 @@ export function useSearch(fn, isResize = true, searchProps, gridProps) {
     }
   }
 
-  // 是否默认首次filter
-  const isDefaultFilter = ref(false)
+  // 是否默认首次query
+  const isDefaultQuery = ref(false)
   const sortParams = ref({})
   const filterParams = ref({})
   const handleQuery = ($event, key) => {
-    if (!unref(isDefaultFilter)) {
-      isDefaultFilter.value = true
+    if (!unref(isDefaultQuery)) {
+      isDefaultQuery.value = true
       return init()
     }
     const pagination = {}
@@ -62,7 +62,7 @@ export function useSearch(fn, isResize = true, searchProps, gridProps) {
   })
 
   const init = () => {
-    if (unref(isDefaultSearch) && unref(isDefaultFilter)) {
+    if (unref(isDefaultSearch) && unref(isDefaultQuery)) {
       searchParams.value = useDefaultValue(unref(searchProps).columns)
       filterParams.value = useDefaultValue(unref(gridProps).columns)
     }

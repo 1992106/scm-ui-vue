@@ -81,12 +81,19 @@ const XImage = defineComponent({
             .catch(() => {
               compressUrls.value = previewUrls.value
             })
+        } else {
+          // 图为空时，使用默认图片展示
+          compressUrls.value = [fallUrl]
         }
       },
       { immediate: true }
     )
 
     const handlePreview = (index: number) => {
+      // 图片为空时，不支持预览功能
+      if (thumbUrls.value.length) {
+        return
+      }
       visible.value = true
       current.value = index
     }

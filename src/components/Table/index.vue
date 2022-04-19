@@ -98,7 +98,7 @@ export default defineComponent({
      * 默认值
      */
     const defaultState = {
-      defaultColumn: { ellipsis: true, align: 'center', sortDirections: ['asc', 'desc'] },
+      defaultColumn: { ellipsis: true, align: 'center' },
       defaultPaginationConfig: {
         size: 'default',
         defaultPageSize: 20,
@@ -174,9 +174,15 @@ export default defineComponent({
       }
       // 排序
       if (!isEmpty(sorter)) {
-        const { order, field } = sorter
-        const sorts = order ? { sortBy: order.toUpperCase(), sortKey: field } : {}
-        emit('search', sorts, 'sort')
+        const { column, order, field } = sorter
+        // 服务端排序
+        if (column?.sorter === true) {
+          const sortBy = ['asc', 'desc']
+            .map(v => order.includes(v) && order.slice(v.length).toUpperCase())
+            .filter(Boolean)[0]
+          const sorts = order ? { sortBy, sortKey: field } : {}
+          emit('search', sorts, 'sort')
+        }
       }
       emit('change', filters, sorter, { currentDataSource })
     }
