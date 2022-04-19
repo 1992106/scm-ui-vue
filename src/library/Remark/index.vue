@@ -18,7 +18,7 @@
         </template>
       </template>
     </x-table>
-    <a-form :label-col="{ span: 0 }">
+    <a-form :label-col="{ span: 0 }" style="margin-top: 10px">
       <a-form-item v-bind="validateInfos.content">
         <a-textarea
           v-model:value="modelRef.content"

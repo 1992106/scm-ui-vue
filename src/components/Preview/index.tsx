@@ -12,7 +12,7 @@ const XPreview = defineComponent({
   },
   emits: ['update:visible'],
   setup(props, { emit }) {
-    const previewUrls: Record<number, string> = reactive({})
+    const previewUrls: any = reactive({})
     const current: Ref<number> = ref(0)
     const isPreviewGroup: Ref<boolean> = ref(false)
 
