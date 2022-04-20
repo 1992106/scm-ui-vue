@@ -36,7 +36,7 @@ export const getTableScroll = ({ id, extraHeight } = {}) => {
     tHeaderBottom = tHeader.getBoundingClientRect().bottom
   }
   // 分页器：高度+margin20
-  const pagination = document.querySelector('.my-table .ant-table .ant-pagination')
+  const pagination = document.querySelector('.my-table .ant-pagination')
   const paginationHeight = pagination ? pagination.getBoundingClientRect().height : 0
 
   const y = `calc(100vh - ${tHeaderBottom + paginationHeight + extraHeight}px)`

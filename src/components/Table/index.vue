@@ -98,7 +98,7 @@ export default defineComponent({
      * 默认值
      */
     const defaultState = {
-      defaultColumn: { ellipsis: true, align: 'center' },
+      defaultColumn: { ellipsis: true, align: 'center', resizable: true },
       defaultPaginationConfig: {
         size: 'default',
         defaultPageSize: 20,
@@ -158,7 +158,6 @@ export default defineComponent({
     }
     // 排序、筛选变化时触发
     const handleChange = (pagination, filters, sorter, { currentDataSource }) => {
-      // TODO:
       // 分页
       if (!isEmpty(pagination)) {
         const { current, pageSize } = pagination

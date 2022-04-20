@@ -28,7 +28,7 @@ export function useFormLayout() {
     // TODO: 手动触发resize事件，调整表格高度
     setTimeout(() => {
       dispatchResize()
-    }, 1000)
+    }, 200)
   }
 
   const getLastNodeLeft = lastNode => {

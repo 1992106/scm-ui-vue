@@ -95,7 +95,7 @@ export default defineComponent({
       if (!isFunction(customRequest)) return
       const currentFile = options?.file
       try {
-        const { data } = await customRequest(currentFile)
+        const data = await customRequest(currentFile)
         const file = {
           ...data,
           uid: data?.id,

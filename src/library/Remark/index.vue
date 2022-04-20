@@ -9,7 +9,7 @@
     :confirm-loading="confirmLoading"
     @ok="handleOk"
     @cancel="handleCancel">
-    <x-table v-bind="tableOptions">
+    <x-table v-bind="tableOptions" v-model:pagination="pagination" @search="handleSearch">
       <template #bodyCell="{ column, record: { attachments } }">
         <template v-if="column.key === 'attachments'">
           <a-button v-if="attachments" type="link" @click="handleDownload(attachments)">
@@ -18,7 +18,7 @@
         </template>
       </template>
     </x-table>
-    <a-form :label-col="{ span: 0 }" style="margin-top: 10px">
+    <a-form :label-col="{ span: 0 }">
       <a-form-item v-bind="validateInfos.content">
         <a-textarea
           v-model:value="modelRef.content"
@@ -27,7 +27,7 @@
           :rows="4"
           :maxlength="maxlength" />
       </a-form-item>
-      <a-form-item v-if="customUpload">
+      <a-form-item>
         <x-upload
           v-model:fileList="modelRef.attachments"
           :customRequest="customUpload"
@@ -65,14 +65,15 @@ export default defineComponent({
     customUpload: { type: Function },
     maxlength: { type: Number, default: 200 },
     size: { type: Number, default: 3 },
-    limit: { type: Number, default: 1 }
+    limit: { type: Number, default: 1 },
+    showPagination: { type: Boolean, default: false }
   },
   emits: ['update:visible', 'done'],
   setup(props, { emit }) {
     const modalVisible = computed({
       get: () => {
         if (props.visible) {
-          getRemark()
+          handleSearch()
         }
         return props.visible
       },
@@ -83,7 +84,11 @@ export default defineComponent({
 
     const state = reactive({
       spinning: false,
-      confirmLoading: false
+      confirmLoading: false,
+      pagination: {
+        page: 1,
+        pageSize: 10
+      }
     })
 
     const tableOptions = reactive({
@@ -111,15 +116,22 @@ export default defineComponent({
         { title: '附件', width: 120, key: 'attachments' }
       ],
       dataSource: [],
-      showPagination: false
+      showPagination: props.showPagination,
+      defaultPaginationConfig: {
+        size: 'small',
+        defaultPageSize: 10,
+        pageSizeOptions: ['10', '20', '30', '40']
+      }
     })
 
-    const getRemark = async () => {
-      const { customRequest } = props
+    const handleSearch = async () => {
+      const { customRequest, showPagination } = props
       if (!isFunction(customRequest)) return
       state.spinning = true
       tableOptions.dataSource = []
-      const data = await customRequest()
+      const data = await customRequest({
+        ...(showPagination ? state.pagination : {})
+      })
       state.spinning = false
       tableOptions.dataSource = (data || []).map(row => {
         const attachments = row?.files || row?.fileList || row?.attachments
@@ -176,6 +188,7 @@ export default defineComponent({
       ...toRefs(state),
       modalVisible,
       tableOptions,
+      handleSearch,
       handleDownload,
       validateInfos,
       modelRef,
@@ -185,3 +198,20 @@ export default defineComponent({
   }
 })
 </script>
+<style lang="scss" scoped>
+.ant-form {
+  margin-top: 20px;
+
+  .ant-form-item {
+    margin-bottom: 0;
+
+    &:first-of-type {
+      margin-bottom: 10px;
+    }
+  }
+
+  .my-upload {
+    height: 112px;
+  }
+}
+</style>
