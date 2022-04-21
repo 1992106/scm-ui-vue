@@ -1,6 +1,6 @@
 import { defineComponent, ref, computed, PropType, watch } from 'vue'
 import { Image, Space } from 'ant-design-vue'
-import XPreview from '../Preview'
+import XPreview from '@components/Preview/index.vue'
 import { isObject } from 'lodash-es'
 import { compressImage } from '@src/utils'
 import './index.scss'
@@ -91,7 +91,7 @@ const XImage = defineComponent({
 
     const handlePreview = (index: number) => {
       // 图片为空时，不支持预览功能
-      if (thumbUrls.value.length) {
+      if (!thumbUrls.value.length) {
         return
       }
       visible.value = true

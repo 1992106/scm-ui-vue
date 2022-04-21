@@ -12,9 +12,11 @@
     <x-table v-bind="tableOptions" v-model:pagination="pagination" @search="handleSearch">
       <template #bodyCell="{ column, record: { attachments } }">
         <template v-if="column.key === 'attachments'">
-          <a-button v-if="attachments" type="link" @click="handleDownload(attachments)">
-            {{ attachments?.fileName }}
-          </a-button>
+          <template v-if="attachments.length">
+            <a-button v-for="file in attachments" :key="file?.id" type="link" @click="handleDownload(file)">
+              {{ file?.fileName }}
+            </a-button>
+          </template>
         </template>
       </template>
     </x-table>
@@ -57,7 +59,7 @@ export default defineComponent({
   inheritAttrs: false,
   props: {
     title: { type: String, default: '备注' },
-    width: { type: Number, default: 960 },
+    width: { type: [String, Number], default: 960 },
     height: { type: Number, default: 400 },
     visible: { type: Boolean, default: false },
     customRequest: { type: Function, require: true },
@@ -112,8 +114,8 @@ export default defineComponent({
             return formatTime(text)
           }
         },
-        { title: '备注内容', dataIndex: 'content' },
-        { title: '附件', width: 120, key: 'attachments' }
+        { title: '备注内容', minWidth: 200, dataIndex: 'content' },
+        { title: '附件', minWidth: 120, key: 'attachments' }
       ],
       dataSource: [],
       showPagination: props.showPagination,
@@ -139,7 +141,7 @@ export default defineComponent({
         return {
           ...row,
           content,
-          attachments
+          attachments: !isEmpty(attachments) ? attachments : []
         }
       })
     }
@@ -203,15 +205,12 @@ export default defineComponent({
   margin-top: 20px;
 
   .ant-form-item {
-    margin-bottom: 0;
+    margin-bottom: 10px;
 
-    &:first-of-type {
-      margin-bottom: 10px;
+    &:last-of-type {
+      height: 112px;
+      margin-bottom: 0;
     }
-  }
-
-  .my-upload {
-    height: 112px;
   }
 }
 </style>

@@ -1,0 +1,40 @@
+<template>
+  <div style="display: none">
+    <a-image-preview-group :preview="{ current, visible: isPreview, onVisibleChange: handleVisibleChange }">
+      <a-image v-for="src in urls" :key="src" :src="src" />
+    </a-image-preview-group>
+  </div>
+</template>
+<script lang="ts">
+import { computed, defineComponent, PropType, ref } from 'vue'
+
+export default defineComponent({
+  name: 'XPreview',
+  inheritAttrs: false,
+  props: {
+    visible: { type: Boolean as PropType<boolean>, default: false },
+    current: { type: Number as PropType<number>, default: 0 },
+    urls: { type: Array as PropType<string[]>, required: true }
+  },
+  emits: ['update:visible'],
+  setup(props, { emit }) {
+    const isPreview = computed({
+      get: () => props.visible,
+      set: val => {
+        emit('update:visible', val)
+      }
+    })
+    const current = ref(props.current)
+
+    const handleVisibleChange = bool => {
+      isPreview.value = bool
+    }
+
+    return {
+      isPreview,
+      current,
+      handleVisibleChange
+    }
+  }
+})
+</script>

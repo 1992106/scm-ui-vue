@@ -1,7 +1,7 @@
 // 基础组件
 export { default as IconFont } from './IconFont/index.tsx'
 export { default as XImage } from './Image/index.tsx'
-export { default as XPreview } from './Preview/index.tsx'
+export { default as XPreview } from './Preview/index.vue'
 export { default as XUpload } from './Upload/index.vue'
 // form表单
 export { default as XSearch } from './Search/index.vue'

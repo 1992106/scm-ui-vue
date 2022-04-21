@@ -111,7 +111,7 @@ export default defineComponent({
      * 默认值
      */
     const defaultState = {
-      defaultColumn: { ellipsis: true, align: 'center', resizable: true },
+      defaultColumn: { ellipsis: true, align: 'center' },
       defaultPaginationConfig: {
         size: 'default',
         defaultPageSize: 20,

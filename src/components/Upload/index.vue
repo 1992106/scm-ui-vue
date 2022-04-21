@@ -18,13 +18,13 @@
       <span v-show="limit" class="limit">({{ files.length }}/{{ limit }})</span>
     </div>
   </a-upload>
-  <x-preview v-model:visible="previewVisible" :urls="previewUrls" :current="previewCurrent"></x-preview>
+  <x-preview v-model:visible="previewVisible" :current="previewCurrent" :urls="previewUrls"></x-preview>
 </template>
 <script>
 import { defineComponent, reactive, toRefs, watch, watchEffect } from 'vue'
 import { message } from 'ant-design-vue'
 import { PlusOutlined } from '@ant-design/icons-vue'
-import XPreview from '@components/Preview'
+import XPreview from '@components/Preview/index.vue'
 import { isFunction } from 'lodash-es'
 import { isEmpty, downloadFile } from '@src/utils'
 
@@ -140,6 +140,7 @@ export default defineComponent({
       if (props.listType === 'text' && props.showUploadList?.showPreviewIcon === false) {
         return false
       }
+      console.log(state.files, file, 9999)
       const list = state.files.filter(val => val.status === 'done')
       state.previewCurrent = list.findIndex(v => v.id === file.id)
       state.previewVisible = true
