@@ -6,6 +6,7 @@ export function useSearch(fn, isResize = true, searchProps, gridProps) {
   // 是否默认首次search
   const isDefaultSearch = ref(false)
   const searchParams = ref({})
+  // 搜索栏
   const handleSearch = $event => {
     if (!unref(isDefaultSearch)) {
       isDefaultSearch.value = true
@@ -23,6 +24,7 @@ export function useSearch(fn, isResize = true, searchProps, gridProps) {
   const isDefaultQuery = ref(false)
   const sortParams = ref({})
   const filterParams = ref({})
+  // 分页、排序、筛选
   const handleQuery = ($event, key) => {
     if (!unref(isDefaultQuery)) {
       isDefaultQuery.value = true

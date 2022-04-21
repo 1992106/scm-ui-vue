@@ -38,14 +38,19 @@ export const getTableScroll = ({ id, extraHeight } = {}) => {
   // 分页器：高度+margin20
   const pagination = document.querySelector('.my-table .ant-pagination')
   const paginationHeight = pagination ? pagination.getBoundingClientRect().height : 0
-
-  const y = `calc(100vh - ${tHeaderBottom + paginationHeight + extraHeight}px)`
+  // 窗体高度-表格内容顶部的高度-表格内容底部的高度
+  const height = `calc(100vh - ${tHeaderBottom + paginationHeight + extraHeight}px)`
 
   // TODO: 设置表格高度不生效
-  // const tBody = document.querySelector('.my-table .ant-table .ant-table-body')
-  // if (tBody) {
-  //   tBody.style.cssText += `height: ${y}px`
+  // const bodyEl = document.querySelector('.my-table .ant-table .ant-table-body')
+  // if (bodyEl) {
+  //   bodyEl.style.cssText += `height: ${y}px`
   // }
+  // 空数据时，设置高度
+  const emptyEl = document.querySelector('.my-table .ant-table-empty  .ant-table-body .ant-table-placeholder')
+  if (emptyEl) {
+    emptyEl.style.height = height
+  }
 
-  return { x: 'max-content', y }
+  return { x: 'max-content', y: height }
 }

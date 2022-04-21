@@ -21,7 +21,7 @@
       :scroll="getScroll"
       :size="size"
       :locale="locale"
-      :row-selection="rowSelection"
+      :row-selection="getRowSelection"
       :row-class-name="handleRowClassName"
       :custom-row="customRow"
       :custom-header-row="customHeaderRow"
@@ -65,7 +65,9 @@ export default defineComponent({
     // 横向/纵向滚动
     scroll: { type: Object, default: () => ({ scrollToFirstRowOnChange: true }) },
     // 选择功能的配置
-    rowSelection: Object,
+    rowSelection: { type: [Boolean, Object] },
+    // 勾选项
+    selectedValue: { type: Array, default: () => [] },
     // 行的类名
     rowClassName: Function,
     // 指定树形结构的列名
@@ -87,13 +89,24 @@ export default defineComponent({
   emits: [
     'search',
     'update:pagination',
-    // 'update:selected-value',
+    'update:selected-value',
+    'radio-change',
+    'checkbox-change',
+    'select',
+    'select-all',
     'change',
     'expand',
     'expandedRowsChange',
     'resizeColumn'
   ],
   setup(props, { emit, slots }) {
+    /**
+     * data
+     */
+    const state = reactive({
+      scroll: {},
+      selectedRowKeys: props.selectedValue
+    })
     /**
      * 默认值
      */
@@ -106,14 +119,25 @@ export default defineComponent({
         showQuickJumper: true,
         showTotal: total => `共 ${total} 条`,
         pageSizeOptions: ['20', '40', '60', '80', '100']
+      },
+      defaultRowSelection: {
+        type: 'checkbox',
+        fixed: true,
+        columnWidth: 50,
+        onChange: (selectedRowKeys, selectedRows) => {
+          state.selectedRowKeys = selectedRowKeys
+          emit('update:selected-value', selectedRowKeys)
+          emit('radio-change', selectedRowKeys, selectedRows)
+          emit('checkbox-change', selectedRowKeys, selectedRows)
+        },
+        onSelect: (record, selected, selectedRows, nativeEvent) => {
+          emit('select', record, selected, selectedRows, nativeEvent)
+        },
+        onSelectAll: (selected, selectedRows, changeRows) => {
+          emit('select-all', selected, selectedRows, changeRows)
+        }
       }
     }
-    /**
-     * data
-     */
-    const state = reactive({
-      scroll: {}
-    })
     /**
      * refs
      */
@@ -145,8 +169,18 @@ export default defineComponent({
     const getScroll = computed(() => mergeProps(state.scroll, props.scroll))
     const getPaginationConfig = computed(() => {
       return props.showPagination
-        ? mergeProps(defaultState.defaultPaginationConfig, props.paginationConfig, props.pagination)
+        ? mergeProps(defaultState.defaultPaginationConfig, props.paginationConfig, {
+            current: props.pagination.page,
+            pageSize: props.pagination.pageSize
+          })
         : false
+    })
+    const getRowSelection = computed(() => {
+      return props.rowSelection === true
+        ? defaultState.defaultRowSelection
+        : typeof props.rowSelection === 'object' && !isEmpty(props.rowSelection)
+        ? mergeProps(defaultState.defaultRowSelection, props.rowSelection)
+        : null
     })
     /**
      * methods
@@ -157,7 +191,7 @@ export default defineComponent({
       return [index % 2 === 1 ? 'table-striped' : null, result].filter(Boolean)
     }
     // 排序、筛选变化时触发
-    const handleChange = (pagination, filters, sorter, { currentDataSource }) => {
+    const handleChange = (pagination, filters, sorter, extra) => {
       // 分页
       if (!isEmpty(pagination)) {
         const { current, pageSize } = pagination
@@ -167,23 +201,24 @@ export default defineComponent({
         })
         emit('search')
       }
-      // 筛选
-      if (!isEmpty(filters)) {
+      const column = sorter?.column || {}
+      // 服务端筛选
+      if (!isEmpty(filters) && isEmpty(column.onFilter)) {
         emit('search', filters, 'filter')
       }
-      // 排序
-      if (!isEmpty(sorter)) {
-        const { column, order, field } = sorter
-        // 服务端排序
-        if (column?.sorter === true) {
+      // 服务端排序
+      if (!isEmpty(sorter) && column?.sorter === true) {
+        const { order, field } = sorter
+        if (!isEmpty(order)) {
           const sortBy = ['asc', 'desc']
             .map(v => order.includes(v) && order.slice(v.length).toUpperCase())
             .filter(Boolean)[0]
-          const sorts = order ? { sortBy, sortKey: field } : {}
-          emit('search', sorts, 'sort')
+          emit('search', { sortBy, sortKey: field }, 'sort')
+        } else {
+          emit('search', {}, 'sort')
         }
       }
-      emit('change', filters, sorter, { currentDataSource })
+      emit('change', filters, sorter, extra)
     }
 
     // 点击展开图标时触发
@@ -214,6 +249,7 @@ export default defineComponent({
       getTableSlots,
       getTransformCellText,
       getPaginationConfig,
+      getRowSelection,
       tableRef,
       handleRowClassName,
       handleChange,
