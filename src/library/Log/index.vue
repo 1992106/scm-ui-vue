@@ -1,12 +1,13 @@
 <template>
   <x-drawer
     v-bind="$attrs"
-    v-model:visible="logVisible"
+    v-model:visible="modalVisible"
     :title="title"
     :width="width"
     :spin-props="spinning"
+    :footer="null"
     destroy-on-close
-    @afterVisibleChange="handleClose">
+    @cancel="handleCancel">
     <a-timeline>
       <a-timeline-item v-for="item in data" :key="item?.id">
         <p>{{ formatTime(item?.createAt || item?.createdTime) || '-' }}</p>
@@ -20,7 +21,8 @@
   </x-drawer>
 </template>
 <script lang="ts">
-import { defineComponent, computed, reactive, toRefs } from 'vue'
+import { defineComponent, reactive, toRefs, watchEffect } from 'vue'
+import { Timeline, TimelineItem } from 'ant-design-vue'
 import XDrawer from '@components/Drawer'
 import { isFunction } from 'lodash-es'
 import { formatTime } from '@src/utils'
@@ -28,7 +30,9 @@ import { formatTime } from '@src/utils'
 export default defineComponent({
   name: 'XLog',
   components: {
-    'x-drawer': XDrawer
+    'x-drawer': XDrawer,
+    'a-timeline': Timeline,
+    'a-timeline-item': TimelineItem
   },
   inheritAttrs: false,
   props: {
@@ -40,26 +44,10 @@ export default defineComponent({
   emits: ['update:visible', 'done'],
   setup(props, { emit }) {
     const state = reactive({
+      modalVisible: props.visible,
       data: [],
       spinning: false
     })
-    const logVisible = computed({
-      get: () => {
-        if (props.visible) {
-          getLogData()
-        }
-        return props.visible
-      },
-      set: val => {
-        emit('update:visible', val)
-      }
-    })
-
-    const handleClose = visible => {
-      if (!visible) {
-        emit('done', false)
-      }
-    }
 
     const getLogData = async () => {
       const { customRequest } = props
@@ -71,10 +59,22 @@ export default defineComponent({
       state.data = data || []
     }
 
+    watchEffect(() => {
+      if (props.visible) {
+        getLogData()
+      }
+      state.modalVisible = props.visible
+    })
+
+    const handleCancel = () => {
+      state.modalVisible = false
+      emit('update:visible', false)
+      emit('done')
+    }
+
     return {
       ...toRefs(state),
-      logVisible,
-      handleClose,
+      handleCancel,
       formatTime
     }
   }

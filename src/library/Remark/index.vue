@@ -41,8 +41,8 @@
 </template>
 
 <script lang="ts">
-import { reactive, computed, toRefs, defineComponent } from 'vue'
-import { Form } from 'ant-design-vue'
+import { reactive, toRefs, defineComponent, watchEffect } from 'vue'
+import { Button, Form, FormItem, Textarea } from 'ant-design-vue'
 import XModal from '@components/Modal'
 import XTable from '@components/Table/index.vue'
 import XUpload from '@components/Upload/index.vue'
@@ -54,7 +54,11 @@ export default defineComponent({
   components: {
     'x-modal': XModal,
     'x-table': XTable,
-    'x-upload': XUpload
+    'x-upload': XUpload,
+    'a-form': Form,
+    'a-form-item': FormItem,
+    'a-textarea': Textarea,
+    'a-button': Button
   },
   inheritAttrs: false,
   props: {
@@ -72,19 +76,8 @@ export default defineComponent({
   },
   emits: ['update:visible', 'done'],
   setup(props, { emit }) {
-    const modalVisible = computed({
-      get: () => {
-        if (props.visible) {
-          handleSearch()
-        }
-        return props.visible
-      },
-      set: val => {
-        emit('update:visible', val)
-      }
-    })
-
     const state = reactive({
+      modalVisible: props.visible,
       spinning: false,
       confirmLoading: false,
       pagination: {
@@ -146,6 +139,13 @@ export default defineComponent({
       })
     }
 
+    watchEffect(() => {
+      if (props.visible) {
+        handleSearch()
+      }
+      state.modalVisible = props.visible
+    })
+
     const handleDownload = row => {
       const { url, fileName } = row || {}
       download(url, fileName)
@@ -173,9 +173,7 @@ export default defineComponent({
             ...(!isEmpty(modelRef.attachments) ? { resourcesIds: modelRef.attachments.map(val => val?.id) } : {})
           })
           state.confirmLoading = false
-          modalVisible.value = false
           handleCancel()
-          emit('done')
         })
         .catch(err => {
           console.error(err)
@@ -184,11 +182,13 @@ export default defineComponent({
 
     const handleCancel = () => {
       resetFields()
+      state.modalVisible = false
+      emit('update:visible', false)
+      emit('done')
     }
 
     return {
       ...toRefs(state),
-      modalVisible,
       tableOptions,
       handleSearch,
       handleDownload,

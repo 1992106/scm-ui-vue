@@ -29,7 +29,7 @@ export default defineComponent({
     // PDF配置
     fileName: { type: String, default: '' },
     // 在导出前的回调
-    onBefore: { type: Function, default: null }
+    onBefore: { type: Function }
   },
   emits: ['done'],
   setup(props, { emit }) {

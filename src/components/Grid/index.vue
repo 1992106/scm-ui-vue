@@ -536,6 +536,13 @@ export default defineComponent({
     }
   }
 
+  // 处理空格
+  :deep(.vxe-table--body) {
+    .vxe-body--column .vxe-cell {
+      white-space: pre !important;
+    }
+  }
+
   .ant-pagination {
     padding: 10px;
     text-align: right;

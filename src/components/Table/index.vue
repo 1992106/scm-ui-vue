@@ -39,11 +39,15 @@
 </template>
 <script>
 import { defineComponent, computed, mergeProps, ref, reactive, toRef, toRefs } from 'vue'
+import { Table } from 'ant-design-vue'
 import { useScroll } from './useScroll'
 import { isEmpty } from '@src/utils'
 
 export default defineComponent({
   name: 'XTable',
+  components: {
+    'a-table': Table
+  },
   inheritAttrs: false,
   props: {
     // 表格行 key 的取值

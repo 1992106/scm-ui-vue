@@ -22,7 +22,7 @@
 </template>
 <script>
 import { defineComponent, reactive, toRefs, watch, watchEffect } from 'vue'
-import { message } from 'ant-design-vue'
+import { message, Upload } from 'ant-design-vue'
 import { PlusOutlined } from '@ant-design/icons-vue'
 import XPreview from '@components/Preview/index.vue'
 import { isFunction } from 'lodash-es'
@@ -32,7 +32,8 @@ export default defineComponent({
   name: 'XUpload',
   components: {
     PlusOutlined,
-    'x-preview': XPreview
+    'x-preview': XPreview,
+    'a-upload': Upload
   },
   inheritAttrs: false,
   props: {

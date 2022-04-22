@@ -2,26 +2,26 @@
   overflow: hidden;
 
   .ant-modal {
-    top: 0 !important;
-    right: 0 !important;
-    bottom: 0 !important;
-    left: 0 !important;
     width: 100% !important;
-    height: 100%;
+    max-width: 100%;
+    top: 0;
     padding-bottom: 0;
+    margin: 0;
   }
 
   .ant-modal-content {
-    height: 100%;
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh);
 
     .ant-modal-body {
-      overflow-y: auto;
-      height: calc(100% - 110px);
+      flex: 1;
+      overflow-y: auto
     }
-  }
 
-  .ant-modal-header {
-    padding-right: 90px;
+    .ant-modal-header {
+      padding-right: 90px;
+    }
   }
 }
 

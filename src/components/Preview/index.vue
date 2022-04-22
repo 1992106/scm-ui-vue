@@ -7,9 +7,14 @@
 </template>
 <script lang="ts">
 import { computed, defineComponent, PropType, ref } from 'vue'
+import { Image, ImagePreviewGroup } from 'ant-design-vue'
 
 export default defineComponent({
   name: 'XPreview',
+  components: {
+    'a-image': Image,
+    'a-image-preview-group': ImagePreviewGroup
+  },
   inheritAttrs: false,
   props: {
     visible: { type: Boolean as PropType<boolean>, default: false },
