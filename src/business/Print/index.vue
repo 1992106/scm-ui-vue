@@ -21,8 +21,8 @@
 </template>
 <script lang="ts">
 import { defineComponent, ref } from 'vue'
-import XQrcode from '@library/Qrcode/index.vue'
-import XBarcode from '@library/Barcode/index.vue'
+import XQrcode from '@business/Qrcode/index.vue'
+import XBarcode from '@business/Barcode/index.vue'
 import print from './print'
 import { isFunction } from 'lodash-es'
 import { isPromise } from '@src/utils'
