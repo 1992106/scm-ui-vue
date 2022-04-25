@@ -86,13 +86,16 @@ export default ({ mode }) => {
     build.rollupOptions = {
       output: {
         inlineDynamicImports: true,
-        interop: 'esModule',
         exports: 'named',
         // 在 UMD 构建模式下为这些外部化的依赖提供一个全局变量
         globals: {
           vue: 'vue',
+          vuex: 'vuex',
+          'vue-router': 'vue-router',
           'ant-design-vue': 'ant-design-vue',
           '@ant-design/icons-vue': '@ant-design/icons-vue',
+          'vxe-table': 'vxe-table',
+          'vue-draggable-next': 'vue-draggable-next',
           dayjs: 'dayjs',
           'lodash-es': 'lodash-es',
           '@vueup/vue-quill': '@vueup/vue-quill',
@@ -100,13 +103,21 @@ export default ({ mode }) => {
           html2canvas: 'html2canvas',
           jsbarcode: 'jsbarcode',
           jspdf: 'jspdf',
-          'qrcodejs2-fix': 'qrcodejs2-fix',
-          'vue-draggable-next': 'vue-draggable-next',
-          'vxe-table': 'vxe-table'
+          'qrcodejs2-fix': 'qrcodejs2-fix'
         }
       },
       // 确保外部化处理那些你不想打包进库的依赖
-      external: ['vue', 'ant-design-vue', '@ant-design/icons-vue', 'lodash-es', 'vxe-table']
+      external: [
+        'vue',
+        'vuex',
+        'vue-router',
+        'ant-design-vue',
+        '@ant-design/icons-vue',
+        'vxe-table',
+        'vue-draggable-next',
+        'dayjs',
+        'lodash-es'
+      ]
     }
   }
 

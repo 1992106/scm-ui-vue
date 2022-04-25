@@ -51,7 +51,7 @@ export default defineComponent({
   inheritAttrs: false,
   props: {
     // 表格行 key 的取值
-    rowKey: { type: [String, Function], default: 'id' },
+    rowKey: { type: [String, Function], default: 'key' },
     // 自定义列
     columns: { type: Array, required: true, default: () => [] },
     // 表格数据

@@ -1,6 +1,6 @@
 {
   "name": "scm-ui-vue",
-  "version": "0.0.6-5",
+  "version": "0.0.6-6",
   "main": "dist/scm-ui-vue.umd.js",
   "module": "dist/scm-ui-vue.es.js",
   "unpkg": "dist/scm-ui-vue.umd.js",
@@ -31,7 +31,6 @@
     "@ant-design/icons-vue": "^6.1.0",
     "@vueup/vue-quill": "^1.0.0-alpha.1",
     "ant-design-vue": "^3.2.0",
-    "axios": "^0.26.1",
     "dayjs": "^1.11.0",
     "echarts": "^5.3.1",
     "html2canvas": "^1.4.1",
