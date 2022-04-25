@@ -1,7 +1,7 @@
 import JsPDF from 'jspdf'
 import html2canvas from 'html2canvas'
 
-const jsPDF = ({ el, fileName, handleAfter }) => {
+const jsPDF = ({ el, fileName, handleDone }) => {
   el.style.paddingLeft = '20px'
   el.style.paddingRight = '20px'
   html2canvas(el, {
@@ -21,8 +21,8 @@ const jsPDF = ({ el, fileName, handleAfter }) => {
 
     // 一页pdf显示html页面生成的canvas高度;
     const pageHeight = Math.floor((canvas.width / a4Width) * a4Height)
-    // 未生成pdf的html页面高度
-    let leftHeight = canvas.height
+    // 未生成pdf的html页面总高度
+    let totalHeight = canvas.height
     // 页面偏移
     let position = 0
     // html页面生成的canvas在pdf中图片的宽高
@@ -36,24 +36,24 @@ const jsPDF = ({ el, fileName, handleAfter }) => {
 
     // 有两个高度需要区分，一个是html页面的实际高度，和生成pdf的页面高度(841.89)
     // 当内容未超过pdf一页显示的范围，无需分页
-    if (leftHeight < pageHeight) {
+    if (totalHeight < pageHeight) {
       pdf.addImage(pageData, 'JPEG', 0, 0, a4Width, imgHeight)
     } else {
-      // TODO: 多页打印
-      while (leftHeight > 0) {
+      // 多页打印
+      while (totalHeight > 0) {
         pdf.addImage(pageData, 'JPEG', 0, position, a4Width, imgHeight)
-        leftHeight -= pageHeight
-        position -= 841.89
+        totalHeight -= pageHeight
+        position -= a4Height
         // 避免添加空白页
-        if (leftHeight > 0) {
+        if (totalHeight > 0) {
           pdf.addPage()
         }
       }
     }
     pdf.save(fileName)
     // 完成回调
-    if (handleAfter) {
-      handleAfter()
+    if (handleDone) {
+      handleDone()
     }
   })
 }

@@ -39,7 +39,7 @@ export default defineComponent({
     buttonText: { type: String, default: '打印' },
     buttonProps: { type: Object },
     // 打印配置
-    title: { type: String, default: '' },
+    title: { type: String },
     // 二维码
     qrcodeProps: { type: Object },
     // 条形码
@@ -81,7 +81,7 @@ export default defineComponent({
       print({
         el: printRef.value,
         title: props.title,
-        handleAfter: handleDone
+        handleDone
       })
     }
 

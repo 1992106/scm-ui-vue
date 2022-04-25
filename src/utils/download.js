@@ -14,6 +14,9 @@ const download = (url, fileName) => {
   aLink.href = url
   aLink.download = fileName || ''
   document.body.appendChild(aLink)
+  // const event = document.createEvent('MouseEvents') // 创建鼠标事件对象
+  // event.initEvent('click', false, false) //初始化事件对象
+  // aLink.dispatchEvent(event) // 给指定的元素，执行事件click事件
   aLink.click()
   document.body.removeChild(aLink)
 }

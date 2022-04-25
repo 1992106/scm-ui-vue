@@ -65,7 +65,7 @@ export default defineComponent({
       jsPDF({
         el: pdfRef.value,
         fileName: props.fileName,
-        handleAfter: handleDone
+        handleDone
       })
     }
 
