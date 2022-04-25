@@ -59,6 +59,7 @@ const XDrawer = defineComponent({
 
     return () => (
       <Drawer
+        {...props}
         {...ctx.attrs}
         visible={props.visible}
         class={['my-drawer', props.class]}
