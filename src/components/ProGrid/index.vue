@@ -35,6 +35,10 @@
     <template v-if="hasToolBar" #toolBar>
       <slot name="toolBar"></slot>
     </template>
+    <!--空数据-->
+    <template v-if="hasToolBar" #emptyText>
+      <slot name="emptyText"></slot>
+    </template>
     <!--插槽-->
     <template v-for="slot of getGridSlots" :key="slot" #[slot]="scope">
       <slot :name="slot" v-bind="scope"></slot>
@@ -91,7 +95,7 @@ export default defineComponent({
       return (columns || [])
         .filter(col => col.slots)
         .flatMap(col =>
-          ['default', 'header', 'footer', 'title', 'content', 'edit', 'filter', 'checkbox', 'radio']
+          ['default', 'header', 'footer', 'title', 'edit', 'filter', 'checkbox', 'radio', 'content']
             .map(val => col.slots[val])
             .filter(Boolean)
         )
@@ -115,7 +119,7 @@ export default defineComponent({
       () => props.value?.page,
       page => {
         if (page && page === 1) {
-          state.pagination.page = props.value?.page
+          state.pagination.page = 1
         }
       }
     )

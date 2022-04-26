@@ -1,5 +1,11 @@
 <template>
-  <x-table ref="xTable" auto-resize v-bind="tableProps" v-model:pagination="pagination" @search="handleQuery">
+  <x-table
+    ref="xTable"
+    auto-resize
+    :extra-height="12"
+    v-bind="tableProps"
+    v-model:pagination="pagination"
+    @search="handleQuery">
     <!--搜索栏-->
     <template v-if="hasSearchBar" #searchBar>
       <x-search
@@ -82,7 +88,8 @@ export default defineComponent({
           'expandIcon',
           'title',
           'footer',
-          'summary'
+          'summary',
+          'emptyText'
         ].includes(val)
       )
     })
@@ -105,7 +112,7 @@ export default defineComponent({
       () => props.value?.page,
       page => {
         if (page && page === 1) {
-          state.pagination.page = props.value?.page
+          state.pagination.page = 1
         }
       }
     )

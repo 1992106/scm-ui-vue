@@ -16,13 +16,13 @@
       :columns="getColumns"
       :data-source="dataSource"
       :loading="loading"
-      :empty-text="emptyText"
       :pagination="getPaginationConfig"
       :scroll="getScroll"
       :size="size"
       :locale="locale"
       :row-selection="getRowSelection"
       :row-class-name="handleRowClassName"
+      :components="components"
       :custom-row="customRow"
       :custom-header-row="customHeaderRow"
       :transform-cell-text="getTransformCellText"
@@ -58,13 +58,14 @@ export default defineComponent({
     dataSource: { type: Array, default: () => [] },
     loading: { type: [Boolean, Object], default: false },
     total: { type: Number, default: 0 },
-    emptyText: { type: String, default: '暂无数据' },
     transformCellText: { type: Function, default: null },
     // 页码
     showPagination: { type: Boolean, default: true },
     pagination: { type: Object, default: () => ({ page: 1, pageSize: 20 }) },
     paginationConfig: Object,
-    // 自动计算高度
+    // 额外高度
+    extraHeight: Number,
+    // 自动计算表格
     autoResize: { type: Boolean, default: false },
     // 横向/纵向滚动
     scroll: { type: Object, default: () => ({ scrollToFirstRowOnChange: true }) },
@@ -87,6 +88,7 @@ export default defineComponent({
     },
     // 默认文案设置，目前包括排序、过滤、空数据文案
     locale: { type: Object, default: () => ({ filterConfirm: '筛选', filterReset: '重置', emptyText: '暂无数据' }) },
+    components: Object,
     customRow: Function,
     customHeaderRow: Function
   },
@@ -161,7 +163,8 @@ export default defineComponent({
           'expandIcon',
           'summary',
           'title',
-          'footer'
+          'footer',
+          'emptyText'
         ].includes(val)
       )
     })
@@ -169,7 +172,7 @@ export default defineComponent({
       return props.transformCellText ? props.transformCellText : ({ text }) => (isEmpty(text) ? '--' : text)
     })
     // 自动计算表格的宽高
-    useScroll({ autoResize: props.autoResize, scroll: toRef(state, 'scroll') })
+    useScroll({ autoResize: props.autoResize, extraHeight: props.extraHeight, scroll: toRef(state, 'scroll') })
     const getScroll = computed(() => mergeProps(state.scroll, props.scroll))
     const getPaginationConfig = computed(() => {
       return props.showPagination

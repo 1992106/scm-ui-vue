@@ -1,7 +1,9 @@
 # XModal 对话框
 
 ## API
-> [antd-design-vue](https://www.antdv.com/components/modal-cn)
+
+> [Modal](https://www.antdv.com/components/modal-cn)
+
 ### Props
 
 | 参数 | 说明 | 类型 | 默认值 |
@@ -20,12 +22,14 @@
 | cancelButtonProps | cancel 按钮 props | Object | - |
 
 ### Emits
-```markdown
+
+```vue
 emits: ['update:visible', 'cancel', 'ok', 'fullScreen']
 ```
 
 ### Slots
-```markdown
+
+```vue
 <slot name="title"></slot>
 <slot name="footer"></slot>
 ```

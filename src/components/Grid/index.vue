@@ -15,6 +15,7 @@
     :scroll-x="getScrollX"
     :scroll-y="getScrollY"
     :height="height"
+    :auto-resize="autoResize"
     :row-config="getRowConfig"
     :column-config="getColumnConfig"
     :row-class-name="rowClassName"
@@ -27,6 +28,7 @@
     :sort-config="getSortConfig"
     :filter-config="getFilterConfig"
     :merge-cells="mergeCells"
+    :footer-method="footerMethod"
     :edit-config="getEditConfig"
     :valid-config="validConfig"
     :edit-rules="editRules"
@@ -74,16 +76,12 @@
           @change="handleSettingChange"></ColumnSetting>
       </template>
     </template>
-    <!--表格头部-->
-    <template #top>
-      <slot name="title"></slot>
-    </template>
-    <!--表格尾部-->
-    <template #bottom>
-      <slot name="footer"></slot>
+    <!--空数据-->
+    <template #empty>
+      <slot name="emptyText"></slot>
     </template>
     <!--slot-->
-    <template v-for="slot of getSlots" :key="slot" #[slot]="scope">
+    <template v-for="slot of getGridSlots" :key="slot" #[slot]="scope">
       <slot :name="slot" v-bind="scope"></slot>
     </template>
     <!--分页-->
@@ -128,6 +126,8 @@ export default defineComponent({
     paginationConfig: Object,
     // 高度
     height: [Number, String],
+    // 自动计算表格
+    autoResize: { type: Boolean, default: false },
     // 斑马纹
     stripe: { type: Boolean, default: true },
     // 行配置
@@ -136,18 +136,20 @@ export default defineComponent({
     columnConfig: Object,
     // 序号配置
     seqConfig: Object,
-    // 勾选项
-    selectedValue: { type: Array, default: () => [] },
     // 单选框配置
     radioConfig: Object,
     // 复选框配置
     checkboxConfig: Object,
+    // 勾选项
+    selectedValue: { type: Array, default: () => [] },
     // 排序配置
     sortConfig: Object,
     // 筛选配置
     filterConfig: Object,
-    // 合并单元格 (不能用于展开行，不建议用于固定列、树形结构)
+    // 合并指定的单元格 (不能用于展开行，不建议用于固定列、树形结构)
     mergeCells: Array,
+    // 表尾的数据获取方法，返回一个二维数组
+    footerMethod: Function,
     // 编辑配置
     editConfig: Object,
     // 校验配置项
@@ -176,7 +178,7 @@ export default defineComponent({
     customZoom: { type: Boolean, default: false },
     // 自定义设置
     customSetting: { type: Boolean, default: false },
-    // 本地Storage名称（拖拽列和自定义表头时需要本地储存）,
+    // 本地Storage名称，拖拽列和自定义表头时本地储存
     storageName: String
   },
   emits: [
@@ -211,8 +213,8 @@ export default defineComponent({
       },
       defaultRowConfig: { isHover: true, isCurrent: true },
       defaultColumnConfig: { resizable: true },
-      defaultRadioConfig: { labelField: '_', highlight: true, checkMethod: () => true },
-      defaultCheckboxConfig: { labelField: '_', highlight: true, checkMethod: () => true },
+      defaultRadioConfig: { highlight: true },
+      defaultCheckboxConfig: { highlight: true },
       defaultSortConfig: { remote: true },
       defaultFilterConfig: { remote: true },
       defaultEditConfig: { trigger: 'click', mode: 'cell', showStatus: true },
@@ -262,12 +264,12 @@ export default defineComponent({
       })
       return slots
     }
-    const getSlots = computed(() => {
+    const getGridSlots = computed(() => {
       const columns = generateSlots(props.columns)
       return (columns || [])
         .filter(col => col.slots)
         .flatMap(col =>
-          ['default', 'header', 'footer', 'edit', 'filter', 'title', 'checkbox', 'radio', 'content']
+          ['default', 'header', 'footer', 'title', 'edit', 'filter', 'checkbox', 'radio', 'content']
             .map(val => col.slots[val])
             .filter(Boolean)
         )
@@ -466,7 +468,7 @@ export default defineComponent({
       ...toRefs(state),
       hasSearchBar,
       hasToolBar,
-      getSlots,
+      getGridSlots,
       getPaginationConfig,
       getRowConfig,
       getColumnConfig,
@@ -525,6 +527,7 @@ export default defineComponent({
     }
   }
 
+  // 处理表头排序和筛选图标向右对齐
   :deep(.vxe-table--header) {
     .vxe-cell {
       display: flex;
@@ -536,7 +539,7 @@ export default defineComponent({
     }
   }
 
-  // 处理空格
+  // 处理表格内容空格显示
   :deep(.vxe-table--body) {
     .vxe-body--column .vxe-cell {
       white-space: pre !important;

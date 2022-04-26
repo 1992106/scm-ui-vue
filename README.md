@@ -1,6 +1,6 @@
 # scm-ui-vue
 
-vue3 + antd-design-vue + vxe-table
+[vue3](https://v3.cn.vuejs.org/) + [antd-design-vue](https://www.antdv.com/docs/vue/introduce-cn) + [vxe-table](https://vxetable.cn/v4/#/table/start/install)
 
 ## install and use
 
@@ -12,7 +12,7 @@ yarn add scm-ui-vue
 
 - use
 
-```vue
+```yarn
 import ScmUI form 'scm-ui-vue'
 
 app.use(ScmUI)
@@ -27,10 +27,10 @@ app.use(ScmUI)
 | IconFont | 字体图标 |
 | XImage | 图片 |
 | XPreview | 图片预览 |
-| XUpload | 上传文件/图片 |
+| XUpload | 上传 |
 | XSearch | 搜索栏 |
 | XDrawer | 抽屉 |
-| XLayout | 对话框 |
+| XLayout | 布局 |
 | XTabs | 标签页 |
 | XPage | 页面 |
 | XTable | 表格 |

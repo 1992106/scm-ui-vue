@@ -12,6 +12,9 @@ export default install
 
 export * from '@components/index'
 export * from '@business/index'
+
+// 函数调用
+export * from '@components/create'
 export * from '@business/create'
 
 // export { VXETablePluginSCM } from './plugins/VXETablePluginSCM'

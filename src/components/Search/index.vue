@@ -66,10 +66,6 @@ export default defineComponent({
   props: {
     // 自定义字段
     columns: { type: Array, required: true, default: () => [] },
-    // 重置搜索
-    resetSearch: { type: Boolean, default: true },
-    // 清空搜索
-    clearSearch: { type: Boolean, default: false },
     // 表单布局
     layout: {
       validator(value) {
@@ -81,12 +77,16 @@ export default defineComponent({
     labelCol: { type: Object, default: () => ({}) },
     // 控件布局
     wrapperCol: { type: Object, default: () => ({}) },
-    scrollToFirstError: { type: Boolean, default: true },
+    // 重置时是否触发搜索
+    resetSearch: { type: Boolean, default: true },
+    // 清空时是否触发搜索
+    clearSearch: { type: Boolean, default: false },
     // 按钮
     showSearch: { type: Boolean, default: true },
     searchText: { type: String, default: '搜索' },
     showReset: { type: Boolean, default: true },
     resetText: { type: String, default: '重置' },
+    // 展开/收起
     showExpand: { type: Boolean, default: false },
     defaultExpand: { type: Boolean, default: false }
   },

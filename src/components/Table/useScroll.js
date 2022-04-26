@@ -1,9 +1,9 @@
 import { onBeforeUnmount, onMounted } from 'vue'
 import { debounce } from 'lodash-es'
 
-export const useScroll = ({ autoResize, scroll }) => {
+export const useScroll = ({ autoResize, extraHeight, scroll }) => {
   const onResize = debounce(() => {
-    scroll.value = getTableScroll()
+    scroll.value = getTableScroll({ extraHeight })
   }, 200)
 
   onMounted(() => {
@@ -28,7 +28,7 @@ export const getTableScroll = ({ id, extraHeight } = {}) => {
     tHeader = document.querySelector('.my-table .ant-table .ant-table-header')
   }
   if (typeof extraHeight === 'undefined') {
-    extraHeight = 10 // 页面内边距或外边距
+    extraHeight = 0 // 页面内边距或外边距
   }
   // 表格内容距离顶部的距离
   let tHeaderBottom = 0
@@ -49,7 +49,7 @@ export const getTableScroll = ({ id, extraHeight } = {}) => {
   // 空数据时，设置高度
   const emptyEl = document.querySelector('.my-table .ant-table-empty  .ant-table-body .ant-table-placeholder')
   if (emptyEl) {
-    emptyEl.style.height = height
+    emptyEl.style.height = `calc(100vh - ${tHeaderBottom + paginationHeight + extraHeight + 12}px)`
   }
 
   return { x: 'max-content', y: height }
