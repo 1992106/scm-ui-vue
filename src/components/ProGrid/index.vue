@@ -36,7 +36,7 @@
       <slot name="toolBar"></slot>
     </template>
     <!--空数据-->
-    <template v-if="hasToolBar" #emptyText>
+    <template #emptyText>
       <slot name="emptyText"></slot>
     </template>
     <!--插槽-->
