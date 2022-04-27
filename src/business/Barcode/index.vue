@@ -1,5 +1,5 @@
 <template>
-  <img ref="barcode" alt="条形码" />
+  <img ref="elBarcode" alt="条形码" />
   <p v-if="displayValue" style="text-align: center; font-size: 20px; margin-top: -6px; color: #000">
     {{ text || code }}
   </p>
@@ -11,22 +11,23 @@ import JsBarcode from 'jsbarcode'
 
 export default defineComponent({
   name: 'XBarcode',
+  inheritAttrs: false,
   props: {
     code: { type: String, require: true },
-    format: { type: String, default: 'CODE128' },
-    width: { type: Number, default: 2 },
-    height: { type: Number, default: 40 },
-    text: { type: String },
+    format: { type: String, default: 'CODE128' }, // 条形码类型
+    width: { type: Number, default: 2 }, // 条之间的宽度
+    height: { type: Number, default: 40 }, // 高度
+    text: { type: String }, // 显示的文字，默认显示code
     lineColor: { type: String, default: '#000' },
-    displayValue: { type: Boolean, default: true }
+    displayValue: { type: Boolean, default: true } // 是否显示条形码下面的文字
   },
   setup(props) {
-    const barcode = ref(null)
+    const elBarcode = ref(null)
     const getBarCode = () => {
-      JsBarcode(barcode.value, props.code, {
-        format: props.format,
+      JsBarcode(elBarcode.value, props.code, {
         width: props.width,
         height: props.height,
+        format: props.format,
         lineColor: props.lineColor,
         displayValue: false
       })
@@ -43,7 +44,7 @@ export default defineComponent({
       }
     )
     return {
-      barcode,
+      elBarcode,
       getBarCode
     }
   }

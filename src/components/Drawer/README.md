@@ -14,9 +14,9 @@
 | confirmLoading | 确定按钮 loading | Boolean | `false` |
 | okText | ok 按钮文字 | String | `确定` |
 | okType | ok 按钮类型 | String | `primary` |
-| okButtonProps | ok 按钮 props | Object | - |
+| okButtonProps | ok 按钮 props | Object | `-` |
 | cancelText | cancel 按钮文字 | String | `取消` |
-| cancelButtonProps | cancel 按钮 props | Object | - |
+| cancelButtonProps | cancel 按钮 props | Object | `-` |
 
 ### Emits
 

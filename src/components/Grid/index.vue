@@ -1,6 +1,6 @@
 <template>
   <vxe-grid
-    ref="gridRef"
+    ref="xGrid"
     class="my-grid"
     align="center"
     border
@@ -130,27 +130,27 @@ export default defineComponent({
     autoResize: { type: Boolean, default: false },
     // 斑马纹
     stripe: { type: Boolean, default: true },
-    // 行配置
+    // 行配置项
     rowConfig: Object,
-    // 列配置
+    // 列配置项
     columnConfig: Object,
-    // 序号配置
+    // 序号配置项
     seqConfig: Object,
-    // 单选框配置
+    // 单选框配置项
     radioConfig: Object,
-    // 复选框配置
+    // 复选框配置项
     checkboxConfig: Object,
     // 勾选项
     selectedValue: { type: Array, default: () => [] },
-    // 排序配置
+    // 排序配置项
     sortConfig: Object,
-    // 筛选配置
+    // 筛选配置项
     filterConfig: Object,
     // 合并指定的单元格 (不能用于展开行，不建议用于固定列、树形结构)
     mergeCells: Array,
     // 表尾的数据获取方法，返回一个二维数组
     footerMethod: Function,
-    // 编辑配置
+    // 编辑配置项
     editConfig: Object,
     // 校验配置项
     validConfig: Object,
@@ -253,7 +253,7 @@ export default defineComponent({
     /**
      * refs
      */
-    const gridRef = ref(null)
+    const xGrid = ref(null)
     /**
      * 计算属性
      */
@@ -296,7 +296,7 @@ export default defineComponent({
       }
       emit('update:pagination', pagination)
       emit('search')
-      // gridRef.value.loadData()
+      // xGrid.value.loadData()
     }
     const handleShowSizeChange = (_, pageSize) => {
       const pagination = {
@@ -305,7 +305,7 @@ export default defineComponent({
       }
       emit('update:pagination', pagination)
       emit('search')
-      // gridRef.value.loadData()
+      // xGrid.value.loadData()
     }
     // 单选
     const handleRadioChange = ({ row, rowIndex, $rowIndex, column, columnIndex, $columnIndex, $event }) => {
@@ -343,15 +343,14 @@ export default defineComponent({
     }
     // 全选
     const handleCheckboxAll = ({ records, reserves, indeterminates, checked, $event }) => {
-      const $xGrid = unref(gridRef)
+      const $xGrid = unref(xGrid)
       emit('update:selected-value', $xGrid.getCheckboxRecords())
       emit('checkbox-all', { records, reserves, indeterminates, checked, $event })
-      // gridRef.value.reloadData()
     }
     // 监听selectedValue，如果为空，清空勾选
     watchEffect(() => {
       if (isEmpty(props.selectedValue)) {
-        const $xGrid = unref(gridRef)
+        const $xGrid = unref(xGrid)
         $xGrid?.clearCheckboxRow() // 清空勾选
         $xGrid?.clearRadioRow() // 清空单选框
       }
@@ -364,7 +363,7 @@ export default defineComponent({
     const handleEditClosed = ({ row, rowIndex, $rowIndex, column, columnIndex, $columnIndex }) => {
       const field = column.property
       // 判断单元格值是否被修改
-      const $xGrid = unref(gridRef)
+      const $xGrid = unref(xGrid)
       if ($xGrid.isUpdateByRow(row, field)) {
         emit('edit-closed', { row, field, rowIndex, $rowIndex, column, columnIndex, $columnIndex })
         // $xGrid.reloadRow(row, null, field)
@@ -389,7 +388,7 @@ export default defineComponent({
       if (getFilterConfig.value?.remote) {
         emit('search', filters, 'filter')
       }
-      // gridRef.value.loadData()
+      // xGrid.value.loadData()
     }
     // 筛选面板显示隐藏
     const handleFilterVisible = ({ column, property, visible, filterList, $event }) => {
@@ -445,7 +444,7 @@ export default defineComponent({
     }
     // 配置列
     const handleSettingChange = columns => {
-      const $xGrid = unref(gridRef)
+      const $xGrid = unref(xGrid)
       state.customColumns = columns
       $xGrid.reloadColumn(columns)
       setColumnsToStorage()
@@ -480,7 +479,7 @@ export default defineComponent({
       getScrollX,
       getScrollY,
       getTreeConfig,
-      gridRef,
+      xGrid,
       handlePageChange,
       handleShowSizeChange,
       handleRadioChange,

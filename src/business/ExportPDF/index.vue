@@ -8,7 +8,7 @@
         </template>
       </a-button>
     </template>
-    <div ref="pdfRef" class="export-pdf-content">
+    <div ref="elExportPDF" class="export-pdf-content">
       <slot></slot>
     </div>
   </div>
@@ -21,19 +21,20 @@ import { isPromise } from '@src/utils'
 
 export default defineComponent({
   name: 'XExportPDF',
+  inheritAttrs: false,
   props: {
-    // 打印按钮
+    // 导出按钮
     showButton: { type: Boolean, default: true },
     buttonText: { type: String, default: '导出PDF' },
     buttonProps: { type: Object },
-    // PDF配置
+    // PDF文件名
     fileName: { type: String, default: '' },
-    // 在导出前的回调
+    // 导出前的回调
     onBefore: { type: Function }
   },
   emits: ['done'],
   setup(props, { emit }) {
-    const pdfRef = ref(null)
+    const elExportPDF = ref(null)
 
     const handleClick = () => {
       let result = null
@@ -63,14 +64,14 @@ export default defineComponent({
 
     const handlePDF = () => {
       jsPDF({
-        el: pdfRef.value,
+        el: elExportPDF.value,
         fileName: props.fileName,
         handleDone
       })
     }
 
     return {
-      pdfRef,
+      elExportPDF,
       handleClick
     }
   }

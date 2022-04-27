@@ -1,5 +1,6 @@
 import { onBeforeUnmount, onMounted } from 'vue'
 import { debounce } from 'lodash-es'
+import { getScrollBarSize } from '@src/utils'
 
 export const useScroll = ({ autoResize, extraHeight, scroll }) => {
   const onResize = debounce(() => {
@@ -49,7 +50,8 @@ export const getTableScroll = ({ id, extraHeight } = {}) => {
   // 空数据时，设置高度
   const emptyEl = document.querySelector('.my-table .ant-table-empty  .ant-table-body .ant-table-placeholder')
   if (emptyEl) {
-    emptyEl.style.height = `calc(100vh - ${tHeaderBottom + paginationHeight + extraHeight + 12}px)`
+    const scrollBarWidth = getScrollBarSize()
+    emptyEl.style.height = `calc(100vh - ${tHeaderBottom + paginationHeight + extraHeight + scrollBarWidth}px)`
   }
 
   return { x: 'max-content', y: height }

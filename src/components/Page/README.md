@@ -8,7 +8,7 @@
 
 | 参数 | 说明 | 类型 | 默认值 |
 | --- | --- | --- | --- |
-| v-model:value | 搜索参数，包含分页、排序和筛选参数 | Object | - |
+| v-model:value | 搜索参数，包含分页、排序和筛选参数 | Object | `-` |
 | searchProps | XSearch props | Object | `{}` |
 
 #### searchProps

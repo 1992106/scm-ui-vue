@@ -16,8 +16,8 @@
 | transformCellText | 单元格自定义显示，一般用于空数据默认显示 | Function | `--` |
 | showPagination | 是否显示分页 | Boolean | `true` |
 | v-model:pagination | 当前页数和每页条数 | Object | `{ page: 1, pageSize: 20 }` |
-| paginationConfig | 分页配置 | Object | `{ size: 'default', defaultPageSize: 20, showSizeChanger: true, showQuickJumper: true, showTotal: total => `共 ${total} 条`, pageSizeOptions: ['20', '40', '60', '80', '100'] }` |
-| extraHeight | 额外高度 | Number | - |
+| paginationConfig | 分页配置项 | Object | `{ size: 'default', defaultPageSize: 20, showSizeChanger: true, showQuickJumper: true, showTotal: total => `共 ${total} 条`, pageSizeOptions: ['20', '40', '60', '80', '100'] }` |
+| extraHeight | 额外高度 | Number | `-` |
 | autoResize | 自动计算表格 | Boolean | `false` |
 | scroll | 表格是否可滚动，也可以指定滚动区域的宽、高 | Object | `{ scrollToFirstRowOnChange: true }` |
 | rowSelection | 列表项是否可选择 | Object | `{ type: 'checkbox', fixed: true, columnWidth: 50 }` |

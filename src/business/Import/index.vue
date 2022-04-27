@@ -6,7 +6,8 @@
     :width="width"
     :spin-props="spinning"
     destroy-on-close
-    :footer="null">
+    :footer="null"
+    @cancel="handleCancel">
     <div>
       一、请按照数据模式的格式准备导入数据，模版中的表头名称不可更改及删除，每次限制导入
       {{ limit }}
@@ -39,19 +40,22 @@
   </x-modal>
 </template>
 <script lang="ts">
-import { computed, defineComponent, reactive, toRefs } from 'vue'
+import { defineComponent, reactive, toRefs, watchEffect } from 'vue'
+import { Button, Upload } from 'ant-design-vue'
 import { UploadOutlined } from '@ant-design/icons-vue'
 import XModal from '@components/Modal'
 import { isFunction } from 'lodash-es'
 import { importFile } from './import'
-import { download } from '@src/utils'
 
 export default defineComponent({
   name: 'XImport',
   components: {
     UploadOutlined,
-    'x-modal': XModal
+    'x-modal': XModal,
+    'a-upload': Upload,
+    'a-button': Button
   },
+  inheritAttrs: false,
   props: {
     title: { type: String, default: '导入数据' },
     width: { type: Number, default: 520 },
@@ -63,18 +67,14 @@ export default defineComponent({
   },
   emits: ['update:visible', 'done'],
   setup(props, { emit }) {
-    const modalVisible = computed({
-      get: () => {
-        return props.visible
-      },
-      set: val => {
-        emit('update:visible', val)
-      }
-    })
-
     const state = reactive({
+      modalVisible: props.visible,
       spinning: false,
       loading: false
+    })
+
+    watchEffect(() => {
+      state.modalVisible = props.visible
     })
 
     const handleImport = async data => {
@@ -82,7 +82,7 @@ export default defineComponent({
       if (!isFunction(customImport)) return
       state.spinning = true
       await importFile(customImport, data, () => {
-        modalVisible.value = false
+        handleCancel()
         emit('done')
       })
       state.spinning = false
@@ -92,16 +92,20 @@ export default defineComponent({
       const { customDownload } = props
       if (!isFunction(customDownload)) return
       state.loading = true
-      const data = await customDownload()
+      await customDownload()
       state.loading = false
-      download(data?.url, data?.name)
+    }
+
+    const handleCancel = () => {
+      state.modalVisible = false // 使用函数方法调用时，需要手动关闭
+      emit('update:visible', false)
     }
 
     return {
       ...toRefs(state),
-      modalVisible,
       handleImport,
-      handleDownload
+      handleDownload,
+      handleCancel
     }
   }
 })

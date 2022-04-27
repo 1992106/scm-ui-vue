@@ -31,7 +31,7 @@
       </a-form-item>
       <a-form-item>
         <x-upload
-          v-model:fileList="modelRef.attachments"
+          v-model:file-list="modelRef.attachments"
           :customRequest="customUpload"
           :size="size"
           :limit="limit"></x-upload>
@@ -64,12 +64,12 @@ export default defineComponent({
   props: {
     title: { type: String, default: '备注' },
     width: { type: [String, Number], default: 960 },
-    height: { type: Number, default: 400 },
+    scrollY: { type: Number, default: 400 },
+    maxlength: { type: Number, default: 200 },
     visible: { type: Boolean, default: false },
     customRequest: { type: Function, require: true },
     customSubmit: { type: Function },
     customUpload: { type: Function },
-    maxlength: { type: Number, default: 200 },
     size: { type: Number, default: 3 },
     limit: { type: Number, default: 1 },
     showPagination: { type: Boolean, default: false }
@@ -88,7 +88,7 @@ export default defineComponent({
 
     const tableOptions = reactive({
       scroll: {
-        y: props.height
+        y: props.scrollY
       },
       size: 'small',
       columns: [
@@ -162,6 +162,12 @@ export default defineComponent({
 
     const { resetFields, validate, validateInfos } = Form.useForm(modelRef, rulesRef)
 
+    const handleCancel = () => {
+      resetFields()
+      state.modalVisible = false // 使用函数方法调用时，需要手动关闭
+      emit('update:visible', false)
+    }
+
     const handleOk = async () => {
       const { customSubmit } = props
       if (!isFunction(customSubmit)) return
@@ -174,17 +180,11 @@ export default defineComponent({
           })
           state.confirmLoading = false
           handleCancel()
+          emit('done')
         })
         .catch(err => {
           console.error(err)
         })
-    }
-
-    const handleCancel = () => {
-      resetFields()
-      state.modalVisible = false
-      emit('update:visible', false)
-      emit('done')
     }
 
     return {

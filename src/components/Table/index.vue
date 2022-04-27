@@ -9,7 +9,7 @@
       <slot name="toolBar"></slot>
     </div>
     <a-table
-      ref="tableRef"
+      ref="xTable"
       bordered
       v-bind="$attrs"
       :row-key="rowKey"
@@ -69,7 +69,7 @@ export default defineComponent({
     autoResize: { type: Boolean, default: false },
     // 横向/纵向滚动
     scroll: { type: Object, default: () => ({ scrollToFirstRowOnChange: true }) },
-    // 选择功能的配置
+    // 选择功能的配置项
     rowSelection: { type: [Boolean, Object] },
     // 勾选项
     selectedValue: { type: Array, default: () => [] },
@@ -147,7 +147,7 @@ export default defineComponent({
     /**
      * refs
      */
-    const tableRef = ref(null)
+    const xTable = ref(null)
     /**
      * computed
      */
@@ -257,7 +257,7 @@ export default defineComponent({
       getTransformCellText,
       getPaginationConfig,
       getRowSelection,
-      tableRef,
+      xTable,
       handleRowClassName,
       handleChange,
       handleExpand,

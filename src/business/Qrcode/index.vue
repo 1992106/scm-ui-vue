@@ -1,34 +1,35 @@
 <template>
-  <div ref="qrcodeRef"></div>
+  <div ref="elQrcode"></div>
 </template>
 <script>
 import { defineComponent, nextTick, ref, watch } from 'vue'
-import QRCode from 'qrcodejs2-fix'
+import JsQrcode from 'qrcodejs2-fix'
 export default defineComponent({
   name: 'XQrcode',
+  inheritAttrs: false,
   props: {
     code: { type: [String, Number], require: true },
     width: { type: Number, default: 120 },
     height: { type: Number, default: 120 },
+    correctLevel: { type: String, default: 'L' },
     colorDark: { type: String, default: '#000' },
-    colorLight: { type: String, default: '#fff' },
-    correctLevel: { type: String, default: 'L' }
+    colorLight: { type: String, default: '#fff' }
   },
   setup(props) {
-    const qrcodeRef = ref(null)
+    const elQrcode = ref(null)
 
     const generateQRCode = () => {
       // 生成二维码先清空旧的
-      if (qrcodeRef.value) {
-        qrcodeRef.value.innerHTML = ''
+      if (elQrcode.value) {
+        elQrcode.value.innerHTML = ''
       }
-      new QRCode(qrcodeRef.value, {
+      new JsQrcode(elQrcode.value, {
         text: props.code,
         width: props.width,
         height: props.height,
         colorDark: props.colorDark,
         colorLight: props.colorLight,
-        correctLevel: QRCode?.CorrectLevel.L
+        correctLevel: JsQrcode?.CorrectLevel[props.correctLevel]
       })
     }
 
@@ -45,7 +46,7 @@ export default defineComponent({
     )
 
     return {
-      qrcodeRef
+      elQrcode
     }
   }
 })

@@ -7,7 +7,8 @@
     :spin-props="spinning"
     :footer="null"
     destroy-on-close
-    @cancel="handleCancel">
+    @cancel="handleCancel"
+    @ok="handleOk">
     <a-timeline>
       <a-timeline-item v-for="item in data" :key="item?.id">
         <p>{{ formatTime(item?.createAt || item?.createdTime) || '-' }}</p>
@@ -67,13 +68,18 @@ export default defineComponent({
     })
 
     const handleCancel = () => {
-      state.modalVisible = false
+      state.modalVisible = false // 使用函数方法调用时，需要手动关闭
       emit('update:visible', false)
+    }
+
+    const handleOk = () => {
+      handleCancel()
       emit('done')
     }
 
     return {
       ...toRefs(state),
+      handleOk,
       handleCancel,
       formatTime
     }

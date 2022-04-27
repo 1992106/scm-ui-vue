@@ -8,7 +8,7 @@
 
 | 参数 | 说明 | 类型 | 默认值 |
 | --- | --- | --- | --- |
-| v-model:value | 搜索参数，包含分页、排序和筛选参数 | Object | - |
+| v-model:value | 搜索参数，包含分页、排序和筛选参数 | Object | `-` |
 | searchProps | XSearch props | Object | `{}` |
 | gridProps | XGrid props | Object | `{}` |
 
@@ -40,20 +40,20 @@
 | emptyText | 空数据显示的内容 | Function | `暂无数据` |
 | showPagination | 是否显示分页 | Boolean | `true` |
 | v-model:pagination | 当前页数和每页条数 | Object | `{ page: 1, pageSize: 20 }` |
-| paginationConfig | 分页配置 | Object | `{ size: 'default', defaultPageSize: 20, showSizeChanger: true, showQuickJumper: true, showTotal: total => `共 ${total} 条`, pageSizeOptions: ['20', '40', '60', '80', '100'] }` |
+| paginationConfig | 分页配置项 | Object | `{ size: 'default', defaultPageSize: 20, showSizeChanger: true, showQuickJumper: true, showTotal: total => `共 ${total} 条`, pageSizeOptions: ['20', '40', '60', '80', '100'] }` |
 | height | 表格高度 | [Number, String] | `auto` |
 | autoResize | 表格高度 | Boolean | `true` |
 | rowConfig | 行配置项 | Object | `{ isHover: true, isCurrent: true }` |
 | columnConfig | 列配置项 | Object | `{ resizable: true }` |
-| seqConfig | 序号配置项 | Object | - |
+| seqConfig | 序号配置项 | Object | `-` |
 | radioConfig | 单选框配置项 | Object | `{ highlight: true }` |
 | checkboxConfig | 复选框配置项 | Object | `{ highlight: true }` |
 | v-model:selectedValue | 勾选数据，行数据 | Array | `[]` |
-| mergeCells | 自定义缩放 | Array | - |
-| footerMethod | 自定义缩放 | Function | - |
+| mergeCells | 自定义缩放 | Array | `-` |
+| footerMethod | 自定义缩放 | Function | `-` |
 | customZoom | 自定义缩放 | Boolean | `true` |
 | customSetting | 自定义设置 | Boolean | `true` |
-| storageName | 本地Storage名称，拖拽列和自定义表头时本地储存 | String | - |
+| storageName | 本地Storage名称，拖拽列和自定义表头时本地储存 | String | `-` |
 
 ### Emits
 

@@ -8,10 +8,11 @@
     :show-upload-list="showUploadList"
     :before-upload="beforeUpload"
     :custom-request="handleCustomRequest"
-    @change="handleRemove"
+    @change="handleChange"
+    @remove="handleRemove"
     @preview="handlePreview"
     @download="handleDownload">
-    <div v-if="showUploadBtn && (!limit || files.length < limit)">
+    <div v-if="mode === 'upload' && (!limit || files.length < limit)">
       <slot>
         <PlusOutlined />
       </slot>
@@ -26,7 +27,7 @@ import { message, Upload } from 'ant-design-vue'
 import { PlusOutlined } from '@ant-design/icons-vue'
 import XPreview from '@components/Preview/index.vue'
 import { isFunction } from 'lodash-es'
-import { isEmpty, downloadFile } from '@src/utils'
+import { isEmpty, downloadByUrl } from '@src/utils'
 
 export default defineComponent({
   name: 'XUpload',
@@ -40,13 +41,13 @@ export default defineComponent({
     fileList: { type: Array, default: () => [], required: true },
     customRequest: { type: Function },
     listType: { type: String, default: 'picture-card' },
-    showUploadBtn: { type: [Boolean, Object], default: true },
     showUploadList: { type: [Boolean, Object], default: true },
     accept: { type: String, default: 'image/*' },
+    mode: { type: String, default: 'upload' },
     size: { type: Number },
     limit: { type: Number }
   },
-  emits: ['update:fileList', 'change'],
+  emits: ['update:fileList', 'change', 'preview', 'remove'],
   setup(props, { emit }) {
     const state = reactive({
       files: [],
@@ -64,6 +65,7 @@ export default defineComponent({
         props.accept.includes(val)
       )
     }
+
     // 上传前校验
     const beforeUpload = file => {
       // 格式
@@ -119,12 +121,12 @@ export default defineComponent({
           if (index !== -1) {
             state.files.splice(index, 1)
           }
-        }, 1000)
+        }, 500)
       }
     }
 
-    // 移除图片
-    const handleRemove = data => {
+    // 上传文件改变时的状态
+    const handleChange = data => {
       const { file, fileList } = data
       if (file.status === 'removed') {
         state.files = fileList.filter(val => val.status === 'done')
@@ -141,7 +143,6 @@ export default defineComponent({
       if (props.listType === 'text' && props.showUploadList?.showPreviewIcon === false) {
         return false
       }
-      console.log(state.files, file, 9999)
       const list = state.files.filter(val => val.status === 'done')
       state.previewCurrent = list.findIndex(v => v.id === file.id)
       state.previewVisible = true
@@ -150,7 +151,7 @@ export default defineComponent({
     // 下载图片
     const handleDownload = file => {
       message.info('正在下载中...')
-      downloadFile(file.url, file.name)
+      downloadByUrl(file.url, file.name)
     }
 
     watch(
@@ -182,7 +183,7 @@ export default defineComponent({
       ...toRefs(state),
       beforeUpload,
       handleCustomRequest,
-      handleRemove,
+      handleChange,
       handlePreview,
       handleDownload
     }

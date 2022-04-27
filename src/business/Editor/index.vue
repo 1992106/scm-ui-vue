@@ -14,6 +14,7 @@ export default defineComponent({
   components: {
     QuillEditor
   },
+  inheritAttrs: false,
   setup: () => {
     const editorRef = ref()
     const state = reactive({

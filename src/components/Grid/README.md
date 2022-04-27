@@ -15,20 +15,20 @@
 | emptyText | 空数据显示的内容 | Function | `暂无数据` |
 | showPagination | 是否显示分页 | Boolean | `true` |
 | v-model:pagination | 当前页数和每页条数 | Object | `{ page: 1, pageSize: 20 }` |
-| paginationConfig | 分页配置 | Object | `{ size: 'default', defaultPageSize: 20, showSizeChanger: true, showQuickJumper: true, showTotal: total => `共 ${total} 条`, pageSizeOptions: ['20', '40', '60', '80', '100'] }` |
-| height | 表格高度 | [Number, String] | - |
+| paginationConfig | 分页配置项 | Object | `{ size: 'default', defaultPageSize: 20, showSizeChanger: true, showQuickJumper: true, showTotal: total => `共 ${total} 条`, pageSizeOptions: ['20', '40', '60', '80', '100'] }` |
+| height | 表格高度 | [Number, String] | `-` |
 | autoResize | 表格高度 | Boolean | `false` |
 | rowConfig | 行配置项 | Object | `{ isHover: true, isCurrent: true }` |
 | columnConfig | 列配置项 | Object | `{ resizable: true }` |
-| seqConfig | 序号配置项 | Object | - |
+| seqConfig | 序号配置项 | Object | `-` |
 | radioConfig | 单选框配置项 | Object | `{ highlight: true }` |
 | checkboxConfig | 复选框配置项 | Object | `{ highlight: true }` |
 | v-model:selectedValue | 勾选数据，行数据 | Array | `[]` |
-| mergeCells | 自定义缩放 | Array | - |
-| footerMethod | 自定义缩放 | Function | - |
+| mergeCells | 自定义缩放 | Array | `-` |
+| footerMethod | 自定义缩放 | Function | `-` |
 | customZoom | 自定义缩放 | Boolean | `false` |
 | customSetting | 自定义设置 | Boolean | `false` |
-| storageName | 本地Storage名称，拖拽列和自定义表头时本地储存 | String | - |
+| storageName | 本地Storage名称，拖拽列和自定义表头时本地储存 | String | `-` |
 
 ### Emits
 

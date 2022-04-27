@@ -4,7 +4,7 @@ import { isEmpty } from '@utils/lang'
 const { request } = myFetch
 
 /**
- * 下载图片
+ * 下载图片/文件
  * @param url
  * @param fileName
  */
@@ -21,6 +21,12 @@ const download = (url, fileName) => {
   document.body.removeChild(aLink)
 }
 
+/**
+ * 下载图片/文件-文件流
+ * @param content
+ * @param fileName
+ * @param type
+ */
 const downloadByBlob = (content, fileName, type) => {
   const blob = new Blob([content], { type: type })
   // 生成ObjectURL
@@ -32,16 +38,16 @@ const downloadByBlob = (content, fileName, type) => {
 }
 
 /**
- * 下载图片/文件
+ * 下载图片/文件-资源url
  * @param url
  * @param fileName
  * @returns {Promise<void>}
  */
-const downloadFile = async (url, fileName) => {
+const downloadByUrl = async (url, fileName) => {
   const res = await fetch(url, {
     method: 'GET',
     responseType: 'blob',
-    mode: 'cors', // 默认值
+    mode: 'cors',
     cache: 'no-cache'
   }).then(res => {
     return res.blob()
@@ -103,4 +109,4 @@ const compressImage = async (src, width, height, quality = 0.5) => {
   })
 }
 
-export { download, downloadFile, exportFile, compressImage }
+export { download, downloadByBlob, downloadByUrl, exportFile, compressImage }

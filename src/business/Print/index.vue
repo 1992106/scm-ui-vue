@@ -9,7 +9,7 @@
       </a-button>
     </template>
     <div style="display: none">
-      <div ref="printRef" class="print-dialog">
+      <div ref="elPrint" class="print-dialog">
         <x-qrcode v-if="qrcodeProps" v-bind="qrcodeProps"></x-qrcode>
         <x-barcode v-if="barcodeProps" v-bind="barcodeProps"></x-barcode>
         <div class="print-content">
@@ -33,23 +33,24 @@ export default defineComponent({
     'x-qrcode': XQrcode,
     'x-barcode': XBarcode
   },
+  inheritAttrs: false,
   props: {
     // 打印按钮
     showButton: { type: Boolean, default: true },
     buttonText: { type: String, default: '打印' },
     buttonProps: { type: Object },
-    // 打印配置
-    title: { type: String },
     // 二维码
     qrcodeProps: { type: Object },
     // 条形码
     barcodeProps: { type: Object },
+    // 打印页头
+    title: { type: String },
     // 在打印前的回调
     onBefore: { type: Function, default: null }
   },
   emits: ['done'],
   setup(props, { emit }) {
-    const printRef = ref(null)
+    const elPrint = ref(null)
 
     const handleClick = () => {
       let result = null
@@ -79,14 +80,14 @@ export default defineComponent({
 
     const printf = () => {
       print({
-        el: printRef.value,
+        el: elPrint.value,
         title: props.title,
         handleDone
       })
     }
 
     return {
-      printRef,
+      elPrint,
       handleClick
     }
   }

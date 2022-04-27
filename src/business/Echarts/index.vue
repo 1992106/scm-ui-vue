@@ -1,5 +1,5 @@
 <template>
-  <div ref="echartsRef" class="my-echarts"></div>
+  <div ref="elEcharts" class="my-echarts"></div>
 </template>
 <script>
 import { defineComponent, markRaw, onMounted, onUnmounted, ref, watch } from 'vue'
@@ -23,6 +23,7 @@ import { BarChart, LineChart, PieChart, ScatterChart } from 'echarts/charts'
 
 export default defineComponent({
   name: 'XEcharts',
+  inheritAttrs: false,
   props: {
     options: { type: Object, default: () => ({}) },
     components: { type: Array, default: () => [BarChart, LineChart, PieChart, ScatterChart] },
@@ -31,7 +32,7 @@ export default defineComponent({
     theme: { type: String }
   },
   setup(props) {
-    const echartsRef = ref(null)
+    const elEcharts = ref(null)
     const xEcharts = ref(null)
 
     // 注册必须的组件
@@ -50,7 +51,7 @@ export default defineComponent({
     ])
 
     const initEcharts = () => {
-      const instance = getInstanceByDom(echartsRef.value)
+      const instance = getInstanceByDom(elEcharts.value)
       if (instance) {
         xEcharts.value = instance
       } else {
@@ -58,7 +59,7 @@ export default defineComponent({
           width: props.width,
           height: props.height
         }
-        xEcharts.value = markRaw(init(echartsRef.value, props.theme || null, opts))
+        xEcharts.value = markRaw(init(elEcharts.value, props.theme || null, opts))
         xEcharts.value?.setOption(props.options)
       }
     }
@@ -86,7 +87,7 @@ export default defineComponent({
     })
 
     return {
-      echartsRef,
+      elEcharts,
       xEcharts
     }
   }

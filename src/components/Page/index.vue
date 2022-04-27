@@ -41,7 +41,7 @@ export default defineComponent({
   components: {
     'x-search': XSearch
   },
-  inheritAttrs: true,
+  inheritAttrs: false,
   props: {
     value: Object,
     searchProps: { type: Object, default: () => ({}) }

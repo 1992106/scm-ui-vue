@@ -53,7 +53,7 @@ export const isPromise = obj => {
  * @param value 需要舍入的数
  * @param length 保留小数点后位数
  */
-export function toFixed(value, length = 2) {
+export const toFixed = (value, length = 2) => {
   if (typeof value === 'string') {
     value = Number(value)
   }
@@ -61,6 +61,57 @@ export function toFixed(value, length = 2) {
     throw new Error('value不是数字')
   }
   return Math.round(Math.pow(10, length) * value) / Math.pow(10, length)
+}
+
+/**
+ * 字符串前后去空
+ * @param string
+ * @returns {string}
+ */
+export const trim = string => {
+  return (string || '').replace(/^[\s\uFEFF]+|[\s\uFEFF]+$/g, '')
+}
+
+/**
+ * 获取滚抽条大小
+ * @returns {number}
+ */
+let scrollBarWidth
+export const getScrollBarSize = () => {
+  if (scrollBarWidth === undefined) {
+    const inner = document.createElement('div')
+    inner.style.width = '100%'
+    inner.style.height = '200px'
+
+    const outer = document.createElement('div')
+    const outerStyle = outer.style
+
+    outerStyle.position = 'absolute'
+    outerStyle.top = 0
+    outerStyle.left = 0
+    outerStyle.pointerEvents = 'none'
+    outerStyle.visibility = 'hidden'
+    outerStyle.width = '200px'
+    outerStyle.height = '150px'
+    outerStyle.overflow = 'hidden'
+
+    outer.appendChild(inner)
+
+    document.body.appendChild(outer)
+
+    var widthContained = inner.offsetWidth
+    outer.style.overflow = 'scroll'
+    var widthScroll = inner.offsetWidth
+
+    if (widthContained === widthScroll) {
+      widthScroll = outer.clientWidth
+    }
+
+    document.body.removeChild(outer)
+
+    scrollBarWidth = widthContained - widthScroll
+  }
+  return scrollBarWidth
 }
 
 /**
