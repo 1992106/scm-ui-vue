@@ -17,8 +17,8 @@ const XDrawer = defineComponent({
     manual: { type: Boolean, default: false },
     spinProps: { type: [Boolean, Object], default: false },
     confirmLoading: { type: Boolean, default: false },
-    okText: { type: String, default: '确定' },
     okType: { type: String, default: 'primary' },
+    okText: { type: String, default: '确定' },
     okButtonProps: Object,
     cancelText: { type: String, default: '取消' },
     cancelButtonProps: Object

@@ -4,6 +4,8 @@
 
 > XModal
 
+## API
+
 ### Props
 
 | 参数 | 说明 | 类型 | 默认值 |
@@ -27,7 +29,11 @@ emits: ['update:visible', 'done']
 ```vue
 <x-import v-model:visible="visible" :customImport="customImport" :customDownload="customDownload" @done="handleDone"></x-import>
 
-// import使用函数方法
+<x-import v-model:visible="visible" :customImport="customImport" @done="handleDone">
+  <a-button @click="handleDownload"></a-button>
+</x-import>
+
+// 使用函数方法
 createXImport({ customImport: customImport, customDownload: customDownload }, () => {
   // 执行done事件
 })

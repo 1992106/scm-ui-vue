@@ -1,6 +1,7 @@
 <template>
   <a-layout class="my-page">
     <a-layout-sider
+      v-bind="$attrs"
       v-model:collapsed="collapsed"
       collapsible
       :collapsed-width="0"
@@ -8,10 +9,10 @@
       :width="160"
       theme="light">
       <a-spin v-bind="spinProps">
-        <a-menu v-model:selectedKeys="selectedKeys" @click="handleClick">
-          <a-menu-item v-for="item in menus" :key="item.value">
-            {{ item.label }}
-            <span v-if="item.count" class="count">{{ item.count }}</span>
+        <a-menu v-bind="menuProps" v-model:selectedKeys="selectedKeys" @click="handleClick">
+          <a-menu-item v-for="menu in menus" :key="menu?.value">
+            {{ menu?.label }}
+            <span v-if="menu?.count" class="count">{{ menu?.count }}</span>
           </a-menu-item>
         </a-menu>
       </a-spin>
@@ -27,8 +28,9 @@ export default defineComponent({
   name: 'XLayout',
   inheritAttrs: false,
   props: {
+    value: [String, Number],
     list: { type: Array, default: () => [] }, // { label: '', value: '', count: '' }
-    value: String,
+    menuProps: { type: Object, default: () => ({}) },
     spinProps: { type: [Boolean, Object], default: false }
   },
   emits: ['update:value', 'click'],

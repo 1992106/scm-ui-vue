@@ -33,6 +33,7 @@ export default defineComponent({
   },
   setup(props) {
     const elEcharts = ref(null)
+    // 图表实例
     const xEcharts = ref(null)
 
     // 注册必须的组件

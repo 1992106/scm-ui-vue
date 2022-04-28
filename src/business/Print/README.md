@@ -6,6 +6,8 @@
 > 
 > XBarcode
 
+## API
+
 ### Props
 
 | 参数 | 说明 | 类型 | 默认值 |
@@ -24,6 +26,13 @@
 emits: ['done']
 ```
 
+### Slots
+
+```vue
+<slot name="icon"></slot>
+<slot></slot>
+```
+
 ### Example
 
 ```vue
@@ -31,6 +40,5 @@ emits: ['done']
   :onBefore="onBefore"
   buttonText="打印"
   :buttonProps="{ type: 'primary', loading }">
-  <p>打印的内容</p>
 </x-print>
 ```

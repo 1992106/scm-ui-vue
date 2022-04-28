@@ -1,5 +1,9 @@
 # XEcharts 图表
 
+## API
+
+> [ECharts](https://echarts.apache.org/handbook/zh/get-started/)
+
 ### Props
 
 | 参数 | 说明 | 类型 | 默认值 |
@@ -13,5 +17,10 @@
 ### Example
 
 ```vue
-<x-echarts :options="options"></x-echarts>
+<x-echarts ref="myChart" :options="options"></x-echarts>
+
+// 监听echarts事件
+myChart.value.xEcharts.on('click', function (params) {
+  console.log(params)
+})
 ```

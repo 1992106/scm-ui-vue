@@ -1,11 +1,19 @@
 <template>
   <div class="my-editor">
-    <QuillEditor v-bind="$attrs" ref="editorRef" theme="snow" content-type="html" :toolbar="toolbar"></QuillEditor>
+    <QuillEditor
+      ref="xEditor"
+      v-bind="$attrs"
+      :content-type="contentType"
+      :theme="theme"
+      :toolbar="toolbar"
+      :enable="enable"
+      :readOnly="readOnly"
+      :placeholder="placeholder"></QuillEditor>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, ref, toRefs } from 'vue'
+import { defineComponent, ref } from 'vue'
 import { QuillEditor } from '@vueup/vue-quill'
 import '@vueup/vue-quill/dist/vue-quill.snow.css'
 
@@ -15,20 +23,28 @@ export default defineComponent({
     QuillEditor
   },
   inheritAttrs: false,
-  setup: () => {
-    const editorRef = ref()
-    const state = reactive({
-      toolbar: [
+  props: {
+    contentType: { type: String, default: 'html' },
+    theme: { type: String, default: 'snow' },
+    toolbar: {
+      type: Array,
+      default: () => [
         [{ header: 1 }, { header: 2 }, { size: ['small', false, 'large', 'huge'] }],
         ['bold', 'italic', 'underline', 'strike', { color: [] }, { background: [] }],
         [{ list: 'ordered' }, { list: 'bullet' }, { align: [] }, { indent: '-1' }, { indent: '+1' }],
         ['link', 'image'],
         ['clean']
       ]
-    })
+    },
+    enable: { type: Boolean, default: true },
+    readOnly: { type: Boolean, default: false },
+    placeholder: { type: String, default: '请输入内容' }
+  },
+  setup: () => {
+    const xEditor = ref(null)
+
     return {
-      editorRef,
-      ...toRefs(state)
+      xEditor
     }
   }
 })

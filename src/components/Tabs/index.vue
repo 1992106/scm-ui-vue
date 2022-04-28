@@ -1,7 +1,7 @@
 <template>
-  <a-tabs v-model:activeKey="activeKey" class="my-tabs" size="small" @change="handleChange">
-    <a-tab-pane v-for="item in tabs" :key="item?.value" :tab="item?.label">
-      <template v-if="item?.value === activeKey">
+  <a-tabs v-bind="$attrs" v-model:activeKey="activeKey" class="my-tabs" :size="size" @change="handleChange">
+    <a-tab-pane v-for="tab in tabs" :key="tab?.value" :tab="tab?.label">
+      <template v-if="tab?.value === activeKey">
         <slot></slot>
       </template>
     </a-tab-pane>
@@ -16,9 +16,9 @@ export default defineComponent({
   name: 'XTabs',
   inheritAttrs: false,
   props: {
-    list: { type: Array, default: () => [] },
-    value: String,
-    isPermission: { type: Boolean, default: true }
+    value: [String, Number],
+    list: { type: Array, default: () => [] }, // { label: '', value: '' }
+    size: { type: String, default: 'small' }
   },
   emits: ['update:value', 'click'],
   setup(props, { emit }) {

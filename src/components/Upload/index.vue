@@ -9,7 +9,6 @@
     :before-upload="beforeUpload"
     :custom-request="handleCustomRequest"
     @change="handleChange"
-    @remove="handleRemove"
     @preview="handlePreview"
     @download="handleDownload">
     <div v-if="mode === 'upload' && (!limit || files.length < limit)">

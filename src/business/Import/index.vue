@@ -15,12 +15,7 @@
       <span v-if="extra" class="color-error">{{ extra }}</span>
       <br />
       <slot>
-        <a-button type="link" :loading="loading" @click="handleDownload">
-          下载模版
-          <template #icon>
-            <slot name="icon"></slot>
-          </template>
-        </a-button>
+        <a-button type="link" :loading="loading" @click="handleDownload">下载模版</a-button>
       </slot>
     </div>
     <div style="margin-top: 20px">

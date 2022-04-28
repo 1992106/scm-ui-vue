@@ -1,10 +1,6 @@
 # XExportPDF 导出PDF
 
-## Components
-
-> XQrcode
-> 
-> XBarcode
+## API
 
 ### Props
 
@@ -22,6 +18,13 @@
 emits: ['done']
 ```
 
+### Slots
+
+```vue
+<slot name="icon"></slot>
+<slot></slot>
+```
+
 ### Example
 
 ```vue
@@ -29,6 +32,5 @@ emits: ['done']
   :onBefore="onBefore"
   buttonText="导出PDF"
   :buttonProps="{ type: 'primary', loading }">
-  <p>PDF的内容</p>
 </x-exportPDF>
 ```
