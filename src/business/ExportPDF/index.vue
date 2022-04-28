@@ -1,7 +1,7 @@
 <template>
   <div class="my-export-pdf">
     <template v-if="showButton">
-      <a-button type="default" v-bind="buttonProps" @click="handleClick">
+      <a-button type="default" v-bind="buttonProps" @click="handleExport">
         {{ buttonText }}
         <template #icon>
           <slot name="icon"></slot>
@@ -36,7 +36,7 @@ export default defineComponent({
   setup(props, { emit }) {
     const elExportPDF = ref(null)
 
-    const handleClick = () => {
+    const handleExport = () => {
       let result = null
       if (props.onBefore && isFunction(props.onBefore)) {
         result = props.onBefore()
@@ -45,7 +45,7 @@ export default defineComponent({
         result
           .then(() => {
             setTimeout(() => {
-              handlePDF()
+              exportPDF()
             }, 200)
           })
           .catch(err => {
@@ -53,7 +53,7 @@ export default defineComponent({
           })
       } else {
         setTimeout(() => {
-          handlePDF()
+          exportPDF()
         })
       }
     }
@@ -62,7 +62,7 @@ export default defineComponent({
       emit('done')
     }
 
-    const handlePDF = () => {
+    const exportPDF = () => {
       jsPDF({
         el: elExportPDF.value,
         fileName: props.fileName,
@@ -72,7 +72,7 @@ export default defineComponent({
 
     return {
       elExportPDF,
-      handleClick
+      handleExport
     }
   }
 })

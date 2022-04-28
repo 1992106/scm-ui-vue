@@ -1,7 +1,7 @@
 <template>
   <div class="my-print">
     <template v-if="showButton">
-      <a-button type="default" v-bind="buttonProps" @click="handleClick">
+      <a-button type="default" v-bind="buttonProps" @click="handlePrint">
         {{ buttonText }}
         <template #icon>
           <slot name="icon"></slot>
@@ -52,7 +52,7 @@ export default defineComponent({
   setup(props, { emit }) {
     const elPrint = ref(null)
 
-    const handleClick = () => {
+    const handlePrint = () => {
       let result = null
       if (props.onBefore && isFunction(props.onBefore)) {
         result = props.onBefore()
@@ -88,7 +88,7 @@ export default defineComponent({
 
     return {
       elPrint,
-      handleClick
+      handlePrint
     }
   }
 })
