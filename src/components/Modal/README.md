@@ -32,6 +32,7 @@ emits: ['update:visible', 'cancel', 'ok', 'fullScreen']
 ```vue
 <slot name="title"></slot>
 <slot name="footer"></slot>
+<slot></slot>
 ```
 
 ### Example
@@ -46,7 +47,6 @@ emits: ['update:visible', 'cancel', 'ok', 'fullScreen']
     :confirmLoading="confirmLoading"
     destroy-on-close
     @ok="handleOk">
-    <div>对话框例子</div>
   </x-modal>
 </template>
 <script lang="ts">
@@ -99,7 +99,6 @@ export default defineComponent({
     destroy-on-close
     @cancel="handleCancel"
     @ok="handleOk">
-    <div>对话框例子</div>
   </x-modal>
 </template>
 <script lang="ts">

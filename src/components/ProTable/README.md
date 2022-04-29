@@ -62,6 +62,7 @@ emits: ['update:value', 'search', 'reset', 'clear']
 <slot name="shortcut"></slot>
 <slot name="toolBar"></slot>
 
+// XTable插槽
 <slot name="headerCell"></slot>
 <slot name="bodyCell"></slot>
 <slot name="customFilterDropdown"></slot>

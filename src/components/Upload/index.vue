@@ -42,11 +42,11 @@ export default defineComponent({
     listType: { type: String, default: 'picture-card' },
     showUploadList: { type: [Boolean, Object], default: true },
     accept: { type: String, default: 'image/*' },
-    mode: { type: String, default: 'upload' },
+    mode: { type: String, default: 'upload' }, // 'upload'、'preview'
     size: { type: Number },
     limit: { type: Number }
   },
-  emits: ['update:fileList', 'change', 'preview', 'remove'],
+  emits: ['update:file-list', 'change', 'preview'],
   setup(props, { emit }) {
     const state = reactive({
       files: [],
@@ -108,7 +108,7 @@ export default defineComponent({
         }
         const index = state.files.findIndex(val => val?.uid === currentFile?.uid)
         state.files.splice(index, 1, file)
-        emit('update:fileList', state.files)
+        emit('update:file-list', state.files)
         emit('change', { file, fileList: state.files })
       } catch (e) {
         // 上传失败
@@ -129,7 +129,7 @@ export default defineComponent({
       const { file, fileList } = data
       if (file.status === 'removed') {
         state.files = fileList.filter(val => val.status === 'done')
-        emit('update:fileList', state.files)
+        emit('update:file-list', state.files)
         emit('change', { file, fileList })
       } else if (file.status === undefined) {
         // TODO: 过滤限制上传的图片
@@ -145,6 +145,7 @@ export default defineComponent({
       const list = state.files.filter(val => val.status === 'done')
       state.previewCurrent = list.findIndex(v => v.id === file.id)
       state.previewVisible = true
+      emit('preview', file)
     }
 
     // 下载图片

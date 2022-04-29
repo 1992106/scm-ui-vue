@@ -1,5 +1,5 @@
 <template>
-  <div class="my-export-pdf">
+  <div class="my-export">
     <template v-if="showButton">
       <a-button type="default" v-bind="buttonProps" @click="handleExport">
         {{ buttonText }}
@@ -8,7 +8,7 @@
         </template>
       </a-button>
     </template>
-    <div ref="elExportPDF" class="export-pdf-content">
+    <div ref="elExport" class="export-content">
       <slot></slot>
     </div>
   </div>
@@ -20,21 +20,23 @@ import { isFunction } from 'lodash-es'
 import { isPromise } from '@src/utils'
 
 export default defineComponent({
-  name: 'XExportPDF',
+  name: 'XExport',
   inheritAttrs: false,
   props: {
     // 导出按钮
     showButton: { type: Boolean, default: true },
-    buttonText: { type: String, default: '导出PDF' },
+    buttonText: { type: String, default: '导出' },
     buttonProps: { type: Object },
-    // PDF文件名
+    // 导出文件类型
+    fileType: { type: String, default: 'pdf' }, // 支持pdf和excel导出
+    // 导出文件名
     fileName: { type: String, default: '' },
     // 导出前的回调
     onBefore: { type: Function }
   },
   emits: ['done'],
   setup(props, { emit }) {
-    const elExportPDF = ref(null)
+    const elExport = ref(null)
 
     const handleExport = () => {
       let result = null
@@ -44,17 +46,15 @@ export default defineComponent({
       if (result && isPromise(result)) {
         result
           .then(() => {
-            setTimeout(() => {
-              exportPDF()
-            }, 200)
+            dispatch()
           })
           .catch(err => {
             console.error(err)
           })
       } else {
         setTimeout(() => {
-          exportPDF()
-        })
+          dispatch()
+        }, 200)
       }
     }
 
@@ -62,28 +62,51 @@ export default defineComponent({
       emit('done')
     }
 
+    const dispatch = () => {
+      switch (props.fileType) {
+        case 'pdf':
+          exportPDF()
+          break
+        case 'excel':
+          exportExcel()
+          break
+        default:
+          exportPDF()
+      }
+    }
+
+    // 导出PDF
     const exportPDF = () => {
-      jsPDF({
-        el: elExportPDF.value,
-        fileName: props.fileName,
-        handleDone
-      })
+      setTimeout(() => {
+        jsPDF({
+          el: elExport.value,
+          fileName: props.fileName,
+          handleDone
+        })
+      }, 200)
+    }
+
+    // 导出excel
+    const exportExcel = () => {
+      // TODO: 待实现
     }
 
     return {
-      elExportPDF,
+      elExport,
       handleExport
     }
   }
 })
 </script>
 <style lang="scss" scoped>
-.export-pdf-content {
-  position: fixed;
-  width: 100%;
-  top: -9999px;
-  left: 9999px;
-  background-color: #fff;
-  z-index: -9999;
+.my-export {
+  .export-content {
+    position: fixed;
+    width: 100%;
+    top: -9999px;
+    left: 9999px;
+    background-color: #fff;
+    z-index: -9999;
+  }
 }
 </style>

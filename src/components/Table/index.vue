@@ -110,7 +110,7 @@ export default defineComponent({
      * data
      */
     const state = reactive({
-      scroll: {},
+      scroll: { x: true },
       selectedRowKeys: props.selectedValue
     })
     /**

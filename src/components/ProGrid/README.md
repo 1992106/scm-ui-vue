@@ -68,6 +68,7 @@ emits: ['update:value', 'search', 'reset', 'clear']
 <slot name="shortcut"></slot>
 <slot name="toolBar"></slot>
 
+// XGrid插槽
 <slot name="default"></slot>
 <slot name="header"></slot>
 <slot name="footer"></slot>

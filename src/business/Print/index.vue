@@ -45,7 +45,7 @@ export default defineComponent({
     barcodeProps: { type: Object },
     // 打印页头
     title: { type: String },
-    // 在打印前的回调
+    // 打印前的回调
     onBefore: { type: Function, default: null }
   },
   emits: ['done'],

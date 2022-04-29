@@ -19,7 +19,7 @@
 ### Emits
 
 ```vue
-emits: ['update:fileList', 'change']
+emits: ['update:fileList', 'change', 'preview']
 ```
 
 ### Example

@@ -59,6 +59,7 @@ emits: [
 <slot name="searchBar"></slot>
 <slot name="toolBar"></slot>
 
+// XGrid插槽
 <slot name="default"></slot>
 <slot name="header"></slot>
 <slot name="footer"></slot>

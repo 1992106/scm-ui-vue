@@ -29,4 +29,5 @@ emits: ['update:visible', 'cancel', 'ok']
 ```vue
 <slot name="title"></slot>
 <slot name="footer"></slot>
+<slot></slot>
 ```

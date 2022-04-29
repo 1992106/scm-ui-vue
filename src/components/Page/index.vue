@@ -25,8 +25,8 @@
       <slot name="toolBar"></slot>
     </div>
     <!--内容-->
-    <div v-if="hasContent" class="content">
-      <slot name="content"></slot>
+    <div class="content">
+      <slot></slot>
     </div>
   </div>
 </template>
@@ -77,7 +77,6 @@ export default defineComponent({
     const hasExtra = computed(() => !!slots['extra'])
     const hasShortcut = computed(() => !!slots['shortcut'])
     const hasToolBar = computed(() => !!slots['toolBar'])
-    const hasContent = computed(() => !!slots['content'])
 
     onMounted(() => {})
 
@@ -88,7 +87,6 @@ export default defineComponent({
       hasExtra,
       hasShortcut,
       hasToolBar,
-      hasContent,
       getSearchSlots,
       handleSearch,
       handleReset,
