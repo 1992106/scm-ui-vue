@@ -1,6 +1,6 @@
 <template>
   <x-table
-    ref="xTable"
+    ref="xProTable"
     auto-resize
     :extra-height="12"
     v-bind="tableProps"
@@ -9,7 +9,6 @@
     <!--搜索栏-->
     <template v-if="hasSearchBar" #searchBar>
       <x-search
-        ref="xSearch"
         show-expand
         layout="horizontal"
         :label-col="{ span: 10 }"
@@ -61,8 +60,7 @@ export default defineComponent({
   },
   emits: ['update:value', 'search', 'reset', 'clear'],
   setup(props, { emit, slots }) {
-    const xTable = ref(null)
-    const xSearch = ref(null)
+    const xProTable = ref(null)
     const state = reactive({
       pagination: {
         page: 1,
@@ -169,8 +167,7 @@ export default defineComponent({
     })
 
     return {
-      xTable,
-      xSearch,
+      xProTable,
       ...toRefs(state),
       hasSearchBar,
       hasExtra,

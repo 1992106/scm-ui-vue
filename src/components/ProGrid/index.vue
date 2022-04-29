@@ -1,6 +1,6 @@
 <template>
   <x-grid
-    ref="xGrid"
+    ref="xProGrid"
     custom-zoom
     custom-setting
     auto-resize
@@ -11,7 +11,6 @@
     <!--搜索栏-->
     <template v-if="hasSearchBar" #searchBar>
       <x-search
-        ref="xSearch"
         show-expand
         layout="horizontal"
         :label-col="{ span: 10 }"
@@ -67,8 +66,7 @@ export default defineComponent({
   },
   emits: ['update:value', 'search', 'reset', 'clear'],
   setup(props, { emit, slots }) {
-    const xGrid = ref(null)
-    const xSearch = ref(null)
+    const xProGrid = ref(null)
     const state = reactive({
       pagination: {
         page: 1,
@@ -137,8 +135,8 @@ export default defineComponent({
     }
 
     const emitReset = $event => {
-      xGrid.value.gridRef.clearFilter()
-      xGrid.value.gridRef.clearSort()
+      xProGrid.value.xGrid?.clearFilter()
+      xProGrid.value.xGrid?.clearSort()
       handleReset($event)
       emit('update:value', { ...$event, ...(unref(showPagination) ? state.pagination : {}) })
       emit('reset', { ...$event, ...(unref(showPagination) ? state.pagination : {}) })
@@ -180,8 +178,7 @@ export default defineComponent({
     })
 
     return {
-      xGrid,
-      xSearch,
+      xProGrid,
       ...toRefs(state),
       hasSearchBar,
       hasExtra,

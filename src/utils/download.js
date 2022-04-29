@@ -78,7 +78,7 @@ const exportFile = async (url, params = {}, method = 'get') => {
  * @param quality
  * @returns {Promise<unknown>}
  */
-const compressImage = async (src, width, height, quality = 0.5) => {
+const compressImage = async (src, width, height, quality = 1) => {
   return new Promise((resolve, reject) => {
     const image = new Image()
     image.setAttribute('crossOrigin', 'Anonymous')

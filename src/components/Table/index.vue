@@ -38,7 +38,7 @@
   </div>
 </template>
 <script>
-import { defineComponent, computed, mergeProps, ref, reactive, toRef, toRefs } from 'vue'
+import { defineComponent, computed, mergeProps, ref, reactive, toRef, toRefs, watchEffect } from 'vue'
 import { Table } from 'ant-design-vue'
 import { useScroll } from './useScroll'
 import { isEmpty } from '@src/utils'
@@ -68,7 +68,7 @@ export default defineComponent({
     // 自动计算表格
     autoResize: { type: Boolean, default: false },
     // 横向/纵向滚动
-    scroll: { type: Object, default: () => ({ scrollToFirstRowOnChange: true }) },
+    scroll: { type: Object, default: () => ({}) },
     // 选择功能的配置项
     rowSelection: { type: [Boolean, Object] },
     // 勾选项
@@ -110,13 +110,14 @@ export default defineComponent({
      * data
      */
     const state = reactive({
-      scroll: { x: true },
+      scroll: {},
       selectedRowKeys: props.selectedValue
     })
     /**
      * 默认值
      */
     const defaultState = {
+      scroll: { x: true, scrollToFirstRowOnChange: true },
       defaultColumn: { ellipsis: true, align: 'center' },
       defaultPaginationConfig: {
         size: 'default',
@@ -144,6 +145,12 @@ export default defineComponent({
         }
       }
     }
+    // 监听selectedValue，如果为空，清空勾选
+    watchEffect(() => {
+      if (isEmpty(props.selectedValue)) {
+        state.selectedRowKeys = []
+      }
+    })
     /**
      * refs
      */
@@ -173,7 +180,7 @@ export default defineComponent({
     })
     // 自动计算表格的宽高
     useScroll({ autoResize: props.autoResize, extraHeight: props.extraHeight, scroll: toRef(state, 'scroll') })
-    const getScroll = computed(() => mergeProps(state.scroll, props.scroll))
+    const getScroll = computed(() => mergeProps(defaultState.scroll, state.scroll, props.scroll))
     const getPaginationConfig = computed(() => {
       return props.showPagination
         ? mergeProps(defaultState.defaultPaginationConfig, props.paginationConfig, {
@@ -184,9 +191,9 @@ export default defineComponent({
     })
     const getRowSelection = computed(() => {
       return props.rowSelection === true
-        ? defaultState.defaultRowSelection
+        ? mergeProps(defaultState.defaultRowSelection, { selectedRowKeys: state.selectedRowKeys })
         : typeof props.rowSelection === 'object' && !isEmpty(props.rowSelection)
-        ? mergeProps(defaultState.defaultRowSelection, props.rowSelection)
+        ? mergeProps(defaultState.defaultRowSelection, { selectedRowKeys: state.selectedRowKeys }, props.rowSelection)
         : null
     })
     /**

@@ -26,13 +26,29 @@
     </div>
     <!--内容-->
     <div class="content">
-      <slot></slot>
+      <slot>
+        <div v-if="dataSource.length" class="section">
+          <template v-for="(item, index) in dataSource">
+            <slot name="renderItem" :item="item" :index="index"></slot>
+          </template>
+        </div>
+        <div v-else class="empty">{{ emptyText }}</div>
+        <!--分页-->
+        <a-pagination
+          v-if="showPagination"
+          v-bind="getPaginationConfig"
+          :current="pagination.page"
+          :page-size="pagination.pageSize"
+          :total="total"
+          @change="handlePageChange"
+          @showSizeChange="handleShowSizeChange" />
+      </slot>
     </div>
   </div>
 </template>
 
 <script>
-import { computed, defineComponent, onMounted, reactive, ref, toRefs } from 'vue'
+import { computed, defineComponent, mergeProps, onMounted, reactive, ref, toRefs, watchEffect } from 'vue'
 import XSearch from '@components/Search/index.vue'
 import { isEmpty } from '@src/utils'
 
@@ -44,12 +60,60 @@ export default defineComponent({
   inheritAttrs: false,
   props: {
     value: Object,
-    searchProps: { type: Object, default: () => ({}) }
+    searchProps: { type: Object, default: () => ({}) },
+    // 数据
+    dataSource: { type: Array, default: () => [] },
+    loading: { type: Boolean, default: false },
+    total: { type: Number, default: 0 },
+    emptyText: { type: String, default: '暂无数据' },
+    // 页码
+    showPagination: { type: Boolean, default: true },
+    pagination: { type: Object, default: () => ({ page: 1, pageSize: 20 }) },
+    paginationConfig: Object
   },
-  emits: ['update:value', 'search', 'reset', 'clear'],
+  emits: ['update:value', 'update:pagination', 'search', 'reset', 'clear'],
   setup(props, { emit, slots }) {
+    /**
+     * 默认值
+     */
+    const defaultState = {
+      defaultPaginationConfig: {
+        defaultPageSize: 20,
+        showSizeChanger: true,
+        showQuickJumper: true,
+        showTotal: total => `共 ${total} 条`,
+        pageSizeOptions: ['20', '40', '60', '80', '100']
+      }
+    }
+
     const xSearch = ref(null)
-    const state = reactive({})
+    const state = reactive({
+      pagination: props.pagination
+    })
+
+    watchEffect(() => {
+      state.pagination = props.pagination
+    })
+
+    const getPaginationConfig = computed(() => mergeProps(defaultState.defaultPaginationConfig, props.paginationConfig))
+
+    // 页码
+    const handlePageChange = (current, pageSize) => {
+      const pagination = {
+        page: current,
+        pageSize
+      }
+      emit('update:pagination', pagination)
+      emit('search')
+    }
+    const handleShowSizeChange = (_, pageSize) => {
+      const pagination = {
+        page: 1,
+        pageSize
+      }
+      emit('update:pagination', pagination)
+      emit('search')
+    }
 
     const handleSearch = $event => {
       emit('update:value', $event)
@@ -88,9 +152,12 @@ export default defineComponent({
       hasShortcut,
       hasToolBar,
       getSearchSlots,
+      getPaginationConfig,
       handleSearch,
       handleReset,
-      handleClear
+      handleClear,
+      handlePageChange,
+      handleShowSizeChange
     }
   }
 })
@@ -110,9 +177,28 @@ export default defineComponent({
   }
 
   .content {
+    display: flex;
+    flex-direction: column;
     flex: 1;
     overflow-y: auto;
     background-color: #fff;
+
+    .section {
+      flex: 1;
+    }
+
+    .empty {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .ant-pagination {
+      padding: 10px;
+      text-align: right;
+      background-color: #fff;
+    }
   }
 }
 </style>

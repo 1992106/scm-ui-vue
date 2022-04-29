@@ -40,5 +40,7 @@ emits: ['update:value', 'search', 'reset', 'clear']
 <slot name="extra"></slot>
 <slot name="shortcut"></slot>
 <slot name="toolBar"></slot>
+
 <slot></slot>
+<slot name="renderItem"></slot>
 ```
