@@ -9,7 +9,12 @@
     :confirm-loading="confirmLoading"
     @ok="handleOk"
     @cancel="handleCancel">
-    <x-table v-bind="tableOptions" v-model:pagination="pagination" @search="handleSearch">
+    <x-table
+      v-bind="tableOptions"
+      v-model:pagination="_pagination"
+      :showPagination="showPagination"
+      :paginationConfig="paginationConfig"
+      @search="handleSearch">
       <template #bodyCell="{ column, record: { attachments } }">
         <template v-if="column.key === 'attachments'">
           <template v-if="attachments.length">
@@ -72,7 +77,16 @@ export default defineComponent({
     customUpload: { type: Function },
     size: { type: Number, default: 3 },
     limit: { type: Number, default: 1 },
-    showPagination: { type: Boolean, default: false }
+    showPagination: { type: Boolean, default: false },
+    pagination: { type: Object, default: () => ({ page: 1, pageSize: 10 }) },
+    paginationConfig: {
+      type: Object,
+      default: () => ({
+        size: 'small',
+        defaultPageSize: 10,
+        pageSizeOptions: ['10', '20', '30', '40']
+      })
+    }
   },
   emits: ['update:visible', 'done'],
   setup(props, { emit }) {
@@ -80,10 +94,11 @@ export default defineComponent({
       modalVisible: props.visible,
       spinning: false,
       confirmLoading: false,
-      pagination: {
-        page: 1,
-        pageSize: 10
-      }
+      _pagination: props.pagination
+    })
+
+    watchEffect(() => {
+      state._pagination = props.pagination
     })
 
     const tableOptions = reactive({
@@ -110,13 +125,7 @@ export default defineComponent({
         { title: '备注内容', minWidth: 200, dataIndex: 'content' },
         { title: '附件', minWidth: 120, key: 'attachments' }
       ],
-      dataSource: [],
-      showPagination: props.showPagination,
-      defaultPaginationConfig: {
-        size: 'small',
-        defaultPageSize: 10,
-        pageSizeOptions: ['10', '20', '30', '40']
-      }
+      dataSource: []
     })
 
     const handleSearch = async () => {
@@ -124,10 +133,13 @@ export default defineComponent({
       if (!isFunction(customRequest)) return
       state.spinning = true
       tableOptions.dataSource = []
-      const data = await customRequest({
-        ...(showPagination ? state.pagination : {})
+      let data = await customRequest({
+        ...(showPagination ? state._pagination : {})
       })
       state.spinning = false
+      if (showPagination) {
+        data = data?.list ?? data?.data ?? []
+      }
       tableOptions.dataSource = (data || []).map(row => {
         const attachments = row?.files || row?.fileList || row?.attachments
         const content = row?.remark || row?.content
