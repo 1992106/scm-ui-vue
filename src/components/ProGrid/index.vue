@@ -197,6 +197,5 @@ export default defineComponent({
 <style lang="scss" scoped>
 .my-grid {
   background-color: #f0f2f5;
-  position: relative;
 }
 </style>

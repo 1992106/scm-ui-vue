@@ -25,7 +25,7 @@
         <Shortcut v-bind="shortcutProps" @shortcut="handleShortcut"></Shortcut>
         <VersionsList :versionsList="versionsList" @add="handleAdd">
           <template #renderItem="scope">
-            <slot v-bind="scope"></slot>
+            <slot name="renderItem" v-bind="scope"></slot>
           </template>
         </VersionsList>
       </div>
