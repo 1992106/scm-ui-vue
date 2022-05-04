@@ -48,11 +48,11 @@ export const getTableScroll = ({ id, extraHeight } = {}) => {
   //   bodyEl.style.cssText += `height: ${y}px`
   // }
   // 空数据时，设置高度
-  const emptyEl = document.querySelector('.my-table .ant-table-empty  .ant-table-body .ant-table-placeholder')
-  if (emptyEl) {
-    const scrollBarWidth = getScrollBarSize()
-    emptyEl.style.height = `calc(100vh - ${tHeaderBottom + paginationHeight + extraHeight + scrollBarWidth}px)`
-  }
+  // const emptyEl = document.querySelector('.my-table .ant-table-empty  .ant-table-body .ant-table-placeholder')
+  // if (emptyEl) {
+  //   const scrollBarWidth = getScrollBarSize()
+  //   emptyEl.style.height = `calc(100vh - ${tHeaderBottom + paginationHeight + extraHeight + scrollBarWidth}px)`
+  // }
 
   return { x: 'max-content', y: height }
 }

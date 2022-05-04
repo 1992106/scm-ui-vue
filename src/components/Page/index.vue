@@ -173,6 +173,7 @@ export default defineComponent({
     flex-wrap: wrap;
     background-color: #fff;
     padding: 10px;
+    margin-bottom: 10px;
   }
 
   .content {

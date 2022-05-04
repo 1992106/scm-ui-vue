@@ -11,13 +11,20 @@
       @cancel="handleCancel"
       @ok="handleOk">
       <a-timeline>
-        <a-timeline-item v-for="item in data" :key="item?.id">
-          <p>{{ formatTime(item?.createAt || item?.createdAt || item?.createTime || item?.createdTime) || '-' }}</p>
-          <p>
+        <a-timeline-item v-for="(item, index) in data" :key="item?.id || index">
+          <div>{{ formatTime(item?.createAt || item?.createdAt || item?.createTime || item?.createdTime) || '-' }}</div>
+          <div>
             {{ item?.createUser || item?.createdUser || '-' }}
-            <span style="margin: 0 5px">操作了</span>
-            <span style="color: #1890ff" v-html="item?.content"></span>
-          </p>
+            <span style="margin: 0 5px">【{{ item?.type || '操作了' }}】</span>
+            <div class="content" v-if="hasArray(item?.content)">
+              <p v-for="(text, i) in item?.content" :key="text || i">
+                {{ text }}
+              </p>
+            </div>
+            <template v-else>
+              <span class="content" v-html="item?.content"></span>
+            </template>
+          </div>
         </a-timeline-item>
       </a-timeline>
     </x-drawer>
@@ -100,6 +107,10 @@ export default defineComponent({
       { immediate: true }
     )
 
+    const hasArray = content => {
+      return Array.isArray(content)
+    }
+
     const handleCancel = () => {
       state.modalVisible = false // 使用函数方法调用时，需要手动关闭
       emit('update:visible', false)
@@ -113,6 +124,7 @@ export default defineComponent({
     return {
       zhCn,
       ...toRefs(state),
+      hasArray,
       handleOk,
       handleCancel,
       formatTime
