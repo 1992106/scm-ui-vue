@@ -101,7 +101,7 @@ export default defineComponent({
 
     // 页码默认赋值
     watchEffect(() => {
-      if (props.gridProps?.pagination) {
+      if (!isEmpty(props.gridProps?.pagination)) {
         state.pagination = props.gridProps.pagination
       }
     })

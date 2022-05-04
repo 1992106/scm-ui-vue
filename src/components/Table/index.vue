@@ -121,6 +121,7 @@ export default defineComponent({
       defaultColumn: { ellipsis: true, align: 'center' },
       defaultPaginationConfig: {
         size: 'default',
+        hideOnSinglePage: false,
         defaultPageSize: 20,
         showSizeChanger: true,
         showQuickJumper: true,
@@ -184,6 +185,7 @@ export default defineComponent({
     const getPaginationConfig = computed(() => {
       return props.showPagination
         ? mergeProps(defaultState.defaultPaginationConfig, props.paginationConfig, {
+            total: props.total,
             current: props.pagination.page,
             pageSize: props.pagination.pageSize
           })

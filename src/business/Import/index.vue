@@ -1,43 +1,46 @@
 <template>
-  <x-modal
-    v-bind="$attrs"
-    v-model:visible="modalVisible"
-    :title="title"
-    :width="width"
-    :spin-props="spinning"
-    destroy-on-close
-    :footer="null"
-    @cancel="handleCancel">
-    <div>
-      一、请按照数据模式的格式准备导入数据，模版中的表头名称不可更改及删除，每次限制导入
-      {{ limit }}
-      行。
-      <span v-if="extra" class="color-error">{{ extra }}</span>
-      <br />
-      <slot>
-        <a-button type="link" :loading="loading" @click="handleDownload">下载模版</a-button>
-      </slot>
-    </div>
-    <div style="margin-top: 20px">
-      <p style="margin-bottom: 10px">二、将准备好的数据导入</p>
-      <a-upload
-        class="import-template"
-        accept=".csv, application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-        list-type="picture-card"
-        :show-upload-list="false"
-        :custom-request="handleImport">
-        <div>
-          <UploadOutlined />
-          <p>选择导入的文件</p>
-        </div>
-      </a-upload>
-    </div>
-  </x-modal>
+  <a-config-provider :locale="zhCn">
+    <x-modal
+      v-bind="$attrs"
+      v-model:visible="modalVisible"
+      :title="title"
+      :width="width"
+      :spin-props="spinning"
+      destroy-on-close
+      :footer="null"
+      @cancel="handleCancel">
+      <div>
+        一、请按照数据模式的格式准备导入数据，模版中的表头名称不可更改及删除，每次限制导入
+        {{ limit }}
+        行。
+        <span v-if="extra" class="color-error">{{ extra }}</span>
+        <br />
+        <slot>
+          <a-button type="link" :loading="loading" @click="handleDownload">下载模版</a-button>
+        </slot>
+      </div>
+      <div style="margin-top: 20px">
+        <p style="margin-bottom: 10px">二、将准备好的数据导入</p>
+        <a-upload
+          class="import-template"
+          accept=".csv, application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+          list-type="picture-card"
+          :show-upload-list="false"
+          :custom-request="handleImport">
+          <div>
+            <UploadOutlined />
+            <p>选择导入的文件</p>
+          </div>
+        </a-upload>
+      </div>
+    </x-modal>
+  </a-config-provider>
 </template>
 <script lang="ts">
 import { defineComponent, reactive, toRefs, watchEffect } from 'vue'
-import { Button, Upload } from 'ant-design-vue'
+import { Button, ConfigProvider, Upload } from 'ant-design-vue'
 import { UploadOutlined } from '@ant-design/icons-vue'
+import zhCn from 'ant-design-vue/es/locale/zh_CN'
 import XModal from '@components/Modal'
 import { isFunction } from 'lodash-es'
 import { importFile } from './import'
@@ -47,6 +50,7 @@ export default defineComponent({
   components: {
     UploadOutlined,
     'x-modal': XModal,
+    'a-config-provider': ConfigProvider,
     'a-upload': Upload,
     'a-button': Button
   },
@@ -97,6 +101,7 @@ export default defineComponent({
     }
 
     return {
+      zhCn,
       ...toRefs(state),
       handleImport,
       handleDownload,

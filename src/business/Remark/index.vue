@@ -1,53 +1,56 @@
 <template>
-  <x-modal
-    v-bind="$attrs"
-    v-model:visible="modalVisible"
-    :title="title"
-    :width="width"
-    destroy-on-close
-    :spin-props="spinning"
-    :confirm-loading="confirmLoading"
-    @ok="handleOk"
-    @cancel="handleCancel">
-    <x-table
-      v-bind="tableOptions"
-      v-model:pagination="_pagination"
-      :showPagination="showPagination"
-      :paginationConfig="paginationConfig"
-      @search="handleSearch">
-      <template #bodyCell="{ column, record: { attachments } }">
-        <template v-if="column.key === 'attachments'">
-          <template v-if="attachments.length">
-            <a-button v-for="file in attachments" :key="file?.id" type="link" @click="handleDownload(file)">
-              {{ file?.fileName }}
-            </a-button>
+  <a-config-provider :locale="zhCn">
+    <x-modal
+      v-bind="$attrs"
+      v-model:visible="modalVisible"
+      :title="title"
+      :width="width"
+      destroy-on-close
+      :spin-props="spinning"
+      :confirm-loading="confirmLoading"
+      @ok="handleOk"
+      @cancel="handleCancel">
+      <x-table
+        v-bind="tableOptions"
+        v-model:pagination="pages"
+        :showPagination="showPagination"
+        :paginationConfig="paginationConfig"
+        @search="handleSearch">
+        <template #bodyCell="{ column, record: { attachments } }">
+          <template v-if="column.key === 'attachments'">
+            <template v-if="attachments.length">
+              <a-button v-for="file in attachments" :key="file?.id" type="link" @click="handleDownload(file)">
+                {{ file?.fileName }}
+              </a-button>
+            </template>
           </template>
         </template>
-      </template>
-    </x-table>
-    <a-form :label-col="{ span: 0 }">
-      <a-form-item v-bind="validateInfos.content">
-        <a-textarea
-          v-model:value="modelRef.content"
-          placeholder="请输入备注"
-          show-count
-          :rows="4"
-          :maxlength="maxlength" />
-      </a-form-item>
-      <a-form-item>
-        <x-upload
-          v-model:file-list="modelRef.attachments"
-          :customRequest="customUpload"
-          :size="size"
-          :limit="limit"></x-upload>
-      </a-form-item>
-    </a-form>
-  </x-modal>
+      </x-table>
+      <a-form :label-col="{ span: 0 }">
+        <a-form-item v-bind="validateInfos.content">
+          <a-textarea
+            v-model:value="modelRef.content"
+            placeholder="请输入备注"
+            show-count
+            :rows="4"
+            :maxlength="maxlength" />
+        </a-form-item>
+        <a-form-item>
+          <x-upload
+            v-model:file-list="modelRef.attachments"
+            :customRequest="customUpload"
+            :size="size"
+            :limit="limit"></x-upload>
+        </a-form-item>
+      </a-form>
+    </x-modal>
+  </a-config-provider>
 </template>
 
 <script lang="ts">
-import { reactive, toRefs, defineComponent, watchEffect } from 'vue'
-import { Button, Form, FormItem, Textarea } from 'ant-design-vue'
+import { reactive, toRefs, defineComponent, watchEffect, watch } from 'vue'
+import { Button, ConfigProvider, Form, FormItem, Textarea } from 'ant-design-vue'
+import zhCn from 'ant-design-vue/es/locale/zh_CN'
 import XModal from '@components/Modal'
 import XTable from '@components/Table/index.vue'
 import XUpload from '@components/Upload/index.vue'
@@ -60,6 +63,7 @@ export default defineComponent({
     'x-modal': XModal,
     'x-table': XTable,
     'x-upload': XUpload,
+    'a-config-provider': ConfigProvider,
     'a-form': Form,
     'a-form-item': FormItem,
     'a-textarea': Textarea,
@@ -69,7 +73,7 @@ export default defineComponent({
   props: {
     title: { type: String, default: '备注' },
     width: { type: [String, Number], default: 960 },
-    scrollY: { type: Number, default: 400 },
+    scrollY: { type: Number, default: 360 },
     maxlength: { type: Number, default: 200 },
     visible: { type: Boolean, default: false },
     customRequest: { type: Function, require: true },
@@ -94,11 +98,12 @@ export default defineComponent({
       modalVisible: props.visible,
       spinning: false,
       confirmLoading: false,
-      _pagination: props.pagination
+      pages: props.pagination
     })
 
     watchEffect(() => {
-      state._pagination = props.pagination
+      state.modalVisible = props.visible
+      state.pages = props.pagination
     })
 
     const tableOptions = reactive({
@@ -118,14 +123,15 @@ export default defineComponent({
           title: '备注时间',
           width: 160,
           customRender: ({ record }) => {
-            const text = record?.createAt || record?.createdTime
+            const text = record?.createAt || record?.createdAt || record?.createTime || record?.createdTime
             return formatTime(text)
           }
         },
         { title: '备注内容', minWidth: 200, dataIndex: 'content' },
         { title: '附件', minWidth: 120, key: 'attachments' }
       ],
-      dataSource: []
+      dataSource: [],
+      total: 0
     })
 
     const handleSearch = async () => {
@@ -133,30 +139,45 @@ export default defineComponent({
       if (!isFunction(customRequest)) return
       state.spinning = true
       tableOptions.dataSource = []
-      let data = await customRequest({
-        ...(showPagination ? state._pagination : {})
+      const data = await customRequest({
+        ...(showPagination ? state.pages : {})
       })
       state.spinning = false
       if (showPagination) {
-        data = data?.list ?? data?.data ?? []
+        const list = data?.list ?? data?.data ?? []
+        tableOptions.dataSource = list.map(row => {
+          const attachments = row?.files || row?.fileList || row?.attachments
+          const content = row?.remark || row?.content
+          return {
+            ...row,
+            content,
+            attachments: !isEmpty(attachments) ? attachments : []
+          }
+        })
+        tableOptions.total = data?.total ?? data?.pagination?.total
+      } else {
+        tableOptions.dataSource = (data || []).map(row => {
+          const attachments = row?.files || row?.fileList || row?.attachments
+          const content = row?.remark || row?.content
+          return {
+            ...row,
+            content,
+            attachments: !isEmpty(attachments) ? attachments : []
+          }
+        })
+        tableOptions.total = (data || []).length
       }
-      tableOptions.dataSource = (data || []).map(row => {
-        const attachments = row?.files || row?.fileList || row?.attachments
-        const content = row?.remark || row?.content
-        return {
-          ...row,
-          content,
-          attachments: !isEmpty(attachments) ? attachments : []
-        }
-      })
     }
 
-    watchEffect(() => {
-      if (props.visible) {
-        handleSearch()
-      }
-      state.modalVisible = props.visible
-    })
+    watch(
+      () => props.visible,
+      bool => {
+        if (bool) {
+          handleSearch()
+        }
+      },
+      { immediate: true }
+    )
 
     const handleDownload = row => {
       const { url, fileName } = row || {}
@@ -200,6 +221,7 @@ export default defineComponent({
     }
 
     return {
+      zhCn,
       ...toRefs(state),
       tableOptions,
       handleSearch,

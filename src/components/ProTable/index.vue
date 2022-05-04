@@ -94,7 +94,7 @@ export default defineComponent({
 
     // 页码默认赋值
     watchEffect(() => {
-      if (props.tableProps?.pagination) {
+      if (!isEmpty(props.tableProps?.pagination)) {
         state.pagination = props.tableProps.pagination
       }
     })

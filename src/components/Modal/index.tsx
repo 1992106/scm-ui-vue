@@ -17,9 +17,7 @@ type SpinProps = {
 const ModalProps = {
   visible: Boolean,
   destroyOnClose: Boolean,
-  wrapClassName: String,
-  okText: { type: String, default: '确定' },
-  cancelText: { type: String, default: '取消' }
+  wrapClassName: String
 }
 
 const XModal = defineComponent({

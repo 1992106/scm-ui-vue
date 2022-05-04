@@ -73,9 +73,6 @@ export default defineComponent({
   },
   emits: ['update:value', 'update:pagination', 'search', 'reset', 'clear'],
   setup(props, { emit, slots }) {
-    /**
-     * 默认值
-     */
     const defaultState = {
       defaultPaginationConfig: {
         defaultPageSize: 20,
@@ -92,7 +89,9 @@ export default defineComponent({
     })
 
     watchEffect(() => {
-      state.pagination = props.pagination
+      if (!isEmpty(props.pagination)) {
+        state.pagination = props.pagination
+      }
     })
 
     const getPaginationConfig = computed(() => mergeProps(defaultState.defaultPaginationConfig, props.paginationConfig))

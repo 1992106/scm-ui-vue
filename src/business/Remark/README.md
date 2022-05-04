@@ -17,7 +17,7 @@
 | v-model:visible | 是否显示 | Boolean | `false`                                                                                    |
 | title | 标题 | String | `备注`                                                                                       |
 | width | 宽度 | [String, Number] | `960`                                                                                      |
-| scrollY | 表格滚动区域的高 | [String, Number] | `400`                                                                                      |
+| scrollY | 表格滚动区域的高 | [String, Number] | `360`                                                                                      |
 | maxlength | 备注长度 | Number | `200`                                                                                      |
 | customRequest | 自定义请求 | Function | `-`                                                                                        |
 | customSubmit | 自定义提交 | Function | `-`                                                                                        |

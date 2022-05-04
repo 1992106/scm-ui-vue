@@ -14,6 +14,8 @@
 | title | 标题 | String | `操作日志` |
 | width | 宽度 | [String, Number] | `360` |
 | customRequest | 自定义请求 | Function | `-` |
+| showPagination | 是否显示分页 | Boolean | `true`                                                                                     |
+| v-model:pagination | 当前页数和每页条数 | Object | `{ page: 1, pageSize: 10 }`                                                                |
 
 ### Emits
 
