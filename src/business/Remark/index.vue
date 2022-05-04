@@ -1,6 +1,7 @@
 <template>
   <a-config-provider :locale="zhCn">
     <x-modal
+      class="my-remark"
       v-bind="$attrs"
       v-model:visible="modalVisible"
       :title="title"
@@ -144,7 +145,7 @@ export default defineComponent({
       })
       state.spinning = false
       if (showPagination) {
-        const list = data?.list ?? data?.data ?? []
+        const list = data?.data ?? data?.list ?? []
         tableOptions.dataSource = list.map(row => {
           const attachments = row?.files || row?.fileList || row?.attachments
           const content = row?.remark || row?.content
@@ -154,7 +155,7 @@ export default defineComponent({
             attachments: !isEmpty(attachments) ? attachments : []
           }
         })
-        tableOptions.total = data?.total ?? data?.pagination?.total
+        tableOptions.total = data?.total || 0
       } else {
         tableOptions.dataSource = (data || []).map(row => {
           const attachments = row?.files || row?.fileList || row?.attachments
@@ -235,15 +236,17 @@ export default defineComponent({
 })
 </script>
 <style lang="scss" scoped>
-.ant-form {
-  margin-top: 20px;
+.my-remark {
+  .ant-form {
+    margin-top: 20px;
 
-  .ant-form-item {
-    margin-bottom: 10px;
+    .ant-form-item {
+      margin-bottom: 10px;
 
-    &:last-of-type {
-      height: 112px;
-      margin-bottom: 0;
+      &:last-of-type {
+        height: 112px;
+        margin-bottom: 0;
+      }
     }
   }
 }

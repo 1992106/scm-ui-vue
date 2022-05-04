@@ -11,7 +11,7 @@
 | rowKey | 表格行 key 的取值，可以是字符串或一个函数 | [String, Function] | `key` |
 | columns | 表格列的配置 | Array | `[]` |
 | dataSource | 表格的数据 | Array | `[]` |
-| loading | 表格 loading | Boolean | `false` |
+| loading | 表格 loading | [Boolean, Object] | `false` |
 | total | 数据总数 | Number | `0` |
 | transformCellText | 单元格自定义显示，一般用于空数据默认显示 | Function | `--` |
 | showPagination | 是否显示分页 | Boolean | `true` |

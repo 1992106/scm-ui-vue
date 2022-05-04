@@ -1,49 +1,53 @@
 <template>
   <div class="my-page">
-    <x-search
-      ref="xSearch"
-      show-expand
-      layout="horizontal"
-      :label-col="{ span: 10 }"
-      :wrapper-col="{ span: 14 }"
-      v-bind="searchProps"
-      @search="handleSearch"
-      @reset="handleReset"
-      @clear="handleClear">
-      <template v-for="slot of getSearchSlots" :key="slot" #[slot]="scope">
-        <slot :name="slot" v-bind="scope"></slot>
-      </template>
-      <template v-if="hasExtra" #extra>
-        <slot name="extra"></slot>
-      </template>
-      <template v-if="hasShortcut" #shortcut>
-        <slot name="shortcut"></slot>
-      </template>
-    </x-search>
-    <!--工具栏-->
-    <div v-if="hasToolBar" class="toolbar">
-      <slot name="toolBar"></slot>
-    </div>
-    <!--内容-->
-    <div class="content">
-      <slot>
-        <div v-if="dataSource.length" class="section">
-          <template v-for="(item, index) in dataSource">
-            <slot name="renderItem" :item="item" :index="index"></slot>
-          </template>
-        </div>
-        <div v-else class="empty">{{ emptyText }}</div>
-        <!--分页-->
-        <a-pagination
-          v-if="showPagination"
-          v-bind="getPaginationConfig"
-          :current="pagination.page"
-          :page-size="pagination.pageSize"
-          :total="total"
-          @change="handlePageChange"
-          @showSizeChange="handleShowSizeChange" />
-      </slot>
-    </div>
+    <a-spin v-bind="spinProps">
+      <x-search
+        ref="xSearch"
+        show-expand
+        layout="horizontal"
+        :label-col="{ span: 10 }"
+        :wrapper-col="{ span: 14 }"
+        v-bind="searchProps"
+        @search="handleSearch"
+        @reset="handleReset"
+        @clear="handleClear">
+        <template v-for="slot of getSearchSlots" :key="slot" #[slot]="scope">
+          <slot :name="slot" v-bind="scope"></slot>
+        </template>
+        <template v-if="hasExtra" #extra>
+          <slot name="extra"></slot>
+        </template>
+        <template v-if="hasShortcut" #shortcut>
+          <slot name="shortcut"></slot>
+        </template>
+      </x-search>
+      <!--工具栏-->
+      <div v-if="hasToolBar" class="toolbar">
+        <slot name="toolBar"></slot>
+      </div>
+      <!--内容-->
+      <div class="content">
+        <slot>
+          <div v-if="dataSource.length" class="section">
+            <template v-for="(item, index) in dataSource">
+              <slot name="renderItem" :item="item" :index="index"></slot>
+            </template>
+          </div>
+          <div v-else class="empty">
+            <a-empty :description="emptyText" />
+          </div>
+          <!--分页-->
+          <a-pagination
+            v-if="showPagination"
+            v-bind="getPaginationConfig"
+            :current="pagination.page"
+            :page-size="pagination.pageSize"
+            :total="total"
+            @change="handlePageChange"
+            @showSizeChange="handleShowSizeChange" />
+        </slot>
+      </div>
+    </a-spin>
   </div>
 </template>
 
@@ -63,7 +67,7 @@ export default defineComponent({
     searchProps: { type: Object, default: () => ({}) },
     // 数据
     dataSource: { type: Array, default: () => [] },
-    loading: { type: Boolean, default: false },
+    loading: { type: [Boolean, Object], default: false },
     total: { type: Number, default: 0 },
     emptyText: { type: String, default: '暂无数据' },
     // 页码
@@ -94,6 +98,16 @@ export default defineComponent({
       }
     })
 
+    // 加载
+    const spinProps = computed(() => {
+      return typeof props.loading === 'object' ? props.loading : { spinning: props.loading }
+    })
+
+    // 搜索插槽
+    const getSearchSlots = computed(() => {
+      const columns = props.searchProps.columns
+      return (columns || []).map(col => col.slot).filter(Boolean)
+    })
     const getPaginationConfig = computed(() => mergeProps(defaultState.defaultPaginationConfig, props.paginationConfig))
 
     // 页码
@@ -129,12 +143,6 @@ export default defineComponent({
       emit('clear', $event)
     }
 
-    // 搜索插槽
-    const getSearchSlots = computed(() => {
-      const columns = props.searchProps.columns
-      return (columns || []).map(col => col.slot).filter(Boolean)
-    })
-
     // 是否显示插槽
     const hasSearchBar = computed(() => !isEmpty(props['searchProps']))
     const hasExtra = computed(() => !!slots['extra'])
@@ -150,6 +158,7 @@ export default defineComponent({
       hasExtra,
       hasShortcut,
       hasToolBar,
+      spinProps,
       getSearchSlots,
       getPaginationConfig,
       handleSearch,
@@ -163,10 +172,18 @@ export default defineComponent({
 </script>
 <style lang="scss" scoped>
 .my-page {
-  display: flex;
-  flex-direction: column;
   height: 100%;
   background-color: #f0f2f5;
+
+  :deep(.ant-spin-nested-loading) {
+    height: 100%;
+
+    .ant-spin-container {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+  }
 
   .toolbar {
     display: flex;

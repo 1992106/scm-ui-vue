@@ -1,6 +1,7 @@
 <template>
   <a-config-provider :locale="zhCn">
     <x-drawer
+      class="my-log"
       v-bind="$attrs"
       v-model:visible="modalVisible"
       :title="title"
@@ -15,8 +16,8 @@
           <div>{{ formatTime(item?.createAt || item?.createdAt || item?.createTime || item?.createdTime) || '-' }}</div>
           <div>
             {{ item?.createUser || item?.createdUser || '-' }}
-            <span style="margin: 0 5px">【{{ item?.type || '操作了' }}】</span>
-            <div class="content" v-if="hasArray(item?.content)">
+            <span>【{{ item?.action || '操作了' }}】</span>
+            <div v-if="hasArray(item?.content)" class="content">
               <p v-for="(text, i) in item?.content" :key="text || i">
                 {{ text }}
               </p>
@@ -89,8 +90,8 @@ export default defineComponent({
       state.spinning = false
       // TODO
       if (showPagination) {
-        state.data = data?.list ?? data?.data ?? []
-        state.total = data?.total ?? data?.pagination?.total
+        state.data = data?.data ?? data?.list ?? []
+        state.total = data?.total || 0
       } else {
         state.data = data || []
         state.total = (data || []).length
@@ -132,3 +133,10 @@ export default defineComponent({
   }
 })
 </script>
+<style lang="scss" scoped>
+.my-log {
+  .content {
+    color: $color-primary;
+  }
+}
+</style>

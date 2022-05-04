@@ -87,7 +87,7 @@ export default defineComponent({
       default: 'middle'
     },
     // 默认文案设置，目前包括排序、过滤、空数据文案
-    locale: { type: Object, default: () => ({ filterConfirm: '筛选', filterReset: '重置', emptyText: '暂无数据' }) },
+    locale: { type: Object, default: () => ({ filterConfirm: '筛选', filterReset: '重置' }) },
     components: Object,
     customRow: Function,
     customHeaderRow: Function
