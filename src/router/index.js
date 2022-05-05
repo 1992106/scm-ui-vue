@@ -63,7 +63,7 @@ export const routes = [
       {
         path: 'index',
         name: 'dashboard',
-        component: () => import('@views/Home.vue'),
+        component: () => import('@views/Dashboard.vue'),
         meta: {
           title: '仪表盘',
           icon: 'icon-dashboard'

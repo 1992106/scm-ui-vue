@@ -201,7 +201,7 @@ export default defineComponent({
       right: 0;
       transform: translateX(100%);
       padding-left: 5px;
-      color: #007aff;
+      color: $color-primary;
       user-select: none;
     }
   }

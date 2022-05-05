@@ -1,9 +1,9 @@
 <template>
   <a-config-provider :locale="zhCn">
     <x-drawer
-      class="my-log"
       v-bind="$attrs"
       v-model:visible="modalVisible"
+      class="my-log"
       :title="title"
       :width="width"
       :spin-props="spinning"
@@ -16,14 +16,14 @@
           <div>{{ formatTime(item?.createAt || item?.createdAt || item?.createTime || item?.createdTime) || '-' }}</div>
           <div>
             {{ item?.createUser || item?.createdUser || '-' }}
-            <span>【{{ item?.action || '操作了' }}】</span>
-            <div v-if="hasArray(item?.content)" class="content">
-              <p v-for="(text, i) in item?.content" :key="text || i">
-                {{ text }}
-              </p>
-            </div>
-            <template v-else>
-              <span class="content" v-html="item?.content"></span>
+            <span>{{ item?.action || '操作了' }}</span>
+            <template v-if="item?.content">
+              <div v-if="hasArray(item?.content)" class="content">
+                <p v-for="(text, i) in item?.content" :key="text || i">【{{ text }}】</p>
+              </div>
+              <template v-else>
+                <span class="content" v-html="'【' + item?.content + '】'"></span>
+              </template>
             </template>
           </div>
         </a-timeline-item>

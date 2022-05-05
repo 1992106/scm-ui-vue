@@ -77,9 +77,7 @@
     </template>
     <!--空数据-->
     <template #empty>
-      <slot>
-        <a-empty :description="emptyText" />
-      </slot>
+      <a-empty :image="simpleImage" :description="emptyText" />
     </template>
     <!--slot-->
     <template v-for="slot of getGridSlots" :key="slot" #[slot]="scope">
@@ -102,6 +100,7 @@
 </template>
 <script>
 import { defineComponent, reactive, ref, computed, toRefs, unref, mergeProps, watchEffect } from 'vue'
+import { Empty } from 'ant-design-vue'
 import ColumnSetting from './ColumnSetting.vue'
 import { columnsToStorage, getField, mergeStorageAndColumns, storageToColumns } from './utils'
 import { cloneDeep } from 'lodash-es'
@@ -466,6 +465,7 @@ export default defineComponent({
 
     return {
       ...toRefs(state),
+      simpleImage: Empty.PRESENTED_IMAGE_SIMPLE,
       hasSearchBar,
       hasToolBar,
       getGridSlots,

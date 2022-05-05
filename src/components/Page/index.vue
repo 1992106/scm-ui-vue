@@ -43,7 +43,7 @@
               @showSizeChange="handleShowSizeChange" />
           </div>
           <div v-else class="empty">
-            <a-empty :description="emptyText" />
+            <a-empty :image="simpleImage" :description="emptyText" />
           </div>
         </slot>
       </div>
@@ -53,6 +53,7 @@
 
 <script>
 import { computed, defineComponent, mergeProps, onMounted, reactive, ref, toRefs, watchEffect } from 'vue'
+import { Empty } from 'ant-design-vue'
 import XSearch from '@components/Search/index.vue'
 import { isEmpty } from '@src/utils'
 
@@ -152,8 +153,9 @@ export default defineComponent({
     onMounted(() => {})
 
     return {
-      xSearch,
       ...toRefs(state),
+      simpleImage: Empty.PRESENTED_IMAGE_SIMPLE,
+      xSearch,
       hasSearchBar,
       hasExtra,
       hasShortcut,

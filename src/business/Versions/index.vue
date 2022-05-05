@@ -86,7 +86,7 @@ export default defineComponent({
 
     // 搜索插槽
     const getSearchSlots = computed(() => {
-      const columns = props.searchProps.columns
+      const columns = props.searchProps?.columns || []
       return (columns || []).map(col => col.slot).filter(Boolean)
     })
 
