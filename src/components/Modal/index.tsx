@@ -61,7 +61,7 @@ const XModal = defineComponent({
 
     const renderIcon = () => {
       return props?.showFullscreen ? (
-        <div class='my-model-close-fullscreen'>
+        <div class='x-model-close-fullscreen'>
           {props.fullscreen ? (
             <FullscreenExitOutlined onClick={handleFullScreen} />
           ) : (
@@ -77,7 +77,7 @@ const XModal = defineComponent({
     const wrapClassName = computed(
       () =>
         `${props.wrapClassName ? props.wrapClassName : ''}
-        ${unref(fullScreenRef) ? 'my-model-fullscreen' : ''}`
+        ${unref(fullScreenRef) ? 'x-model-fullscreen' : ''}`
     )
 
     const handleCancel = () => {

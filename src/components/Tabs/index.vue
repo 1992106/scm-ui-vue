@@ -1,5 +1,5 @@
 <template>
-  <a-tabs v-bind="$attrs" v-model:activeKey="activeKey" class="my-tabs" :size="size" @change="handleChange">
+  <a-tabs v-bind="$attrs" v-model:activeKey="activeKey" class="x-tabs" :size="size" @change="handleChange">
     <a-tab-pane v-for="tab in tabs" :key="tab?.value" :tab="tab?.label">
       <template v-if="tab?.value === activeKey">
         <slot></slot>
@@ -58,7 +58,7 @@ export default defineComponent({
 })
 </script>
 <style scoped lang="scss">
-.my-tabs {
+.x-tabs {
   height: 100%;
   background-color: #f0f2f5;
 

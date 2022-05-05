@@ -1,5 +1,5 @@
 <template>
-  <div class="my-print">
+  <div class="x-print">
     <template v-if="showButton">
       <a-button type="default" v-bind="buttonProps" @click="handlePrint">
         {{ buttonText }}

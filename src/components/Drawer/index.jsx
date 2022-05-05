@@ -62,7 +62,7 @@ const XDrawer = defineComponent({
         {...props}
         {...ctx.attrs}
         visible={props.visible}
-        class={['my-drawer', props.class]}
+        class={['x-drawer', props.class]}
         width={props.width}
         height={props.height}
         title={ctx.slots?.title?.() || ctx.attrs?.title}

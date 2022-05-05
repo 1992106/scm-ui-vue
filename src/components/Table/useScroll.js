@@ -1,6 +1,6 @@
 import { onBeforeUnmount, onMounted } from 'vue'
 import { debounce } from 'lodash-es'
-import { getScrollBarSize } from '@src/utils'
+// import { getScrollBarSize } from '@src/utils'
 
 export const useScroll = ({ autoResize, extraHeight, scroll }) => {
   const onResize = debounce(() => {
@@ -23,10 +23,10 @@ export const getTableScroll = ({ id, extraHeight } = {}) => {
   let tHeader
   if (id) {
     tHeader = document.getElementById(id)
-      ? document.getElementById(id).querySelector('.my-table .ant-table .ant-table-header')
+      ? document.getElementById(id).querySelector('.x-table .ant-table .ant-table-header')
       : null
   } else {
-    tHeader = document.querySelector('.my-table .ant-table .ant-table-header')
+    tHeader = document.querySelector('.x-table .ant-table .ant-table-header')
   }
   if (typeof extraHeight === 'undefined') {
     extraHeight = 0 // 页面内边距或外边距
@@ -37,18 +37,18 @@ export const getTableScroll = ({ id, extraHeight } = {}) => {
     tHeaderBottom = tHeader.getBoundingClientRect().bottom
   }
   // 分页器：高度+margin20
-  const pagination = document.querySelector('.my-table .ant-pagination')
+  const pagination = document.querySelector('.x-table .ant-pagination')
   const paginationHeight = pagination ? pagination.getBoundingClientRect().height : 0
   // 窗体高度-表格内容顶部的高度-表格内容底部的高度
   const height = `calc(100vh - ${tHeaderBottom + paginationHeight + extraHeight}px)`
 
   // TODO: 设置表格高度不生效
-  // const bodyEl = document.querySelector('.my-table .ant-table .ant-table-body')
+  // const bodyEl = document.querySelector('.x-table .ant-table .ant-table-body')
   // if (bodyEl) {
   //   bodyEl.style.cssText += `height: ${y}px`
   // }
   // 空数据时，设置高度
-  // const emptyEl = document.querySelector('.my-table .ant-table-empty  .ant-table-body .ant-table-placeholder')
+  // const emptyEl = document.querySelector('.x-table .ant-table-empty  .ant-table-body .ant-table-placeholder')
   // if (emptyEl) {
   //   const scrollBarWidth = getScrollBarSize()
   //   emptyEl.style.height = `calc(100vh - ${tHeaderBottom + paginationHeight + extraHeight + scrollBarWidth}px)`

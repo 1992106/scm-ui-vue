@@ -1,5 +1,5 @@
 <template>
-  <div ref="elEcharts" class="my-echarts"></div>
+  <div ref="elEcharts" class="x-echarts"></div>
 </template>
 <script>
 import { defineComponent, markRaw, onMounted, onUnmounted, ref, watch } from 'vue'

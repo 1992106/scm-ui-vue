@@ -1,4 +1,4 @@
-.my-model-fullscreen {
+.x-model-fullscreen {
   overflow: hidden;
 
   .ant-modal {
@@ -25,7 +25,7 @@
   }
 }
 
-.my-model-close-fullscreen {
+.x-model-close-fullscreen {
   @include flexRCC;
 
   height: 100%;

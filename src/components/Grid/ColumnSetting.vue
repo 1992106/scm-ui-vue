@@ -4,7 +4,7 @@
       <Iconfont type="icon-setting" size="18"></Iconfont>
     </button>
     <template #title>
-      <div class="my-grid-setting">
+      <div class="x-grid-setting">
         <div class="setting-head">
           <a-checkbox v-model:checked="checkAll" :indeterminate="indeterminate" @change="handleCheckAll">
             列展示
@@ -258,7 +258,7 @@ export default defineComponent({
 })
 </script>
 <style lang="scss" scoped>
-.my-grid-setting {
+.x-grid-setting {
   margin: -6px -8px;
   color: $text-color;
   width: 200px;

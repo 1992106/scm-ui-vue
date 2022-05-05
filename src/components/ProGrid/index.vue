@@ -76,8 +76,8 @@ export default defineComponent({
 
     // 搜索插槽
     const getSearchSlots = computed(() => {
-      const columns = props.searchProps.columns
-      return (columns || []).map(col => col.slot).filter(Boolean)
+      const columns = props.searchProps?.columns || []
+      return columns.map(col => col.slot).filter(Boolean)
     })
 
     // grid插槽
@@ -108,7 +108,7 @@ export default defineComponent({
 
     // 是否显示页码，默认显示
     const showPagination = computed(() => {
-      const _showPagination = props.gridProps.showPagination
+      const _showPagination = props.gridProps?.showPagination
       return typeof _showPagination === 'undefined' ? true : _showPagination
     })
 
@@ -195,7 +195,7 @@ export default defineComponent({
 })
 </script>
 <style lang="scss" scoped>
-.my-grid {
+.x-grid {
   background-color: #f0f2f5;
 }
 </style>

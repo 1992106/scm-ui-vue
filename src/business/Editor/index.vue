@@ -1,5 +1,5 @@
 <template>
-  <div class="my-editor">
+  <div class="x-editor">
     <QuillEditor
       ref="xEditor"
       v-bind="$attrs"
@@ -50,7 +50,7 @@ export default defineComponent({
 })
 </script>
 <style lang="scss" scoped>
-.my-editor {
+.x-editor {
   :deep(.ql-container) {
     height: 320px;
   }

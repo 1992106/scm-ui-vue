@@ -16,7 +16,7 @@
 
 | 参数 | 说明 | 类型 | 默认值 |
 | --- | --- | --- | --- |
-| columns | 搜索栏的配置 | Array | `[]` |
+| columns | 搜索栏配置 | Array | `[]` |
 | layout | 表单布局 | String | `horizontal` |
 | labelCol | 标签布局 | Object | `{ span: 10 }` |
 | wrapperCol | 控件布局 | Object | `{ span: 14 }` |
@@ -34,8 +34,8 @@
 | 参数 | 说明 | 类型 | 默认值 |
 | --- | --- | --- | --- |
 | rowKey | 表格行 key 的取值，可以是字符串或一个函数 | [String, Function] | `key` |
-| columns | 表格列的配置 | Array | `[]` |
-| dataSource | 表格的数据 | Array | `[]` |
+| columns | 表格列配置 | Array | `[]` |
+| dataSource | 表格数据 | Array | `[]` |
 | loading | 表格 loading | Boolean | `false` |
 | total | 数据总数 | Number | `0` |
 | transformCellText | 单元格自定义显示，一般用于空数据默认显示 | Function | `--` |

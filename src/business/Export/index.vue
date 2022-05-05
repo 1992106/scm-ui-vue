@@ -1,5 +1,5 @@
 <template>
-  <div class="my-export">
+  <div class="x-export">
     <template v-if="showButton">
       <a-button type="default" v-bind="buttonProps" @click="handleExport">
         {{ buttonText }}
@@ -99,7 +99,7 @@ export default defineComponent({
 })
 </script>
 <style lang="scss" scoped>
-.my-export {
+.x-export {
   .export-content {
     position: fixed;
     width: 100%;

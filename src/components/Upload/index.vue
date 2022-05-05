@@ -2,7 +2,7 @@
   <a-upload
     v-bind="$attrs"
     v-model:file-list="files"
-    class="my-upload"
+    class="x-upload"
     :accept="accept"
     :list-type="listType"
     :show-upload-list="showUploadList"
@@ -191,7 +191,7 @@ export default defineComponent({
 })
 </script>
 <style lang="scss" scoped>
-.my-upload {
+.x-upload {
   :deep(.ant-upload) {
     position: relative;
 

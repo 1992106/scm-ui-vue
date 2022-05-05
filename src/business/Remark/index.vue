@@ -1,7 +1,7 @@
 <template>
   <a-config-provider :locale="zhCn">
     <x-modal
-      class="my-remark"
+      class="x-remark"
       v-bind="$attrs"
       v-model:visible="modalVisible"
       :title="title"
@@ -236,7 +236,7 @@ export default defineComponent({
 })
 </script>
 <style lang="scss" scoped>
-.my-remark {
+.x-remark {
   .ant-form {
     margin-top: 20px;
 

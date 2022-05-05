@@ -16,11 +16,14 @@
 | title | 标题 | String | `操作日志` |
 | width | 宽度 | [String, Number] | `80%` |
 | height | 高度 | [String, Number] | `-` |
+| manual | 是否手动搜索 | Boolean | `false` |
 | searchProps | XSearch props | Object | `{}` |
-| shortcutProps | 快捷搜索 props | Object | `{}` |
+| shortcutProps | XForm props | Object | `{}` |
 | tableProps | XTable props | Object | `{}` |
 | customRequest | 自定义请求 | Function | `-` |
-| manual | 是否手动搜索 | Boolean | `false` |
+| rowProps |a-row props | Object | `-` |
+| colProps | a-col props | Object | `-` |
+| emptyText | 空数据显示的内容 | String | `暂无数据` |
 
 ### Emits
 

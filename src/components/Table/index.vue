@@ -1,5 +1,5 @@
 <template>
-  <div class="my-table">
+  <div class="x-table">
     <a-spin v-bind="spinProps">
       <!--搜索栏-->
       <template v-if="hasSearchBar">
@@ -71,7 +71,7 @@ export default defineComponent({
     autoResize: { type: Boolean, default: false },
     // 横向/纵向滚动
     scroll: { type: Object, default: () => ({}) },
-    // 选择功能的配置项
+    // 选择功能配置项
     rowSelection: { type: [Boolean, Object] },
     // 勾选项
     selectedValue: { type: Array, default: () => [] },
@@ -284,7 +284,7 @@ export default defineComponent({
 })
 </script>
 <style lang="scss" scoped>
-.my-table {
+.x-table {
   .toolbar {
     display: flex;
     flex-wrap: wrap;

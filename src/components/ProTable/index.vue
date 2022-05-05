@@ -70,8 +70,8 @@ export default defineComponent({
 
     // 搜索插槽
     const getSearchSlots = computed(() => {
-      const columns = props.searchProps.columns
-      return (columns || []).map(col => col.slot).filter(Boolean)
+      const columns = props.searchProps?.columns || []
+      return columns.map(col => col.slot).filter(Boolean)
     })
 
     // table插槽
@@ -101,7 +101,7 @@ export default defineComponent({
 
     // 是否显示页码，默认显示
     const showPagination = computed(() => {
-      const _showPagination = props.tableProps.showPagination
+      const _showPagination = props.tableProps?.showPagination
       return typeof _showPagination === 'undefined' ? true : _showPagination
     })
 
@@ -184,8 +184,7 @@ export default defineComponent({
 })
 </script>
 <style lang="scss" scoped>
-.my-table {
+.x-table {
   background-color: #f0f2f5;
-  position: relative;
 }
 </style>

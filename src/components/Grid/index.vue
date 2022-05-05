@@ -1,7 +1,7 @@
 <template>
   <vxe-grid
     ref="xGrid"
-    class="my-grid"
+    class="x-grid"
     align="center"
     border
     show-overflow
@@ -148,7 +148,7 @@ export default defineComponent({
     filterConfig: Object,
     // 合并指定的单元格 (不能用于展开行，不建议用于固定列、树形结构)
     mergeCells: Array,
-    // 表尾的数据获取方法，返回一个二维数组
+    // 表尾数据获取方法，返回一个二维数组
     footerMethod: Function,
     // 编辑配置项
     editConfig: Object,
@@ -503,7 +503,7 @@ export default defineComponent({
 })
 </script>
 <style lang="scss" scoped>
-.my-grid {
+.x-grid {
   :deep(.vxe-toolbar) {
     height: auto;
 

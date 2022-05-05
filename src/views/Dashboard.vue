@@ -6,6 +6,7 @@
     </a-space>
     <Preview v-model:visible="previewState.visible" :current="previewState.current" :urls="previewState.urls"></Preview>
     <Versions
+      v-if="versionsState.visible"
       v-model:visible="versionsState.visible"
       :searchProps="versionsState.searchProps"
       :shortcutProps="versionsState.shortcutProps">
@@ -16,16 +17,34 @@
           <a-input-number></a-input-number>
         </a-space>
       </template>
+      <template #renderItem="{ item, index }">
+        <div class="box">
+          <a-checkbox v-model:checked="item.checked">{{ index }}</a-checkbox>
+          <x-image width="100%" :urls="item?.urls"></x-image>
+          <div class="info">
+            <p class="line">
+              <span>BX2022001</span>
+              <span>类型：版型</span>
+            </p>
+            <p>分类：亲子装/情侣装/连体衣</p>
+            <p class="line">
+              <span>角色：妈妈</span>
+              <span>面料类型：针织</span>
+            </p>
+          </div>
+        </div>
+      </template>
     </Versions>
   </div>
 </template>
-<script>
+<script lang="ts">
 import { reactive } from 'vue'
+import XImage from '@components/Image'
 import Preview from '@components/Preview/index.vue'
 import Versions from '@business/Versions/index.vue'
 export default {
   name: 'Dashboard',
-  components: { Preview, Versions },
+  components: { XImage, Preview, Versions },
   setup() {
     // 预览
     const previewState = reactive({
@@ -94,19 +113,23 @@ export default {
       shortcutProps: {
         columns: [
           {
-            type: 'AChecked',
+            type: 'ACheckboxGroup',
             title: '范围',
             field: 'z',
-            options: [{ label: '我的收藏', value: 'z' }]
+            props: {
+              options: [{ label: '我的收藏', value: 'z' }]
+            }
           },
           {
-            type: 'AChecked',
+            type: 'ACheckboxGroup',
             title: '类型',
             field: 'x',
-            options: [
-              { label: '版型', value: 'x' },
-              { label: '款式', value: 'y' }
-            ]
+            props: {
+              options: [
+                { label: '版型', value: 'x' },
+                { label: '款式', value: 'y' }
+              ]
+            }
           }
         ]
       },
@@ -125,3 +148,28 @@ export default {
   }
 }
 </script>
+<style lang="scss" scoped>
+.box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+
+  .info {
+    width: 100%;
+    margin-top: 10px;
+
+    .line {
+      display: flex;
+      justify-content: space-between;
+    }
+  }
+
+  .ant-checkbox-wrapper {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    z-index: 10;
+  }
+}
+</style>

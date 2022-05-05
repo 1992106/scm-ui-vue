@@ -1,10 +1,10 @@
 <template>
   <div class="versions-list">
-    <template v-if="data.length">
-      <template v-for="(item, index) in data">
+    <a-row v-if="data.length" :gutter="16" wrap v-bind="rowProps">
+      <a-col v-for="(item, index) in data" :key="index" :span="6" v-bind="colProps">
         <slot name="renderItem" :item="item" :index="index"></slot>
-      </template>
-    </template>
+      </a-col>
+    </a-row>
     <template v-else>
       <a-empty :image="simpleImage" :description="emptyText" />
     </template>
@@ -18,6 +18,8 @@ export default defineComponent({
   name: 'VersionsList',
   props: {
     versionsList: { type: Array, default: () => [] },
+    rowProps: Object,
+    colProps: Object,
     emptyText: String
   },
   emits: ['add'],
@@ -29,7 +31,16 @@ export default defineComponent({
     watch(
       () => props.versionsList,
       list => {
-        state.data = list
+        state.data = [
+          ...list,
+          { checked: false },
+          { checked: false },
+          { checked: false },
+          { checked: false },
+          { checked: false },
+          { checked: false },
+          { checked: false }
+        ]
       },
       { deep: true, immediate: true }
     )
@@ -46,3 +57,11 @@ export default defineComponent({
   }
 })
 </script>
+<style lang="scss" scoped>
+.versions-list {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #c8c7cc;
+  margin-left: 15px;
+}
+</style>

@@ -7,7 +7,7 @@
     destroyOnClose
     @ok="handleOk"
     @cancel="handleCancel">
-    <div class="my-materials">
+    <div class="x-materials">
       <x-search
         ref="xSearch"
         show-expand
@@ -30,14 +30,14 @@
         </VersionsList>
       </div>
       <div class="selected-list">
-        已选中{{ selectedList.length }}条
+        <div class="total">已选中{{ selectedList.length }}条</div>
         <SelectedList v-bind="tableProps" v-model:selectedList="selectedList" @del="handleDel"></SelectedList>
       </div>
     </div>
   </x-modal>
 </template>
 <script lang="ts">
-import { computed, defineComponent, reactive, toRefs } from 'vue'
+import { computed, defineComponent, onMounted, reactive, toRefs } from 'vue'
 import XModal from '@components/Modal'
 import XSearch from '@components/Search/index.vue'
 import Shortcut from './Shortcut.vue'
@@ -60,12 +60,14 @@ export default defineComponent({
     title: { type: String, default: '版型库' },
     width: { type: [String, Number], default: '80%' },
     height: { type: [String, Number], default: 'calc(100% - 100px)' },
+    manual: { type: Boolean, default: false },
     searchProps: { type: Object, default: () => ({}) },
     shortcutProps: { type: Object, default: () => ({}) },
     tableProps: { type: Object, default: () => ({}) },
     customRequest: { type: Function, require: true },
-    emptyText: { type: String, default: '暂无数据' },
-    manual: { type: Boolean, default: false }
+    rowProps: Object,
+    colProps: Object,
+    emptyText: { type: String, default: '暂无数据' }
   },
   emits: ['update:visible', 'done'],
   setup(props, { emit }) {
@@ -134,6 +136,12 @@ export default defineComponent({
       materialVisible.value = false
     }
 
+    onMounted(() => {
+      if (!props.manual) {
+        handleSearch(null)
+      }
+    })
+
     return {
       ...toRefs(state),
       materialVisible,
@@ -150,24 +158,19 @@ export default defineComponent({
 })
 </script>
 <style scoped lang="scss">
-.my-materials {
+.x-materials {
   .content {
     display: flex;
     flex: 1;
-    flex-direction: column;
     padding: 20px 0;
-
-    .versions-list {
-      margin-left: 15px;
-    }
   }
 
   .selected-list {
     display: flex;
     flex: 1;
     flex-direction: column;
-    border: 1px solid #c8c7cc;
     padding: 10px;
+    border: 1px solid #c8c7cc;
   }
 }
 </style>

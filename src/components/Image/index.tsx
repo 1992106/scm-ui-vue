@@ -69,9 +69,7 @@ const XImage = defineComponent({
       () => {
         if (thumbUrls.value.length) {
           const { width, height, quality } = props
-          const w = typeof width === 'string' ? parseFloat(width) : width
-          const h = typeof height === 'string' ? parseFloat(height) : height
-          Promise.allSettled(thumbUrls.value.map(url => compressImage(url, w, h, quality)))
+          Promise.allSettled(thumbUrls.value.map(url => compressImage(url, width, height, quality)))
             .then(res => {
               // @ts-ignore
               compressUrls.value = res.map((v, i) => {
@@ -99,25 +97,42 @@ const XImage = defineComponent({
     }
 
     return () => (
-      <Space>
-        {compressUrls.value.map((src, index) => (
+      <>
+        {compressUrls.value.length === 1 ? (
           <Image
             {...ctx.attrs}
-            key={index}
             style={{ cursor: 'pointer' }}
             width={props.width}
             height={props.height}
-            src={src}
+            src={compressUrls.value[0]}
             preview={false}
             // @ts-ignore
             onClick={() => handlePreview(index)}
             fallback={fallUrl}
           />
-        ))}
+        ) : (
+          // 相册模式
+          <Space>
+            {compressUrls.value.map((src, index) => (
+              <Image
+                {...ctx.attrs}
+                key={index}
+                style={{ cursor: 'pointer' }}
+                width={props.width}
+                height={props.height}
+                src={src}
+                preview={false}
+                // @ts-ignore
+                onClick={() => handlePreview(index)}
+                fallback={fallUrl}
+              />
+            ))}
+          </Space>
+        )}
         {props.preview && (
           <XPreview v-model={[visible.value, 'visible']} current={current.value} urls={previewUrls.value} />
         )}
-      </Space>
+      </>
     )
   }
 })

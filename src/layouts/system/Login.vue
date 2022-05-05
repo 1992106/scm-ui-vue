@@ -93,8 +93,8 @@ export default defineComponent({
           }
           await router.push(redirect)
         }
-      } catch (error) {
-        console.log(error)
+      } catch (err) {
+        console.error('login error', err)
       }
     }
 

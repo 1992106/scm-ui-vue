@@ -4,7 +4,7 @@ export function useFormLayout() {
   const { proxy } = getCurrentInstance()
 
   const updateLayout = () => {
-    const formEl = proxy.$refs['xForm'].$el
+    const formEl = proxy.$refs['xSearch'].$el
     const childNodes = Array.from(formEl.children)
     if (childNodes < 2) return
     const lastNode = childNodes.pop() // 删除最后一个（搜索按钮组）

@@ -1,5 +1,5 @@
 <template>
-  <div class="my-page">
+  <div class="x-page">
     <a-spin v-bind="spinProps">
       <x-search
         ref="xSearch"
@@ -173,7 +173,7 @@ export default defineComponent({
 })
 </script>
 <style lang="scss" scoped>
-.my-page {
+.x-page {
   height: 100%;
   background-color: #f0f2f5;
 
