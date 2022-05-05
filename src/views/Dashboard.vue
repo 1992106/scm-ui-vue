@@ -5,7 +5,10 @@
       <a-button @click="handleVersions">版型库</a-button>
     </a-space>
     <Preview v-model:visible="previewState.visible" :current="previewState.current" :urls="previewState.urls"></Preview>
-    <Versions v-model:visible="versionsState.visible">
+    <Versions
+      v-model:visible="versionsState.visible"
+      :searchProps="versionsState.searchProps"
+      :shortcutProps="versionsState.shortcutProps">
       <template #scope>
         <a-space>
           <a-input-number></a-input-number>
@@ -67,8 +70,8 @@ export default {
             }
           },
           {
-            type: '转款式设计款号',
-            title: '版型编号',
+            type: 'AInput',
+            title: '转款式设计款号',
             field: 'd',
             props: {
               placeholder: '请输入'
@@ -89,7 +92,23 @@ export default {
         ]
       },
       shortcutProps: {
-        columns: []
+        columns: [
+          {
+            type: 'AChecked',
+            title: '范围',
+            field: 'z',
+            options: [{ label: '我的收藏', value: 'z' }]
+          },
+          {
+            type: 'AChecked',
+            title: '类型',
+            field: 'x',
+            options: [
+              { label: '版型', value: 'x' },
+              { label: '款式', value: 'y' }
+            ]
+          }
+        ]
       },
       tableProps: {}
     })

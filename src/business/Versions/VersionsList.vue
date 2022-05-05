@@ -6,17 +6,19 @@
       </template>
     </template>
     <template v-else>
-      <div>{{ emptyText }}</div>
+      <a-empty :image="simpleImage" :description="emptyText" />
     </template>
   </div>
 </template>
 <script>
 import { defineComponent, reactive, toRefs, watch } from 'vue'
+import { Empty } from 'ant-design-vue'
 
 export default defineComponent({
   name: 'VersionsList',
   props: {
-    versionsList: { type: Array, default: () => [] }
+    versionsList: { type: Array, default: () => [] },
+    emptyText: String
   },
   emits: ['add'],
   setup(props, { emit }) {
@@ -38,6 +40,7 @@ export default defineComponent({
 
     return {
       ...toRefs(state),
+      simpleImage: Empty.PRESENTED_IMAGE_SIMPLE,
       handleAdd
     }
   }

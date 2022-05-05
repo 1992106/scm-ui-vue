@@ -23,7 +23,7 @@
       </x-search>
       <div class="content">
         <Shortcut v-bind="shortcutProps" @shortcut="handleShortcut"></Shortcut>
-        <VersionsList :versionsList="versionsList" @add="handleAdd">
+        <VersionsList :versionsList="versionsList" :emptyText="emptyText" @add="handleAdd">
           <template #renderItem="scope">
             <slot name="renderItem" v-bind="scope"></slot>
           </template>
@@ -64,6 +64,7 @@ export default defineComponent({
     shortcutProps: { type: Object, default: () => ({}) },
     tableProps: { type: Object, default: () => ({}) },
     customRequest: { type: Function, require: true },
+    emptyText: { type: String, default: '暂无数据' },
     manual: { type: Boolean, default: false }
   },
   emits: ['update:visible', 'done'],
