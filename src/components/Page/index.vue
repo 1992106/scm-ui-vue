@@ -32,19 +32,19 @@
             <template v-for="(item, index) in dataSource">
               <slot name="renderItem" :item="item" :index="index"></slot>
             </template>
+            <!--分页-->
+            <a-pagination
+              v-if="showPagination"
+              v-bind="getPaginationConfig"
+              :current="pagination.page"
+              :page-size="pagination.pageSize"
+              :total="total"
+              @change="handlePageChange"
+              @showSizeChange="handleShowSizeChange" />
           </div>
           <div v-else class="empty">
             <a-empty :description="emptyText" />
           </div>
-          <!--分页-->
-          <a-pagination
-            v-if="showPagination"
-            v-bind="getPaginationConfig"
-            :current="pagination.page"
-            :page-size="pagination.pageSize"
-            :total="total"
-            @change="handlePageChange"
-            @showSizeChange="handleShowSizeChange" />
         </slot>
       </div>
     </a-spin>

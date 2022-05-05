@@ -1,40 +1,42 @@
 <template>
   <div class="my-table">
-    <!--搜索栏-->
-    <template v-if="hasSearchBar">
-      <slot name="searchBar"></slot>
-    </template>
-    <!--工具栏-->
-    <div v-if="hasToolBar" class="toolbar">
-      <slot name="toolBar"></slot>
-    </div>
-    <a-table
-      ref="xTable"
-      bordered
-      v-bind="$attrs"
-      :row-key="rowKey"
-      :columns="getColumns"
-      :data-source="dataSource"
-      :loading="loading"
-      :pagination="getPaginationConfig"
-      :scroll="getScroll"
-      :size="size"
-      :locale="locale"
-      :row-selection="getRowSelection"
-      :row-class-name="handleRowClassName"
-      :components="components"
-      :custom-row="customRow"
-      :custom-header-row="customHeaderRow"
-      :transform-cell-text="getTransformCellText"
-      @change="handleChange"
-      @expand="handleExpand"
-      @expandedRowsChange="handleExpandedRowsChange"
-      @resizeColumn="handleResizeColumn">
-      <!--插槽-->
-      <template v-for="slot of getTableSlots" :key="slot" #[slot]="scope">
-        <slot :name="slot" v-bind="scope"></slot>
+    <a-spin v-bind="spinProps">
+      <!--搜索栏-->
+      <template v-if="hasSearchBar">
+        <slot name="searchBar"></slot>
       </template>
-    </a-table>
+      <!--工具栏-->
+      <div v-if="hasToolBar" class="toolbar">
+        <slot name="toolBar"></slot>
+      </div>
+      <a-table
+        ref="xTable"
+        bordered
+        v-bind="$attrs"
+        :row-key="rowKey"
+        :columns="getColumns"
+        :data-source="dataSource"
+        :loading="false"
+        :pagination="getPaginationConfig"
+        :scroll="getScroll"
+        :size="size"
+        :locale="locale"
+        :row-selection="getRowSelection"
+        :row-class-name="handleRowClassName"
+        :components="components"
+        :custom-row="customRow"
+        :custom-header-row="customHeaderRow"
+        :transform-cell-text="getTransformCellText"
+        @change="handleChange"
+        @expand="handleExpand"
+        @expandedRowsChange="handleExpandedRowsChange"
+        @resizeColumn="handleResizeColumn">
+        <!--插槽-->
+        <template v-for="slot of getTableSlots" :key="slot" #[slot]="scope">
+          <slot :name="slot" v-bind="scope"></slot>
+        </template>
+      </a-table>
+    </a-spin>
   </div>
 </template>
 <script>
@@ -159,6 +161,10 @@ export default defineComponent({
     /**
      * computed
      */
+    // a-table的loading只作用表格，不能覆盖整个页面
+    const spinProps = computed(() => {
+      return typeof props.loading === 'object' ? props.loading : { spinning: props.loading }
+    })
     const getColumns = computed(() => props.columns.map(column => mergeProps(defaultState.defaultColumn, column)))
     const getTableSlots = computed(() => {
       return Object.keys(slots).filter(val =>
@@ -266,6 +272,7 @@ export default defineComponent({
       getTransformCellText,
       getPaginationConfig,
       getRowSelection,
+      spinProps,
       xTable,
       handleRowClassName,
       handleChange,

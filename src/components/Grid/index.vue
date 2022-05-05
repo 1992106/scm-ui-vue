@@ -11,7 +11,6 @@
     :columns="customColumns"
     :data="data"
     :loading="loading"
-    :empty-text="emptyText"
     :scroll-x="getScrollX"
     :scroll-y="getScrollY"
     :height="height"
@@ -78,17 +77,19 @@
     </template>
     <!--空数据-->
     <template #empty>
-      <slot name="emptyText"></slot>
+      <slot>
+        <a-empty :description="emptyText" />
+      </slot>
     </template>
     <!--slot-->
     <template v-for="slot of getGridSlots" :key="slot" #[slot]="scope">
       <slot :name="slot" v-bind="scope"></slot>
     </template>
     <!--分页-->
-    <template #pager>
+    <template v-if="data.length" #pager>
       <slot name="pagination">
         <a-pagination
-          v-if="showPagination && columns.length"
+          v-if="showPagination"
           v-bind="getPaginationConfig"
           :current="pagination.page"
           :page-size="pagination.pageSize"
