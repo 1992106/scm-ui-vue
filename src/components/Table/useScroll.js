@@ -54,5 +54,6 @@ export const getTableScroll = ({ id, extraHeight } = {}) => {
   //   emptyEl.style.height = `calc(100vh - ${tHeaderBottom + paginationHeight + extraHeight + scrollBarWidth}px)`
   // }
 
-  return { x: 'max-content', y: height }
+  // TODO: x: 'max-content' 会导致 ellipsis: true 无效
+  return { x: '100%', y: height }
 }

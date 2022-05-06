@@ -100,7 +100,7 @@
 </template>
 <script>
 import { defineComponent, reactive, ref, computed, toRefs, unref, mergeProps, watchEffect } from 'vue'
-import { Empty } from 'ant-design-vue'
+import { Empty, Pagination } from 'ant-design-vue'
 import ColumnSetting from './ColumnSetting.vue'
 import { columnsToStorage, getField, mergeStorageAndColumns, storageToColumns } from './utils'
 import { cloneDeep } from 'lodash-es'
@@ -109,7 +109,9 @@ import { isEmpty } from '@src/utils'
 export default defineComponent({
   name: 'XGrid',
   components: {
-    ColumnSetting
+    ColumnSetting,
+    'a-pagination': Pagination,
+    'a-empty': Empty
   },
   inheritAttrs: false,
   props: {

@@ -35,15 +35,14 @@ export default defineComponent({
       rowKey: props.rowKey,
       size: 'small',
       columns: [
-        { title: '操作', width: 80, dataIndex: 'actions' },
-        { title: '缩略图', width: 120, dataIndex: 'thumbnail' },
+        { title: '操作', width: 100, dataIndex: 'actions' },
+        { title: '缩略图', width: 160, dataIndex: 'thumbnail' },
         {
           title: '版型编号',
           dataIndex: 'prototypeNo'
         },
         {
           title: '版型分类',
-          minWidth: 200,
           customRender: ({ record }) => {
             return [record?.oneCategoryName, record?.twoCategoryName, record?.threeCategoryName]
               .filter(Boolean)

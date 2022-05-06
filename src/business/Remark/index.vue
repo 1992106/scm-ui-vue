@@ -21,7 +21,11 @@
         <template #bodyCell="{ column, record: { attachments } }">
           <template v-if="column.dataIndex === 'attachments'">
             <template v-if="attachments.length">
-              <a-button v-for="file in attachments" :key="file?.id" type="link" @click="handleDownload(file)">
+              <a-button
+                v-for="(file, index) in attachments"
+                :key="file?.id || index"
+                type="link"
+                @click="handleDownload(file)">
                 {{ file?.fileName }}
               </a-button>
             </template>
@@ -131,8 +135,8 @@ export default defineComponent({
             return formatTime(text)
           }
         },
-        { title: '备注内容', minWidth: 200, dataIndex: 'content' },
-        { title: '附件', minWidth: 120, dataIndex: 'attachments' }
+        { title: '备注内容', dataIndex: 'content' },
+        { title: '附件', width: 120, dataIndex: 'attachments' }
       ],
       dataSource: [],
       total: 0
@@ -213,7 +217,7 @@ export default defineComponent({
           state.confirmLoading = true
           await customSubmit({
             content: modelRef.content,
-            ...(!isEmpty(modelRef.attachments) ? { resourcesIds: modelRef.attachments.map(val => val?.id) } : {})
+            ...(!isEmpty(modelRef.attachments) ? { ids: modelRef.attachments.map(val => val?.id) } : {})
           })
           state.confirmLoading = false
           handleCancel()

@@ -26,7 +26,7 @@
         <slot name="toolBar"></slot>
       </div>
       <!--内容-->
-      <div class="content">
+      <div class="x-page-container">
         <slot>
           <div v-if="dataSource.length" class="section">
             <template v-for="(item, index) in dataSource">
@@ -53,14 +53,17 @@
 
 <script>
 import { computed, defineComponent, mergeProps, onMounted, reactive, ref, toRefs, watchEffect } from 'vue'
-import { Empty } from 'ant-design-vue'
+import { Empty, Pagination, Spin } from 'ant-design-vue'
 import XSearch from '@components/Search/index.vue'
 import { isEmpty } from '@src/utils'
 
 export default defineComponent({
   name: 'XPage',
   components: {
-    'x-search': XSearch
+    'x-search': XSearch,
+    'a-pagination': Pagination,
+    'a-spin': Spin,
+    'a-empty': Empty
   },
   inheritAttrs: false,
   props: {
@@ -200,7 +203,7 @@ export default defineComponent({
     margin-bottom: 10px;
   }
 
-  .content {
+  &-container {
     display: flex;
     flex-direction: column;
     flex: 1;

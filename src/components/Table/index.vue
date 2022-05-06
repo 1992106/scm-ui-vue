@@ -41,14 +41,15 @@
 </template>
 <script>
 import { defineComponent, computed, mergeProps, ref, reactive, toRef, toRefs, watchEffect } from 'vue'
-import { Table } from 'ant-design-vue'
+import { Spin, Table } from 'ant-design-vue'
 import { useScroll } from './useScroll'
 import { isEmpty } from '@src/utils'
 
 export default defineComponent({
   name: 'XTable',
   components: {
-    'a-table': Table
+    'a-table': Table,
+    'a-spin': Spin
   },
   inheritAttrs: false,
   props: {
@@ -120,7 +121,7 @@ export default defineComponent({
      */
     const defaultState = {
       scroll: { x: true, scrollToFirstRowOnChange: true },
-      defaultColumn: { ellipsis: true, align: 'center' },
+      defaultColumn: { align: 'center' },
       defaultPaginationConfig: {
         size: 'default',
         hideOnSinglePage: false,
