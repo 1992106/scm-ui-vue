@@ -153,9 +153,9 @@ export default defineComponent({
     onMounted(() => {})
 
     return {
+      xSearch,
       ...toRefs(state),
       simpleImage: Empty.PRESENTED_IMAGE_SIMPLE,
-      xSearch,
       hasSearchBar,
       hasExtra,
       hasShortcut,
@@ -185,6 +185,11 @@ export default defineComponent({
       display: flex;
       flex-direction: column;
     }
+  }
+
+  .x-search {
+    padding: 10px 0;
+    margin-bottom: 10px;
   }
 
   .toolbar {

@@ -263,6 +263,7 @@ export default defineComponent({
     const hasToolBar = computed(() => !!slots['toolBar'])
 
     return {
+      xTable,
       ...toRefs(state),
       hasSearchBar,
       hasToolBar,
@@ -273,7 +274,6 @@ export default defineComponent({
       getPaginationConfig,
       getRowSelection,
       spinProps,
-      xTable,
       handleRowClassName,
       handleChange,
       handleExpand,

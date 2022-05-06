@@ -197,5 +197,10 @@ export default defineComponent({
 <style lang="scss" scoped>
 .x-grid {
   background-color: #f0f2f5;
+
+  .x-search {
+    padding: 10px 0;
+    margin-bottom: 10px;
+  }
 }
 </style>

@@ -25,32 +25,12 @@ const XImage = defineComponent({
     const visible = ref(false)
     const current = ref(0)
 
-    const previewUrls = computed((): string[] => {
-      // 处理字符串
-      if (typeof props.urls === 'string' && props.urls) {
-        return [props.urls]
-      }
-
-      // 处理数组
-      const srcs = Array.isArray(props.urls)
-        ? props.urls
-            .map(item => (isObject(item as PreviewField) ? item?.src ?? item?.url ?? item?.thumbUrl ?? '' : item))
-            .filter(Boolean)
-        : []
-
-      // 如果预览列表为空则把缩略图扔进去
-      if (!srcs.length && props.thumbnail) {
-        return [props.thumbnail]
-      }
-
-      return srcs
-    })
-
+    // 缩略图
     const thumbUrls = computed((): string[] => {
       if (props.thumbnail) {
         return [props.thumbnail]
       }
-      // 当缩略图没有的时候，把urls当成缩略图
+      // 当缩略图没有时，则把urls当成缩略图
       return props.urls
         ? typeof props.urls === 'string'
           ? [props.urls]
@@ -87,11 +67,34 @@ const XImage = defineComponent({
       { immediate: true }
     )
 
-    const handlePreview = (index: number) => {
-      // 图片为空时，不支持预览功能
-      if (!thumbUrls.value.length) {
-        return
+    // 预览图
+    const previewUrls = computed((): string[] => {
+      // 字符串
+      if (typeof props.urls === 'string' && props.urls) {
+        return [props.urls]
       }
+
+      // 数组
+      const srcs = Array.isArray(props.urls)
+        ? props.urls
+            .map(item => (isObject(item as PreviewField) ? item?.src ?? item?.url ?? item?.thumbUrl ?? '' : item))
+            .filter(Boolean)
+        : []
+
+      // 如果预览列表为空，则把缩略图当成预览图
+      if (!srcs.length && props.thumbnail) {
+        return [props.thumbnail]
+      }
+
+      return srcs
+    })
+
+    const isPreview = computed(() => {
+      // 图片为空时，不支持预览功能
+      return props.preview && previewUrls.value.length > 0
+    })
+
+    const handlePreview = (index: number) => {
       visible.value = true
       current.value = index
     }
@@ -99,6 +102,7 @@ const XImage = defineComponent({
     return () => (
       <>
         {compressUrls.value.length === 1 ? (
+          // 单图模式
           <Image
             {...ctx.attrs}
             style={{ cursor: 'pointer' }}
@@ -129,7 +133,7 @@ const XImage = defineComponent({
             ))}
           </Space>
         )}
-        {props.preview && (
+        {isPreview.value && (
           <XPreview v-model={[visible.value, 'visible']} current={current.value} urls={previewUrls.value} />
         )}
       </>

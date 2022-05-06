@@ -1,5 +1,5 @@
 import myFetch from '@utils/fetch'
-import { isEmpty } from '@utils/lang'
+import { getPixelSize, isEmpty } from '@utils/lang'
 
 const { request } = myFetch
 
@@ -70,10 +70,6 @@ const exportFile = async (url, params = {}, method = 'get') => {
   downloadByBlob(res.data, fileName, 'application/octet-stream')
 }
 
-const getSize = val => {
-  return typeof val === 'string' && val.endsWith('px') ? parseFloat(val) : null
-}
-
 /**
  * 压缩图片
  * @param src
@@ -85,8 +81,8 @@ const getSize = val => {
 const compressImage = async (src, width, height, quality = 1) => {
   return new Promise((resolve, reject) => {
     const image = new Image()
-    width = getSize(width)
-    height = getSize(height)
+    width = getPixelSize(width)
+    height = getPixelSize(height)
     image.setAttribute('crossOrigin', 'Anonymous')
     image.onload = async () => {
       // 有宽度无高度时，等比例计算高度

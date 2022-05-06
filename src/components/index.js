@@ -4,7 +4,7 @@ export { default as XImage } from './Image/index.tsx'
 export { default as XPreview } from './Preview/index.vue'
 export { default as XUpload } from './Upload/index.vue'
 // form表单
-import { default as XForm } from './Form/index.vue'
+export { default as XForm } from './Form/index.vue'
 // dialog对话框
 export { default as XDrawer } from './Drawer/index.jsx'
 export { default as XModal } from './Modal/index.tsx'

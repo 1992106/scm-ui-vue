@@ -1,13 +1,12 @@
 <template>
   <x-modal
-    v-model:visible="materialVisible"
+    v-model:visible="modalVisible"
     :title="title"
     :width="width"
-    :height="height"
     destroyOnClose
     @ok="handleOk"
     @cancel="handleCancel">
-    <div class="x-materials">
+    <div class="x-versions">
       <x-search
         ref="xSearch"
         show-expand
@@ -22,8 +21,8 @@
         </template>
       </x-search>
       <div class="content">
-        <Shortcut v-bind="shortcutProps" @shortcut="handleShortcut"></Shortcut>
-        <VersionsList :versionsList="versionsList" :emptyText="emptyText" @add="handleAdd">
+        <Shortcut ref="xShortcut" v-bind="shortcutProps"></Shortcut>
+        <VersionsList :versionsList="versionsList" :emptyText="emptyText" @add="handleAdd" @del="handleDel">
           <template #renderItem="scope">
             <slot name="renderItem" v-bind="scope"></slot>
           </template>
@@ -31,19 +30,19 @@
       </div>
       <div class="selected-list">
         <div class="total">已选中{{ selectedList.length }}条</div>
-        <SelectedList v-bind="tableProps" v-model:selectedList="selectedList" @del="handleDel"></SelectedList>
+        <SelectedList :rowKey="rowKey" :scrollY="scrollY" :selectedList="selectedList" @del="handleDel"></SelectedList>
       </div>
     </div>
   </x-modal>
 </template>
 <script lang="ts">
-import { computed, defineComponent, onMounted, reactive, toRefs } from 'vue'
+import { computed, defineComponent, onMounted, reactive, ref, toRefs } from 'vue'
 import XModal from '@components/Modal'
 import XSearch from '@components/Search/index.vue'
 import Shortcut from './Shortcut.vue'
 import VersionsList from './VersionsList.vue'
 import SelectedList from './SelectedList.vue'
-import { isFunction } from 'lodash-es'
+import { isFunction, cloneDeep } from 'lodash-es'
 import { isEmpty } from '@src/utils'
 
 export default defineComponent({
@@ -59,11 +58,11 @@ export default defineComponent({
     visible: { type: Boolean, default: false },
     title: { type: String, default: '版型库' },
     width: { type: [String, Number], default: '80%' },
-    height: { type: [String, Number], default: 'calc(100% - 100px)' },
+    rowKey: { type: String, default: 'id' },
+    scrollY: { type: [String, Number], default: 400 },
     manual: { type: Boolean, default: false },
     searchProps: { type: Object, default: () => ({}) },
     shortcutProps: { type: Object, default: () => ({}) },
-    tableProps: { type: Object, default: () => ({}) },
     customRequest: { type: Function, require: true },
     rowProps: Object,
     colProps: Object,
@@ -71,7 +70,8 @@ export default defineComponent({
   },
   emits: ['update:visible', 'done'],
   setup(props, { emit }) {
-    const materialVisible = computed({
+    const xShortcut = ref(null)
+    const modalVisible = computed({
       get: () => {
         return props.visible
       },
@@ -82,7 +82,7 @@ export default defineComponent({
 
     const state = reactive({
       spinning: false,
-      shortcutParams: {},
+      cloneList: [],
       versionsList: [],
       selectedList: []
     })
@@ -97,21 +97,30 @@ export default defineComponent({
       const { customRequest } = props
       if (!isFunction(customRequest)) return
       state.spinning = true
+      state.cloneList = []
       state.versionsList = []
+      const shortcutParams = xShortcut.value?.onGetFormValue?.()
       const data = await customRequest({
         ...(isEmpty(params) ? {} : params),
-        ...(isEmpty(state.shortcutParams) ? {} : state.shortcutParams)
+        ...(isEmpty(shortcutParams) ? {} : shortcutParams)
       })
       state.spinning = false
-      state.versionsList = data.map(val => ({ ...val, checked: false }))
-    }
-
-    const handleShortcut = params => {
-      state.shortcutParams = params
+      state.cloneList = cloneDeep(data) // 备份数据
+      if (state.selectedList.length) {
+        state.versionsList = (data || []).map(item => {
+          const newItem = state.selectedList.find(val => item?.[props.rowKey] === val?.[props.rowKey])
+          return {
+            ...item,
+            ...(!isEmpty(newItem) ? newItem : {})
+          }
+        })
+      } else {
+        state.versionsList = data
+      }
     }
 
     const handleReset = () => {
-      state.shortcutParams = {}
+      xShortcut.value?.onResetFormValue?.()
     }
 
     const handleAdd = row => {
@@ -119,9 +128,15 @@ export default defineComponent({
     }
 
     const handleDel = row => {
-      state.versionsList = state.versionsList.map(val => {
-        return row?.id === val?.id ? { ...val, checked: false } : val
+      state.versionsList = state.versionsList.map(item => {
+        const newItem = state.cloneList.find(val => row?.[props.rowKey] === val?.[props.rowKey])
+        return {
+          ...item,
+          ...(!isEmpty(newItem) ? newItem : {})
+        }
       })
+      const index = state.selectedList.findIndex(val => row?.[props.rowKey] === val?.[props.rowKey])
+      state.selectedList.splice(index, 1)
     }
 
     const handleOk = () => {
@@ -131,9 +146,9 @@ export default defineComponent({
 
     const handleCancel = () => {
       handleReset()
+      state.cloneList = []
       state.versionsList = []
       state.selectedList = []
-      materialVisible.value = false
     }
 
     onMounted(() => {
@@ -144,10 +159,10 @@ export default defineComponent({
 
     return {
       ...toRefs(state),
-      materialVisible,
+      xShortcut,
+      modalVisible,
       getSearchSlots,
       handleSearch,
-      handleShortcut,
       handleReset,
       handleAdd,
       handleDel,
@@ -158,11 +173,12 @@ export default defineComponent({
 })
 </script>
 <style scoped lang="scss">
-.x-materials {
+.x-versions {
   .content {
     display: flex;
     flex: 1;
     padding: 20px 0;
+    max-height: 640px;
   }
 
   .selected-list {

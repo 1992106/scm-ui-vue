@@ -1,5 +1,5 @@
 <template>
-  <a-form ref="xForm" class="x-form" v-bind="$attrs" :layout="layout" :label-col="labelCol" :wrapper-col="wrapperCol">
+  <a-form ref="elForm" class="x-form" v-bind="$attrs" :layout="layout" :label-col="labelCol" :wrapper-col="wrapperCol">
     <template v-for="column in getColumns" :key="column?.field || column?.slot">
       <template v-if="column.type">
         <a-form-item :label="column?.title" v-bind="validateInfos[column.field]">
@@ -21,12 +21,12 @@
   </a-form>
 </template>
 <script>
-import { computed, defineComponent, mergeProps, nextTick, reactive, ref, toRaw, unref } from "vue";
-import { Form } from "ant-design-vue";
-import { DownOutlined, UpOutlined } from "@ant-design/icons-vue";
-import { omit, pick } from "lodash-es";
-import { mergeEvents, toEmpty } from "./utils";
-import { dateToDayjs, dayjsToDate, isEmpty } from "@src/utils";
+import { computed, defineComponent, mergeProps, nextTick, reactive, ref, toRaw, unref } from 'vue'
+import { Form } from 'ant-design-vue'
+import { DownOutlined, UpOutlined } from '@ant-design/icons-vue'
+import { omit, pick } from 'lodash-es'
+import { mergeEvents, toEmpty } from './utils'
+import { dateToDayjs, dayjsToDate, isEmpty } from '@src/utils'
 
 export default defineComponent({
   name: 'XForm',
@@ -52,7 +52,7 @@ export default defineComponent({
   },
   emits: ['enter', 'clear'],
   setup(props, { emit }) {
-    const xForm = ref(null)
+    const elForm = ref(null)
 
     // 默认值
     const defaultState = {
@@ -225,6 +225,11 @@ export default defineComponent({
       return toEmpty(params)
     }
 
+    // 重置表单值
+    const onResetFormValue = () => {
+      resetFields()
+    }
+
     // 设置字段和值
     const onSetFieldValue = obj => {
       if (!isEmpty(obj)) {
@@ -235,7 +240,7 @@ export default defineComponent({
     }
 
     return {
-      xForm,
+      elForm,
       getModelValue,
       getColumns,
       modelRef,
@@ -243,6 +248,7 @@ export default defineComponent({
       resetFields,
       validateInfos,
       onGetFormValue,
+      onResetFormValue,
       onSetFieldValue
     }
   }

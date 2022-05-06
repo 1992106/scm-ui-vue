@@ -1,10 +1,10 @@
 <template>
   <x-table
     ref="xProTable"
-    auto-resize
-    :extra-height="12"
     v-bind="tableProps"
     v-model:pagination="pagination"
+    auto-resize
+    :extra-height="12"
     @search="handleQuery">
     <!--搜索栏-->
     <template v-if="hasSearchBar" #searchBar>
@@ -186,5 +186,10 @@ export default defineComponent({
 <style lang="scss" scoped>
 .x-table {
   background-color: #f0f2f5;
+
+  .x-search {
+    padding: 10px 0;
+    margin-bottom: 10px;
+  }
 }
 </style>

@@ -4,7 +4,7 @@
       <slot name="extra"></slot>
     </div>
     <x-form
-      ref="xSearch"
+      ref="xForm"
       v-bind="$attrs"
       :layout="layout"
       :label-col="labelCol"
@@ -85,7 +85,7 @@ export default defineComponent({
   },
   emits: ['search', 'reset', 'clear'],
   setup(props, { emit, slots }) {
-    const xSearch = ref(null)
+    const xForm = ref(null)
 
     // 搜索columns
     const getColumns = computed(() => {
@@ -100,7 +100,7 @@ export default defineComponent({
     })
 
     const handleSearch = () => {
-      unref(xSearch)
+      unref(xForm)
         .validate()
         .then(() => {
           onEmit()
@@ -111,19 +111,19 @@ export default defineComponent({
     }
 
     const onEmit = () => {
-      emit('search', unref(xSearch).onGetFormValue())
+      emit('search', unref(xForm).onGetFormValue())
     }
 
     const handleReset = () => {
-      unref(xSearch).resetFields()
-      emit('reset', unref(xSearch).onGetFormValue())
+      unref(xForm).resetFields()
+      emit('reset', unref(xForm).onGetFormValue())
       if (props.resetSearch) {
         onEmit()
       }
     }
 
     const handleClear = () => {
-      emit('clear', unref(xSearch).onGetFormValue())
+      emit('clear', unref(xForm).onGetFormValue())
       if (props.clearSearch) {
         onEmit()
       }
@@ -169,7 +169,7 @@ export default defineComponent({
     }
 
     return {
-      xSearch,
+      xForm,
       hasExtra,
       hasShortcut,
       handleSearch,
@@ -190,8 +190,6 @@ export default defineComponent({
 .x-search {
   background-color: #fff;
   border-radius: 2px;
-  padding: 10px 0;
-  margin-bottom: 10px;
 
   .ant-form {
     :deep(.ant-form-item) {

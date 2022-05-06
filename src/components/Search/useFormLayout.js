@@ -4,8 +4,8 @@ export function useFormLayout() {
   const { proxy } = getCurrentInstance()
 
   const updateLayout = () => {
-    const formEl = proxy.$refs['xSearch'].$el
-    const childNodes = Array.from(formEl.children)
+    const elForm = proxy.$refs['xForm'].$el
+    const childNodes = Array.from(elForm.children)
     if (childNodes < 2) return
     const lastNode = childNodes.pop() // 删除最后一个（搜索按钮组）
     const lastLeft = getLastNodeLeft(lastNode) // 搜索按钮组left
@@ -58,7 +58,8 @@ export function useFormLayout() {
 
   const hasExpand = () => {
     const maxHeight = proxy.$el.clientHeight
-    const childNodes = Array.from(proxy.$el.children)
+    const elForm = proxy.$refs['xForm'].$el
+    const childNodes = Array.from(elForm.children)
     const firstNode = childNodes[0]
     return firstNode && maxHeight > firstNode.clientHeight
   }

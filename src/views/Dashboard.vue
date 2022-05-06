@@ -9,7 +9,8 @@
       v-if="versionsState.visible"
       v-model:visible="versionsState.visible"
       :searchProps="versionsState.searchProps"
-      :shortcutProps="versionsState.shortcutProps">
+      :shortcutProps="versionsState.shortcutProps"
+      :customRequest="versionsState.customRequest">
       <template #scope>
         <a-space>
           <a-input-number></a-input-number>
@@ -17,9 +18,11 @@
           <a-input-number></a-input-number>
         </a-space>
       </template>
-      <template #renderItem="{ item, index }">
+      <template #renderItem="{ item, index, change }">
         <div class="box">
-          <a-checkbox v-model:checked="item.checked">{{ index }}</a-checkbox>
+          <a-checkbox v-model:checked="item.checked" @change="change($event.target.checked, item)">
+            {{ index }}
+          </a-checkbox>
           <x-image width="100%" :urls="item?.urls"></x-image>
           <div class="info">
             <p class="line">
@@ -41,7 +44,7 @@
 import { reactive } from 'vue'
 import XImage from '@components/Image'
 import Preview from '@components/Preview/index.vue'
-import Versions from '@business/Versions/index.vue'
+import Versions from '@business/Versions'
 export default {
   name: 'Dashboard',
   components: { XImage, Preview, Versions },
@@ -133,7 +136,12 @@ export default {
           }
         ]
       },
-      tableProps: {}
+      customRequest: async params => {
+        console.log(params, 'search')
+        return [{ id: 1 }, { id: 2 }, { id: 3 }, { id: 4 }, { id: 5 }, { id: 6 }, { id: 7 }, { id: 8 }, { id: 9 }].map(
+          val => ({ ...val, checked: false })
+        )
+      }
     })
     const handleVersions = () => {
       versionsState.visible = !versionsState.visible

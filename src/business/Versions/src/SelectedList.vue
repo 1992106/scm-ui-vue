@@ -1,0 +1,94 @@
+<template>
+  <x-table v-bind="tableProps">
+    <template #bodyCell="{ column, record }">
+      <template v-if="column.dataIndex === 'actions'">
+        <a-button type="link" @click="handleDel(record)">删除</a-button>
+      </template>
+      <template v-if="column.dataIndex === 'thumbnail'">
+        <x-image :width="50" :thumbnail="record?.fileList?.[0]?.thumbUrl" :urls="record?.fileList"></x-image>
+      </template>
+    </template>
+  </x-table>
+</template>
+<script>
+import { defineComponent, reactive, watch } from 'vue'
+import XTable from '@components/Table/index.vue'
+import XImage from '@components/Image'
+
+export default defineComponent({
+  name: 'SelectedList',
+  components: {
+    'x-table': XTable,
+    'x-image': XImage
+  },
+  props: {
+    rowKey: String,
+    scrollY: [String, Number],
+    selectedList: { type: Array, default: () => [] }
+  },
+  emits: ['del'],
+  setup(props, { emit }) {
+    const tableProps = reactive({
+      scroll: {
+        y: props.scrollY
+      },
+      rowKey: props.rowKey,
+      size: 'small',
+      columns: [
+        { title: '操作', width: 80, dataIndex: 'actions' },
+        { title: '缩略图', width: 120, dataIndex: 'thumbnail' },
+        {
+          title: '版型编号',
+          dataIndex: 'prototypeNo'
+        },
+        {
+          title: '版型分类',
+          minWidth: 200,
+          customRender: ({ record }) => {
+            return [record?.oneCategoryName, record?.twoCategoryName, record?.threeCategoryName]
+              .filter(Boolean)
+              .join('/')
+          }
+        },
+        {
+          title: '类型',
+          dataIndex: 'typeDesc'
+        },
+        {
+          title: '角色',
+          dataIndex: 'sizeRoleName'
+        },
+        {
+          title: '面料类型',
+          dataIndex: 'fabricsTypeDesc'
+        }
+      ],
+      dataSource: [],
+      showPagination: false
+    })
+
+    watch(
+      () => props.selectedList,
+      list => {
+        tableProps.dataSource = list.map(val => {
+          const fileList = val?.prototypeImgs || val?.fileList || val?.files || []
+          return {
+            ...val,
+            fileList
+          }
+        })
+      },
+      { deep: true, immediate: true }
+    )
+
+    const handleDel = row => {
+      emit('del', row)
+    }
+
+    return {
+      tableProps,
+      handleDel
+    }
+  }
+})
+</script>

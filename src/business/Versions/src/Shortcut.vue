@@ -1,7 +1,7 @@
 <template>
   <div class="shortcut-bar">
     <div class="title">更多搜索条件</div>
-    <x-form ref="xShortcut" layout="vertical" v-bind="$attrs" :columns="getColumns">
+    <x-form ref="xForm" layout="vertical" v-bind="$attrs" :columns="getColumns">
       <template v-for="slot of getSearchSlots" :key="slot" #[slot]="scope">
         <slot :name="slot" v-bind="scope"></slot>
       </template>
@@ -9,7 +9,7 @@
   </div>
 </template>
 <script>
-import { computed, defineComponent, ref } from 'vue'
+import { computed, defineComponent, ref, unref } from 'vue'
 import XForm from '@components/Form/index.vue'
 import { toDisabled } from '@components/Form/utils'
 
@@ -18,9 +18,8 @@ export default defineComponent({
   components: {
     'x-form': XForm
   },
-  emits: ['shortcut'],
-  setup(props, { emit, attrs }) {
-    const xShortcut = ref(null)
+  setup(props, { attrs }) {
+    const xForm = ref(null)
 
     // 搜索columns
     const getColumns = computed(() => {
@@ -28,21 +27,26 @@ export default defineComponent({
       return columns.map(column => toDisabled(column))
     })
 
-    // 搜索插槽
+    // 搜索slots
     const getSearchSlots = computed(() => {
       const columns = attrs?.columns || []
       return columns.map(col => col.slot).filter(Boolean)
     })
 
-    const handleShortcut = params => {
-      emit('shortcut', params)
+    const onGetFormValue = () => {
+      return unref(xForm)?.onGetFormValue?.()
+    }
+
+    const onResetFormValue = () => {
+      return unref(xForm)?.onResetFormValue?.()
     }
 
     return {
-      xShortcut,
+      xForm,
       getColumns,
       getSearchSlots,
-      handleShortcut
+      onGetFormValue,
+      onResetFormValue
     }
   }
 })
@@ -50,7 +54,6 @@ export default defineComponent({
 <style lang="scss" scoped>
 .shortcut-bar {
   width: 240px;
-  max-height: 400px;
   padding: 0 10px;
   border: 1px solid #c8c7cc;
   overflow-y: auto;

@@ -464,6 +464,7 @@ export default defineComponent({
     const hasToolBar = computed(() => !!slots['toolBar'])
 
     return {
+      xGrid,
       ...toRefs(state),
       simpleImage: Empty.PRESENTED_IMAGE_SIMPLE,
       hasSearchBar,
@@ -480,7 +481,6 @@ export default defineComponent({
       getScrollX,
       getScrollY,
       getTreeConfig,
-      xGrid,
       handlePageChange,
       handleShowSizeChange,
       handleRadioChange,

@@ -7,3 +7,6 @@ export { default as XLog } from './Log/index.vue'
 export { default as XRemark } from './Remark/index.vue'
 export { default as XEcharts } from './Echarts/index.vue'
 export { default as XEditor } from './Editor/index.vue'
+
+// 全局和按需引入
+export { default as XVersions } from './Versions'

@@ -14,11 +14,12 @@
       <x-table
         v-bind="tableOptions"
         v-model:pagination="pages"
+        :rowKey="rowKey"
         :showPagination="showPagination"
         :paginationConfig="paginationConfig"
         @search="handleSearch">
         <template #bodyCell="{ column, record: { attachments } }">
-          <template v-if="column.key === 'attachments'">
+          <template v-if="column.dataIndex === 'attachments'">
             <template v-if="attachments.length">
               <a-button v-for="file in attachments" :key="file?.id" type="link" @click="handleDownload(file)">
                 {{ file?.fileName }}
@@ -74,7 +75,8 @@ export default defineComponent({
   props: {
     title: { type: String, default: '备注' },
     width: { type: [String, Number], default: 960 },
-    scrollY: { type: Number, default: 360 },
+    rowKey: { type: [String, Function], default: 'id' },
+    scrollY: { type: [String, Number], default: 360 },
     maxlength: { type: Number, default: 200 },
     visible: { type: Boolean, default: false },
     customRequest: { type: Function, require: true },
@@ -111,6 +113,7 @@ export default defineComponent({
       scroll: {
         y: props.scrollY
       },
+      rowKey: props.rowKey,
       size: 'small',
       columns: [
         {
@@ -129,7 +132,7 @@ export default defineComponent({
           }
         },
         { title: '备注内容', minWidth: 200, dataIndex: 'content' },
-        { title: '附件', minWidth: 120, key: 'attachments' }
+        { title: '附件', minWidth: 120, dataIndex: 'attachments' }
       ],
       dataSource: [],
       total: 0
