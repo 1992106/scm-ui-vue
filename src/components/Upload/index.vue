@@ -3,9 +3,10 @@
     v-bind="$attrs"
     v-model:file-list="files"
     class="x-upload"
-    :accept="accept"
     :list-type="listType"
     :show-upload-list="showUploadList"
+    :accept="accept"
+    :max-count="limit"
     :before-upload="beforeUpload"
     :custom-request="handleCustomRequest"
     @change="handleChange"
@@ -41,12 +42,12 @@ export default defineComponent({
     customRequest: { type: Function },
     listType: { type: String, default: 'picture-card' },
     showUploadList: { type: [Boolean, Object], default: true },
-    accept: { type: String, default: 'image/*' },
     mode: { type: String, default: 'upload' }, // 'upload'、'preview'
+    accept: { type: String }, // 'image/*'、'application/*'、'audio/*'、'video/*'
     size: { type: Number },
     limit: { type: Number }
   },
-  emits: ['update:file-list', 'change', 'preview'],
+  emits: ['update:file-list', 'change', 'preview', 'download'],
   setup(props, { emit }) {
     const state = reactive({
       files: [],
@@ -56,25 +57,23 @@ export default defineComponent({
       previewCurrent: 0
     })
 
-    const hasImage = () => {
-      return ['.png', '.jpg', '.jpeg', '.gif', 'image/'].some(val => props.accept.includes(val))
-    }
-    const hasDocument = () => {
-      return ['.doc', '.docx', '.xls', '.xlsx', '.ppt', '.pptx', '.pdf', '.zip', 'application/'].some(val =>
-        props.accept.includes(val)
-      )
-    }
-
     // 上传前校验
     const beforeUpload = file => {
       // 格式
       let isAccept = true
       if (!isEmpty(props.accept)) {
         const accepts = props.accept.split(',')
-        if (hasDocument()) {
-          isAccept = accepts.some(val => file.type.endsWith(val)) || file.type.startsWith('application/')
-        } else if (hasImage()) {
+        if (props.accept.includes('image/')) {
           isAccept = accepts.some(val => file.type.endsWith(val)) || file.type.startsWith('image/')
+        }
+        if (props.accept.includes('application/')) {
+          isAccept = accepts.some(val => file.type.endsWith(val)) || file.type.startsWith('application/')
+        }
+        if (props.accept.includes('audio/')) {
+          isAccept = accepts.some(val => file.type.endsWith(val)) || file.type.startsWith('audio/')
+        }
+        if (props.accept.includes('video/')) {
+          isAccept = accepts.some(val => file.type.endsWith(val)) || file.type.startsWith('video/')
         }
       }
       if (!isAccept) {
@@ -89,69 +88,6 @@ export default defineComponent({
         message.error(`不能大于${props.size}M`)
       }
       return isLtM && isAccept
-    }
-
-    // 上传图片
-    const handleCustomRequest = async options => {
-      const { customRequest } = props
-      if (!isFunction(customRequest)) return
-      const currentFile = options?.file
-      try {
-        const data = await customRequest(currentFile)
-        const file = {
-          ...data,
-          uid: data?.id,
-          name: data?.fileName,
-          status: 'done',
-          thumbUrl: data?.url || data?.thumbUrl,
-          url: data?.url
-        }
-        const index = state.files.findIndex(val => val?.uid === currentFile?.uid)
-        state.files.splice(index, 1, file)
-        emit('update:file-list', state.files)
-        emit('change', { file, fileList: state.files })
-      } catch (e) {
-        // 上传失败
-        const file = state.files.find(val => val.status === 'uploading')
-        file.status = 'error'
-        // 延时手动删除上传失败的图片
-        setTimeout(() => {
-          const index = state.files.find(val => val.status === 'error')
-          if (index !== -1) {
-            state.files.splice(index, 1)
-          }
-        }, 500)
-      }
-    }
-
-    // 上传文件改变时的状态
-    const handleChange = data => {
-      const { file, fileList } = data
-      if (file.status === 'removed') {
-        state.files = fileList.filter(val => val.status === 'done')
-        emit('update:file-list', state.files)
-        emit('change', { file, fileList })
-      } else if (file.status === undefined) {
-        // TODO: 过滤限制上传的图片
-        state.files = fileList.filter(val => val?.status !== undefined)
-      }
-    }
-
-    // 预览图片
-    const handlePreview = file => {
-      if (props.listType === 'text' && props.showUploadList?.showPreviewIcon === false) {
-        return false
-      }
-      const list = state.files.filter(val => val.status === 'done')
-      state.previewCurrent = list.findIndex(v => v.id === file.id)
-      state.previewVisible = true
-      emit('preview', file)
-    }
-
-    // 下载图片
-    const handleDownload = file => {
-      message.info('正在下载中...')
-      downloadByUrl(file.url, file.name)
     }
 
     watch(
@@ -175,9 +111,70 @@ export default defineComponent({
       { immediate: true, deep: true }
     )
 
+    // 上传图片
+    const handleCustomRequest = async options => {
+      const { customRequest } = props
+      if (!isFunction(customRequest)) return
+      const { file } = options
+      try {
+        const data = await customRequest(file)
+        // 上传成功，status: 'done'
+        const uploadFile = {
+          ...data,
+          uid: data?.id,
+          name: data?.fileName,
+          status: 'done',
+          thumbUrl: data?.url || data?.thumbUrl,
+          url: data?.url
+        }
+        const index = state.files.findIndex(val => val?.uid === file?.uid)
+        state.files.splice(index, 1, uploadFile)
+        emit('update:file-list', state.files)
+        emit('change', { file: uploadFile, fileList: state.files })
+      } catch (e) {
+        // 上传失败, status: 'error'
+        const uploadFile = state.files.find(val => val?.uid === file?.uid)
+        uploadFile.status = 'error'
+        // 手动删除上传失败的图片
+        setTimeout(() => {
+          state.files = state.files.filter(val => val?.status === 'done')
+        }, 500)
+      }
+    }
+
+    // 上传文件改变时的状态, 状态：uploading done error removed
+    const handleChange = data => {
+      const { file, fileList } = data
+      if (file.status === 'removed') {
+        state.files = fileList.filter(val => val.status === 'done')
+        emit('update:file-list', state.files)
+        emit('change', { file, fileList })
+      } else if (file.status === undefined) {
+        // TODO: 过滤限制上传的图片
+        state.files = fileList.filter(val => val?.status !== undefined)
+      }
+    }
+
+    // 预览图片
     watchEffect(() => {
       state.previewUrls = state.files.filter(val => val.status === 'done').map(val => val?.url)
     })
+    const handlePreview = file => {
+      if (props.listType === 'text' && props.showUploadList?.showPreviewIcon === false) {
+        return false
+      }
+      const list = state.files.filter(val => val.status === 'done')
+      state.previewCurrent = list.findIndex(v => v.id === file.id)
+      state.previewVisible = true
+      emit('preview', file)
+    }
+
+    // 下载图片
+    const handleDownload = file => {
+      message.info('正在下载中...')
+      downloadByUrl(file.url, file.name)
+      emit('download', file)
+    }
 
     return {
       ...toRefs(state),
