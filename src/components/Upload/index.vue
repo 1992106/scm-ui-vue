@@ -112,13 +112,14 @@ export default defineComponent({
     )
 
     // 上传图片
-    const handleCustomRequest = async options => {
+    const handleCustomRequest = async option => {
       const { customRequest } = props
       if (!isFunction(customRequest)) return
-      const { file } = options
+      const { file } = option
       try {
         const data = await customRequest(file)
-        // 上传成功，status: 'done'
+        // 上传成功（status: 'done'）
+        // 没有触发option.onSuccess()，手动设置状态为 'done'
         const uploadFile = {
           ...data,
           uid: data?.id,
@@ -132,7 +133,8 @@ export default defineComponent({
         emit('update:file-list', state.files)
         emit('change', { file: uploadFile, fileList: state.files })
       } catch (e) {
-        // 上传失败, status: 'error'
+        // 上传失败（status: 'error'）
+        // 没有触发option.onError()，手动设置状态为 'error'
         const uploadFile = state.files.find(val => val?.uid === file?.uid)
         uploadFile.status = 'error'
         // 手动删除上传失败的图片
@@ -142,9 +144,11 @@ export default defineComponent({
       }
     }
 
-    // 上传文件改变时的状态, 状态：uploading done error removed
+    // 上传文件改变时的状态（'uploading' 'done' 'error' 'removed'）
+    // 因为自定义customRequest方法没有调用onSuccess和onError方法，所以不会触发状态为 'done' 和 'error' change事件
     const handleChange = data => {
       const { file, fileList } = data
+      // 移除
       if (file.status === 'removed') {
         state.files = fileList.filter(val => val.status === 'done')
         emit('update:file-list', state.files)
@@ -169,7 +173,7 @@ export default defineComponent({
       emit('preview', file)
     }
 
-    // 下载图片
+    // 下载
     const handleDownload = file => {
       message.info('正在下载中...')
       downloadByUrl(file.url, file.name)
