@@ -21,8 +21,8 @@
           :versionsList="versionsList"
           :rowProps="rowProps"
           :colProps="colProps"
-          :emptyText="emptyText"
           :total="total"
+          :emptyText="emptyText"
           @search="handleSearch"
           @add="handleAdd"
           @del="handleDel">

@@ -30,9 +30,9 @@ export default defineComponent({
     versionsList: { type: Array, default: () => [] },
     rowProps: Object,
     colProps: Object,
-    emptyText: String,
     total: Number,
-    pagination: Object
+    pagination: Object,
+    emptyText: String
   },
   emits: ['update:pagination', 'search', 'add', 'del'],
   setup(props, { emit }) {
