@@ -1,29 +1,51 @@
 <template>
   <div class="versions-list">
-    <a-row v-if="versionsList.length" v-bind="rowProps">
-      <a-col v-for="(item, index) in versionsList" :key="index" v-bind="colProps">
-        <slot name="renderItem" :item="item" :index="index" :change="handleChange"></slot>
-      </a-col>
-    </a-row>
+    <template v-if="versionsList.length">
+      <div class="scroll">
+        <a-row v-bind="rowProps">
+          <a-col v-for="(item, index) in versionsList" :key="index" v-bind="colProps">
+            <slot name="renderItem" :item="item" :index="index" :change="handleChange"></slot>
+          </a-col>
+        </a-row>
+      </div>
+      <!--分页-->
+      <x-pagination v-model:pagination="pages" :total="total" />
+    </template>
     <template v-else>
       <a-empty :image="simpleImage" :description="emptyText" />
     </template>
   </div>
 </template>
 <script>
-import { defineComponent } from 'vue'
+import { defineComponent, computed } from 'vue'
 import { Empty } from 'ant-design-vue'
+import XPagination from '@components/Pagination/index.vue'
 
 export default defineComponent({
   name: 'VersionsList',
+  components: {
+    'x-pagination': XPagination
+  },
   props: {
     versionsList: { type: Array, default: () => [] },
     rowProps: Object,
     colProps: Object,
-    emptyText: String
+    emptyText: String,
+    total: Number,
+    pagination: Object
   },
-  emits: ['add', 'del'],
+  emits: ['update:pagination', 'search', 'add', 'del'],
   setup(props, { emit }) {
+    const pages = computed({
+      get: () => {
+        return props.pagination
+      },
+      set: val => {
+        emit('update:pagination', val)
+        emit('search')
+      }
+    })
+
     const handleChange = (bool, row) => {
       if (bool) {
         emit('add', row)
@@ -34,6 +56,7 @@ export default defineComponent({
 
     return {
       simpleImage: Empty.PRESENTED_IMAGE_SIMPLE,
+      pages,
       handleChange
     }
   }
@@ -41,10 +64,21 @@ export default defineComponent({
 </script>
 <style lang="scss" scoped>
 .versions-list {
+  display: flex;
+  flex-direction: column;
   flex: 1;
-  padding: 10px 20px;
   border: 1px solid #c8c7cc;
   margin-left: 15px;
-  overflow-y: auto;
+  min-height: 360px;
+
+  .scroll {
+    flex: 1;
+    padding: 10px 20px 0;
+    overflow-y: auto;
+  }
+
+  .ant-pagination {
+    padding: 10px 20px;
+  }
 }
 </style>

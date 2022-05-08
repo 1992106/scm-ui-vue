@@ -17,10 +17,13 @@
       <div class="content">
         <Shortcut ref="xShortcut" v-bind="shortcutProps"></Shortcut>
         <VersionsList
+          v-model:pagination="pages"
           :versionsList="versionsList"
           :rowProps="rowProps"
           :colProps="colProps"
           :emptyText="emptyText"
+          :total="total"
+          @search="handleSearch"
           @add="handleAdd"
           @del="handleDel">
           <template #renderItem="scope">
@@ -86,6 +89,9 @@ export default defineComponent({
 
     const state = reactive({
       spinning: false,
+      searchParams: {},
+      pages: { page: 1, pageSize: 20 },
+      total: 0,
       cloneList: [],
       versionsList: [],
       selectedList: []
@@ -100,18 +106,24 @@ export default defineComponent({
     const handleSearch = async params => {
       const { customRequest } = props
       if (!isFunction(customRequest)) return
+      // 初始化和分页时参数为空
+      if (params) {
+        state.searchParams = params
+      }
       state.spinning = true
       state.cloneList = []
       state.versionsList = []
       const shortcutParams = xShortcut.value?.onGetFormValues?.()
       const data = await customRequest({
-        ...(isEmpty(params) ? {} : params),
+        ...(isEmpty(state.searchParams) ? {} : state.searchParams),
+        ...state.pages,
         ...(isEmpty(shortcutParams) ? {} : shortcutParams)
       })
       state.spinning = false
-      state.cloneList = cloneDeep(data) // 备份数据
+      const list = data?.data ?? data?.list ?? []
+      state.cloneList = cloneDeep(list) // 备份数据
       if (state.selectedList.length) {
-        state.versionsList = (data || []).map(item => {
+        state.versionsList = (list || []).map(item => {
           const newItem = state.selectedList.find(val => item?.[props.rowKey] === val?.[props.rowKey])
           return {
             ...item,
@@ -119,11 +131,14 @@ export default defineComponent({
           }
         })
       } else {
-        state.versionsList = data
+        state.versionsList = list
       }
+      state.total = data?.total || 0
     }
 
     const handleReset = () => {
+      state.searchParams = {}
+      state.pages = { page: 1, pageSize: 20 }
       xShortcut.value?.onResetFields?.()
     }
 

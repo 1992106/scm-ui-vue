@@ -157,7 +157,7 @@ export default defineComponent({
     const hasShortcut = computed(() => !!slots['shortcut'])
     const hasToolBar = computed(() => !!slots['toolBar'])
 
-    // 初始化调用一下，获取查询参数
+    // 初始化调用一下，获取搜索参数
     const onInit = () => {
       handleSearch()
       handleQuery()

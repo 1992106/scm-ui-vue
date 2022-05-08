@@ -94,6 +94,9 @@ export default defineComponent({
       }
     })
 
+    // 页码配置
+    const getPaginationConfig = computed(() => mergeProps(defaultState.defaultPaginationConfig, props.paginationConfig))
+
     // 加载
     const spinProps = computed(() => {
       return typeof props.loading === 'object' ? props.loading : { spinning: props.loading }
@@ -104,7 +107,6 @@ export default defineComponent({
       const columns = props.searchProps.columns
       return (columns || []).map(col => col.slot).filter(Boolean)
     })
-    const getPaginationConfig = computed(() => mergeProps(defaultState.defaultPaginationConfig, props.paginationConfig))
 
     // 页码
     const handlePageChange = (current, pageSize) => {
@@ -145,7 +147,18 @@ export default defineComponent({
     const hasShortcut = computed(() => !!slots['shortcut'])
     const hasToolBar = computed(() => !!slots['toolBar'])
 
-    onMounted(() => {})
+    // 初始化时，获取搜索参数
+    const onInit = () => {
+      const params = xSearch.value?.onGetFormValues?.()
+      emit('update:value', {
+        ...params,
+        ...(props.showPagination ? state.pagination : {})
+      })
+    }
+
+    onMounted(() => {
+      onInit()
+    })
 
     return {
       xSearch,
