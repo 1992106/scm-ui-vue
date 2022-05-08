@@ -1,20 +1,28 @@
 <template>
   <x-modal
+    v-bind="$attrs"
     v-model:visible="modalVisible"
+    class="x-versions-dialog"
     :title="title"
     :width="width"
     destroyOnClose
     @ok="handleOk"
     @cancel="handleCancel">
     <div class="x-versions">
-      <x-search ref="xSearch" show-expand v-bind="searchProps" @search="handleSearch" @reset="handleReset">
+      <x-search ref="xSearch" v-bind="searchProps" @search="handleSearch" @reset="handleReset">
         <template v-for="slot of getSearchSlots" :key="slot" #[slot]="scope">
           <slot :name="slot" v-bind="scope"></slot>
         </template>
       </x-search>
       <div class="content">
         <Shortcut ref="xShortcut" v-bind="shortcutProps"></Shortcut>
-        <VersionsList :versionsList="versionsList" :emptyText="emptyText" @add="handleAdd" @del="handleDel">
+        <VersionsList
+          :versionsList="versionsList"
+          :rowProps="rowProps"
+          :colProps="colProps"
+          :emptyText="emptyText"
+          @add="handleAdd"
+          @del="handleDel">
           <template #renderItem="scope">
             <slot name="renderItem" v-bind="scope"></slot>
           </template>
@@ -22,7 +30,11 @@
       </div>
       <div class="selected-list">
         <div class="total">已选中{{ selectedList.length }}条</div>
-        <SelectedList :rowKey="rowKey" :scrollY="scrollY" :selectedList="selectedList" @del="handleDel"></SelectedList>
+        <SelectedList
+          :rowKey="rowKey"
+          :selectedList="selectedList"
+          :emptyText="emptyText"
+          @del="handleDel"></SelectedList>
       </div>
     </div>
   </x-modal>
@@ -46,18 +58,18 @@ export default defineComponent({
     VersionsList,
     SelectedList
   },
+  inheritAttrs: false,
   props: {
     visible: { type: Boolean, default: false },
     title: { type: String, default: '版型库' },
     width: { type: [String, Number], default: '80%' },
     rowKey: { type: String, default: 'id' },
-    scrollY: { type: [String, Number], default: 400 },
     manual: { type: Boolean, default: false },
     searchProps: { type: Object, default: () => ({}) },
     shortcutProps: { type: Object, default: () => ({}) },
     customRequest: { type: Function, require: true },
-    rowProps: Object,
-    colProps: Object,
+    rowProps: { type: Object, default: () => ({ gutter: 24, wrap: true }) },
+    colProps: { type: Object, default: () => ({ span: 6 }) },
     emptyText: { type: String, default: '暂无数据' }
   },
   emits: ['update:visible', 'done'],
@@ -175,10 +187,20 @@ export default defineComponent({
 
   .selected-list {
     display: flex;
-    flex: 1;
     flex-direction: column;
     padding: 10px;
     border: 1px solid #c8c7cc;
+
+    .total {
+      margin-bottom: 6px;
+    }
+  }
+}
+</style>
+<style lang="scss">
+.x-versions-dialog {
+  &.x-modal {
+    top: 24px;
   }
 }
 </style>

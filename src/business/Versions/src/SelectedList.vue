@@ -23,16 +23,17 @@ export default defineComponent({
   },
   props: {
     rowKey: String,
-    scrollY: [String, Number],
-    selectedList: { type: Array, default: () => [] }
+    selectedList: { type: Array, default: () => [] },
+    emptyText: String
   },
   emits: ['del'],
   setup(props, { emit }) {
     const tableProps = reactive({
       scroll: {
-        y: props.scrollY
+        y: 400
       },
       rowKey: props.rowKey,
+      emptyText: props.emptyText,
       size: 'small',
       columns: [
         { title: '操作', width: 100, dataIndex: 'actions' },

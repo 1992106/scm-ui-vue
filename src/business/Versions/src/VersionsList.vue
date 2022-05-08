@@ -1,7 +1,7 @@
 <template>
   <div class="versions-list">
-    <a-row v-if="versionsList.length" :gutter="24" wrap v-bind="rowProps">
-      <a-col v-for="(item, index) in versionsList" :key="index" :span="6" v-bind="colProps">
+    <a-row v-if="versionsList.length" v-bind="rowProps">
+      <a-col v-for="(item, index) in versionsList" :key="index" v-bind="colProps">
         <slot name="renderItem" :item="item" :index="index" :change="handleChange"></slot>
       </a-col>
     </a-row>

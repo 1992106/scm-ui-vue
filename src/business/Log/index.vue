@@ -1,9 +1,9 @@
 <template>
   <a-config-provider :locale="zhCn">
     <x-drawer
+      class="x-log"
       v-bind="$attrs"
       v-model:visible="modalVisible"
-      class="x-log"
       :title="title"
       :width="width"
       :spin-props="spinning"

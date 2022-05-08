@@ -17,7 +17,8 @@ type SpinProps = {
 const ModalProps = {
   visible: Boolean,
   destroyOnClose: Boolean,
-  wrapClassName: String
+  wrapClassName: String,
+  class: String
 }
 
 const XModal = defineComponent({
@@ -74,10 +75,8 @@ const XModal = defineComponent({
       )
     }
 
-    const wrapClassName = computed(
-      () =>
-        `${props.wrapClassName ? props.wrapClassName : ''}
-        ${unref(fullScreenRef) ? 'x-model-fullscreen' : ''}`
+    const wrapClassName = computed(() =>
+      [props.wrapClassName, `${unref(fullScreenRef) ? 'x-model-fullscreen' : ''}`].filter(Boolean).join(' ')
     )
 
     const handleCancel = () => {
@@ -96,6 +95,7 @@ const XModal = defineComponent({
         {...props}
         {...ctx.attrs}
         wrapClassName={unref(wrapClassName)}
+        class={['x-modal', props?.class]}
         closeIcon={renderIcon()}
         title={ctx.slots?.title?.() || ctx.attrs?.title}
         footer={ctx.slots?.footer?.() || ctx.attrs?.footer}
