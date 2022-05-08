@@ -38,9 +38,9 @@
 | columns | 表格列配置 | Array | `[]` |
 | data | 表格数据 | Array | `[]` |
 | loading | 表格 loading | Boolean | `false` |
-| total | 数据总数 | Number | `0` |
 | emptyText | 空数据显示的内容 | String | `暂无数据` |
 | showPagination | 是否显示分页 | Boolean | `true` |
+| total | 数据总数 | Number | `0` |
 | v-model:pagination | 当前页数和每页条数 | Object | `{ page: 1, pageSize: 20 }` |
 | paginationConfig | 分页配置项 | Object | `{ size: 'default', defaultPageSize: 20, showSizeChanger: true, showQuickJumper: true, showTotal: total => `共 ${total} 条`, pageSizeOptions: ['20', '40', '60', '80', '100'] }` |
 | height | 表格高度 | [Number, String] | `auto` |

@@ -1,7 +1,7 @@
 <template>
   <div class="x-page">
     <a-spin v-bind="spinProps">
-      <x-search ref="xSearch" v-bind="searchProps" @search="handleSearch" @reset="handleReset" @clear="handleClear">
+      <x-search ref="xSearch" v-bind="searchProps" @search="handleSearch" @reset="emitReset" @clear="emitClear">
         <template v-for="slot of getSearchSlots" :key="slot" #[slot]="scope">
           <slot :name="slot" v-bind="scope"></slot>
         </template>
@@ -20,18 +20,17 @@
       <div class="x-page-container">
         <slot>
           <div v-if="dataSource.length" class="section">
-            <template v-for="(item, index) in dataSource">
-              <slot name="renderItem" :item="item" :index="index"></slot>
-            </template>
-            <!--分页-->
-            <a-pagination
-              v-if="showPagination"
-              v-bind="getPaginationConfig"
-              :current="pagination.page"
-              :page-size="pagination.pageSize"
+            <div class="scroll">
+              <template v-for="(item, index) in dataSource">
+                <slot name="renderItem" :item="item" :index="index"></slot>
+              </template>
+            </div>
+            <x-pagination
+              v-model:pagination="pages"
               :total="total"
-              @change="handlePageChange"
-              @showSizeChange="handleShowSizeChange" />
+              :showPagination="showPagination"
+              :paginationConfig="paginationConfig"
+              @change="handlePageChange" />
           </div>
           <div v-else class="empty">
             <a-empty :image="simpleImage" :description="emptyText" />
@@ -43,16 +42,18 @@
 </template>
 
 <script>
-import { computed, defineComponent, mergeProps, onMounted, reactive, ref, toRefs, watchEffect } from 'vue'
-import { Empty, Pagination, Spin } from 'ant-design-vue'
+import { computed, defineComponent, onMounted, reactive, ref, toRef, toRefs, unref, watch, watchEffect } from 'vue'
+import { Empty, Spin } from 'ant-design-vue'
 import XSearch from '@components/Search/index.vue'
+import XPagination from '@components/Pagination/index.vue'
+import { useSearch } from '@hooks/useSearch'
 import { isEmpty } from '@src/utils'
 
 export default defineComponent({
   name: 'XPage',
   components: {
     'x-search': XSearch,
-    'a-pagination': Pagination,
+    'x-pagination': XPagination,
     'a-spin': Spin,
     'a-empty': Empty
   },
@@ -63,39 +64,20 @@ export default defineComponent({
     // 数据
     dataSource: { type: Array, default: () => [] },
     loading: { type: [Boolean, Object], default: false },
-    total: { type: Number, default: 0 },
     emptyText: { type: String, default: '暂无数据' },
     // 页码
     showPagination: { type: Boolean, default: true },
-    pagination: { type: Object, default: () => ({ page: 1, pageSize: 20 }) },
+    total: { type: Number, default: 0 },
+    pagination: { type: Object, default: () => ({}) },
     paginationConfig: Object
   },
-  emits: ['update:value', 'update:pagination', 'search', 'reset', 'clear'],
+  emits: ['update:value', 'search', 'reset', 'clear'],
   setup(props, { emit, slots }) {
     const xSearch = ref(null)
 
-    const defaultState = {
-      defaultPaginationConfig: {
-        defaultPageSize: 20,
-        showSizeChanger: true,
-        showQuickJumper: true,
-        showTotal: total => `共 ${total} 条`,
-        pageSizeOptions: ['20', '40', '60', '80', '100']
-      }
-    }
-
     const state = reactive({
-      pagination: props.pagination
+      pages: { page: 1, pageSize: 20 }
     })
-
-    watchEffect(() => {
-      if (!isEmpty(props.pagination)) {
-        state.pagination = props.pagination
-      }
-    })
-
-    // 页码配置
-    const getPaginationConfig = computed(() => mergeProps(defaultState.defaultPaginationConfig, props.paginationConfig))
 
     // 加载
     const spinProps = computed(() => {
@@ -108,37 +90,57 @@ export default defineComponent({
       return (columns || []).map(col => col.slot).filter(Boolean)
     })
 
-    // 页码
-    const handlePageChange = (current, pageSize) => {
-      const pagination = {
-        page: current,
-        pageSize
+    // 页码默认赋值
+    watchEffect(() => {
+      if (!isEmpty(props.pagination)) {
+        state.pages = props.pagination
       }
-      emit('update:pagination', pagination)
-      emit('search')
-    }
-    const handleShowSizeChange = (_, pageSize) => {
-      const pagination = {
-        page: 1,
-        pageSize
+    })
+
+    // TODO：监听页码，当页码为1时，重置页码（快捷搜索用到）
+    watch(
+      () => props.value?.page,
+      page => {
+        if (page && page === 1) {
+          state.pages.page = 1
+        }
       }
-      emit('update:pagination', pagination)
-      emit('search')
+    )
+
+    const emitSearch = (params = {}) => {
+      // 点击按钮筛选时，需要重置页码
+      if (params.page) {
+        state.pages.page = params.page
+      }
+      emit('update:value', {
+        ...params,
+        ...(props.showPagination ? state.pages : {})
+      })
+      emit('search', { ...params, ...(props.showPagination ? state.pages : {}) })
     }
 
-    const handleSearch = $event => {
-      emit('update:value', $event)
-      emit('search', $event)
+    const emitReset = $event => {
+      handleReset($event)
+      emit('update:value', { ...$event, ...(props.showPagination ? state.pages : {}) })
+      emit('reset', { ...$event, ...(props.showPagination ? state.pages : {}) })
     }
 
-    const handleReset = $event => {
-      emit('update:value', $event)
-      emit('reset', $event)
+    const emitClear = $event => {
+      handleClear($event)
+      emit('update:value', { ...$event, ...(props.showPagination ? state.pages : {}) })
+      emit('clear', { ...$event, ...(props.showPagination ? state.pages : {}) })
     }
 
-    const handleClear = $event => {
-      emit('update:value', $event)
-      emit('clear', $event)
+    const { paramsRef, handleQuery, handleSearch, handleReset, handleClear } = useSearch(
+      emitSearch,
+      false,
+      toRef(props, 'searchProps'),
+      null
+    )
+
+    // 分页
+    const handlePageChange = () => {
+      handleQuery()
     }
 
     // 是否显示插槽
@@ -147,12 +149,13 @@ export default defineComponent({
     const hasShortcut = computed(() => !!slots['shortcut'])
     const hasToolBar = computed(() => !!slots['toolBar'])
 
-    // 初始化时，获取搜索参数
+    // 初始化调用一下，获取搜索参数
     const onInit = () => {
-      const params = xSearch.value?.onGetFormValues?.()
+      handleSearch()
+      handleQuery()
       emit('update:value', {
-        ...params,
-        ...(props.showPagination ? state.pagination : {})
+        ...unref(paramsRef),
+        ...(props.showPagination ? state.pages : {})
       })
     }
 
@@ -162,20 +165,19 @@ export default defineComponent({
 
     return {
       xSearch,
-      ...toRefs(state),
       simpleImage: Empty.PRESENTED_IMAGE_SIMPLE,
+      ...toRefs(state),
       hasSearchBar,
       hasExtra,
       hasShortcut,
       hasToolBar,
       spinProps,
       getSearchSlots,
-      getPaginationConfig,
-      handleSearch,
-      handleReset,
-      handleClear,
       handlePageChange,
-      handleShowSizeChange
+      handleQuery,
+      handleSearch,
+      emitReset,
+      emitClear
     }
   }
 })
@@ -216,7 +218,15 @@ export default defineComponent({
     background-color: #fff;
 
     .section {
-      flex: 1;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+
+      .scroll {
+        flex: 1;
+        padding: 10px 10px 0;
+        overflow-y: auto;
+      }
     }
 
     .empty {
@@ -228,8 +238,6 @@ export default defineComponent({
 
     .ant-pagination {
       padding: 10px;
-      text-align: right;
-      background-color: #fff;
     }
   }
 }

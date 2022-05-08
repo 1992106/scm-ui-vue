@@ -120,10 +120,10 @@ export default defineComponent({
     // 表格数据
     data: { type: Array, default: () => [] },
     loading: { type: Boolean, default: false },
-    total: { type: Number, default: 0 },
     emptyText: { type: String, default: '暂无数据' },
     // 页码
     showPagination: { type: Boolean, default: true },
+    total: { type: Number, default: 0 },
     pagination: { type: Object, default: () => ({ page: 1, pageSize: 20 }) },
     paginationConfig: Object,
     // 高度
@@ -467,8 +467,8 @@ export default defineComponent({
 
     return {
       xGrid,
-      ...toRefs(state),
       simpleImage: Empty.PRESENTED_IMAGE_SIMPLE,
+      ...toRefs(state),
       hasSearchBar,
       hasToolBar,
       getGridSlots,

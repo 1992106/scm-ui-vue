@@ -11,9 +11,9 @@
       <!--分页-->
       <x-pagination v-model:pagination="pages" :total="total" />
     </template>
-    <template v-else>
+    <div v-else class="empty">
       <a-empty :image="simpleImage" :description="emptyText" />
-    </template>
+    </div>
   </div>
 </template>
 <script>
@@ -73,8 +73,15 @@ export default defineComponent({
 
   .scroll {
     flex: 1;
-    padding: 10px 20px 0;
+    padding: 20px 20px 0;
     overflow-y: auto;
+  }
+
+  .empty {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .ant-pagination {

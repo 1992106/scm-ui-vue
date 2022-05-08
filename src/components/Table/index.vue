@@ -60,10 +60,10 @@ export default defineComponent({
     // 表格数据
     dataSource: { type: Array, default: () => [] },
     loading: { type: [Boolean, Object], default: false },
-    total: { type: Number, default: 0 },
     transformCellText: { type: Function, default: null },
     // 页码
     showPagination: { type: Boolean, default: true },
+    total: { type: Number, default: 0 },
     pagination: { type: Object, default: () => ({ page: 1, pageSize: 20 }) },
     paginationConfig: Object,
     // 额外高度

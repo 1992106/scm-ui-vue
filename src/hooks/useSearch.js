@@ -65,8 +65,8 @@ export function useSearch(fn, isResize = true, searchProps, gridProps) {
 
   const init = () => {
     if (unref(isDefaultSearch) && unref(isDefaultQuery)) {
-      searchParams.value = useDefaultValue(unref(searchProps).columns)
-      filterParams.value = useDefaultValue(unref(gridProps).columns)
+      searchParams.value = useDefaultValue(unref(searchProps)?.columns)
+      filterParams.value = gridProps ? useDefaultValue(unref(gridProps)?.columns) : {}
     }
   }
 
