@@ -83,5 +83,6 @@ export default defineComponent({
 <style lang="scss" scoped>
 .ant-pagination {
   text-align: right;
+  background-color: #fff;
 }
 </style>

@@ -86,22 +86,20 @@
     <!--分页-->
     <template v-if="data.length" #pager>
       <slot name="pagination">
-        <a-pagination
-          v-if="showPagination"
-          v-bind="getPaginationConfig"
-          :current="pagination.page"
-          :page-size="pagination.pageSize"
+        <x-pagination
+          v-model:pagination="pages"
+          :showPagination="showPagination"
           :total="total"
-          @change="handlePageChange"
-          @showSizeChange="handleShowSizeChange" />
+          :paginationConfig="paginationConfig" />
       </slot>
     </template>
   </vxe-grid>
 </template>
 <script>
 import { defineComponent, reactive, ref, computed, toRefs, unref, mergeProps, watchEffect } from 'vue'
-import { Empty, Pagination } from 'ant-design-vue'
+import { Empty } from 'ant-design-vue'
 import ColumnSetting from './ColumnSetting.vue'
+import XPagination from '@components/Pagination/index.vue'
 import { columnsToStorage, getField, mergeStorageAndColumns, storageToColumns } from './utils'
 import { cloneDeep } from 'lodash-es'
 import { isEmpty } from '@src/utils'
@@ -110,7 +108,7 @@ export default defineComponent({
   name: 'XGrid',
   components: {
     ColumnSetting,
-    'a-pagination': Pagination,
+    'x-pagination': XPagination,
     'a-empty': Empty
   },
   inheritAttrs: false,
@@ -206,13 +204,6 @@ export default defineComponent({
      * 默认值
      */
     const defaultState = {
-      defaultPaginationConfig: {
-        defaultPageSize: 20,
-        showSizeChanger: true,
-        showQuickJumper: true,
-        showTotal: total => `共 ${total} 条`,
-        pageSizeOptions: ['20', '40', '60', '80', '100']
-      },
       defaultRowConfig: { isHover: true, isCurrent: true },
       defaultColumnConfig: { resizable: true },
       defaultRadioConfig: { highlight: true },
@@ -259,6 +250,16 @@ export default defineComponent({
     /**
      * 计算属性
      */
+    const pages = computed({
+      get: () => {
+        return props.pagination
+      },
+      set: val => {
+        emit('update:pagination', val)
+        emit('search')
+        // xGrid.value.loadData()
+      }
+    })
     const generateSlots = (columns, slots = []) => {
       columns.forEach(column => {
         slots.push(column)
@@ -276,7 +277,6 @@ export default defineComponent({
             .filter(Boolean)
         )
     })
-    const getPaginationConfig = computed(() => mergeProps(defaultState.defaultPaginationConfig, props.paginationConfig))
     const getRowConfig = computed(() => mergeProps(defaultState.defaultRowConfig, props.rowConfig))
     const getColumnConfig = computed(() => mergeProps(defaultState.defaultColumnConfig, props.columnConfig))
     const getRadioConfig = computed(() => mergeProps(defaultState.defaultRadioConfig, props.radioConfig))
@@ -290,25 +290,6 @@ export default defineComponent({
     /**
      * methods
      */
-    // 页码
-    const handlePageChange = (current, pageSize) => {
-      const pagination = {
-        page: current,
-        pageSize
-      }
-      emit('update:pagination', pagination)
-      emit('search')
-      // xGrid.value.loadData()
-    }
-    const handleShowSizeChange = (_, pageSize) => {
-      const pagination = {
-        page: 1,
-        pageSize
-      }
-      emit('update:pagination', pagination)
-      emit('search')
-      // xGrid.value.loadData()
-    }
     // 单选
     const handleRadioChange = ({ row, rowIndex, $rowIndex, column, columnIndex, $columnIndex, $event }) => {
       emit('update:selected-value', [row])
@@ -471,8 +452,8 @@ export default defineComponent({
       ...toRefs(state),
       hasSearchBar,
       hasToolBar,
+      pages,
       getGridSlots,
-      getPaginationConfig,
       getRowConfig,
       getColumnConfig,
       getRadioConfig,
@@ -483,8 +464,6 @@ export default defineComponent({
       getScrollX,
       getScrollY,
       getTreeConfig,
-      handlePageChange,
-      handleShowSizeChange,
       handleRadioChange,
       handleCheckboxChange,
       handleCheckboxAll,
@@ -550,8 +529,6 @@ export default defineComponent({
 
   .ant-pagination {
     padding: 10px;
-    text-align: right;
-    background-color: #fff;
   }
 }
 </style>

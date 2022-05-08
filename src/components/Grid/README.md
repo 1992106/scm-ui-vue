@@ -15,7 +15,7 @@
 | showPagination | 是否显示分页 | Boolean | `true` |
 | total | 数据总数 | Number | `0` |
 | v-model:pagination | 当前页数和每页条数 | Object | `{ page: 1, pageSize: 20 }` |
-| paginationConfig | 分页配置项 | Object | `{ size: 'default', defaultPageSize: 20, showSizeChanger: true, showQuickJumper: true, showTotal: total => `共 ${total} 条`, pageSizeOptions: ['20', '40', '60', '80', '100'] }` |
+| paginationConfig | 分页配置项 | Object | `-` |
 | height | 表格高度 | [Number, String] | `-` |
 | autoResize | 表格高度 | Boolean | `false` |
 | rowConfig | 行配置项 | Object | `{ isHover: true, isCurrent: true }` |
