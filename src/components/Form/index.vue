@@ -3,8 +3,8 @@
     <!--栅格化布局-->
     <template v-if="gird">
       <a-row v-bind="rowProps">
-        <template v-for="(column, i) in getColumns" :key="column?.field || column?.slot">
-          <a-col v-show="expand || i < getIndex" v-bind="colProps">
+        <template v-for="column in getColumns" :key="column?.field || column?.slot">
+          <a-col v-bind="colProps">
             <template v-if="column.type">
               <a-form-item :label="column?.title" v-bind="validateInfos[column.field]">
                 <component
@@ -17,15 +17,15 @@
             <!--自定义slot-->
             <template v-else>
               <a-form-item :label="column?.title">
-                <slot :name="column.slot"></slot>
+                <slot :name="column.slot" :column="column"></slot>
               </a-form-item>
             </template>
           </a-col>
         </template>
         <template v-if="hasActions">
-          <a-col class="actions" v-bind="colProps" :push="getPush">
+          <a-col class="actions" v-bind="colProps">
             <a-form-item :label-col="{ span: 0 }" :wrapper-col="{ span: 24 }">
-              <slot name="actions"></slot>
+              <slot name="renderActions" :search="onSubmit" :reset="onReset"></slot>
             </a-form-item>
           </a-col>
         </template>
@@ -46,24 +46,24 @@
         <!--自定义slot-->
         <template v-else>
           <a-form-item :label="column?.title">
-            <slot :name="column.slot"></slot>
+            <slot :name="column.slot" :column="column"></slot>
           </a-form-item>
         </template>
       </template>
       <template v-if="hasActions">
-        <a-form-item :label-col="{ span: 0 }" :wrapper-col="{ span: 24 }">
-          <slot name="actions"></slot>
+        <a-form-item>
+          <slot name="renderActions" :search="onSubmit" :reset="onReset"></slot>
         </a-form-item>
       </template>
     </template>
   </a-form>
 </template>
 <script>
-import { computed, defineComponent, mergeProps, nextTick, reactive, ref, toRaw, unref } from 'vue'
+import { computed, defineComponent, mergeProps, reactive, ref, toRaw, unref } from 'vue'
 import { Form } from 'ant-design-vue'
 import { DownOutlined, UpOutlined } from '@ant-design/icons-vue'
 import { omit, pick } from 'lodash-es'
-import { mergeEvents, toEmpty } from './utils'
+import { formatRules, hasDate, hasMultiple, toEmpty } from './utils'
 import { dateToDayjs, dayjsToDate, isEmpty } from '@src/utils'
 
 export default defineComponent({
@@ -92,163 +92,33 @@ export default defineComponent({
     // row
     rowProps: { type: Object, default: () => ({}) },
     // col
-    colProps: { type: Object, default: () => ({}) },
-    // 是否展开，默认展开（用于控制搜索栏显示/隐藏）
-    expand: { type: Boolean, default: true }
+    colProps: { type: Object, default: () => ({}) }
   },
-  emits: ['enter', 'clear'],
+  emits: ['submit', 'reset'],
   setup(props, { emit, slots }) {
     const elForm = ref(null)
 
-    const getIndex = computed(() => {
-      if (props.gird && props.colProps?.span) {
-        return 24 / props.colProps.span - 1
-      } else {
-        return getColumns.value.length
-      }
-    })
-
-    const getPush = computed(() => {
-      if (props.expand && props.gird && props.colProps?.span) {
-        const multiple = 24 / props.colProps.span
-        const length = getColumns.value.length
-        return (multiple - (length % multiple) - 1) * props.colProps.span
-      } else {
-        return 0
-      }
-    })
-
-    // 默认值
-    const defaultState = {
-      AInput: {
-        props: {
-          allowClear: true
-        },
-        events: ['change', 'pressEnter']
-      },
-      ATextarea: {
-        props: {
-          allowClear: true
-        },
-        events: ['change', 'pressEnter']
-      },
-      AInputNumber: {
-        events: ['pressEnter']
-      },
-      AAutoComplete: {
-        props: {
-          allowClear: true
-        },
-        events: ['change']
-      },
-      ASelect: {
-        props: {
-          allowClear: true,
-          showSearch: true,
-          optionFilterProp: 'label'
-        },
-        events: ['clear']
-      },
-      ATreeSelect: {
-        props: {
-          allowClear: true,
-          showSearch: true,
-          treeCheckable: true,
-          maxTagCount: 1
-        },
-        events: ['change']
-      },
-      ACascader: {
-        props: {
-          allowClear: true,
-          showSearch: true,
-          placeholder: ''
-        },
-        events: ['change']
-      },
-      ATimePicker: {
-        props: {
-          allowClear: true
-        },
-        events: ['change']
-      },
-      ADatePicker: {
-        props: {
-          allowClear: true,
-          format: 'YYYY-MM-DD',
-          valueFormat: 'YYYY-MM-DD'
-        },
-        events: ['change']
-      },
-      ARangePicker: {
-        props: {
-          allowClear: true,
-          format: 'YYYY-MM-DD',
-          valueFormat: 'YYYY-MM-DD'
-        },
-        events: ['change']
-      }
-    }
-    // 默认事件映射
-    const defaultEventsMap = {
-      // 实现清除事件
-      change: $event => {
-        // Input或Cascader/DatePicker/TreeSelect组件不支持clear，使用change模拟clear事件
-        if (($event?.type === 'click' && !$event.target.value) || isEmpty($event)) {
-          emit('clear', onGetFormValues())
-        }
-      },
-      clear: () => {
-        // Select
-        nextTick(() => {
-          emit('clear', onGetFormValues())
-        })
-      },
-      // 实现enter搜索功能
-      pressEnter: () => {
-        // Input/InputNumber组件
-        emit('enter', onGetFormValues())
-      }
-    }
     // 获取v-model绑定名称
     const getModelValue = type => (['ASwitch'].includes(type) ? 'checked' : 'value')
     // 获取格式化后的columns
     const getColumns = computed(() => {
       return props.columns.map(column => {
         const { props = {}, events = {} } = column
-        const defaultAllState = defaultState[column?.type] || {}
         // column
         const allColumn = pick(column, ['type', 'title', 'field', 'slot', 'rules'])
         // props
-        const defaultProps = defaultAllState.props || {}
         const otherProps = omit(column, ['type', 'title', 'field', 'slot', 'rules', 'props', 'events'])
-        const allProps = toRaw(mergeProps(defaultProps, otherProps, props))
-        // events
-        const defaultEvents = defaultAllState.events || []
-        const allEvents = mergeEvents(defaultEventsMap, defaultEvents, events)
-        return { ...allColumn, modelValue: getModelValue(column?.type), props: allProps, events: allEvents }
+        const allProps = toRaw(mergeProps(otherProps, props))
+
+        return { ...allColumn, modelValue: getModelValue(column?.type), props: allProps, events }
       })
     })
 
-    // 是否是多选框
-    const hasMultiple = column => {
-      return (
-        (column?.type === 'ASelect' && ['multiple', 'tags'].includes(column?.props?.mode)) ||
-        (column?.type === 'ASlider' && column?.props?.range) ||
-        (column?.type === 'ATreeSelect' && column?.props?.multiple) ||
-        ['ACheckboxGroup', 'ACascader', 'ARangePicker'].includes(column?.type)
-      )
-    }
-    // 是否是日期选择框
-    const hasDate = column => {
-      return ['ADatePicker', 'AWeekPicker', 'AMonthPicker', 'ARangePicker', 'ATimePicker'].includes(column?.type)
-    }
-
-    const allDefaultValue = ['defaultValue', 'defaultPickerValue']
+    const modelRef = reactive({})
     const getModel = computed(() => {
       return unref(getColumns).reduce((prev, next) => {
         // 在使用useForm时，需要手动设置默认值
-        let value = allDefaultValue.map(val => next?.props[val]).find(Boolean)
+        let value = ['defaultValue', 'defaultPickerValue'].map(val => next?.props[val]).find(Boolean)
         // 格式化时间（antd不支持new Date()）
         if (hasDate(next)) {
           value = dateToDayjs(value, next?.props?.valueFormat)
@@ -264,28 +134,26 @@ export default defineComponent({
         return prev
       }, {})
     })
+
+    const rulesRef = reactive({})
     const getRules = computed(() => {
-      return unref(getColumns).reduce((prev, next) => {
-        if (!isEmpty(next?.rules)) {
-          prev[next.field] = next?.rules
-        }
-        return prev
-      }, {})
+      return formatRules(unref(getColumns))
     })
 
-    const modelRef = reactive({})
-    const rulesRef = reactive({})
     const { validate, resetFields, validateInfos } = Form.useForm(
       Object.assign(modelRef, unref(getModel)),
       Object.assign(rulesRef, unref(getRules))
     )
 
-    // 是否显示插槽
-    const hasActions = computed(() => !!slots['actions'])
+    // 提交
+    const onSubmit = () => {
+      emit('submit', onGetFormValues())
+    }
 
-    // 重置表单
-    const onResetFields = () => {
+    // 重置
+    const onReset = () => {
       resetFields()
+      emit('reset', onGetFormValues())
     }
 
     // 获取表单值
@@ -307,10 +175,11 @@ export default defineComponent({
       }
     }
 
+    // 是否显示插槽
+    const hasActions = computed(() => !!slots['renderActions'])
+
     return {
       elForm,
-      getIndex,
-      getPush,
       hasActions,
       getModelValue,
       getColumns,
@@ -318,7 +187,8 @@ export default defineComponent({
       validate,
       resetFields,
       validateInfos,
-      onResetFields,
+      onSubmit,
+      onReset,
       onGetFormValues,
       onSetFieldValue
     }

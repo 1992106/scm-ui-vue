@@ -1,41 +1,51 @@
-import { cloneDeep, omit } from 'lodash-es'
-import { getType, isEmpty, recursive } from '@src/utils'
+import { dateToDayjs, getType, isEmpty } from '@src/utils'
 
-export const mergeEvents = (defaultEventsMap, defaultEvents = [], events = {}) => {
-  const newEvents = defaultEvents.reduce((prev, name) => {
-    const defaultEvent = defaultEventsMap[name] || Function.prototype
-    const event = events[name]
-    prev[name] = event
-      ? $event => {
-          event($event)
-          defaultEvent($event)
-        }
-      : defaultEvent
-    return prev
-  }, {})
-  return { ...events, ...newEvents }
+// 是否是多选框
+export const hasMultiple = column => {
+  return (
+    (column?.type === 'ASelect' && ['multiple', 'tags'].includes(column?.props?.mode)) ||
+    (column?.type === 'ASlider' && column?.props?.range) ||
+    (column?.type === 'ATreeSelect' && column?.props?.multiple) ||
+    ['ACheckboxGroup', 'ACascader', 'ARangePicker'].includes(column?.type)
+  )
 }
 
-export const toDisabled = column => {
-  const props = column?.props || {}
-  const options = cloneDeep(props?.options || [])
-  const treeData = cloneDeep(props?.treeData || [])
-  if (['ASelect', 'AAutoComplete'].includes(column.type)) {
-    return { ...column, props: { ...props, options: options.map(val => omit(val, ['disabled'])) } }
-  } else if (column.type === 'ACascader') {
-    recursive(options, node => {
-      delete node.disabled
-    })
-    return { ...column, props: { ...props, options } }
-  } else if (column.type === 'ATreeSelect') {
-    recursive(treeData, node => {
-      delete node.disabled
-      delete node.disableCheckbox
-    })
-    return { ...column, props: { ...props, treeData } }
-  } else {
-    return column
-  }
+// 是否是日期选择框
+export const hasDate = column => {
+  return ['ADatePicker', 'AWeekPicker', 'AMonthPicker', 'ARangePicker', 'ATimePicker'].includes(column?.type)
+}
+
+export const allDefaultValue = ['defaultValue', 'defaultPickerValue']
+
+// 格式化表单值
+export const formatModel = (columns, values) => {
+  return columns.reduce((prev, next) => {
+    // 在使用useForm时，需要手动设置默认值
+    let value = allDefaultValue.map(val => next?.props[val]).find(Boolean)
+    // 格式化时间（antd不支持new Date()）
+    if (hasDate(next)) {
+      value = dateToDayjs(value, next?.props?.valueFormat)
+    }
+    if (isEmpty(value)) {
+      value = hasMultiple(next) ? [] : undefined
+    }
+    // TODO: AAutoComplete组件默认值为undefined时，点击重置无效
+    if (next.type === 'AAutoComplete') {
+      value = ''
+    }
+    prev[next.field] = isEmpty(values) ? value : values[next.field]
+    return prev
+  }, {})
+}
+
+// 格式化表单规则
+export const formatRules = columns => {
+  return columns.reduce((prev, next) => {
+    if (!isEmpty(next?.rules)) {
+      prev[next.field] = next?.rules
+    }
+    return prev
+  }, {})
 }
 
 /**

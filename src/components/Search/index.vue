@@ -1,62 +1,72 @@
 <template>
-  <div :class="['x-search', isShowExpand ? 'show-expand' : '']">
+  <div :class="['x-search', hasShowExpand ? 'show-expand' : '']">
     <div v-if="hasExtra" class="extra">
       <slot name="extra"></slot>
     </div>
-    <x-form
-      ref="xForm"
-      v-bind="$attrs"
-      :layout="layout"
-      :label-col="labelCol"
-      :wrapper-col="wrapperCol"
-      :gird="true"
-      :row-props="rowProps"
-      :col-props="colProps"
-      :columns="getColumns"
-      :expand="isExpand"
-      @enter="handleSearch"
-      @clear="handleClear">
-      <template v-for="slot of getSearchSlots" :key="slot" #[slot]="scope">
-        <slot :name="slot" v-bind="scope"></slot>
-      </template>
-      <template #actions>
-        <a-space>
-          <template v-if="showSearch">
-            <a-button type="primary" @click.prevent="handleSearch">{{ searchText }}</a-button>
-          </template>
-          <template v-if="showReset">
-            <a-button @click="handleReset">{{ resetText }}</a-button>
-          </template>
-          <div v-if="isShowExpand" class="expand" @click="handleExpand">
-            <template v-if="isExpand">
-              <span>收起</span>
-              <UpOutlined />
+    <a-form ref="elForm" v-bind="$attrs" :layout="layout" :label-col="labelCol" :wrapper-col="wrapperCol">
+      <a-row v-bind="rowProps">
+        <template v-for="(column, i) in getColumns" :key="column?.field || column?.slot">
+          <a-col v-show="isExpand || i < getIndex" v-bind="colProps">
+            <template v-if="column.type">
+              <a-form-item :label="column?.title" v-bind="validateInfos[column.field]">
+                <component
+                  :is="column.type"
+                  v-model:[column.modelValue]="modelRef[column.field]"
+                  v-bind="column?.props || {}"
+                  v-on="column?.events || {}"></component>
+              </a-form-item>
             </template>
+            <!--自定义slot-->
             <template v-else>
-              <span>展开</span>
-              <DownOutlined />
+              <a-form-item :label="column?.title">
+                <slot :name="column.slot" :column="column"></slot>
+              </a-form-item>
             </template>
-          </div>
-        </a-space>
-      </template>
-    </x-form>
+          </a-col>
+        </template>
+        <a-col class="actions" v-bind="colProps" :push="getPush">
+          <a-form-item :label-col="{ span: 0 }" :wrapper-col="{ span: 24 }">
+            <a-space>
+              <template v-if="showSearch">
+                <a-button type="primary" @click.prevent="handleSearch">{{ searchText }}</a-button>
+              </template>
+              <template v-if="showReset">
+                <a-button @click="handleReset">{{ resetText }}</a-button>
+              </template>
+              <div v-if="hasShowExpand" class="expand" @click="handleExpand">
+                <template v-if="isExpand">
+                  <span>收起</span>
+                  <UpOutlined />
+                </template>
+                <template v-else>
+                  <span>展开</span>
+                  <DownOutlined />
+                </template>
+              </div>
+            </a-space>
+          </a-form-item>
+        </a-col>
+      </a-row>
+    </a-form>
     <div v-if="hasShortcut" class="shortcut">
       <slot name="shortcut"></slot>
     </div>
   </div>
 </template>
 <script>
-import { computed, defineComponent, nextTick, ref, unref } from 'vue'
+import { computed, defineComponent, mergeProps, nextTick, reactive, ref, toRaw, unref } from 'vue'
+import { Form } from 'ant-design-vue'
 import { DownOutlined, UpOutlined } from '@ant-design/icons-vue'
-import XForm from '@components/Form/index.vue'
-import { toDisabled } from '@components/Form/utils'
+import { omit, pick } from 'lodash-es'
+import { mergeEvents, toDisabled } from './utils'
+import { dateToDayjs, dayjsToDate, isEmpty } from '@src/utils'
+import { formatRules, hasDate, hasMultiple, toEmpty } from '@components/Form/utils'
 
 export default defineComponent({
   name: 'XSearch',
   components: {
     DownOutlined,
-    UpOutlined,
-    'x-form': XForm
+    UpOutlined
   },
   inheritAttrs: false,
   props: {
@@ -87,69 +97,229 @@ export default defineComponent({
     showReset: { type: Boolean, default: true },
     resetText: { type: String, default: '重置' },
     // 是否显示【展开/收起】按钮
-    showExpand: { type: Boolean, default: false },
-    // 是否展开，默认收起
+    showExpand: { type: Boolean, default: true },
+    // 是否展开，默认展开
     expand: { type: Boolean, default: false }
   },
   emits: ['search', 'reset', 'clear'],
   setup(props, { emit, slots }) {
-    const xForm = ref(null)
+    const elForm = ref(null)
 
-    // 搜索columns
+    // 默认值
+    const defaultState = {
+      AInput: {
+        props: {
+          allowClear: true
+        },
+        events: ['change', 'pressEnter']
+      },
+      ATextarea: {
+        props: {
+          allowClear: true
+        },
+        events: ['change', 'pressEnter']
+      },
+      AInputNumber: {
+        events: ['pressEnter']
+      },
+      AAutoComplete: {
+        props: {
+          allowClear: true
+        },
+        events: ['change']
+      },
+      ASelect: {
+        props: {
+          allowClear: true,
+          showSearch: true,
+          optionFilterProp: 'label'
+        },
+        events: ['clear']
+      },
+      ATreeSelect: {
+        props: {
+          allowClear: true,
+          showSearch: true,
+          treeCheckable: true,
+          maxTagCount: 1
+        },
+        events: ['change']
+      },
+      ACascader: {
+        props: {
+          allowClear: true,
+          showSearch: true,
+          placeholder: ''
+        },
+        events: ['change']
+      },
+      ATimePicker: {
+        props: {
+          allowClear: true
+        },
+        events: ['change']
+      },
+      ADatePicker: {
+        props: {
+          allowClear: true,
+          format: 'YYYY-MM-DD',
+          valueFormat: 'YYYY-MM-DD'
+        },
+        events: ['change']
+      },
+      ARangePicker: {
+        props: {
+          allowClear: true,
+          format: 'YYYY-MM-DD',
+          valueFormat: 'YYYY-MM-DD'
+        },
+        events: ['change']
+      }
+    }
+    // 默认事件映射
+    const defaultEventsMap = {
+      // 实现清除事件
+      change: $event => {
+        // Input或Cascader/DatePicker/TreeSelect组件不支持clear，使用change模拟clear事件
+        if (($event?.type === 'click' && !$event.target.value) || isEmpty($event)) {
+          emit('clear', emitData())
+        }
+      },
+      clear: () => {
+        // Select
+        nextTick(() => {
+          handleClear()
+        })
+      },
+      // 实现enter搜索功能
+      pressEnter: () => {
+        // Input/InputNumber组件
+        emitSearch()
+      }
+    }
+    // 获取v-model绑定名称
+    const getModelValue = type => (['ASwitch'].includes(type) ? 'checked' : 'value')
+    // 获取格式化后的columns
     const getColumns = computed(() => {
-      const columns = props?.columns || []
-      return columns.map(column => toDisabled(column))
+      return props.columns.map(column => {
+        const { props = {}, events = {}, slot } = toDisabled(column) // disabled: true => false
+        const defaultAllState = defaultState[column?.type] || {}
+        // column
+        const allColumn = pick(column, ['type', 'title', 'field', 'rules'])
+        // props
+        const defaultProps = defaultAllState.props || {}
+        const otherProps = omit(column, ['type', 'title', 'field', 'slot', 'rules', 'props', 'events'])
+        const allProps = toRaw(mergeProps(defaultProps, otherProps, props))
+        // events
+        const defaultEvents = defaultAllState.events || []
+        const allEvents = mergeEvents(defaultEventsMap, defaultEvents, events)
+        return { ...allColumn, modelValue: getModelValue(column?.type), props: allProps, events: allEvents, slot }
+      })
     })
 
-    // 搜索插槽
-    const getSearchSlots = computed(() => {
-      const columns = props?.columns || []
-      return columns.map(col => col.slot).filter(Boolean)
+    const modelRef = reactive({})
+    const getModel = computed(() => {
+      return unref(getColumns).reduce((prev, next) => {
+        // 在使用useForm时，需要手动设置默认值
+        let value = ['defaultValue', 'defaultPickerValue'].map(val => next?.props[val]).find(Boolean)
+        // 格式化时间（antd不支持new Date()）
+        if (hasDate(next)) {
+          value = dateToDayjs(value, next?.props?.valueFormat)
+        }
+        if (isEmpty(value)) {
+          value = hasMultiple(next) ? [] : undefined
+        }
+        // TODO: AAutoComplete组件默认值为undefined时，点击重置无效
+        if (next.type === 'AAutoComplete') {
+          value = ''
+        }
+        prev[next.field] = isEmpty(modelRef) ? value : modelRef[next.field]
+        return prev
+      }, {})
     })
 
-    const handleSearch = () => {
-      unref(xForm)
-        .validate()
-        .then(() => {
-          onEmit()
-        })
-        .catch(err => {
-          console.error('from error', err)
-        })
+    const rulesRef = reactive({})
+    const getRules = computed(() => {
+      return formatRules(unref(getColumns))
+    })
+
+    const { validate, resetFields, validateInfos } = Form.useForm(
+      Object.assign(modelRef, unref(getModel)),
+      Object.assign(rulesRef, unref(getRules))
+    )
+
+    const emitData = () => {
+      const params = unref(getColumns).reduce((prev, column) => {
+        const value = modelRef[column.field]
+        prev[column.field] = hasDate(column) ? dayjsToDate(value, column?.props?.valueFormat) : value
+        return prev
+      }, {})
+      return toEmpty(params)
     }
 
-    const onEmit = () => {
-      emit('search', unref(xForm).onGetFormValues())
+    const emitSearch = () => {
+      emit('search', emitData())
+    }
+
+    const handleSearch = () => {
+      validate()
+        .then(() => {
+          emitSearch()
+        })
+        .catch(err => {
+          console.log('from error', err)
+        })
     }
 
     const handleReset = () => {
-      unref(xForm).resetFields()
-      emit('reset', unref(xForm).onGetFormValues())
+      resetFields()
+      emit('reset', emitData())
       if (props.resetSearch) {
-        onEmit()
+        emitSearch()
       }
     }
 
     const handleClear = () => {
-      emit('clear', unref(xForm).onGetFormValues())
+      emit('clear', emitData())
       if (props.clearSearch) {
-        onEmit()
+        emitSearch()
       }
     }
 
-    // 判断是否有多行
-    const isShowExpand = computed(() => {
-      if (props.colProps?.span) {
-        // 如果只有一行，则不需要【展开/收起】按钮
+    /**
+     * 是否显示【展开收起】按钮
+     * @type {ComputedRef<unknown>}
+     */
+    const hasShowExpand = computed(() => {
+      if (props.showExpand && props.colProps?.span) {
+        // 判断是否多行，如果只有一行，则不需要【展开/收起】按钮
         const multiple = 24 / props.colProps.span
-        return props.showExpand && props.columns.length >= multiple
+        return props.columns.length >= multiple
       } else {
         return false
       }
     })
 
-    // 展开/收起
-    const isExpand = ref(props.expand)
+    const getIndex = computed(() => {
+      if (props.colProps?.span) {
+        return 24 / props.colProps.span - 1
+      } else {
+        return getColumns.value.length
+      }
+    })
+
+    const getPush = computed(() => {
+      if (isExpand.value && props.colProps?.span) {
+        const multiple = 24 / props.colProps.span
+        const length = getColumns.value.length
+        return (multiple - (length % multiple) - 1) * props.colProps.span
+      } else {
+        return 0
+      }
+    })
+
+    // 是否展开/收起
+    const isExpand = ref(props.showExpand ? props.expand : true)
     const handleExpand = () => {
       isExpand.value = !isExpand.value
       nextTick(() => {
@@ -157,6 +327,7 @@ export default defineComponent({
       })
     }
 
+    // 派发事件
     const dispatchResize = () => {
       const event = document.createEvent('HTMLEvents')
       event.initEvent('resize', true, true)
@@ -181,20 +352,40 @@ export default defineComponent({
       })
     }
 
+    // 获取搜索参数
+    const onGetFormValues = () => {
+      return emitData()
+    }
+
+    // 设置搜索字段和值
+    const onSetFieldValue = obj => {
+      if (!isEmpty(obj)) {
+        Object.keys(obj).forEach(field => {
+          Object.assign(modelRef, { [field]: obj[field] })
+        })
+      }
+    }
+
     return {
-      xForm,
+      elForm,
       hasExtra,
       hasShortcut,
+      getModelValue,
+      getColumns,
+      modelRef,
+      validateInfos,
       handleSearch,
       handleReset,
       handleClear,
-      getColumns,
-      getSearchSlots,
+      hasShowExpand,
+      getIndex,
+      getPush,
+      isExpand,
+      handleExpand,
       onSearch,
       onReset,
-      isExpand,
-      isShowExpand,
-      handleExpand
+      onSetFieldValue,
+      onGetFormValues
     }
   }
 })

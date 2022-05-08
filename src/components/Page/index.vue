@@ -1,13 +1,7 @@
 <template>
   <div class="x-page">
     <a-spin v-bind="spinProps">
-      <x-search
-        ref="xSearch"
-        show-expand
-        v-bind="searchProps"
-        @search="handleSearch"
-        @reset="handleReset"
-        @clear="handleClear">
+      <x-search ref="xSearch" v-bind="searchProps" @search="handleSearch" @reset="handleReset" @clear="handleClear">
         <template v-for="slot of getSearchSlots" :key="slot" #[slot]="scope">
           <slot :name="slot" v-bind="scope"></slot>
         </template>

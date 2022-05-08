@@ -17,7 +17,7 @@
 <script>
 import { computed, defineComponent, ref, unref } from 'vue'
 import XForm from '@components/Form/index.vue'
-import { toDisabled } from '@components/Form/utils'
+import { toDisabled } from '@components/Search/utils'
 
 export default defineComponent({
   name: 'Shortcut',
@@ -36,7 +36,7 @@ export default defineComponent({
     // 搜索columns
     const getColumns = computed(() => {
       const columns = attrs?.columns || []
-      return columns.map(column => toDisabled(column))
+      return columns.map(column => toDisabled(column)) // disabled: true => false
     })
 
     // 搜索slots
@@ -50,7 +50,7 @@ export default defineComponent({
     }
 
     const onResetFields = () => {
-      return unref(xForm)?.onResetFields?.()
+      return unref(xForm)?.onReset?.()
     }
 
     return {

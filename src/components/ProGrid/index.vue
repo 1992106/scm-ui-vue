@@ -10,13 +10,7 @@
     @search="handleQuery">
     <!--搜索栏-->
     <template v-if="hasSearchBar" #searchBar>
-      <x-search
-        ref="xSearch"
-        show-expand
-        v-bind="searchProps"
-        @search="handleSearch"
-        @reset="emitReset"
-        @clear="emitClear">
+      <x-search ref="xSearch" v-bind="searchProps" @search="handleSearch" @reset="emitReset" @clear="emitClear">
         <template v-for="slot of getSearchSlots" :key="slot" #[slot]="scope">
           <slot :name="slot" v-bind="scope"></slot>
         </template>

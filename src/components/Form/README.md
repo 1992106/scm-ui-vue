@@ -15,12 +15,11 @@
 | gird | 是否栅格化布局 | Boolean | `false` |
 | rowProps |a-row props | Object | `{}` |
 | colProps | a-col props | Object | `{}` |
-| expand | 是否收起（用于控制搜索栏显示/隐藏） | Boolean | `true` |
 
 ### Emits
 
 ```vue
-emits: ['enter', 'clear']
+emits: ['submit', 'reset']
 ```
 
 ### Slots
@@ -32,12 +31,15 @@ emits: ['enter', 'clear']
 ### Methods
 
 ```vue
+// 提交表单
+onSubmit()
+
 // 重置表单
-onResetFields()
+onReset()
 
 // 获取表单值
 onGetFormValues()
 
 // 设置表单字段和值
-onSetFieldValue({ field: value})
+onSetFieldValue({ field: value })
 ```
