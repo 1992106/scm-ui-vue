@@ -1,7 +1,13 @@
 <template>
   <div class="shortcut-bar">
     <div class="title">更多搜索条件</div>
-    <x-form ref="xForm" layout="vertical" v-bind="$attrs" :columns="getColumns">
+    <x-form
+      ref="xForm"
+      layout="vertical"
+      v-bind="$attrs"
+      :columns="getColumns"
+      :row-props="rowProps"
+      :col-props="colProps">
       <template v-for="slot of getSearchSlots" :key="slot" #[slot]="scope">
         <slot :name="slot" v-bind="scope"></slot>
       </template>
@@ -17,6 +23,12 @@ export default defineComponent({
   name: 'Shortcut',
   components: {
     'x-form': XForm
+  },
+  props: {
+    // row
+    rowProps: { type: Object, default: () => ({ gutter: 24 }) },
+    // col
+    colProps: { type: Object, default: () => ({ md: 12, xl: 8 }) }
   },
   setup(props, { attrs }) {
     const xForm = ref(null)

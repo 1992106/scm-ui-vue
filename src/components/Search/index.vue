@@ -9,6 +9,7 @@
       :layout="layout"
       :label-col="labelCol"
       :wrapper-col="wrapperCol"
+      :gird="true"
       :row-props="rowProps"
       :col-props="colProps"
       :columns="getColumns"
@@ -85,8 +86,9 @@ export default defineComponent({
     searchText: { type: String, default: '搜索' },
     showReset: { type: Boolean, default: true },
     resetText: { type: String, default: '重置' },
-    // 展开/收起
+    // 是否显示【展开/收起】按钮
     showExpand: { type: Boolean, default: false },
+    // 是否展开，默认收起
     expand: { type: Boolean, default: false }
   },
   emits: ['search', 'reset', 'clear'],
@@ -135,13 +137,14 @@ export default defineComponent({
       }
     }
 
-    // 判断是否只有一行：如果只有一行，则不需要【展开/收起】按钮
+    // 判断是否有多行
     const isShowExpand = computed(() => {
       if (props.colProps?.span) {
+        // 如果只有一行，则不需要【展开/收起】按钮
         const multiple = 24 / props.colProps.span
         return props.showExpand && props.columns.length >= multiple
       } else {
-        return props.showExpand
+        return false
       }
     })
 
@@ -210,27 +213,25 @@ export default defineComponent({
   }
 
   // 展开收起
-  .ant-form {
-    margin-right: 20px;
+  &.show-expand {
+    .ant-form {
+      margin-right: 20px;
 
-    :deep(.actions) {
-      text-align: right;
+      :deep(.actions) {
+        text-align: right;
 
-      .expand {
-        cursor: pointer;
-        min-width: 50px;
+        .expand {
+          cursor: pointer;
+          min-width: 50px;
+        }
       }
-    }
-    &.ant-form-horizontal {
       :deep(.ant-form-item) {
         margin-bottom: 10px;
 
         .ant-input-affix-wrapper,
-        .ant-select,
-        .ant-cascader-picker,
         .ant-calendar-picker,
         .ant-time-picker,
-        .tree-select {
+        .ant-tree-select {
           width: 100%;
         }
 
@@ -245,6 +246,13 @@ export default defineComponent({
           span[class='ant-calendar-picker-input ant-input'] {
             width: 100%;
           }
+        }
+      }
+
+      // 行内布局
+      &.ant-form-inline {
+        :deep(.ant-row) {
+          flex: 1;
         }
       }
     }

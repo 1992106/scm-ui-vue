@@ -42,7 +42,12 @@ export default defineComponent({
     customRequest: { type: Function },
     listType: { type: String, default: 'picture-card' },
     showUploadList: { type: [Boolean, Object], default: true },
-    mode: { type: String, default: 'upload' }, // 'upload'、'preview'
+    mode: {
+      validator(value) {
+        return ['upload', 'preview'].includes(value)
+      },
+      default: 'upload'
+    },
     accept: { type: String }, // 'image/*'、'application/*'、'audio/*'、'video/*'
     size: { type: Number },
     limit: { type: Number }

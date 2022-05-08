@@ -10,8 +10,8 @@
 | --- | -- | --- | --- |
 | columns | 搜索栏配置 | Array | `[]` |
 | layout | 表单布局 | String | `inline` |
-| labelCol | 标签布局 | Object | `{}` |
-| wrapperCol | 控件布局 | Object | `{}` |
+| labelCol | 标签布局 | Object | `{ span: 10 }` |
+| wrapperCol | 控件布局 | Object | `{ span: 14 }` |
 | rowProps |a-row props | Object | `{ gutter: 24 }` |
 | colProps | a-col props | Object | `{ span: 6 }` |
 | resetSearch | 重置时是否触发搜索 | Boolean | `true` |
@@ -20,8 +20,8 @@
 | searchText | 搜索按钮文字 | Boolean | `搜索` |
 | showReset | 是否显示重置按钮 | Boolean | `true` |
 | resetText | 重置按钮文字 | Boolean | `重置` |
-| showExpand | 是否显示展开/收起 | Boolean | `false` |
-| expand | 默认收起 | Boolean | `false` |
+| showExpand | 是否显示【展开/收起】按钮 | Boolean | `false` |
+| expand | 是否展开，默认收起 | Boolean | `false` |
 
 ### Emits
 

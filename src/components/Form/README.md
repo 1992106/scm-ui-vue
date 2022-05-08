@@ -12,9 +12,11 @@
 | layout | 表单布局 | String | `inline` |
 | labelCol | 标签布局 | Object | `{}` |
 | wrapperCol | 控件布局 | Object | `{}` |
+| gird | 是否栅格化布局 | Boolean | `false` |
 | rowProps |a-row props | Object | `{}` |
 | colProps | a-col props | Object | `{}` |
-| expand | 默认收起 | Boolean | `true` |
+| expand | 是否收起（用于控制搜索栏显示/隐藏） | Boolean | `true` |
+
 ### Emits
 
 ```vue

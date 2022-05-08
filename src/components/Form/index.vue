@@ -1,33 +1,61 @@
 <template>
   <a-form ref="elForm" class="x-form" v-bind="$attrs" :layout="layout" :label-col="labelCol" :wrapper-col="wrapperCol">
-    <a-row v-bind="rowProps">
-      <template v-for="(column, i) in getColumns" :key="column?.field || column?.slot">
-        <a-col v-show="expand || i < getIndex" v-bind="colProps">
-          <template v-if="column.type">
-            <a-form-item :label="column?.title" v-bind="validateInfos[column.field]">
-              <component
-                :is="column.type"
-                v-model:[column.modelValue]="modelRef[column.field]"
-                v-bind="column?.props || {}"
-                v-on="column?.events || {}"></component>
+    <!--栅格化布局-->
+    <template v-if="gird">
+      <a-row v-bind="rowProps">
+        <template v-for="(column, i) in getColumns" :key="column?.field || column?.slot">
+          <a-col v-show="expand || i < getIndex" v-bind="colProps">
+            <template v-if="column.type">
+              <a-form-item :label="column?.title" v-bind="validateInfos[column.field]">
+                <component
+                  :is="column.type"
+                  v-model:[column.modelValue]="modelRef[column.field]"
+                  v-bind="column?.props || {}"
+                  v-on="column?.events || {}"></component>
+              </a-form-item>
+            </template>
+            <!--自定义slot-->
+            <template v-else>
+              <a-form-item :label="column?.title">
+                <slot :name="column.slot"></slot>
+              </a-form-item>
+            </template>
+          </a-col>
+        </template>
+        <template v-if="hasActions">
+          <a-col class="actions" v-bind="colProps" :push="getPush">
+            <a-form-item :label-col="{ span: 0 }" :wrapper-col="{ span: 24 }">
+              <slot name="actions"></slot>
             </a-form-item>
-          </template>
-          <!--自定义slot-->
-          <template v-else>
-            <a-form-item :label="column?.title">
-              <slot :name="column.slot"></slot>
-            </a-form-item>
-          </template>
-        </a-col>
+          </a-col>
+        </template>
+      </a-row>
+    </template>
+    <!--正常表单-->
+    <template v-else>
+      <template v-for="column in getColumns" :key="column?.field || column?.slot">
+        <template v-if="column.type">
+          <a-form-item :label="column?.title" v-bind="validateInfos[column.field]">
+            <component
+              :is="column.type"
+              v-model:[column.modelValue]="modelRef[column.field]"
+              v-bind="column?.props || {}"
+              v-on="column?.events || {}"></component>
+          </a-form-item>
+        </template>
+        <!--自定义slot-->
+        <template v-else>
+          <a-form-item :label="column?.title">
+            <slot :name="column.slot"></slot>
+          </a-form-item>
+        </template>
       </template>
       <template v-if="hasActions">
-        <a-col class="actions" v-bind="colProps" :push="getPush">
-          <a-form-item :label-col="{ span: 0 }" :wrapper-col="{ span: 24 }">
-            <slot name="actions"></slot>
-          </a-form-item>
-        </a-col>
+        <a-form-item :label-col="{ span: 0 }" :wrapper-col="{ span: 24 }">
+          <slot name="actions"></slot>
+        </a-form-item>
       </template>
-    </a-row>
+    </template>
   </a-form>
 </template>
 <script>
@@ -59,11 +87,13 @@ export default defineComponent({
     labelCol: { type: Object, default: () => ({}) },
     // 控件布局
     wrapperCol: { type: Object, default: () => ({}) },
+    // 是否栅格化布局
+    gird: { type: Boolean, default: false },
     // row
     rowProps: { type: Object, default: () => ({}) },
     // col
     colProps: { type: Object, default: () => ({}) },
-    // 是否展开
+    // 是否展开，默认展开（用于控制搜索栏显示/隐藏）
     expand: { type: Boolean, default: true }
   },
   emits: ['enter', 'clear'],
@@ -71,7 +101,7 @@ export default defineComponent({
     const elForm = ref(null)
 
     const getIndex = computed(() => {
-      if (props.layout === 'horizontal' && props.colProps?.span) {
+      if (props.gird && props.colProps?.span) {
         return 24 / props.colProps.span - 1
       } else {
         return getColumns.value.length
@@ -79,10 +109,10 @@ export default defineComponent({
     })
 
     const getPush = computed(() => {
-      if (props.layout === 'horizontal' && props.expand && props.colProps?.span) {
+      if (props.expand && props.gird && props.colProps?.span) {
         const multiple = 24 / props.colProps.span
-        const remainder = getColumns.value.length % multiple
-        return (multiple - remainder - 1) * props.colProps.span
+        const length = getColumns.value.length
+        return (multiple - (length % multiple) - 1) * props.colProps.span
       } else {
         return 0
       }
@@ -199,6 +229,7 @@ export default defineComponent({
         return { ...allColumn, modelValue: getModelValue(column?.type), props: allProps, events: allEvents }
       })
     })
+
     // 是否是多选框
     const hasMultiple = column => {
       return (
