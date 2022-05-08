@@ -7,7 +7,7 @@
 ### Props
 
 | 参数 | 说明 | 类型 | 默认值 |
-| --- | -- | --- | --- |
+| --- | --- | --- | --- |
 | columns | 搜索栏配置 | Array | `[]` |
 | layout | 表单布局 | String | `inline` |
 | labelCol | 标签布局 | Object | `{ span: 10 }` |
