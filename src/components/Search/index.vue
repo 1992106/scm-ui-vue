@@ -1,5 +1,5 @@
 <template>
-  <div :class="['x-search', showExpand ? 'show-expand' : '']">
+  <div :class="['x-search', isShowExpand ? 'show-expand' : '']">
     <div v-if="hasExtra" class="extra">
       <slot name="extra"></slot>
     </div>
@@ -9,13 +9,16 @@
       :layout="layout"
       :label-col="labelCol"
       :wrapper-col="wrapperCol"
+      :row-props="rowProps"
+      :col-props="colProps"
       :columns="getColumns"
+      :expand="isExpand"
       @enter="handleSearch"
       @clear="handleClear">
       <template v-for="slot of getSearchSlots" :key="slot" #[slot]="scope">
         <slot :name="slot" v-bind="scope"></slot>
       </template>
-      <div class="actions">
+      <template #actions>
         <a-space>
           <template v-if="showSearch">
             <a-button type="primary" @click.prevent="handleSearch">{{ searchText }}</a-button>
@@ -34,7 +37,7 @@
             </template>
           </div>
         </a-space>
-      </div>
+      </template>
     </x-form>
     <div v-if="hasShortcut" class="shortcut">
       <slot name="shortcut"></slot>
@@ -42,18 +45,17 @@
   </div>
 </template>
 <script>
-import { computed, defineComponent, nextTick, onMounted, ref, unref } from 'vue'
+import { computed, defineComponent, nextTick, ref, unref } from 'vue'
 import { DownOutlined, UpOutlined } from '@ant-design/icons-vue'
 import XForm from '@components/Form/index.vue'
-import { useFormLayout } from './useFormLayout'
 import { toDisabled } from '@components/Form/utils'
 
 export default defineComponent({
   name: 'XSearch',
   components: {
-    'x-form': XForm,
     DownOutlined,
-    UpOutlined
+    UpOutlined,
+    'x-form': XForm
   },
   inheritAttrs: false,
   props: {
@@ -64,12 +66,16 @@ export default defineComponent({
       validator(value) {
         return ['horizontal', 'vertical', 'inline'].includes(value)
       },
-      default: 'inline'
+      default: 'horizontal'
     },
     // 标签布局
-    labelCol: { type: Object, default: () => ({}) },
+    labelCol: { type: Object, default: () => ({ span: 10 }) },
     // 控件布局
-    wrapperCol: { type: Object, default: () => ({}) },
+    wrapperCol: { type: Object, default: () => ({ span: 14 }) },
+    // row
+    rowProps: { type: Object, default: () => ({ gutter: 24 }) },
+    // col
+    colProps: { type: Object, default: () => ({ span: 6 }) },
     // 重置时是否触发搜索
     resetSearch: { type: Boolean, default: true },
     // 清空时是否触发搜索
@@ -81,7 +87,7 @@ export default defineComponent({
     resetText: { type: String, default: '重置' },
     // 展开/收起
     showExpand: { type: Boolean, default: false },
-    defaultExpand: { type: Boolean, default: false }
+    expand: { type: Boolean, default: false }
   },
   emits: ['search', 'reset', 'clear'],
   setup(props, { emit, slots }) {
@@ -111,44 +117,48 @@ export default defineComponent({
     }
 
     const onEmit = () => {
-      emit('search', unref(xForm).onGetFormValue())
+      emit('search', unref(xForm).onGetFormValues())
     }
 
     const handleReset = () => {
       unref(xForm).resetFields()
-      emit('reset', unref(xForm).onGetFormValue())
+      emit('reset', unref(xForm).onGetFormValues())
       if (props.resetSearch) {
         onEmit()
       }
     }
 
     const handleClear = () => {
-      emit('clear', unref(xForm).onGetFormValue())
+      emit('clear', unref(xForm).onGetFormValues())
       if (props.clearSearch) {
         onEmit()
       }
     }
 
-    // 表单布局
-    const { updateLayout, hasExpand } = useFormLayout()
-    const isExpand = ref(props.defaultExpand)
+    // 判断是否只有一行：如果只有一行，则不需要【展开/收起】按钮
+    const isShowExpand = computed(() => {
+      if (props.colProps?.span) {
+        const multiple = 24 / props.colProps.span
+        return props.showExpand && props.columns.length >= multiple
+      } else {
+        return props.showExpand
+      }
+    })
+
+    // 展开/收起
+    const isExpand = ref(props.expand)
     const handleExpand = () => {
       isExpand.value = !isExpand.value
-      updateLayout()
+      nextTick(() => {
+        dispatchResize()
+      })
     }
 
-    const isShowExpand = ref(false)
-    onMounted(() => {
-      if (props.showExpand === true) {
-        isShowExpand.value = hasExpand()
-      }
-      // 默认收起
-      nextTick(() => {
-        if (props.defaultExpand === false && props.showExpand === true) {
-          updateLayout()
-        }
-      })
-    })
+    const dispatchResize = () => {
+      const event = document.createEvent('HTMLEvents')
+      event.initEvent('resize', true, true)
+      window.dispatchEvent(event)
+    }
 
     // 是否显示插槽
     const hasExtra = computed(() => !!slots['extra'])
@@ -191,24 +201,6 @@ export default defineComponent({
   background-color: #fff;
   border-radius: 2px;
 
-  .ant-form {
-    :deep(.ant-form-item) {
-      line-height: 40px;
-    }
-
-    .actions {
-      display: flex;
-      flex: 1;
-      justify-content: flex-end;
-      line-height: 40px;
-
-      :deep(.expand) {
-        cursor: pointer;
-        min-width: 50px;
-      }
-    }
-  }
-
   .extra {
     margin: 0 10px 6px 10px;
   }
@@ -218,44 +210,40 @@ export default defineComponent({
   }
 
   // 展开收起
-  &.show-expand {
-    .ant-form {
-      // 水平布局、垂直布局
-      &.ant-form-horizontal {
-        display: flex;
-        flex-wrap: wrap;
-        margin-right: 36px;
+  .ant-form {
+    margin-right: 20px;
 
-        :deep(.ant-form-item) {
-          display: inline-flex;
-          margin-bottom: 0;
-          width: 25%;
+    :deep(.actions) {
+      text-align: right;
 
-          // 显示、隐藏
-          &.hidden {
-            display: none !important;
-          }
+      .expand {
+        cursor: pointer;
+        min-width: 50px;
+      }
+    }
+    &.ant-form-horizontal {
+      :deep(.ant-form-item) {
+        margin-bottom: 10px;
 
-          .ant-input-affix-wrapper,
-          .ant-select,
-          .ant-cascader-picker,
-          .ant-calendar-picker,
-          .ant-time-picker,
-          .tree-select {
+        .ant-input-affix-wrapper,
+        .ant-select,
+        .ant-cascader-picker,
+        .ant-calendar-picker,
+        .ant-time-picker,
+        .tree-select {
+          width: 100%;
+        }
+
+        .ant-form-item-control-input-content {
+          .ant-input-number,
+          .ant-picker {
             width: 100%;
           }
+        }
 
-          .ant-form-item-control-input-content {
-            .ant-input-number,
-            .ant-picker {
-              width: 100%;
-            }
-          }
-
-          .ant-calendar-picker {
-            span[class='ant-calendar-picker-input ant-input'] {
-              width: 100%;
-            }
+        .ant-calendar-picker {
+          span[class='ant-calendar-picker-input ant-input'] {
+            width: 100%;
           }
         }
       }

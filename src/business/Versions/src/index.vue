@@ -7,15 +7,7 @@
     @ok="handleOk"
     @cancel="handleCancel">
     <div class="x-versions">
-      <x-search
-        ref="xSearch"
-        show-expand
-        layout="horizontal"
-        :label-col="{ span: 10 }"
-        :wrapper-col="{ span: 14 }"
-        v-bind="searchProps"
-        @search="handleSearch"
-        @reset="handleReset">
+      <x-search ref="xSearch" show-expand v-bind="searchProps" @search="handleSearch" @reset="handleReset">
         <template v-for="slot of getSearchSlots" :key="slot" #[slot]="scope">
           <slot :name="slot" v-bind="scope"></slot>
         </template>
@@ -99,7 +91,7 @@ export default defineComponent({
       state.spinning = true
       state.cloneList = []
       state.versionsList = []
-      const shortcutParams = xShortcut.value?.onGetFormValue?.()
+      const shortcutParams = xShortcut.value?.onGetFormValues?.()
       const data = await customRequest({
         ...(isEmpty(params) ? {} : params),
         ...(isEmpty(shortcutParams) ? {} : shortcutParams)
@@ -120,7 +112,7 @@ export default defineComponent({
     }
 
     const handleReset = () => {
-      xShortcut.value?.onResetFormValue?.()
+      xShortcut.value?.onResetFields?.()
     }
 
     const handleAdd = row => {

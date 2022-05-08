@@ -4,9 +4,6 @@
       <x-search
         ref="xSearch"
         show-expand
-        layout="horizontal"
-        :label-col="{ span: 10 }"
-        :wrapper-col="{ span: 14 }"
         v-bind="searchProps"
         @search="handleSearch"
         @reset="handleReset"
@@ -81,6 +78,8 @@ export default defineComponent({
   },
   emits: ['update:value', 'update:pagination', 'search', 'reset', 'clear'],
   setup(props, { emit, slots }) {
+    const xSearch = ref(null)
+
     const defaultState = {
       defaultPaginationConfig: {
         defaultPageSize: 20,
@@ -91,7 +90,6 @@ export default defineComponent({
       }
     }
 
-    const xSearch = ref(null)
     const state = reactive({
       pagination: props.pagination
     })

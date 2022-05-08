@@ -33,27 +33,27 @@ export default defineComponent({
       return columns.map(col => col.slot).filter(Boolean)
     })
 
-    const onGetFormValue = () => {
-      return unref(xForm)?.onGetFormValue?.()
+    const onGetFormValues = () => {
+      return unref(xForm)?.onGetFormValues?.()
     }
 
-    const onResetFormValue = () => {
-      return unref(xForm)?.onResetFormValue?.()
+    const onResetFields = () => {
+      return unref(xForm)?.onResetFields?.()
     }
 
     return {
       xForm,
       getColumns,
       getSearchSlots,
-      onGetFormValue,
-      onResetFormValue
+      onGetFormValues,
+      onResetFields
     }
   }
 })
 </script>
 <style lang="scss" scoped>
 .shortcut-bar {
-  width: 240px;
+  width: 320px;
   padding: 0 10px;
   border: 1px solid #c8c7cc;
   overflow-y: auto;

@@ -1,23 +1,33 @@
 <template>
   <a-form ref="elForm" class="x-form" v-bind="$attrs" :layout="layout" :label-col="labelCol" :wrapper-col="wrapperCol">
-    <template v-for="column in getColumns" :key="column?.field || column?.slot">
-      <template v-if="column.type">
-        <a-form-item :label="column?.title" v-bind="validateInfos[column.field]">
-          <component
-            :is="column.type"
-            v-model:[column.modelValue]="modelRef[column.field]"
-            v-bind="column?.props || {}"
-            v-on="column?.events || {}"></component>
-        </a-form-item>
+    <a-row v-bind="rowProps">
+      <template v-for="(column, i) in getColumns" :key="column?.field || column?.slot">
+        <a-col v-show="expand || i < getIndex" v-bind="colProps">
+          <template v-if="column.type">
+            <a-form-item :label="column?.title" v-bind="validateInfos[column.field]">
+              <component
+                :is="column.type"
+                v-model:[column.modelValue]="modelRef[column.field]"
+                v-bind="column?.props || {}"
+                v-on="column?.events || {}"></component>
+            </a-form-item>
+          </template>
+          <!--自定义slot-->
+          <template v-else>
+            <a-form-item :label="column?.title">
+              <slot :name="column.slot"></slot>
+            </a-form-item>
+          </template>
+        </a-col>
       </template>
-      <!--自定义slot-->
-      <template v-else>
-        <a-form-item :label="column?.title">
-          <slot :name="column.slot"></slot>
-        </a-form-item>
+      <template v-if="hasActions">
+        <a-col class="actions" v-bind="colProps" :push="getPush">
+          <a-form-item :label-col="{ span: 0 }" :wrapper-col="{ span: 24 }">
+            <slot name="actions"></slot>
+          </a-form-item>
+        </a-col>
       </template>
-    </template>
-    <slot></slot>
+    </a-row>
   </a-form>
 </template>
 <script>
@@ -43,16 +53,40 @@ export default defineComponent({
       validator(value) {
         return ['horizontal', 'vertical', 'inline'].includes(value)
       },
-      default: 'inline'
+      default: 'horizontal'
     },
     // 标签布局
     labelCol: { type: Object, default: () => ({}) },
     // 控件布局
-    wrapperCol: { type: Object, default: () => ({}) }
+    wrapperCol: { type: Object, default: () => ({}) },
+    // row
+    rowProps: { type: Object, default: () => ({}) },
+    // col
+    colProps: { type: Object, default: () => ({}) },
+    // 是否展开
+    expand: { type: Boolean, default: true }
   },
   emits: ['enter', 'clear'],
-  setup(props, { emit }) {
+  setup(props, { emit, slots }) {
     const elForm = ref(null)
+
+    const getIndex = computed(() => {
+      if (props.layout === 'horizontal' && props.colProps?.span) {
+        return 24 / props.colProps.span - 1
+      } else {
+        return getColumns.value.length
+      }
+    })
+
+    const getPush = computed(() => {
+      if (props.layout === 'horizontal' && props.expand && props.colProps?.span) {
+        const multiple = 24 / props.colProps.span
+        const remainder = getColumns.value.length % multiple
+        return (multiple - remainder - 1) * props.colProps.span
+      } else {
+        return 0
+      }
+    })
 
     // 默认值
     const defaultState = {
@@ -131,19 +165,19 @@ export default defineComponent({
       change: $event => {
         // Input或Cascader/DatePicker/TreeSelect组件不支持clear，使用change模拟clear事件
         if (($event?.type === 'click' && !$event.target.value) || isEmpty($event)) {
-          emit('clear', onGetFormValue())
+          emit('clear', onGetFormValues())
         }
       },
       clear: () => {
         // Select
         nextTick(() => {
-          emit('clear', onGetFormValue())
+          emit('clear', onGetFormValues())
         })
       },
       // 实现enter搜索功能
       pressEnter: () => {
         // Input/InputNumber组件
-        emit('enter', onGetFormValue())
+        emit('enter', onGetFormValues())
       }
     }
     // 获取v-model绑定名称
@@ -215,8 +249,16 @@ export default defineComponent({
       Object.assign(rulesRef, unref(getRules))
     )
 
+    // 是否显示插槽
+    const hasActions = computed(() => !!slots['actions'])
+
+    // 重置表单
+    const onResetFields = () => {
+      resetFields()
+    }
+
     // 获取表单值
-    const onGetFormValue = () => {
+    const onGetFormValues = () => {
       const params = unref(getColumns).reduce((prev, column) => {
         const value = modelRef[column.field]
         prev[column.field] = hasDate(column) ? dayjsToDate(value, column?.props?.valueFormat) : value
@@ -225,12 +267,7 @@ export default defineComponent({
       return toEmpty(params)
     }
 
-    // 重置表单值
-    const onResetFormValue = () => {
-      resetFields()
-    }
-
-    // 设置字段和值
+    // 设置表单字段和值
     const onSetFieldValue = obj => {
       if (!isEmpty(obj)) {
         Object.keys(obj).forEach(field => {
@@ -241,14 +278,17 @@ export default defineComponent({
 
     return {
       elForm,
+      getIndex,
+      getPush,
+      hasActions,
       getModelValue,
       getColumns,
       modelRef,
       validate,
       resetFields,
       validateInfos,
-      onGetFormValue,
-      onResetFormValue,
+      onResetFields,
+      onGetFormValues,
       onSetFieldValue
     }
   }
