@@ -416,6 +416,7 @@ export default defineComponent({
           min-width: 50px;
         }
       }
+
       :deep(.ant-form-item) {
         margin-bottom: 10px;
 
