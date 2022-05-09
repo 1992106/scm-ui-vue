@@ -10,10 +10,10 @@
 | --- | --- | --- | --- |
 | v-model:fileList | 已经上传的文件列表 | Array | `[]` |
 | customRequest | 自定义上传 | Function | `-` |
-| listType | 上传列表的内建样式，支持三种基本样式 text, picture 和 picture-card | String | `picture-card` |
+| listType | 上传列表的内建样式，支持三种基本样式 'text', 'picture' 和 'picture-card' | String | `picture-card` |
 | showUploadList | 自定义上传 | [Boolean, Object] | `-` |
 | mode | 上传/预览模式（'upload'/'preview'） | String | `upload` |
-| accept | 上传文件格式 | String | `-` |
+| accept | 上传文件格式('image/*'、'application/*'、'audio/*'、'video/*') | String | `-` |
 | size | 上传文件大小，单位M | Number | `-` |
 | limit | 上传文件数量 | Number | `-` |
 

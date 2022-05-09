@@ -150,7 +150,7 @@ export default defineComponent({
     }
 
     // 上传文件改变时的状态（'uploading' 'done' 'error' 'removed'）
-    // 因为自定义customRequest方法没有调用onSuccess和onError方法，所以不会触发状态为 'done' 和 'error' change事件
+    // 因为自定义customRequest方法没有调用onSuccess和onError方法，所以不会触发状态为 'done' 和 'error' 的 change事件
     const handleChange = data => {
       const { file, fileList } = data
       // 移除
