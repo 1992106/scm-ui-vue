@@ -85,6 +85,14 @@ export default defineComponent({
       .ant-form-item-label {
         padding-bottom: 0;
       }
+
+      .ant-checkbox-group {
+        width: 100%;
+
+        .ant-checkbox-group-item {
+          width: calc(33% - 8px);
+        }
+      }
     }
   }
 }

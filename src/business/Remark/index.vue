@@ -13,7 +13,7 @@
       @cancel="handleCancel">
       <x-table
         v-bind="tableOptions"
-        v-model:pagination="pages"
+        v-model:pagination="tableOptions.pagination"
         :rowKey="rowKey"
         :showPagination="showPagination"
         :paginationConfig="paginationConfig"
@@ -33,7 +33,7 @@
                 </a-space>
               </template>
               <template v-else>
-                <x-image :height="50" :thumbnail="file?.thumbUrl" :urls="attachments"></x-image>
+                <x-image :height="50" :thumbnail="attachments[0]?.thumbUrl" :urls="attachments"></x-image>
               </template>
             </template>
             <template v-else>--</template>
@@ -61,9 +61,9 @@
   </a-config-provider>
 </template>
 
-<script lang="ts">
+<script>
 import { reactive, toRefs, defineComponent, watchEffect, watch } from 'vue'
-import { Button, ConfigProvider, Form, FormItem, Textarea } from 'ant-design-vue'
+import { Button, ConfigProvider, Form, FormItem, Space, Textarea } from 'ant-design-vue'
 import zhCn from 'ant-design-vue/es/locale/zh_CN'
 import XModal from '@components/Modal'
 import XTable from '@components/Table/index.vue'
@@ -82,6 +82,7 @@ export default defineComponent({
     'a-form': Form,
     'a-form-item': FormItem,
     'a-textarea': Textarea,
+    'a-space': Space,
     'a-button': Button
   },
   inheritAttrs: false,
@@ -98,7 +99,7 @@ export default defineComponent({
     size: { type: Number, default: 3 },
     limit: { type: Number, default: 1 },
     showPagination: { type: Boolean, default: false },
-    pagination: { type: Object, default: () => ({ page: 1, pageSize: 10 }) },
+    pagination: { type: Object },
     paginationConfig: {
       type: Object,
       default: () => ({
@@ -113,13 +114,11 @@ export default defineComponent({
     const state = reactive({
       modalVisible: props.visible,
       spinning: false,
-      confirmLoading: false,
-      pages: props.pagination
+      confirmLoading: false
     })
 
     watchEffect(() => {
       state.modalVisible = props.visible
-      state.pages = props.pagination
     })
 
     const tableOptions = reactive({
@@ -148,7 +147,14 @@ export default defineComponent({
         { title: '附件', width: 120, dataIndex: 'attachments' }
       ],
       dataSource: [],
+      pagination: { page: 1, pageSize: 10 },
       total: 0
+    })
+
+    watchEffect(() => {
+      if (!isEmpty(props.pagination)) {
+        tableOptions.pagination = props.pagination
+      }
     })
 
     const getAttachments = row => {
@@ -164,7 +170,7 @@ export default defineComponent({
       state.spinning = true
       tableOptions.dataSource = []
       const data = await customRequest({
-        ...(showPagination ? state.pages : {})
+        ...(showPagination ? tableOptions.pagination : {})
       })
       state.spinning = false
       if (showPagination) {
