@@ -75,7 +75,7 @@ export default defineComponent({
     colProps: { type: Object, default: () => ({ span: 6 }) },
     emptyText: { type: String, default: '暂无数据' }
   },
-  emits: ['update:visible', 'done'],
+  emits: ['update:visible', 'done', 'search', 'reset'],
   setup(props, { emit }) {
     const xShortcut = ref(null)
     const modalVisible = computed({
@@ -134,12 +134,14 @@ export default defineComponent({
         state.versionsList = list
       }
       state.total = data?.total || 0
+      emit('search')
     }
 
     const handleReset = () => {
       state.searchParams = {}
       state.pages = { page: 1, pageSize: 20 }
       xShortcut.value?.onResetFields?.()
+      emit('reset')
     }
 
     const handleAdd = row => {

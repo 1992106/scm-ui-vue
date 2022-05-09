@@ -16,16 +16,18 @@
           <div>{{ formatTime(item?.createAt || item?.createdAt || item?.createTime || item?.createdTime) || '-' }}</div>
           <div>
             {{ item?.createUser || item?.createdUser || '-' }}
-            <span>{{ item?.action || '操作了' }}</span>
-            <template v-if="item?.content">
-              <div v-if="hasArray(item?.content)" class="content">
-                <p v-for="(text, i) in item?.content" :key="text || i">【{{ text }}】</p>
+            <span>操作了</span>
+            <template v-if="item?.action">
+              <span class="color">【{{ item?.action }}】</span>
+              <div v-if="item?.content">
+                <p v-for="(text, i) in item?.content || []" :key="text || i">{{ text }}</p>
               </div>
-              <template v-else>
-                <span class="content" v-html="'【' + item?.content + '】'"></span>
-              </template>
+              <template v-else>--</template>
             </template>
-            <template>--</template>
+            <template v-else>
+              <span v-if="item?.content" class="color" v-html="'【' + item?.content + '】'"></span>
+              <template v-else>--</template>
+            </template>
           </div>
         </a-timeline-item>
       </a-timeline>
@@ -136,7 +138,7 @@ export default defineComponent({
 </script>
 <style lang="scss" scoped>
 .x-log {
-  .content {
+  .color {
     color: $color-primary;
   }
 }
