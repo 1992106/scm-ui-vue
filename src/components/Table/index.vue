@@ -120,7 +120,7 @@ export default defineComponent({
      * 默认值
      */
     const defaultState = {
-      scroll: { x: true, scrollToFirstRowOnChange: true },
+      scroll: { x: '100%', scrollToFirstRowOnChange: true },
       defaultColumn: { align: 'center' },
       defaultPaginationConfig: {
         size: 'default',

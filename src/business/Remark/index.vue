@@ -21,14 +21,22 @@
         <template #bodyCell="{ column, record: { attachments } }">
           <template v-if="column.dataIndex === 'attachments'">
             <template v-if="attachments.length">
-              <a-button
-                v-for="(file, index) in attachments"
-                :key="file?.id || index"
-                type="link"
-                @click="handleDownload(file)">
-                {{ file?.fileName }}
-              </a-button>
+              <template v-if="attachments[0]?.fileName">
+                <a-space>
+                  <a-button
+                    v-for="(file, index) in attachments"
+                    :key="file?.id || index"
+                    type="link"
+                    @click="handleDownload(file)">
+                    {{ file?.fileName }}
+                  </a-button>
+                </a-space>
+              </template>
+              <template v-else>
+                <x-image :height="50" :thumbnail="file?.thumbUrl" :urls="attachments"></x-image>
+              </template>
             </template>
+            <template v-else>--</template>
           </template>
         </template>
       </x-table>
@@ -60,15 +68,16 @@ import zhCn from 'ant-design-vue/es/locale/zh_CN'
 import XModal from '@components/Modal'
 import XTable from '@components/Table/index.vue'
 import XUpload from '@components/Upload/index.vue'
+import XImage from '@components/Image'
 import { isFunction } from 'lodash-es'
 import { formatTime, isEmpty, download } from '@src/utils'
-
 export default defineComponent({
   name: 'XRemark',
   components: {
     'x-modal': XModal,
     'x-table': XTable,
     'x-upload': XUpload,
+    'x-image': XImage,
     'a-config-provider': ConfigProvider,
     'a-form': Form,
     'a-form-item': FormItem,
@@ -142,6 +151,13 @@ export default defineComponent({
       total: 0
     })
 
+    const getAttachments = row => {
+      return row?.files || row?.fileList || row?.images || row?.imageList || row?.attachments
+    }
+    const formatAttachments = attachments => {
+      return isEmpty(attachments) ? [] : Array.isArray(attachments) ? attachments : [attachments]
+    }
+
     const handleSearch = async () => {
       const { customRequest, showPagination } = props
       if (!isFunction(customRequest)) return
@@ -154,23 +170,23 @@ export default defineComponent({
       if (showPagination) {
         const list = data?.data ?? data?.list ?? []
         tableOptions.dataSource = list.map(row => {
-          const attachments = row?.files || row?.fileList || row?.attachments
+          const attachments = getAttachments(row)
           const content = row?.remark || row?.content
           return {
             ...row,
             content,
-            attachments: !isEmpty(attachments) ? attachments : []
+            attachments: formatAttachments(attachments)
           }
         })
         tableOptions.total = data?.total || 0
       } else {
         tableOptions.dataSource = (data || []).map(row => {
-          const attachments = row?.files || row?.fileList || row?.attachments
+          const attachments = getAttachments(row)
           const content = row?.remark || row?.content
           return {
             ...row,
             content,
-            attachments: !isEmpty(attachments) ? attachments : []
+            attachments: formatAttachments(attachments)
           }
         })
         tableOptions.total = (data || []).length
