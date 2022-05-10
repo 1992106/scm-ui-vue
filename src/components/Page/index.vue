@@ -97,7 +97,7 @@ export default defineComponent({
       return (columns || []).map(col => col.slot).filter(Boolean)
     })
 
-    // TODO：监听页码，当页码为1时，重置页码（快捷搜索用到）
+    // TODO：监听页码，当页码为1时，重置页码（父组件手动重置页码：如快捷搜索）
     watch(
       () => props.value?.page,
       page => {

@@ -49,7 +49,6 @@ import zhCn from 'ant-design-vue/es/locale/zh_CN'
 import XDrawer from '@components/Drawer'
 import { isFunction } from 'lodash-es'
 import { formatTime, isEmpty } from '@src/utils'
-
 export default defineComponent({
   name: 'XLog',
   components: {
@@ -81,10 +80,12 @@ export default defineComponent({
     })
 
     watchEffect(() => {
+      // 使用函数方法调用时不会触发
       state.modalVisible = props.visible
     })
 
     watchEffect(() => {
+      // 使用函数方法调用时不会触发
       if (!isEmpty(props.pagination)) {
         state.pages = props.pagination
       }
