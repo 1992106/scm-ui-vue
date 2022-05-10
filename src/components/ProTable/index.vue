@@ -2,7 +2,7 @@
   <x-table
     ref="xProTable"
     auto-resize
-    :top-height="12"
+    :extra-height="12"
     v-bind="tableProps"
     v-model:pagination="pagination"
     @search="handleQuery">
