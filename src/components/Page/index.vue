@@ -134,16 +134,18 @@ export default defineComponent({
      */
     const handleReset = params => {
       state.searchParams = params
-      // 重置会触发搜索事件，搜索事件会重置页面
+      // 重置会触发搜索事件，搜索方法会重置page和更新value
       // if (props.showPagination) {
       //   state.pages.page = 1
       // }
+      // emit('update:value', { ...params, ...(props.showPagination ? state.pages : {}) })
       emit('reset', { ...params, ...(props.showPagination ? state.pages : {}) })
     }
 
     // 搜索栏-清空
     const handleClear = params => {
       state.searchParams = params
+      emit('update:value', { ...params, ...(props.showPagination ? state.pages : {}) })
       emit('clear', { ...params, ...(props.showPagination ? state.pages : {}) })
     }
 

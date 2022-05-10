@@ -126,15 +126,17 @@ export default defineComponent({
       xProGrid.value.xGrid?.clearFilter()
       xProGrid.value.xGrid?.clearSort()
       onReset(params)
-      // 重置会触发搜索事件，搜索方法会重置页面
+      // 重置会触发搜索事件，搜索方法会重置page和更新value
       // if (unref(showPagination)) {
       //   state.pagination.page = 1
       // }
+      // emit('update:value', { ...params, ...(unref(showPagination) ? state.pagination : {}) })
       emit('reset', { ...params, ...(unref(showPagination) ? state.pagination : {}) })
     }
 
     const handleClear = params => {
       onClear(params)
+      emit('update:value', { ...params, ...(unref(showPagination) ? state.pagination : {}) })
       emit('clear', { ...params, ...(unref(showPagination) ? state.pagination : {}) })
     }
 
