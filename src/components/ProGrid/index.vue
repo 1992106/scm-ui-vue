@@ -116,27 +116,32 @@ export default defineComponent({
       }
     )
 
+    /**
+     * 搜索栏-重置按钮
+     * 1.重置时，默认会触发搜索事件
+     * 2.重置时，需要重置页码为1
+     * @param {*} params
+     */
     const handleReset = params => {
       xProGrid.value.xGrid?.clearFilter()
       xProGrid.value.xGrid?.clearSort()
       onReset(params)
-      // 点击【搜索栏-重置按钮】重置时，需要重置页码
-      if (unref(showPagination)) {
-        state.pagination.page = params.page || 1
-      }
-      // emit('update:value', { ...params, ...(unref(showPagination) ? state.pagination : {}) })
+      // 重置会触发搜索事件，搜索方法会重置页面
+      // if (unref(showPagination)) {
+      //   state.pagination.page = 1
+      // }
       emit('reset', { ...params, ...(unref(showPagination) ? state.pagination : {}) })
     }
 
     const handleClear = params => {
       onClear(params)
-      // emit('update:value', { ...params, ...(unref(showPagination) ? state.pagination : {}) })
       emit('clear', { ...params, ...(unref(showPagination) ? state.pagination : {}) })
     }
 
     // 【XSearch-搜索】和【XGrid-分页、筛选、排序】都会触发该方法
     const emitSearch = (params = {}) => {
-      // 当【搜索、筛选、排序】时，page不为空；需要重置页码
+      // 当【搜索、筛选、排序】时，page不为空；当【分页】时，page为空
+      // 【搜索、筛选、排序】需要重置页码为1
       if (unref(showPagination) && params.page) {
         state.pagination.page = params.page || 1
       }

@@ -124,7 +124,6 @@ export default defineComponent({
       defaultColumn: { align: 'center' },
       defaultPaginationConfig: {
         size: 'default',
-        hideOnSinglePage: false,
         defaultPageSize: 20,
         showSizeChanger: true,
         showQuickJumper: true,

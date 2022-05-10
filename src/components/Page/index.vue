@@ -27,8 +27,8 @@
             </div>
             <x-pagination
               v-model:pagination="pages"
-              :total="total"
               :showPagination="showPagination"
+              :total="total"
               :paginationConfig="paginationConfig"
               @change="handleQuery" />
           </div>
@@ -79,7 +79,7 @@ export default defineComponent({
       pages: { page: 1, pageSize: 20 }
     })
 
-    // 页码默认赋值
+    // 页码赋值
     watchEffect(() => {
       if (!isEmpty(props.pagination)) {
         state.pages = props.pagination
@@ -115,10 +115,10 @@ export default defineComponent({
       emit('search', { ...state.searchParams, ...state.pages })
     }
 
-    // 搜索栏-搜索
+    // 搜索栏-搜索【重置页码】
     const handleSearch = params => {
       state.searchParams = params
-      // 点击【搜索栏-搜索按钮】搜索时，重置页码
+      // 点击【搜索栏-搜索按钮】搜索时，重置页码为1
       if (props.showPagination) {
         state.pages.page = 1
       }
@@ -126,13 +126,18 @@ export default defineComponent({
       emit('search', { ...params, ...(props.showPagination ? state.pages : {}) })
     }
 
-    // 搜索栏-重置（重置时默认会触发搜索方法）
+    /**
+     * 搜索栏-重置
+     * 1.重置时，默认会触发搜索事件
+     * 2.重置时，需要重置页码为1
+     * @param {*} params
+     */
     const handleReset = params => {
       state.searchParams = params
-      // 点击【搜索栏-重置按钮】重置时，重置页码
-      if (props.showPagination) {
-        state.pages.page = 1
-      }
+      // 重置会触发搜索事件，搜索事件会重置页面
+      // if (props.showPagination) {
+      //   state.pages.page = 1
+      // }
       emit('reset', { ...params, ...(props.showPagination ? state.pages : {}) })
     }
 

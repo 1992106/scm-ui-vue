@@ -24,14 +24,13 @@ export function useSearch(fn, isResize = true, searchProps, gridProps) {
   const isDefaultQuery = ref(false)
   const sortParams = ref({})
   const filterParams = ref({})
-  // 分页、排序、筛选
+  // 分页、排序、筛选（分页时，$event和key都为空）
   const handleQuery = ($event, key) => {
     if (!unref(isDefaultQuery)) {
       isDefaultQuery.value = true
       return init()
     }
     const pagination = {}
-    // 分页时，$event为空；处理【筛选、排序】逻辑
     if ($event) {
       pagination.page = 1
       if (key === 'sort') {
@@ -42,6 +41,7 @@ export function useSearch(fn, isResize = true, searchProps, gridProps) {
       }
     }
     if (isFunction(fn)) {
+      // 分页：因为event为空，所以pagination也是空对象
       fn({ ...unref(paramsRef), ...pagination })
     }
   }
