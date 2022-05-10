@@ -1,7 +1,7 @@
 <template>
   <div :class="['x-search', hasShowExpand ? 'show-expand' : '']">
-    <div v-if="hasExtra" class="extra">
-      <slot name="extra"></slot>
+    <div v-if="hasTop" class="search-top">
+      <slot name="top"></slot>
     </div>
     <a-form ref="elForm" v-bind="$attrs" :layout="layout" :label-col="labelCol" :wrapper-col="wrapperCol">
       <a-row v-bind="rowProps">
@@ -48,8 +48,8 @@
         </a-col>
       </a-row>
     </a-form>
-    <div v-if="hasShortcut" class="shortcut">
-      <slot name="shortcut"></slot>
+    <div v-if="hasBottom" class="search-bottom">
+      <slot name="bottom"></slot>
     </div>
   </div>
 </template>
@@ -335,8 +335,8 @@ export default defineComponent({
     }
 
     // 是否显示插槽
-    const hasExtra = computed(() => !!slots['extra'])
-    const hasShortcut = computed(() => !!slots['shortcut'])
+    const hasTop = computed(() => !!slots['top'])
+    const hasBottom = computed(() => !!slots['bottom'])
 
     // 搜索方法
     const onSearch = () => {
@@ -368,9 +368,8 @@ export default defineComponent({
 
     return {
       elForm,
-      hasExtra,
-      hasShortcut,
-      getModelValue,
+      hasTop,
+      hasBottom,
       getColumns,
       modelRef,
       validateInfos,
@@ -396,11 +395,11 @@ export default defineComponent({
   background-color: #fff;
   border-radius: 2px;
 
-  .extra {
+  .search-top {
     padding: 0 10px 10px 10px;
   }
 
-  .shortcut {
+  .search-bottom {
     padding: 0 10px 10px 10px;
   }
 

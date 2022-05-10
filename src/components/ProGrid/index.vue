@@ -14,11 +14,11 @@
         <template v-for="slot of getSearchSlots" :key="slot" #[slot]="scope">
           <slot :name="slot" v-bind="scope"></slot>
         </template>
-        <template v-if="hasExtra" #extra>
-          <slot name="extra"></slot>
+        <template v-if="hasTop" #top>
+          <slot name="top"></slot>
         </template>
-        <template v-if="hasShortcut" #shortcut>
-          <slot name="shortcut"></slot>
+        <template v-if="hasBottom" #bottom>
+          <slot name="bottom"></slot>
         </template>
       </x-search>
     </template>
@@ -165,8 +165,8 @@ export default defineComponent({
 
     // 是否显示插槽
     const hasSearchBar = computed(() => !isEmpty(props['searchProps']))
-    const hasExtra = computed(() => !!slots['extra'])
-    const hasShortcut = computed(() => !!slots['shortcut'])
+    const hasTop = computed(() => !!slots['top'])
+    const hasBottom = computed(() => !!slots['bottom'])
     const hasToolBar = computed(() => !!slots['toolBar'])
 
     // 初始化调用一下，获取搜索参数
@@ -188,8 +188,8 @@ export default defineComponent({
       xSearch,
       ...toRefs(state),
       hasSearchBar,
-      hasExtra,
-      hasShortcut,
+      hasTop,
+      hasBottom,
       hasToolBar,
       getSearchSlots,
       getGridSlots,

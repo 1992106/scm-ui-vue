@@ -181,7 +181,6 @@ export default defineComponent({
     return {
       elForm,
       hasActions,
-      getModelValue,
       getColumns,
       modelRef,
       validate,

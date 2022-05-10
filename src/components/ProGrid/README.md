@@ -66,8 +66,8 @@ emits: ['update:value', 'search', 'reset', 'clear']
 ### Slots
 
 ```vue
-<slot name="extra"></slot>
-<slot name="shortcut"></slot>
+<slot name="top"></slot>
+<slot name="bottom"></slot>
 <slot name="toolBar"></slot>
 
 // XGrid插槽

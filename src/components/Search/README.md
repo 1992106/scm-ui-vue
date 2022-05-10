@@ -32,8 +32,8 @@ emits: ['search', 'reset', 'clear']
 ### Slots
 
 ```vue
-<slot name="extra"></slot>
-<slot name="shortcut"></slot>
+<slot name="top"></slot>
+<slot name="bottom"></slot>
 ```
 
 ### Methods
