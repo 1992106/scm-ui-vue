@@ -192,7 +192,6 @@ export default defineComponent({
   }
 
   .x-search {
-    padding: 10px 0;
     margin-bottom: 10px;
   }
 

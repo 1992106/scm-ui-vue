@@ -392,15 +392,16 @@ export default defineComponent({
 </script>
 <style lang="less" scoped>
 .x-search {
+  padding-top: 10px;
   background-color: #fff;
   border-radius: 2px;
 
   .extra {
-    margin: 0 10px 6px 10px;
+    padding: 0 10px 10px 10px;
   }
 
   .shortcut {
-    margin: 6px 10px 0 10px;
+    padding: 0 10px 10px 10px;
   }
 
   // 展开收起
