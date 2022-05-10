@@ -13,11 +13,11 @@
       @cancel="handleCancel">
       <x-table
         v-bind="tableOptions"
-        v-model:pagination="tableOptions.pagination"
+        v-model:pagination="pages"
         :rowKey="rowKey"
         :showPagination="showPagination"
         :paginationConfig="paginationConfig"
-        @search="handleSearch">
+        @search="handleRequest">
         <template #bodyCell="{ column, record: { attachments } }">
           <template v-if="column.dataIndex === 'attachments'">
             <template v-if="attachments.length">
@@ -33,7 +33,7 @@
                 </a-space>
               </template>
               <template v-else>
-                <x-image :height="50" :thumbnail="attachments[0]?.thumbUrl" :urls="attachments"></x-image>
+                <x-image :width="50" :thumbnail="attachments[0]?.thumbUrl" :urls="attachments"></x-image>
               </template>
             </template>
             <template v-else>--</template>
@@ -53,6 +53,7 @@
           <x-upload
             v-model:file-list="modelRef.attachments"
             :customRequest="customUpload"
+            :accept="accept"
             :size="size"
             :limit="limit"></x-upload>
         </a-form-item>
@@ -96,29 +97,31 @@ export default defineComponent({
     customRequest: { type: Function, require: true },
     customSubmit: { type: Function },
     customUpload: { type: Function },
+    accept: { type: String, default: 'image/*' },
     size: { type: Number, default: 3 },
     limit: { type: Number, default: 1 },
     showPagination: { type: Boolean, default: false },
-    pagination: { type: Object },
-    paginationConfig: {
-      type: Object,
-      default: () => ({
-        size: 'small',
-        defaultPageSize: 10,
-        pageSizeOptions: ['10', '20', '30', '40']
-      })
-    }
+    pagination: { type: Object, default: () => ({ page: 1, pageSize: 10 }) },
+    paginationConfig: { type: Object, default: () => ({ showLessItems: true }) },
+    emptyText: { type: String, default: '暂无数据' }
   },
   emits: ['update:visible', 'done'],
   setup(props, { emit }) {
     const state = reactive({
       modalVisible: props.visible,
       spinning: false,
-      confirmLoading: false
+      confirmLoading: false,
+      pages: props.pagination
     })
 
     watchEffect(() => {
       state.modalVisible = props.visible
+    })
+
+    watchEffect(() => {
+      if (!isEmpty(props.pagination)) {
+        state.pages = props.pagination
+      }
     })
 
     const tableOptions = reactive({
@@ -147,14 +150,7 @@ export default defineComponent({
         { title: '附件', width: 120, dataIndex: 'attachments' }
       ],
       dataSource: [],
-      pagination: { page: 1, pageSize: 10 },
       total: 0
-    })
-
-    watchEffect(() => {
-      if (!isEmpty(props.pagination)) {
-        tableOptions.pagination = props.pagination
-      }
     })
 
     const getAttachments = row => {
@@ -164,13 +160,13 @@ export default defineComponent({
       return isEmpty(attachments) ? [] : Array.isArray(attachments) ? attachments : [attachments]
     }
 
-    const handleSearch = async () => {
+    const handleRequest = async () => {
       const { customRequest, showPagination } = props
       if (!isFunction(customRequest)) return
       state.spinning = true
       tableOptions.dataSource = []
       const data = await customRequest({
-        ...(showPagination ? tableOptions.pagination : {})
+        ...(showPagination ? state.pages : {})
       })
       state.spinning = false
       if (showPagination) {
@@ -203,7 +199,7 @@ export default defineComponent({
       () => props.visible,
       bool => {
         if (bool) {
-          handleSearch()
+          handleRequest()
         }
       },
       { immediate: true }
@@ -254,7 +250,7 @@ export default defineComponent({
       zhCn,
       ...toRefs(state),
       tableOptions,
-      handleSearch,
+      handleRequest,
       handleDownload,
       validateInfos,
       modelRef,

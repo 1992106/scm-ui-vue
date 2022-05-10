@@ -111,7 +111,7 @@ const XImage = defineComponent({
             src={compressUrls.value[0]}
             preview={false}
             // @ts-ignore
-            onClick={() => handlePreview(index)}
+            onClick={() => handlePreview(0)}
             fallback={fallUrl}
           />
         ) : (

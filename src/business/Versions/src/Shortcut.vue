@@ -76,10 +76,11 @@ export default defineComponent({
     margin-bottom: 10px;
   }
 
-  .x-form {
+  .x-form.ant-form-vertical {
     padding: 0 6px;
 
     :deep(.ant-form-item) {
+      flex-wrap: nowrap;
       margin-bottom: 10px;
 
       .ant-form-item-label {
@@ -90,7 +91,8 @@ export default defineComponent({
         width: 100%;
 
         .ant-checkbox-group-item {
-          width: calc(33% - 8px);
+          width: 33%;
+          margin-right: 0;
         }
       }
     }

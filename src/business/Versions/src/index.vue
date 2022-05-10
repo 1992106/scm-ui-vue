@@ -149,11 +149,11 @@ export default defineComponent({
     }
 
     const handleDel = row => {
+      const newItem = state.cloneList.find(val => row?.[props.rowKey] === val?.[props.rowKey])
       state.versionsList = state.versionsList.map(item => {
-        const newItem = state.cloneList.find(val => row?.[props.rowKey] === val?.[props.rowKey])
         return {
           ...item,
-          ...(!isEmpty(newItem) ? newItem : {})
+          ...(!isEmpty(newItem) && newItem?.[props.rowKey] === item?.[props.rowKey] ? newItem : {})
         }
       })
       const index = state.selectedList.findIndex(val => row?.[props.rowKey] === val?.[props.rowKey])

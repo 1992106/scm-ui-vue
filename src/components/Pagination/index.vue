@@ -42,8 +42,21 @@ export default defineComponent({
       }
     }
 
+    // 是否显示较少页面内容
+    const showLessItems = computed(() => {
+      const _showLessItems = props.paginationConfig?.showLessItems
+      return typeof _showLessItems === 'undefined' ? false : _showLessItems
+    })
+
+    // 页码配置
+    const getPaginationConfig = computed(() => {
+      return showLessItems.value
+        ? mergeProps({ size: 'small' }, props.paginationConfig)
+        : mergeProps(defaultState.defaultPaginationConfig, props.paginationConfig)
+    })
+
     const state = reactive({
-      pages: { page: 1, pageSize: 20 }
+      pages: { page: 1, pageSize: showLessItems.value ? 10 : 20 }
     })
 
     watchEffect(() => {
@@ -51,9 +64,6 @@ export default defineComponent({
         state.pages = props.pagination
       }
     })
-
-    // 页码配置
-    const getPaginationConfig = computed(() => mergeProps(defaultState.defaultPaginationConfig, props.paginationConfig))
 
     // 页码
     const handlePageChange = (current, pageSize) => {

@@ -250,6 +250,7 @@ export default defineComponent({
     /**
      * 计算属性
      */
+    // 页码
     const pages = computed({
       get: () => {
         return props.pagination
@@ -260,6 +261,7 @@ export default defineComponent({
         // xGrid.value.loadData()
       }
     })
+    // 插槽
     const generateSlots = (columns, slots = []) => {
       columns.forEach(column => {
         slots.push(column)

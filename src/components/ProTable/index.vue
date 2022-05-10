@@ -8,7 +8,7 @@
     @search="handleQuery">
     <!--搜索栏-->
     <template v-if="hasSearchBar" #searchBar>
-      <x-search ref="xSearch" v-bind="searchProps" @search="handleSearch" @reset="emitReset" @clear="emitClear">
+      <x-search ref="xSearch" v-bind="searchProps" @search="handleSearch" @reset="handleReset" @clear="handleClear">
         <template v-for="slot of getSearchSlots" :key="slot" #[slot]="scope">
           <slot :name="slot" v-bind="scope"></slot>
         </template>
@@ -109,10 +109,27 @@ export default defineComponent({
       }
     )
 
+    const handleReset = params => {
+      onReset(params)
+      // 点击【搜索栏-重置按钮】重置时，需要重置页码
+      if (unref(showPagination)) {
+        state.pagination.page = params.page || 1
+      }
+      // emit('update:value', { ...params, ...(unref(showPagination) ? state.pagination : {}) })
+      emit('reset', { ...params, ...(unref(showPagination) ? state.pagination : {}) })
+    }
+
+    const handleClear = params => {
+      onClear(params)
+      // emit('update:value', { ...params, ...(unref(showPagination) ? state.pagination : {}) })
+      emit('clear', { ...params, ...(unref(showPagination) ? state.pagination : {}) })
+    }
+
+    // 【XSearch-搜索】和【XTable-分页、筛选、排序】都会触发该方法
     const emitSearch = (params = {}) => {
-      // 点击按钮筛选时，需要重置页码
-      if (params.page) {
-        state.pagination.page = params.page
+      // 当【搜索、筛选、排序】时，page不为空；需要重置页码
+      if (unref(showPagination) && params.page) {
+        state.pagination.page = params.page || 1
       }
       emit('update:value', {
         ...params,
@@ -121,19 +138,7 @@ export default defineComponent({
       emit('search', { ...params, ...(unref(showPagination) ? state.pagination : {}) })
     }
 
-    const emitReset = $event => {
-      handleReset($event)
-      emit('update:value', { ...$event, ...(unref(showPagination) ? state.pagination : {}) })
-      emit('reset', { ...$event, ...(unref(showPagination) ? state.pagination : {}) })
-    }
-
-    const emitClear = $event => {
-      handleClear($event)
-      emit('update:value', { ...$event, ...(unref(showPagination) ? state.pagination : {}) })
-      emit('clear', { ...$event, ...(unref(showPagination) ? state.pagination : {}) })
-    }
-
-    const { paramsRef, handleQuery, handleSearch, handleReset, handleClear } = useSearch(
+    const { paramsRef, handleQuery, handleSearch, onReset, onClear } = useSearch(
       emitSearch,
       props.tableProps.autoResize,
       toRef(props, 'searchProps'),
@@ -172,8 +177,8 @@ export default defineComponent({
       getTableSlots,
       handleQuery,
       handleSearch,
-      emitReset,
-      emitClear
+      handleReset,
+      handleClear
     }
   }
 })

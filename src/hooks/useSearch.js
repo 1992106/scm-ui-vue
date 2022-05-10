@@ -31,6 +31,7 @@ export function useSearch(fn, isResize = true, searchProps, gridProps) {
       return init()
     }
     const pagination = {}
+    // 分页时，$event为空；处理【筛选、排序】逻辑
     if ($event) {
       pagination.page = 1
       if (key === 'sort') {
@@ -45,13 +46,13 @@ export function useSearch(fn, isResize = true, searchProps, gridProps) {
     }
   }
 
-  const handleReset = $event => {
+  const onReset = $event => {
     searchParams.value = $event
     sortParams.value = {}
     filterParams.value = {}
   }
 
-  const handleClear = $event => {
+  const onClear = $event => {
     searchParams.value = $event
   }
 
@@ -75,9 +76,9 @@ export function useSearch(fn, isResize = true, searchProps, gridProps) {
   return {
     paramsRef,
     handleSearch,
-    handleReset,
-    handleClear,
-    handleQuery
+    handleQuery,
+    onReset,
+    onClear
   }
 }
 

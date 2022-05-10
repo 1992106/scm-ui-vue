@@ -1,7 +1,7 @@
 <template>
   <div class="x-page">
     <a-spin v-bind="spinProps">
-      <x-search ref="xSearch" v-bind="searchProps" @search="handleSearch" @reset="emitReset" @clear="emitClear">
+      <x-search ref="xSearch" v-bind="searchProps" @search="handleSearch" @reset="handleReset" @clear="handleClear">
         <template v-for="slot of getSearchSlots" :key="slot" #[slot]="scope">
           <slot :name="slot" v-bind="scope"></slot>
         </template>
@@ -30,7 +30,7 @@
               :total="total"
               :showPagination="showPagination"
               :paginationConfig="paginationConfig"
-              @change="handlePageChange" />
+              @change="handleQuery" />
           </div>
           <div v-else class="empty">
             <a-empty :image="simpleImage" :description="emptyText" />
@@ -42,11 +42,10 @@
 </template>
 
 <script>
-import { computed, defineComponent, onMounted, reactive, ref, toRef, toRefs, unref, watch, watchEffect } from 'vue'
+import { computed, defineComponent, onMounted, reactive, ref, toRefs, watch, watchEffect } from 'vue'
 import { Empty, Spin } from 'ant-design-vue'
 import XSearch from '@components/Search/index.vue'
 import XPagination from '@components/Pagination/index.vue'
-import { useSearch } from '@hooks/useSearch'
 import { isEmpty } from '@src/utils'
 
 export default defineComponent({
@@ -71,12 +70,20 @@ export default defineComponent({
     pagination: { type: Object, default: () => ({}) },
     paginationConfig: Object
   },
-  emits: ['update:value', 'search', 'reset', 'clear'],
+  emits: ['update:value', 'update:pagination', 'search', 'reset', 'clear'],
   setup(props, { emit, slots }) {
     const xSearch = ref(null)
 
     const state = reactive({
+      searchParams: {},
       pages: { page: 1, pageSize: 20 }
+    })
+
+    // 页码默认赋值
+    watchEffect(() => {
+      if (!isEmpty(props.pagination)) {
+        state.pages = props.pagination
+      }
     })
 
     // 加载
@@ -90,13 +97,6 @@ export default defineComponent({
       return (columns || []).map(col => col.slot).filter(Boolean)
     })
 
-    // 页码默认赋值
-    watchEffect(() => {
-      if (!isEmpty(props.pagination)) {
-        state.pages = props.pagination
-      }
-    })
-
     // TODO：监听页码，当页码为1时，重置页码（快捷搜索用到）
     watch(
       () => props.value?.page,
@@ -107,40 +107,39 @@ export default defineComponent({
       }
     )
 
-    const emitSearch = (params = {}) => {
-      // 点击按钮筛选时，需要重置页码
-      if (params.page) {
-        state.pages.page = params.page
+    // 分页器-搜索
+    const handleQuery = () => {
+      emit('update:pagination', state.pages)
+      // 分页搜索
+      emit('update:value', { ...state.searchParams, ...state.pages })
+      emit('search', { ...state.searchParams, ...state.pages })
+    }
+
+    // 搜索栏-搜索
+    const handleSearch = params => {
+      state.searchParams = params
+      // 点击【搜索栏-搜索按钮】搜索时，重置页码
+      if (props.showPagination) {
+        state.pages.page = 1
       }
-      emit('update:value', {
-        ...params,
-        ...(props.showPagination ? state.pages : {})
-      })
+      emit('update:value', { ...params, ...(props.showPagination ? state.pages : {}) })
       emit('search', { ...params, ...(props.showPagination ? state.pages : {}) })
     }
 
-    const emitReset = $event => {
-      handleReset($event)
-      emit('update:value', { ...$event, ...(props.showPagination ? state.pages : {}) })
-      emit('reset', { ...$event, ...(props.showPagination ? state.pages : {}) })
+    // 搜索栏-重置（重置时默认会触发搜索方法）
+    const handleReset = params => {
+      state.searchParams = params
+      // 点击【搜索栏-重置按钮】重置时，重置页码
+      if (props.showPagination) {
+        state.pages.page = 1
+      }
+      emit('reset', { ...params, ...(props.showPagination ? state.pages : {}) })
     }
 
-    const emitClear = $event => {
-      handleClear($event)
-      emit('update:value', { ...$event, ...(props.showPagination ? state.pages : {}) })
-      emit('clear', { ...$event, ...(props.showPagination ? state.pages : {}) })
-    }
-
-    const { paramsRef, handleQuery, handleSearch, handleReset, handleClear } = useSearch(
-      emitSearch,
-      false,
-      toRef(props, 'searchProps'),
-      null
-    )
-
-    // 分页
-    const handlePageChange = () => {
-      handleQuery()
+    // 搜索栏-清空
+    const handleClear = params => {
+      state.searchParams = params
+      emit('clear', { ...params, ...(props.showPagination ? state.pages : {}) })
     }
 
     // 是否显示插槽
@@ -151,12 +150,8 @@ export default defineComponent({
 
     // 初始化调用一下，获取搜索参数
     const onInit = () => {
-      handleSearch()
-      handleQuery()
-      emit('update:value', {
-        ...unref(paramsRef),
-        ...(props.showPagination ? state.pages : {})
-      })
+      const params = xSearch.value.onGetFormValues()
+      emit('update:value', { ...params, ...(props.showPagination ? state.pages : {}) })
     }
 
     onMounted(() => {
@@ -173,11 +168,10 @@ export default defineComponent({
       hasToolBar,
       spinProps,
       getSearchSlots,
-      handlePageChange,
       handleQuery,
       handleSearch,
-      emitReset,
-      emitClear
+      handleReset,
+      handleClear
     }
   }
 })

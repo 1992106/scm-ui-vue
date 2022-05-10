@@ -137,10 +137,19 @@ export default {
         ]
       },
       customRequest: async params => {
-        console.log(params, 'search')
-        return [{ id: 1 }, { id: 2 }, { id: 3 }, { id: 4 }, { id: 5 }, { id: 6 }, { id: 7 }, { id: 8 }, { id: 9 }].map(
-          val => ({ ...val, checked: false })
-        )
+        console.log(params)
+        const list = [
+          { id: 1 },
+          { id: 2 },
+          { id: 3 },
+          { id: 4 },
+          { id: 5 },
+          { id: 6 },
+          { id: 7 },
+          { id: 8 },
+          { id: 9 }
+        ].map(val => ({ ...val, checked: false }))
+        return { list, total: 9 }
       }
     })
     const handleVersions = () => {

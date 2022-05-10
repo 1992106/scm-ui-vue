@@ -11,7 +11,7 @@
       destroy-on-close
       @cancel="handleCancel"
       @ok="handleOk">
-      <a-timeline>
+      <a-timeline v-if="data.length > 0">
         <a-timeline-item v-for="(item, index) in data" :key="item?.id || index">
           <div>{{ formatTime(item?.createAt || item?.createdAt || item?.createTime || item?.createdTime) || '-' }}</div>
           <div>
@@ -20,27 +20,35 @@
             <template v-if="item?.action">
               <span class="color">【{{ item?.action }}】</span>
               <div v-if="item?.content">
-                <p v-for="(text, i) in item?.content || []" :key="text || i">{{ text }}</p>
+                <template v-if="Array.isArray(item?.content)">
+                  <p v-for="(text, i) in item?.content" :key="text || i">{{ text }}</p>
+                </template>
+                <p v-else>{{ item?.content }}</p>
               </div>
               <template v-else>--</template>
             </template>
             <template v-else>
-              <span v-if="item?.content" class="color" v-html="'【' + item?.content + '】'"></span>
+              <template v-if="item?.content">
+                <span class="color" v-html="'【' + item?.content + '】'"></span>
+              </template>
               <template v-else>--</template>
             </template>
           </div>
         </a-timeline-item>
       </a-timeline>
+      <template v-else>
+        <a-empty :image="simpleImage" :description="emptyText" />
+      </template>
     </x-drawer>
   </a-config-provider>
 </template>
 <script lang="ts">
 import { defineComponent, reactive, toRefs, watch, watchEffect } from 'vue'
-import { ConfigProvider, Timeline, TimelineItem } from 'ant-design-vue'
+import { ConfigProvider, Empty, Timeline, TimelineItem } from 'ant-design-vue'
 import zhCn from 'ant-design-vue/es/locale/zh_CN'
 import XDrawer from '@components/Drawer'
 import { isFunction } from 'lodash-es'
-import { formatTime } from '@src/utils'
+import { formatTime, isEmpty } from '@src/utils'
 
 export default defineComponent({
   name: 'XLog',
@@ -48,7 +56,8 @@ export default defineComponent({
     'x-drawer': XDrawer,
     'a-config-provider': ConfigProvider,
     'a-timeline': Timeline,
-    'a-timeline-item': TimelineItem
+    'a-timeline-item': TimelineItem,
+    'a-empty': Empty
   },
   inheritAttrs: false,
   props: {
@@ -57,32 +66,31 @@ export default defineComponent({
     visible: { type: Boolean, default: false },
     customRequest: { type: Function, require: true },
     showPagination: { type: Boolean, default: false },
-    pagination: { type: Object, default: () => ({ page: 1, pageSize: 10 }) }
-    // paginationConfig: {
-    //   type: Object,
-    //   default: () => ({
-    //     size: 'small',
-    //     defaultPageSize: 10,
-    //     pageSizeOptions: ['10', '20', '30', '40']
-    //   })
-    // }
+    pagination: { type: Object, default: () => ({ page: 1, pageSize: 10 }) },
+    paginationConfig: { type: Object, default: () => ({ showLessItems: true }) },
+    emptyText: { type: String, default: '暂无数据' }
   },
   emits: ['update:visible', 'done'],
   setup(props, { emit }) {
     const state = reactive({
       modalVisible: props.visible,
-      data: [],
-      total: 0,
       spinning: false,
-      pages: props.pagination
+      data: [],
+      pages: props.pagination,
+      total: 0
     })
 
     watchEffect(() => {
       state.modalVisible = props.visible
-      state.pages = props.pagination
     })
 
-    const getLogData = async () => {
+    watchEffect(() => {
+      if (!isEmpty(props.pagination)) {
+        state.pages = props.pagination
+      }
+    })
+
+    const handleRequest = async () => {
       const { customRequest, showPagination } = props
       if (!isFunction(customRequest)) return
       state.spinning = true
@@ -93,7 +101,7 @@ export default defineComponent({
       state.spinning = false
       // TODO
       if (showPagination) {
-        state.data = data?.data ?? data?.list ?? []
+        state.data = data?.data || data?.list || []
         state.total = data?.total || 0
       } else {
         state.data = data || []
@@ -105,15 +113,11 @@ export default defineComponent({
       () => props.visible,
       bool => {
         if (bool) {
-          getLogData()
+          handleRequest()
         }
       },
       { immediate: true }
     )
-
-    const hasArray = content => {
-      return Array.isArray(content)
-    }
 
     const handleCancel = () => {
       state.modalVisible = false // 使用函数方法调用时，需要手动关闭
@@ -127,8 +131,8 @@ export default defineComponent({
 
     return {
       zhCn,
+      simpleImage: Empty.PRESENTED_IMAGE_SIMPLE,
       ...toRefs(state),
-      hasArray,
       handleOk,
       handleCancel,
       formatTime

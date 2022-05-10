@@ -189,15 +189,26 @@ export default defineComponent({
     // 自动计算表格的宽高
     useScroll({ autoResize: props.autoResize, extraHeight: props.extraHeight, scroll: toRef(state, 'scroll') })
     const getScroll = computed(() => mergeProps(defaultState.scroll, state.scroll, props.scroll))
+    // 是否显示较少页面内容
+    const showLessItems = computed(() => {
+      const _showLessItems = props.paginationConfig?.showLessItems
+      return typeof _showLessItems === 'undefined' ? false : _showLessItems
+    })
+    // 分页器
     const getPaginationConfig = computed(() => {
       return props.showPagination
-        ? mergeProps(defaultState.defaultPaginationConfig, props.paginationConfig, {
-            total: props.total,
-            current: props.pagination.page,
-            pageSize: props.pagination.pageSize
-          })
+        ? mergeProps(
+            showLessItems.value ? { size: 'small' } : defaultState.defaultPaginationConfig,
+            props.paginationConfig,
+            {
+              total: props.total,
+              current: props.pagination.page,
+              pageSize: showLessItems.value ? 10 : props.pagination.pageSize
+            }
+          )
         : false
     })
+    // 勾选框
     const getRowSelection = computed(() => {
       return props.rowSelection === true
         ? mergeProps(defaultState.defaultRowSelection, { selectedRowKeys: state.selectedRowKeys })
