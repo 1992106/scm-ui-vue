@@ -225,7 +225,6 @@ export default defineComponent({
 
     const handleCancel = () => {
       resetFields()
-      state.modalVisible = false // 使用函数方法调用时，需要手动关闭
       emit('update:visible', false)
     }
 
@@ -240,6 +239,7 @@ export default defineComponent({
             ...(!isEmpty(modelRef.attachments) ? { ids: modelRef.attachments.map(val => val?.id) } : {})
           })
           state.confirmLoading = false
+          state.modalVisible = false // 使用函数方法调用时，需要手动关闭
           handleCancel()
           emit('done')
         })

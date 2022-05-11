@@ -121,11 +121,11 @@ export default defineComponent({
     )
 
     const handleCancel = () => {
-      state.modalVisible = false // 使用函数方法调用时，需要手动关闭
       emit('update:visible', false)
     }
 
     const handleOk = () => {
+      state.modalVisible = false // 使用函数方法调用时，需要手动关闭
       handleCancel()
       emit('done')
     }
