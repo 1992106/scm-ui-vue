@@ -2,10 +2,10 @@
   <x-table v-bind="tableProps">
     <template #bodyCell="{ column, record }">
       <template v-if="column.dataIndex === 'actions'">
-        <a-button type="link" @click="handleDel(record)">删除</a-button>
+        <a-button type="link" size="small" @click="handleDel(record)">删除</a-button>
       </template>
       <template v-if="column.dataIndex === 'thumbnail'">
-        <x-image :width="50" :thumbnail="record?.fileList?.[0]?.thumbUrl" :urls="record?.fileList"></x-image>
+        <x-image :width="60" :thumbnail="record?.images?.[0]?.thumbUrl" :urls="record?.images"></x-image>
       </template>
     </template>
   </x-table>
@@ -37,7 +37,7 @@ export default defineComponent({
       size: 'small',
       columns: [
         { title: '操作', width: 100, dataIndex: 'actions' },
-        { title: '缩略图', width: 160, dataIndex: 'thumbnail' },
+        { title: '缩略图', width: 100, dataIndex: 'thumbnail' },
         {
           title: '版型编号',
           dataIndex: 'prototypeNo'
@@ -71,10 +71,10 @@ export default defineComponent({
       () => props.selectedList,
       list => {
         tableProps.dataSource = list.map(val => {
-          const fileList = val?.prototypeImgs || val?.fileList || val?.files || []
+          const images = val?.prototypeImgs || val?.imageList || val?.images || val?.fileList || val?.files || []
           return {
             ...val,
-            fileList
+            images
           }
         })
       },

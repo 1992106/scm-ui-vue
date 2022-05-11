@@ -59,7 +59,6 @@ export default defineComponent({
   },
   emits: ['update:visible', 'done'],
   setup(props, { emit }) {
-    // 使用computed时，不需要绑定@cancel手动关闭
     const modalVisible = computed({
       get: () => {
         return props.visible
@@ -73,14 +72,20 @@ export default defineComponent({
       spinning: false,
       confirmLoading: false
     })
+
+    const handleCancel = () => {}
     
     const handleOk = () => {
+      // 手动关闭弹窗
+      modalVisible.value = false
+      handleCancel()
       emit('done')
     }
     
     return {
       ...toRefs(state),
       modalVisible,
+      handleCancel,
       handleOk
     }
   }
@@ -122,6 +127,7 @@ export default defineComponent({
     })
     
     const handleCancel = () => {
+      // 关闭弹窗
       emit('update:visible', false)
     }
     

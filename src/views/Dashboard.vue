@@ -3,6 +3,7 @@
     <a-space>
       <a-button @click="handlePreview">打开预览</a-button>
       <a-button @click="handleVersions">版型库</a-button>
+      <a-button @click="handleMaterials">物料档案</a-button>
     </a-space>
     <Preview v-model:visible="previewState.visible" :current="previewState.current" :urls="previewState.urls"></Preview>
     <Versions
@@ -38,6 +39,19 @@
         </div>
       </template>
     </Versions>
+    <Materials
+      v-if="materialsState.visible"
+      v-model:visible="materialsState.visible"
+      :searchProps="materialsState.searchProps"
+      :customRequest="materialsState.customRequest">
+      <template #scope>
+        <a-space>
+          <a-input-number></a-input-number>
+          ~
+          <a-input-number></a-input-number>
+        </a-space>
+      </template>
+    </Materials>
   </div>
 </template>
 <script lang="ts">
@@ -45,9 +59,10 @@ import { reactive } from 'vue'
 import XImage from '@components/Image'
 import Preview from '@components/Preview/index.vue'
 import Versions from '@business/Versions'
+import Materials from '@business/Materials'
 export default {
   name: 'Dashboard',
-  components: { XImage, Preview, Versions },
+  components: { XImage, Preview, Versions, Materials },
   setup() {
     // 预览
     const previewState = reactive({
@@ -117,7 +132,7 @@ export default {
         columns: [
           {
             type: 'ACheckboxGroup',
-            title: '范围',
+            title: '收藏',
             field: 'z',
             props: {
               options: [{ label: '我的收藏', value: 'z' }]
@@ -155,12 +170,74 @@ export default {
     const handleVersions = () => {
       versionsState.visible = !versionsState.visible
     }
+    // 物料档案
+    const materialsState = reactive({
+      visible: false,
+      searchProps: {
+        columns: [
+          {
+            type: 'ASelect',
+            title: '物料分类',
+            field: 'a',
+            props: {
+              placeholder: '请选择'
+            }
+          },
+          {
+            type: 'AInput',
+            title: '物料sku',
+            field: 'b',
+            props: {
+              placeholder: '请输入'
+            }
+          },
+          {
+            type: 'AInput',
+            title: '物料名称',
+            field: 'c',
+            props: {
+              placeholder: '请输入'
+            }
+          },
+          {
+            type: 'AInput',
+            title: '供应商',
+            field: 'd',
+            props: {
+              placeholder: '请输入'
+            }
+          },
+          {
+            type: 'AInput',
+            title: '供应商物料编号',
+            field: 'e',
+            props: {
+              placeholder: '请输入'
+            }
+          },
+          {
+            title: '范围',
+            slot: 'scope'
+          }
+        ]
+      },
+      customRequest: async params => {
+        console.log(params)
+        const list = [{ id: 1 }, { id: 2 }, { id: 3 }, { id: 4 }, { id: 5 }, { id: 6 }, { id: 7 }, { id: 8 }, { id: 9 }]
+        return { list, total: 9 }
+      }
+    })
+    const handleMaterials = () => {
+      materialsState.visible = !materialsState.visible
+    }
 
     return {
       previewState,
       handlePreview,
       versionsState,
-      handleVersions
+      handleVersions,
+      materialsState,
+      handleMaterials
     }
   }
 }

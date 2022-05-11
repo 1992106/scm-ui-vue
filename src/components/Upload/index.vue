@@ -7,7 +7,7 @@
     :show-upload-list="showUploadList"
     :accept="accept"
     :max-count="limit"
-    :before-upload="beforeUpload"
+    :before-upload="onBeforeUpload"
     :custom-request="handleCustomRequest"
     @change="handleChange"
     @preview="handlePreview"
@@ -42,6 +42,7 @@ export default defineComponent({
     customRequest: { type: Function },
     listType: { type: String, default: 'picture-card' },
     showUploadList: { type: [Boolean, Object], default: true },
+    beforeUpload: { type: Function },
     mode: {
       validator(value) {
         return ['upload', 'preview'].includes(value)
@@ -63,7 +64,10 @@ export default defineComponent({
     })
 
     // 上传前校验
-    const beforeUpload = file => {
+    const onBeforeUpload = file => {
+      if (props.beforeUpload && isFunction(props.beforeUpload)) {
+        return props.beforeUpload(file)
+      }
       // 格式
       let isAccept = true
       if (!isEmpty(props.accept)) {
@@ -187,7 +191,7 @@ export default defineComponent({
 
     return {
       ...toRefs(state),
-      beforeUpload,
+      onBeforeUpload,
       handleCustomRequest,
       handleChange,
       handlePreview,

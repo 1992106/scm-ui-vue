@@ -2,34 +2,30 @@
   <x-modal
     v-bind="$attrs"
     v-model:visible="modalVisible"
-    class="x-versions-dialog"
+    class="x-materials-dialog"
     :title="title"
     :width="width"
     destroyOnClose
     @ok="handleOk"
     @cancel="handleCancel">
-    <div class="x-versions">
+    <div class="x-materials">
       <x-search ref="xSearch" v-bind="searchProps" @search="handleSearch" @reset="handleReset">
         <template v-for="slot of getSearchSlots" :key="slot" #[slot]="scope">
           <slot :name="slot" v-bind="scope"></slot>
         </template>
       </x-search>
-      <div class="content">
-        <Shortcut ref="xShortcut" v-bind="shortcutProps"></Shortcut>
-        <VersionsList
+      <div class="material-list">
+        <div class="title">全部</div>
+        <MaterialList
           v-model:pagination="pages"
-          :versionsList="versionsList"
-          :rowProps="rowProps"
-          :colProps="colProps"
+          :rowKey="rowKey"
+          :materialList="materialList"
           :total="total"
+          :selectedType="selectedType"
           :emptyText="emptyText"
           @search="handleSearch"
           @add="handleAdd"
-          @del="handleDel">
-          <template #renderItem="scope">
-            <slot name="renderItem" v-bind="scope"></slot>
-          </template>
-        </VersionsList>
+          @del="handleDel"></MaterialList>
       </div>
       <div class="selected-list">
         <div class="total">已选中{{ selectedList.length }}条</div>
@@ -43,41 +39,36 @@
   </x-modal>
 </template>
 <script lang="ts">
-import { computed, defineComponent, onMounted, reactive, ref, toRefs } from 'vue'
+import { computed, defineComponent, onMounted, reactive, toRefs } from 'vue'
 import XModal from '@components/Modal'
 import XSearch from '@components/Search/index.vue'
-import Shortcut from './Shortcut.vue'
-import VersionsList from './VersionsList.vue'
+import MaterialList from './MaterialList.vue'
 import SelectedList from './SelectedList.vue'
 import { isFunction, cloneDeep } from 'lodash-es'
 import { isEmpty } from '@src/utils'
 
 export default defineComponent({
-  name: 'XVersions',
+  name: 'XMaterials',
   components: {
     'x-modal': XModal,
     'x-search': XSearch,
-    Shortcut,
-    VersionsList,
+    MaterialList,
     SelectedList
   },
   inheritAttrs: false,
   props: {
     visible: { type: Boolean, default: false },
-    title: { type: String, default: '版型库' },
+    title: { type: String, default: '版型档案' },
     width: { type: [String, Number], default: '80%' },
-    rowKey: { type: String, default: 'id' },
+    rowKey: { type: String, default: 'supplierMaterialId' },
     manual: { type: Boolean, default: false },
     searchProps: { type: Object, default: () => ({}) },
-    shortcutProps: { type: Object, default: () => ({}) },
     customRequest: { type: Function, require: true },
-    rowProps: { type: Object, default: () => ({ gutter: 24, wrap: true }) },
-    colProps: { type: Object, default: () => ({ span: 6 }) },
+    selectedType: { type: String, default: 'checkbox' }, // 选择模式：checkbox 多选和 radio 单选
     emptyText: { type: String, default: '暂无数据' }
   },
   emits: ['update:visible', 'done', 'search', 'reset'],
   setup(props, { emit }) {
-    const xShortcut = ref(null)
     const modalVisible = computed({
       get: () => {
         return props.visible
@@ -93,7 +84,7 @@ export default defineComponent({
       pages: { page: 1, pageSize: 20 },
       total: 0,
       cloneList: [],
-      versionsList: [],
+      materialList: [],
       selectedList: []
     })
 
@@ -106,24 +97,22 @@ export default defineComponent({
     const handleSearch = async params => {
       const { customRequest } = props
       if (!isFunction(customRequest)) return
-      // 初始化和分页时参数为空
+      // 初始化和分页搜索时参数为空
       if (params) {
         state.searchParams = params
       }
       state.spinning = true
       state.cloneList = []
-      state.versionsList = []
-      const shortcutParams = xShortcut.value?.onGetFormValues?.()
+      state.materialList = []
       const data = await customRequest({
         ...(isEmpty(state.searchParams) ? {} : state.searchParams),
-        ...state.pages,
-        ...(isEmpty(shortcutParams) ? {} : shortcutParams)
+        ...state.pages
       })
       state.spinning = false
       const list = data?.data ?? data?.list ?? []
       state.cloneList = cloneDeep(list) // 备份数据
       if (state.selectedList.length) {
-        state.versionsList = (list || []).map(item => {
+        state.materialList = (list || []).map(item => {
           const newItem = state.selectedList.find(val => item?.[props.rowKey] === val?.[props.rowKey])
           return {
             ...item,
@@ -131,16 +120,15 @@ export default defineComponent({
           }
         })
       } else {
-        state.versionsList = list
+        state.materialList = list
       }
       state.total = data?.total || 0
-      emit('search', state.versionsList)
+      emit('search', state.materialList)
     }
 
     const handleReset = () => {
       state.searchParams = {}
       state.pages = { page: 1, pageSize: 20 }
-      xShortcut.value?.onResetFields?.()
       emit('reset')
     }
 
@@ -150,7 +138,7 @@ export default defineComponent({
 
     const handleDel = row => {
       const newItem = state.cloneList.find(val => row?.[props.rowKey] === val?.[props.rowKey])
-      state.versionsList = state.versionsList.map(item => {
+      state.materialList = state.materialList.map(item => {
         return {
           ...item,
           ...(!isEmpty(newItem) && newItem?.[props.rowKey] === item?.[props.rowKey] ? newItem : {})
@@ -169,7 +157,7 @@ export default defineComponent({
     const handleCancel = () => {
       handleReset()
       state.cloneList = []
-      state.versionsList = []
+      state.materialList = []
       state.selectedList = []
     }
 
@@ -180,7 +168,6 @@ export default defineComponent({
     })
 
     return {
-      xShortcut,
       ...toRefs(state),
       modalVisible,
       getSearchSlots,
@@ -195,24 +182,20 @@ export default defineComponent({
 })
 </script>
 <style scoped lang="scss">
-.x-versions {
+.x-materials {
   .x-search {
     padding-top: 0;
   }
 
-  .content {
-    display: flex;
-    flex: 1;
-    padding: 16px 0;
-    max-height: 640px;
-  }
-
+  .material-list,
   .selected-list {
     display: flex;
     flex-direction: column;
     padding: 10px 16px 16px;
     border: 1px solid #c8c7cc;
+    margin-top: 16px;
 
+    .title,
     .total {
       margin-bottom: 6px;
     }
@@ -220,7 +203,7 @@ export default defineComponent({
 }
 </style>
 <style lang="scss">
-.x-versions-dialog {
+.x-materials-dialog {
   &.x-modal {
     top: 24px;
   }

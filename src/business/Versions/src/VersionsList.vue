@@ -68,7 +68,7 @@ export default defineComponent({
   flex-direction: column;
   flex: 1;
   border: 1px solid #c8c7cc;
-  margin-left: 15px;
+  margin-left: 16px;
   min-height: 360px;
 
   .scroll {

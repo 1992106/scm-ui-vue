@@ -71,6 +71,7 @@ export default defineComponent({
   overflow-y: auto;
 
   .title {
+    text-indent: 2px;
     line-height: 32px;
     border-bottom: 1px solid #c8c7cc;
     margin-bottom: 10px;
