@@ -149,7 +149,7 @@ export default defineComponent({
           }
         },
         { title: '备注内容', dataIndex: 'content' },
-        { title: '附件', width: 120, dataIndex: 'attachments' }
+        { title: '附件', width: 120, dataIndex: 'attachments', ellipsis: true }
       ],
       dataSource: [],
       total: 0
@@ -264,6 +264,13 @@ export default defineComponent({
 </script>
 <style lang="scss" scoped>
 .x-remark {
+  .x-table {
+    .ant-btn-link {
+      white-space: normal;
+      word-break: break-word;
+    }
+  }
+
   .ant-form {
     margin-top: 20px;
 
