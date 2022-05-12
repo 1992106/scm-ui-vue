@@ -1,9 +1,9 @@
 <template>
   <div class="versions-list">
-    <template v-if="versionsList.length">
+    <template v-if="versionList.length">
       <div class="scroll">
         <a-row v-bind="rowProps">
-          <a-col v-for="(item, index) in versionsList" :key="index" v-bind="colProps">
+          <a-col v-for="(item, index) in versionList" :key="index" v-bind="colProps">
             <slot name="renderItem" :item="item" :index="index" :change="handleChange"></slot>
           </a-col>
         </a-row>
@@ -22,12 +22,12 @@ import { Empty } from 'ant-design-vue'
 import XPagination from '@components/Pagination/index.vue'
 
 export default defineComponent({
-  name: 'VersionsList',
+  name: 'VersionList',
   components: {
     'x-pagination': XPagination
   },
   props: {
-    versionsList: { type: Array, default: () => [] },
+    versionList: { type: Array, default: () => [] },
     rowProps: Object,
     colProps: Object,
     total: Number,

@@ -44,7 +44,7 @@ import XModal from '@components/Modal'
 import XSearch from '@components/Search/index.vue'
 import MaterialList from './MaterialList.vue'
 import SelectedList from './SelectedList.vue'
-import { isFunction, cloneDeep } from 'lodash-es'
+import { isFunction } from 'lodash-es'
 import { isEmpty } from '@src/utils'
 
 export default defineComponent({
@@ -83,7 +83,6 @@ export default defineComponent({
       searchParams: {},
       pages: { page: 1, pageSize: 20 },
       total: 0,
-      cloneList: [],
       materialList: [],
       selectedList: []
     })
@@ -102,7 +101,6 @@ export default defineComponent({
         state.searchParams = params
       }
       state.spinning = true
-      state.cloneList = []
       state.materialList = []
       const data = await customRequest({
         ...(isEmpty(state.searchParams) ? {} : state.searchParams),
@@ -110,7 +108,6 @@ export default defineComponent({
       })
       state.spinning = false
       const list = data?.data ?? data?.list ?? []
-      state.cloneList = cloneDeep(list) // 备份数据
       if (state.selectedList.length) {
         state.materialList = (list || []).map(item => {
           const newItem = state.selectedList.find(val => item?.[props.rowKey] === val?.[props.rowKey])
@@ -137,11 +134,11 @@ export default defineComponent({
     }
 
     const handleDel = row => {
-      const newItem = state.cloneList.find(val => row?.[props.rowKey] === val?.[props.rowKey])
       state.materialList = state.materialList.map(item => {
+        const newItem = state.selectedList.find(val => item?.[props.rowKey] === val?.[props.rowKey])
         return {
           ...item,
-          ...(!isEmpty(newItem) && newItem?.[props.rowKey] === item?.[props.rowKey] ? newItem : {})
+          ...(!isEmpty(newItem) ? newItem : {})
         }
       })
       const index = state.selectedList.findIndex(val => row?.[props.rowKey] === val?.[props.rowKey])
@@ -156,7 +153,6 @@ export default defineComponent({
 
     const handleCancel = () => {
       handleReset()
-      state.cloneList = []
       state.materialList = []
       state.selectedList = []
     }

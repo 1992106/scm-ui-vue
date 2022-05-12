@@ -16,9 +16,9 @@
       </x-search>
       <div class="content">
         <Shortcut ref="xShortcut" v-bind="shortcutProps"></Shortcut>
-        <VersionsList
+        <VersionList
           v-model:pagination="pages"
-          :versionsList="versionsList"
+          :versionList="versionList"
           :rowProps="rowProps"
           :colProps="colProps"
           :total="total"
@@ -29,7 +29,7 @@
           <template #renderItem="scope">
             <slot name="renderItem" v-bind="scope"></slot>
           </template>
-        </VersionsList>
+        </VersionList>
       </div>
       <div class="selected-list">
         <div class="total">已选中{{ selectedList.length }}条</div>
@@ -47,7 +47,7 @@ import { computed, defineComponent, onMounted, reactive, ref, toRefs } from 'vue
 import XModal from '@components/Modal'
 import XSearch from '@components/Search/index.vue'
 import Shortcut from './Shortcut.vue'
-import VersionsList from './VersionsList.vue'
+import VersionList from './VersionList.vue'
 import SelectedList from './SelectedList.vue'
 import { isFunction, cloneDeep } from 'lodash-es'
 import { isEmpty } from '@src/utils'
@@ -58,7 +58,7 @@ export default defineComponent({
     'x-modal': XModal,
     'x-search': XSearch,
     Shortcut,
-    VersionsList,
+    VersionList,
     SelectedList
   },
   inheritAttrs: false,
@@ -93,7 +93,7 @@ export default defineComponent({
       pages: { page: 1, pageSize: 20 },
       total: 0,
       cloneList: [],
-      versionsList: [],
+      versionList: [],
       selectedList: []
     })
 
@@ -112,7 +112,7 @@ export default defineComponent({
       }
       state.spinning = true
       state.cloneList = []
-      state.versionsList = []
+      state.versionList = []
       const shortcutParams = xShortcut.value?.onGetFormValues?.()
       const data = await customRequest({
         ...(isEmpty(state.searchParams) ? {} : state.searchParams),
@@ -123,7 +123,7 @@ export default defineComponent({
       const list = data?.data ?? data?.list ?? []
       state.cloneList = cloneDeep(list) // 备份数据
       if (state.selectedList.length) {
-        state.versionsList = (list || []).map(item => {
+        state.versionList = (list || []).map(item => {
           const newItem = state.selectedList.find(val => item?.[props.rowKey] === val?.[props.rowKey])
           return {
             ...item,
@@ -131,10 +131,10 @@ export default defineComponent({
           }
         })
       } else {
-        state.versionsList = list
+        state.versionList = list
       }
       state.total = data?.total || 0
-      emit('search', state.versionsList)
+      emit('search', state.versionList)
     }
 
     const handleReset = () => {
@@ -150,7 +150,7 @@ export default defineComponent({
 
     const handleDel = row => {
       const newItem = state.cloneList.find(val => row?.[props.rowKey] === val?.[props.rowKey])
-      state.versionsList = state.versionsList.map(item => {
+      state.versionList = state.versionList.map(item => {
         return {
           ...item,
           ...(!isEmpty(newItem) && newItem?.[props.rowKey] === item?.[props.rowKey] ? newItem : {})
@@ -169,7 +169,7 @@ export default defineComponent({
     const handleCancel = () => {
       handleReset()
       state.cloneList = []
-      state.versionsList = []
+      state.versionList = []
       state.selectedList = []
     }
 
