@@ -64,36 +64,38 @@ export default defineComponent({
 })
 </script>
 <style lang="scss" scoped>
-.shortcut-bar {
-  width: 320px;
-  padding: 0 10px;
-  border: 1px solid #c8c7cc;
-  overflow-y: auto;
+.x-versions {
+  .shortcut-bar {
+    width: 320px;
+    padding: 0 10px;
+    border: 1px solid #c8c7cc;
+    overflow-y: auto;
 
-  .title {
-    text-indent: 2px;
-    line-height: 32px;
-    border-bottom: 1px solid #c8c7cc;
-    margin-bottom: 10px;
-  }
-
-  .x-form.ant-form-vertical {
-    padding: 0 6px;
-
-    :deep(.ant-form-item) {
-      flex-wrap: nowrap;
+    .title {
+      text-indent: 2px;
+      line-height: 32px;
+      border-bottom: 1px solid #c8c7cc;
       margin-bottom: 10px;
+    }
 
-      .ant-form-item-label {
-        padding-bottom: 0;
-      }
+    .x-form.ant-form-vertical {
+      padding: 0 6px;
 
-      .ant-checkbox-group {
-        width: 100%;
+      :deep(.ant-form-item) {
+        flex-wrap: nowrap;
+        margin-bottom: 10px;
 
-        .ant-checkbox-group-item {
-          width: 33%;
-          margin-right: 0;
+        .ant-form-item-label {
+          padding-bottom: 0;
+        }
+
+        .ant-checkbox-group {
+          width: 100%;
+
+          .ant-checkbox-group-item {
+            width: 33%;
+            margin-right: 0;
+          }
         }
       }
     }

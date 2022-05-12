@@ -63,29 +63,31 @@ export default defineComponent({
 })
 </script>
 <style lang="scss" scoped>
-.versions-list {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  border: 1px solid #c8c7cc;
-  margin-left: 16px;
-  min-height: 360px;
-
-  .scroll {
-    flex: 1;
-    padding: 20px 20px 0;
-    overflow-y: auto;
-  }
-
-  .empty {
-    flex: 1;
+.x-versions {
+  .versions-list {
     display: flex;
-    align-items: center;
-    justify-content: center;
-  }
+    flex-direction: column;
+    flex: 1;
+    border: 1px solid #c8c7cc;
+    margin-left: 16px;
+    min-height: 360px;
 
-  .ant-pagination {
-    padding: 10px 20px;
+    .scroll {
+      flex: 1;
+      padding: 20px 20px 0;
+      overflow-y: auto;
+    }
+
+    .empty {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .ant-pagination {
+      padding: 10px 20px;
+    }
   }
 }
 </style>

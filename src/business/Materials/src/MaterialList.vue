@@ -58,7 +58,7 @@ export default defineComponent({
       rowSelection: true,
       size: 'small',
       columns: [
-        { title: '物料', width: 160, fixed: 'left', dataIndex: 'material' },
+        { title: '物料编码', width: 160, fixed: 'left', dataIndex: 'material' },
         { title: '图片', width: 100, fixed: 'left', dataIndex: 'thumbnail' },
         { title: '物料状态', width: 100, dataIndex: 'statusDesc' },
         { title: '优选供应商', width: 160, dataIndex: 'supplierName' },
