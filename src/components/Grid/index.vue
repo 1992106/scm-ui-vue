@@ -274,7 +274,7 @@ export default defineComponent({
       return (columns || [])
         .filter(col => col.slots)
         .flatMap(col =>
-          ['default', 'header', 'footer', 'title', 'edit', 'filter', 'checkbox', 'radio', 'content']
+          ['default', 'header', 'footer', 'edit', 'filter', 'title', 'checkbox', 'radio', 'content']
             .map(val => col.slots[val])
             .filter(Boolean)
         )

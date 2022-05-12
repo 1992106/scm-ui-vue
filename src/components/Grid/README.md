@@ -63,9 +63,9 @@ emits: [
 <slot name="default"></slot>
 <slot name="header"></slot>
 <slot name="footer"></slot>
-<slot name="title"></slot>
 <slot name="edit"></slot>
 <slot name="filter"></slot>
+<slot name="title"></slot>
 <slot name="checkbox"></slot>
 <slot name="radio"></slot>
 <slot name="content"></slot>
