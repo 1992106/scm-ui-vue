@@ -46,6 +46,7 @@ import MaterialList from './MaterialList.vue'
 import SelectedList from './SelectedList.vue'
 import { isFunction } from 'lodash-es'
 import { isEmpty } from '@src/utils'
+import { transformRowKey } from '@components/Table/utils'
 
 export default defineComponent({
   name: 'XMaterials',
@@ -60,7 +61,7 @@ export default defineComponent({
     visible: { type: Boolean, default: false },
     title: { type: String, default: '版型档案' },
     width: { type: [String, Number], default: '80%' },
-    rowKey: { type: String, default: 'supplierMaterialId' },
+    rowKey: { type: [String, Function], default: 'supplierMaterialId' },
     manual: { type: Boolean, default: false },
     searchProps: { type: Object, default: () => ({}) },
     customRequest: { type: Function, require: true },
@@ -110,7 +111,9 @@ export default defineComponent({
       const list = data?.data ?? data?.list ?? []
       if (state.selectedList.length) {
         state.materialList = (list || []).map(item => {
-          const newItem = state.selectedList.find(val => item?.[props.rowKey] === val?.[props.rowKey])
+          const newItem = state.selectedList.find(val => {
+            return transformRowKey(props.rowKey, item) === transformRowKey(props.rowKey, val)
+          })
           return {
             ...item,
             ...(!isEmpty(newItem) ? newItem : {})
@@ -135,13 +138,17 @@ export default defineComponent({
 
     const handleDel = row => {
       state.materialList = state.materialList.map(item => {
-        const newItem = state.selectedList.find(val => item?.[props.rowKey] === val?.[props.rowKey])
+        const newItem = state.selectedList.find(val => {
+          return transformRowKey(props.rowKey, item) === transformRowKey(props.rowKey, val)
+        })
         return {
           ...item,
           ...(!isEmpty(newItem) ? newItem : {})
         }
       })
-      const index = state.selectedList.findIndex(val => row?.[props.rowKey] === val?.[props.rowKey])
+      const index = state.selectedList.findIndex(val => {
+        return transformRowKey(props.rowKey, row) === transformRowKey(props.rowKey, val)
+      })
       state.selectedList.splice(index, 1)
     }
 

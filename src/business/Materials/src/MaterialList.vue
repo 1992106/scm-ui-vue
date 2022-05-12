@@ -40,8 +40,9 @@ export default defineComponent({
     'x-image': XImage
   },
   props: {
-    rowKey: String,
+    rowKey: [String, Function],
     selectedType: String,
+    selectedValue: { type: Array, default: () => [] },
     materialList: { type: Array, default: () => [] },
     total: Number,
     pagination: Object,

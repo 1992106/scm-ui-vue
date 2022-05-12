@@ -44,6 +44,7 @@ import { defineComponent, computed, mergeProps, ref, reactive, toRef, toRefs, wa
 import { Spin, Table } from 'ant-design-vue'
 import { useScroll } from './useScroll'
 import { isEmpty } from '@src/utils'
+import { getSortBy, transformRowKey } from './utils'
 
 export default defineComponent({
   name: 'XTable',
@@ -114,7 +115,8 @@ export default defineComponent({
      */
     const state = reactive({
       scroll: {},
-      selectedRowKeys: props.selectedValue
+      selectedRows: props.selectedValue,
+      selectedRowKeys: props.selectedValue.map(val => transformRowKey(props.rowKey, val))
     })
     /**
      * 默认值
@@ -136,6 +138,7 @@ export default defineComponent({
         columnWidth: 50,
         onChange: (selectedRowKeys, selectedRows) => {
           state.selectedRowKeys = selectedRowKeys
+          state.selectedRows = selectedRows
           emit('update:selected-value', selectedRowKeys)
           emit('radio-change', selectedRowKeys, selectedRows)
           emit('checkbox-change', selectedRowKeys, selectedRows)
@@ -148,11 +151,10 @@ export default defineComponent({
         }
       }
     }
-    // 监听selectedValue，如果为空，清空勾选
+    // 监听selectedValue，实现双向绑定
     watchEffect(() => {
-      if (isEmpty(props.selectedValue)) {
-        state.selectedRowKeys = []
-      }
+      state.selectedRows = props.selectedValue
+      state.selectedRowKeys = props.selectedValue.map(val => transformRowKey(props.rowKey, val))
     })
     /**
      * refs
@@ -243,9 +245,7 @@ export default defineComponent({
       if (!isEmpty(sorter) && column?.sorter === true) {
         const { order, field } = sorter
         if (!isEmpty(order)) {
-          const sortBy = ['asc', 'desc']
-            .map(v => order.includes(v) && order.slice(v.length).toUpperCase())
-            .filter(Boolean)[0]
+          const sortBy = getSortBy(order)
           emit('search', { sortBy, sortKey: field }, 'sort')
         } else {
           emit('search', {}, 'sort')

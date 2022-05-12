@@ -56,6 +56,7 @@
     @checkbox-change="handleCheckboxChange"
     @checkbox-all="handleCheckboxAll"
     @cell-click="handleCellClick"
+    @cell-dblclick="handleCellDblclick"
     @resizable-change="handleResizableChange">
     <!--搜索栏-->
     <template v-if="hasSearchBar" #form>
@@ -189,6 +190,7 @@ export default defineComponent({
     'checkbox-change',
     'checkbox-all',
     'cell-click',
+    'cell-dblclick',
     'edit-closed',
     'valid-error',
     'filter-change',
@@ -289,6 +291,7 @@ export default defineComponent({
     const getScrollX = computed(() => mergeProps(defaultState.defaultScrollX, props.scrollX))
     const getScrollY = computed(() => mergeProps(defaultState.defaultScrollY, props.scrollY))
     const getTreeConfig = computed(() => (props.stripe ? null : props.treeConfig))
+    const selectedType = computed(() => props.columns.find(column => column?.type))
     /**
      * methods
      */
@@ -327,22 +330,86 @@ export default defineComponent({
       })
     }
     // 全选
-    const handleCheckboxAll = ({ records, reserves, indeterminates, checked, $event }) => {
+    const handleCheckboxAll = ({ checked, $event }) => {
       const $xGrid = unref(xGrid)
-      emit('update:selected-value', $xGrid.getCheckboxRecords())
-      emit('checkbox-all', { records, reserves, indeterminates, checked, $event })
+      let selectedValue
+      if (props.checkboxConfig?.reserve) {
+        selectedValue = $xGrid.getCheckboxReserveRecords()
+      } else {
+        selectedValue = $xGrid.getCheckboxRecords()
+      }
+      emit('update:selected-value', selectedValue)
+      emit('checkbox-all', { checked, $event })
     }
-    // 监听selectedValue，如果为空，清空勾选
+    // 监听selectedValue，实现双向绑定
     watchEffect(() => {
+      const $xGrid = unref(xGrid)
       if (isEmpty(props.selectedValue)) {
-        const $xGrid = unref(xGrid)
-        $xGrid?.clearCheckboxRow() // 清空勾选
-        $xGrid?.clearRadioRow() // 清空单选框
+        if (selectedType.value === 'checkbox') {
+          if (props.checkboxConfig?.reserve) {
+            $xGrid?.clearCheckboxReserve()
+          } else {
+            $xGrid?.clearCheckboxRow()
+          }
+        }
+        // 单选框
+        if (selectedType.value === 'radio') {
+          if (props.radioConfig?.reserve) {
+            $xGrid?.clearRadioReserve()
+          } else {
+            $xGrid?.clearRadioRow()
+          }
+        }
+      } else {
+        // 多选框
+        if (selectedType.value === 'checkbox') {
+          $xGrid.setCheckboxRow(props.selectedValue, true)
+        }
+        // 单选框
+        if (selectedType.value === 'radio') {
+          $xGrid.setRadioRow(props.selectedValue[0])
+        }
       }
     })
     // 单元格点击事件
-    const handleCellClick = ({ row, rowIndex, $rowIndex, column, columnIndex, $columnIndex, $event }) => {
-      emit('cell-click', { row, rowIndex, $rowIndex, column, columnIndex, $columnIndex, $event })
+    const handleCellClick = ({
+      row,
+      rowIndex,
+      $rowIndex,
+      column,
+      columnIndex,
+      $columnIndex,
+      triggerRadio,
+      triggerCheckbox,
+      triggerTreeNode,
+      triggerExpandNode,
+      $event
+    }) => {
+      emit('cell-click', {
+        row,
+        rowIndex,
+        $rowIndex,
+        column,
+        columnIndex,
+        $columnIndex,
+        triggerRadio,
+        triggerCheckbox,
+        triggerTreeNode,
+        triggerExpandNode,
+        $event
+      })
+    }
+    // 单元格双击事件
+    const handleCellDblclick = ({ row, rowIndex, $rowIndex, column, columnIndex, $columnIndex, $event }) => {
+      emit('cell-dblclick', {
+        row,
+        rowIndex,
+        $rowIndex,
+        column,
+        columnIndex,
+        $columnIndex,
+        $event
+      })
     }
     // 编辑
     const handleEditClosed = ({ row, rowIndex, $rowIndex, column, columnIndex, $columnIndex }) => {
@@ -470,6 +537,7 @@ export default defineComponent({
       handleCheckboxChange,
       handleCheckboxAll,
       handleCellClick,
+      handleCellDblclick,
       handleEditClosed,
       handleValidError,
       handleFilterChange,

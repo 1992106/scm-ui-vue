@@ -33,7 +33,7 @@ export default defineComponent({
     'x-table': XTable
   },
   props: {
-    rowKey: String,
+    rowKey: [String, Function],
     selectedList: { type: Array, default: () => [] },
     emptyText: String
   },

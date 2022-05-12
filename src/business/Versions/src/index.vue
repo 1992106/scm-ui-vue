@@ -51,6 +51,7 @@ import VersionList from './VersionList.vue'
 import SelectedList from './SelectedList.vue'
 import { isFunction, cloneDeep } from 'lodash-es'
 import { isEmpty } from '@src/utils'
+import { transformRowKey } from '@components/Table/utils'
 
 export default defineComponent({
   name: 'XVersions',
@@ -66,7 +67,7 @@ export default defineComponent({
     visible: { type: Boolean, default: false },
     title: { type: String, default: '版型库' },
     width: { type: [String, Number], default: '80%' },
-    rowKey: { type: String, default: 'id' },
+    rowKey: { type: [String, Function], default: 'id' },
     manual: { type: Boolean, default: false },
     searchProps: { type: Object, default: () => ({}) },
     shortcutProps: { type: Object, default: () => ({}) },
@@ -124,7 +125,9 @@ export default defineComponent({
       state.cloneList = cloneDeep(list) // 备份数据
       if (state.selectedList.length) {
         state.versionList = (list || []).map(item => {
-          const newItem = state.selectedList.find(val => item?.[props.rowKey] === val?.[props.rowKey])
+          const newItem = state.selectedList.find(val => {
+            return transformRowKey(props.rowKey, item) === transformRowKey(props.rowKey, val)
+          })
           return {
             ...item,
             ...(!isEmpty(newItem) ? newItem : {})
@@ -149,14 +152,20 @@ export default defineComponent({
     }
 
     const handleDel = row => {
-      const newItem = state.cloneList.find(val => row?.[props.rowKey] === val?.[props.rowKey])
+      const newItem = state.cloneList.find(val => {
+        return transformRowKey(props.rowKey, row) === transformRowKey(props.rowKey, val)
+      })
       state.versionList = state.versionList.map(item => {
         return {
           ...item,
-          ...(!isEmpty(newItem) && newItem?.[props.rowKey] === item?.[props.rowKey] ? newItem : {})
+          ...(!isEmpty(newItem) && transformRowKey(props.rowKey, newItem) === transformRowKey(props.rowKey, item)
+            ? newItem
+            : {})
         }
       })
-      const index = state.selectedList.findIndex(val => row?.[props.rowKey] === val?.[props.rowKey])
+      const index = state.selectedList.find(val => {
+        return transformRowKey(props.rowKey, row) === transformRowKey(props.rowKey, val)
+      })
       state.selectedList.splice(index, 1)
     }
 

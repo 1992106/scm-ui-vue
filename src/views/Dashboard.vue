@@ -6,12 +6,7 @@
       <a-button @click="handleMaterials">物料档案</a-button>
     </a-space>
     <Preview v-model:visible="previewState.visible" :current="previewState.current" :urls="previewState.urls"></Preview>
-    <Versions
-      v-if="versionsState.visible"
-      v-model:visible="versionsState.visible"
-      :searchProps="versionsState.searchProps"
-      :shortcutProps="versionsState.shortcutProps"
-      :customRequest="versionsState.customRequest">
+    <Versions v-if="versionsState.visible" v-bind="versionsState" v-model:visible="versionsState.visible">
       <template #scope>
         <a-space>
           <a-input-number></a-input-number>
@@ -39,11 +34,7 @@
         </div>
       </template>
     </Versions>
-    <Materials
-      v-if="materialsState.visible"
-      v-model:visible="materialsState.visible"
-      :searchProps="materialsState.searchProps"
-      :customRequest="materialsState.customRequest">
+    <Materials v-if="materialsState.visible" v-bind="materialsState" v-model:visible="materialsState.visible">
       <template #scope>
         <a-space>
           <a-input-number></a-input-number>
@@ -173,6 +164,7 @@ export default {
     // 物料档案
     const materialsState = reactive({
       visible: false,
+      rowKey: record => record?.id,
       searchProps: {
         columns: [
           {
