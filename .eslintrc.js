@@ -29,7 +29,7 @@ module.exports = {
     withDefaults: 'readonly'
   },
   rules: {
-    'prettier/prettier': [2, { endOfLine: 'lf' }],
+    'prettier/prettier': [2, { endOfLine: 'auto' }],
     'vue/require-default-prop': 0,
     'vue/v-on-event-hyphenation': 0,
     'vue/attribute-hyphenation': 0,

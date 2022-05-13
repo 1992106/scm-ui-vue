@@ -44,7 +44,7 @@ import { defineComponent, computed, mergeProps, ref, reactive, toRef, toRefs, un
 import { Spin, Table } from 'ant-design-vue'
 import { useScroll } from './useScroll'
 import { isEmpty } from '@src/utils'
-import { getSortBy, transformRowKey } from './utils'
+import { getSortDirection, transformRowKey } from './utils'
 
 export default defineComponent({
   name: 'XTable',
@@ -130,8 +130,11 @@ export default defineComponent({
         columnWidth: 50,
         onChange: (selectedRowKeys, selectedRows) => {
           emit('update:selected-value', selectedRows)
-          emit('radio-change', selectedRowKeys, selectedRows)
-          emit('checkbox-change', selectedRowKeys, selectedRows)
+          if (props.rowSelection?.type === 'radio') {
+            emit('radio-change', selectedRowKeys, selectedRows)
+          } else {
+            emit('checkbox-change', selectedRowKeys, selectedRows)
+          }
         },
         onSelect: (record, selected, selectedRows, nativeEvent) => {
           emit('select', record, selected, selectedRows, nativeEvent)
@@ -183,7 +186,7 @@ export default defineComponent({
     const getScroll = computed(() => mergeProps(defaultState.scroll, state.scroll, props.scroll))
     // 是否显示较少页面内容
     const showLessItems = computed(() => {
-      const _showLessItems = props.paginationConfig?.showLessItems
+      const _showLessItems = props.paginationConfig?.showLessItems || props.pagination?.showLessItems
       return typeof _showLessItems === 'undefined' ? false : _showLessItems
     })
     // 分页器
@@ -241,7 +244,7 @@ export default defineComponent({
       if (!isEmpty(sorter) && column?.sorter === true) {
         const { order, field } = sorter
         if (!isEmpty(order)) {
-          const sortBy = getSortBy(order)
+          const sortBy = getSortDirection(order)
           emit('search', { sortBy, sortKey: field }, 'sort')
         } else {
           emit('search', {}, 'sort')

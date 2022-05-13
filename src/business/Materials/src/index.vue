@@ -5,6 +5,7 @@
     class="x-materials-dialog"
     :title="title"
     :width="width"
+    :height="height"
     destroyOnClose
     @ok="handleOk"
     @cancel="handleCancel">
@@ -62,6 +63,7 @@ export default defineComponent({
     visible: { type: Boolean, default: false },
     title: { type: String, default: '物料档案' },
     width: { type: [String, Number], default: '80%' },
+    height: { type: [String, Number] },
     rowKey: { type: [String, Function], default: 'supplierMaterialId' },
     manual: { type: Boolean, default: false },
     searchProps: { type: Object, default: () => ({}) },

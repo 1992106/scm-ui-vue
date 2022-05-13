@@ -16,7 +16,7 @@
 | title | 标题 | String | `物料档案` |
 | width | 宽度 | [String, Number] | `80%` |
 | height | 高度 | [String, Number] | `-` |
-| rowKey | 表格行 key 的取值，可以是字符串或一个函数 | [String, Function] | [String, Function] | `supplierMaterialId` |                                                                  |
+| rowKey | key 的取值，可以是字符串或一个函数 | [String, Function] | [String, Function] | `supplierMaterialId` |
 | manual | 是否手动控制搜索 | Boolean | `false` |
 | searchProps | XSearch props | Object | `{}` |
 | customRequest | 自定义请求 | Function | `-` |
