@@ -345,7 +345,8 @@ export default defineComponent({
     watchEffect(() => {
       const $xGrid = unref(xGrid)
       if (isEmpty(props.selectedValue)) {
-        if (selectedType.value === 'checkbox') {
+        // 多选框
+        if (unref(selectedType) === 'checkbox') {
           if (props.checkboxConfig?.reserve) {
             $xGrid?.clearCheckboxReserve()
           } else {
@@ -353,7 +354,7 @@ export default defineComponent({
           }
         }
         // 单选框
-        if (selectedType.value === 'radio') {
+        if (unref(selectedType) === 'radio') {
           if (props.radioConfig?.reserve) {
             $xGrid?.clearRadioReserve()
           } else {
@@ -362,11 +363,11 @@ export default defineComponent({
         }
       } else {
         // 多选框
-        if (selectedType.value === 'checkbox') {
+        if (unref(selectedType) === 'checkbox') {
           $xGrid.setCheckboxRow(props.selectedValue, true)
         }
         // 单选框
-        if (selectedType.value === 'radio') {
+        if (unref(selectedType) === 'radio') {
           $xGrid.setRadioRow(props.selectedValue[0])
         }
       }
@@ -437,7 +438,7 @@ export default defineComponent({
         }
       })
       emit('filter-change', { column, property, values, datas, filterList, $event })
-      if (getFilterConfig.value?.remote) {
+      if (unref(getFilterConfig)?.remote) {
         emit('search', filters, 'filter')
       }
       // xGrid.value.loadData()
@@ -449,7 +450,7 @@ export default defineComponent({
     // 清除所有筛选条件
     const handleClearFilter = ({ filterList, $event }) => {
       emit('clear-filter', { filterList, $event })
-      if (getFilterConfig.value?.remote) {
+      if (unref(getFilterConfig)?.remote) {
         emit('search', {}, 'filter')
       }
     }
@@ -457,14 +458,14 @@ export default defineComponent({
     const handleSortChange = ({ column, property, order, sortBy, sortList, $event }) => {
       const sorts = order ? { sortBy: order.toUpperCase(), sortKey: property } : {}
       emit('sort-change', { column, property, order, sortBy, sortList, $event })
-      if (getSortConfig.value?.remote) {
+      if (unref(getSortConfig)?.remote) {
         emit('search', sorts, 'sort')
       }
     }
     // 清除所有排序条件
     const handleClearSort = ({ sortList, $event }) => {
       emit('clear-sort', { sortList, $event })
-      if (getSortConfig.value?.remote) {
+      if (unref(getSortConfig)?.remote) {
         emit('search', {}, 'sort')
       }
     }

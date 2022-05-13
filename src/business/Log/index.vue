@@ -120,14 +120,16 @@ export default defineComponent({
       { immediate: true }
     )
 
-    const handleCancel = () => {
-      emit('update:visible', false)
+    const handleOk = () => {
+      emit('done')
+      handleCancel()
     }
 
-    const handleOk = () => {
-      state.modalVisible = false // 使用函数方法调用时，需要手动关闭
-      handleCancel()
-      emit('done')
+    const handleCancel = () => {
+      // TODO: 使用函数方法调用时，需要手动关闭
+      state.modalVisible = false // 只是为了兼容使用函数方法调用，才需要手动关闭
+      // 使用函数方法调用时，通过emit('update:visible', false)不生效
+      emit('update:visible', false)
     }
 
     return {

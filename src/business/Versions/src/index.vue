@@ -170,9 +170,9 @@ export default defineComponent({
     }
 
     const handleOk = () => {
+      emit('done', state.selectedList)
       modalVisible.value = false
       handleCancel()
-      emit('done', state.selectedList)
     }
 
     const handleCancel = () => {

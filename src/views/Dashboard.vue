@@ -6,7 +6,11 @@
       <a-button @click="handleMaterials">物料档案</a-button>
     </a-space>
     <Preview v-model:visible="previewState.visible" :current="previewState.current" :urls="previewState.urls"></Preview>
-    <Versions v-if="versionsState.visible" v-bind="versionsState" v-model:visible="versionsState.visible">
+    <Versions
+      v-if="versionsState.visible"
+      v-bind="versionsState"
+      v-model:visible="versionsState.visible"
+      @done="doneVersions">
       <template #scope>
         <a-space>
           <a-input-number></a-input-number>
@@ -34,7 +38,11 @@
         </div>
       </template>
     </Versions>
-    <Materials v-if="materialsState.visible" v-bind="materialsState" v-model:visible="materialsState.visible">
+    <Materials
+      v-if="materialsState.visible"
+      v-bind="materialsState"
+      v-model:visible="materialsState.visible"
+      @done="doneMaterials">
       <template #scope>
         <a-space>
           <a-input-number></a-input-number>
@@ -144,22 +152,19 @@ export default {
       },
       customRequest: async params => {
         console.log(params)
-        const list = [
-          { id: 1 },
-          { id: 2 },
-          { id: 3 },
-          { id: 4 },
-          { id: 5 },
-          { id: 6 },
-          { id: 7 },
-          { id: 8 },
-          { id: 9 }
-        ].map(val => ({ ...val, checked: false }))
-        return { list, total: 9 }
+        const list = []
+        const total = 30
+        for (let i = 0; i < total; i++) {
+          list.push({ id: i, checked: false })
+        }
+        return { list, total }
       }
     })
     const handleVersions = () => {
       versionsState.visible = !versionsState.visible
+    }
+    const doneVersions = data => {
+      console.log(data, '版型库')
     }
     // 物料档案
     const materialsState = reactive({
@@ -215,12 +220,19 @@ export default {
       },
       customRequest: async params => {
         console.log(params)
-        const list = [{ id: 1 }, { id: 2 }, { id: 3 }, { id: 4 }, { id: 5 }, { id: 6 }, { id: 7 }, { id: 8 }, { id: 9 }]
-        return { list, total: 9 }
+        const list = []
+        const total = 30
+        for (let i = 0; i < total; i++) {
+          list.push({ id: i })
+        }
+        return { list, total }
       }
     })
     const handleMaterials = () => {
       materialsState.visible = !materialsState.visible
+    }
+    const doneMaterials = data => {
+      console.log(data, '物料档案')
     }
 
     return {
@@ -228,8 +240,10 @@ export default {
       handlePreview,
       versionsState,
       handleVersions,
+      doneVersions,
       materialsState,
-      handleMaterials
+      handleMaterials,
+      doneMaterials
     }
   }
 }

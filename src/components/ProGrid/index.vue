@@ -123,8 +123,8 @@ export default defineComponent({
      * @param {*} params
      */
     const handleReset = params => {
-      xProGrid.value.xGrid?.clearFilter()
-      xProGrid.value.xGrid?.clearSort()
+      unref(xProGrid).xGrid?.clearFilter()
+      unref(xProGrid).xGrid?.clearSort()
       onReset(params)
       // 重置会触发搜索事件，搜索方法会重置page和更新value
       // if (unref(showPagination)) {

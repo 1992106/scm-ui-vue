@@ -2,7 +2,7 @@ import { isFunction } from 'lodash-es'
 
 // 转换XTabled的rowKey
 export const transformRowKey = (rowKey, record) => {
-  if (isFunction()) {
+  if (isFunction(rowKey)) {
     return rowKey(record)
   }
   return rowKey

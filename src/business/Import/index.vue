@@ -73,6 +73,7 @@ export default defineComponent({
     })
 
     watchEffect(() => {
+      // 使用函数方法调用时不会触发
       state.modalVisible = props.visible
     })
 
@@ -81,8 +82,8 @@ export default defineComponent({
       if (!isFunction(customImport)) return
       state.spinning = true
       await importFile(customImport, data, () => {
-        handleCancel()
         emit('done')
+        handleCancel()
       })
       state.spinning = false
     }
@@ -96,7 +97,9 @@ export default defineComponent({
     }
 
     const handleCancel = () => {
-      state.modalVisible = false // 使用函数方法调用时，需要手动关闭
+      // TODO: 使用函数方法调用时，需要手动关闭
+      state.modalVisible = false // 只是为了兼容使用函数方法调用，才需要手动关闭
+      // 使用函数方法调用时，通过emit('update:visible', false)不生效
       emit('update:visible', false)
     }
 

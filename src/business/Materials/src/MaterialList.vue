@@ -1,5 +1,5 @@
 <template>
-  <x-table v-bind="tableProps" v-model:pagination="tableProps.pagination" @search="handleSearch">
+  <x-table v-bind="tableProps" v-model:pagination="pages" v-model:selectedValue="selectedList">
     <template #bodyCell="{ column, record }">
       <template v-if="column.dataIndex === 'material'">
         <div>{{ record?.materialSku || '--' }}</div>
@@ -29,7 +29,7 @@
   </x-table>
 </template>
 <script>
-import { defineComponent, reactive, watch, watchEffect } from 'vue'
+import { computed, defineComponent, reactive, watch } from 'vue'
 import XTable from '@components/Table/index.vue'
 import XImage from '@components/Image'
 
@@ -48,7 +48,7 @@ export default defineComponent({
     pagination: Object,
     emptyText: String
   },
-  emits: ['update:pagination', 'search', 'add', 'del'],
+  emits: ['update:pagination', 'update:selectedValue', 'search', 'add', 'del'],
   setup(props, { emit }) {
     const tableProps = reactive({
       scroll: {
@@ -84,12 +84,26 @@ export default defineComponent({
         { title: '物料成分', width: 180, dataIndex: 'materialIngredient', ellipsis: true }
       ],
       dataSource: [],
-      pagination: { page: 1, pageSize: 20 },
       total: 0
     })
 
-    watchEffect(() => {
-      tableProps.pagination = props.pagination
+    const pages = computed({
+      get: () => {
+        return props.pagination
+      },
+      set: val => {
+        emit('update:pagination', val)
+        emit('search')
+      }
+    })
+
+    const selectedList = computed({
+      get: () => {
+        return props.selectedValue
+      },
+      set: val => {
+        emit('update:selectedValue', val)
+      }
     })
 
     watch(
@@ -120,14 +134,10 @@ export default defineComponent({
       { deep: true, immediate: true }
     )
 
-    const handleSearch = () => {
-      emit('update:pagination', tableProps.pagination)
-      emit('search')
-    }
-
     return {
-      tableProps,
-      handleSearch
+      pages,
+      selectedList,
+      tableProps
     }
   }
 })

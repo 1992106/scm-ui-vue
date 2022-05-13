@@ -73,13 +73,15 @@ export default defineComponent({
       confirmLoading: false
     })
 
-    const handleCancel = () => {}
+    const handleCancel = () => {
+      // 关闭弹窗
+      modalVisible.value = false
+    }
     
     const handleOk = () => {
-      // 手动关闭弹窗
-      modalVisible.value = false
-      handleCancel()
       emit('done')
+      // 初始化默认值
+      handleCancel()
     }
     
     return {
@@ -132,8 +134,9 @@ export default defineComponent({
     }
     
     const handleOk = () => {
-      handleCancel()
       emit('done')
+      // 初始化默认值
+      handleCancel()
     }
     
     return {

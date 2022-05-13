@@ -42,7 +42,7 @@
 </template>
 
 <script>
-import { computed, defineComponent, onMounted, reactive, ref, toRefs, watch, watchEffect } from 'vue'
+import { computed, defineComponent, onMounted, reactive, ref, toRefs, unref, watch, watchEffect } from 'vue'
 import { Empty, Spin } from 'ant-design-vue'
 import XSearch from '@components/Search/index.vue'
 import XPagination from '@components/Pagination/index.vue'
@@ -157,7 +157,7 @@ export default defineComponent({
 
     // 初始化调用一下，获取搜索参数
     const onInit = () => {
-      const params = xSearch.value.onGetFormValues()
+      const params = unref(xSearch).onGetFormValues()
       emit('update:value', { ...params, ...(props.showPagination ? state.pages : {}) })
     }
 

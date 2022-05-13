@@ -223,11 +223,6 @@ export default defineComponent({
 
     const { resetFields, validate, validateInfos } = Form.useForm(modelRef, rulesRef)
 
-    const handleCancel = () => {
-      resetFields()
-      emit('update:visible', false)
-    }
-
     const handleOk = async () => {
       const { customSubmit } = props
       if (!isFunction(customSubmit)) return
@@ -239,13 +234,20 @@ export default defineComponent({
             ...(!isEmpty(modelRef.attachments) ? { ids: modelRef.attachments.map(val => val?.id) } : {})
           })
           state.confirmLoading = false
-          state.modalVisible = false // 使用函数方法调用时，需要手动关闭
-          handleCancel()
           emit('done')
+          handleCancel()
         })
         .catch(err => {
           console.error(err)
         })
+    }
+
+    const handleCancel = () => {
+      resetFields()
+      // TODO: 使用函数方法调用时，需要手动关闭
+      state.modalVisible = false // 只是为了兼容使用函数方法调用，才需要手动关闭
+      // 使用函数方法调用时，通过emit('update:visible', false)不生效
+      emit('update:visible', false)
     }
 
     return {

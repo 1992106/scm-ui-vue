@@ -18,6 +18,7 @@
         <div class="title">全部</div>
         <MaterialList
           v-model:pagination="pages"
+          v-model:selectedValue="selectedList"
           :rowKey="rowKey"
           :materialList="materialList"
           :total="total"
@@ -153,9 +154,9 @@ export default defineComponent({
     }
 
     const handleOk = () => {
+      emit('done', state.selectedList)
       modalVisible.value = false
       handleCancel()
-      emit('done', state.selectedList)
     }
 
     const handleCancel = () => {

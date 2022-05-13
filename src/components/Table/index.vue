@@ -40,7 +40,7 @@
   </div>
 </template>
 <script>
-import { defineComponent, computed, mergeProps, ref, reactive, toRef, toRefs, watchEffect } from 'vue'
+import { defineComponent, computed, mergeProps, ref, reactive, toRef, toRefs, unref } from 'vue'
 import { Spin, Table } from 'ant-design-vue'
 import { useScroll } from './useScroll'
 import { isEmpty } from '@src/utils'
@@ -65,7 +65,7 @@ export default defineComponent({
     // 页码
     showPagination: { type: Boolean, default: true },
     total: { type: Number, default: 0 },
-    pagination: { type: Object, default: () => ({ page: 1, pageSize: 20 }) },
+    pagination: { type: Object, default: () => ({}) },
     paginationConfig: Object,
     // 额外高度
     extraHeight: Number,
@@ -111,14 +111,6 @@ export default defineComponent({
   ],
   setup(props, { emit, slots }) {
     /**
-     * data
-     */
-    const state = reactive({
-      scroll: {},
-      selectedRows: props.selectedValue,
-      selectedRowKeys: props.selectedValue.map(val => transformRowKey(props.rowKey, val))
-    })
-    /**
      * 默认值
      */
     const defaultState = {
@@ -137,9 +129,7 @@ export default defineComponent({
         fixed: true,
         columnWidth: 50,
         onChange: (selectedRowKeys, selectedRows) => {
-          state.selectedRowKeys = selectedRowKeys
-          state.selectedRows = selectedRows
-          emit('update:selected-value', selectedRowKeys)
+          emit('update:selected-value', selectedRows)
           emit('radio-change', selectedRowKeys, selectedRows)
           emit('checkbox-change', selectedRowKeys, selectedRows)
         },
@@ -151,10 +141,11 @@ export default defineComponent({
         }
       }
     }
-    // 监听selectedValue，实现双向绑定
-    watchEffect(() => {
-      state.selectedRows = props.selectedValue
-      state.selectedRowKeys = props.selectedValue.map(val => transformRowKey(props.rowKey, val))
+    /**
+     * data
+     */
+    const state = reactive({
+      scroll: {}
     })
     /**
      * refs
@@ -197,24 +188,29 @@ export default defineComponent({
     })
     // 分页器
     const getPaginationConfig = computed(() => {
+      const { page, pageSize, current, ...restPagination } = props.pagination // current是为了兼容 antv 原始用法
       return props.showPagination
         ? mergeProps(
-            showLessItems.value ? { size: 'small' } : defaultState.defaultPaginationConfig,
+            unref(showLessItems) ? { size: 'small' } : defaultState.defaultPaginationConfig,
+            restPagination, // 为了兼容 antv 原始用法
             props.paginationConfig,
             {
               total: props.total,
-              current: props.pagination.page,
-              pageSize: showLessItems.value ? 10 : props.pagination.pageSize
+              current: page || current || 1,
+              pageSize: pageSize || unref(showLessItems) ? 10 : 20
             }
           )
         : false
     })
     // 勾选框
+    const selectedRowKeys = computed(() => {
+      return props.selectedValue.map(val => transformRowKey(props.rowKey, val))
+    })
     const getRowSelection = computed(() => {
       return props.rowSelection === true
-        ? mergeProps(defaultState.defaultRowSelection, { selectedRowKeys: state.selectedRowKeys })
+        ? mergeProps(defaultState.defaultRowSelection, { selectedRowKeys: unref(selectedRowKeys) })
         : typeof props.rowSelection === 'object' && !isEmpty(props.rowSelection)
-        ? mergeProps(defaultState.defaultRowSelection, { selectedRowKeys: state.selectedRowKeys }, props.rowSelection)
+        ? mergeProps(defaultState.defaultRowSelection, { selectedRowKeys: unref(selectedRowKeys) }, props.rowSelection)
         : null
     })
     /**

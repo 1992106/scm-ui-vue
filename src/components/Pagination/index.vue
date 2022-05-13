@@ -14,7 +14,7 @@
 </template>
 
 <script>
-import { computed, defineComponent, mergeProps, reactive, toRefs, watchEffect } from 'vue'
+import { computed, defineComponent, mergeProps, unref } from 'vue'
 import { Pagination } from 'ant-design-vue'
 import { isEmpty } from '@src/utils'
 
@@ -31,7 +31,7 @@ export default defineComponent({
     paginationConfig: Object
   },
   emits: ['update:pagination', 'change', 'showSizeChange'],
-  setup(props, { emit, slots }) {
+  setup(props, { emit, attrs, slots }) {
     const defaultState = {
       defaultPaginationConfig: {
         defaultPageSize: 20,
@@ -44,28 +44,28 @@ export default defineComponent({
 
     // 是否显示较少页面内容
     const showLessItems = computed(() => {
-      const _showLessItems = props.paginationConfig?.showLessItems
+      const _showLessItems = attrs?.showLessItems || props.paginationConfig?.showLessItems
       return typeof _showLessItems === 'undefined' ? false : _showLessItems
+    })
+
+    // 页码
+    const pages = computed(() => {
+      const { page, pageSize } = props.pagination
+      // 兼容 ant 和 设置默认值
+      return {
+        page: page || attrs?.current || 1, // attrs?.current是为了兼容 antv 原始用法
+        pageSize: pageSize || attrs?.pageSize || (unref(showLessItems) ? 10 : 20)
+      }
     })
 
     // 页码配置
     const getPaginationConfig = computed(() => {
+      // attrs是为了兼容 antv 原始用法
       return showLessItems.value
-        ? mergeProps({ size: 'small' }, props.paginationConfig)
-        : mergeProps(defaultState.defaultPaginationConfig, props.paginationConfig)
+        ? mergeProps({ size: 'small' }, attrs, props.paginationConfig)
+        : mergeProps(defaultState.defaultPaginationConfig, attrs, props.paginationConfig)
     })
 
-    const state = reactive({
-      pages: { page: 1, pageSize: showLessItems.value ? 10 : 20 }
-    })
-
-    watchEffect(() => {
-      if (!isEmpty(props.pagination)) {
-        state.pages = props.pagination
-      }
-    })
-
-    // 页码
     const handlePageChange = (current, pageSize) => {
       const pagination = {
         page: current,
@@ -74,6 +74,7 @@ export default defineComponent({
       emit('update:pagination', pagination)
       emit('change', current, pageSize)
     }
+
     const handleShowSizeChange = (current, pageSize) => {
       emit('showSizeChange', current, pageSize)
     }
@@ -81,7 +82,7 @@ export default defineComponent({
     const hasItemRender = computed(() => !isEmpty(slots['itemRender']))
 
     return {
-      ...toRefs(state),
+      pages,
       getPaginationConfig,
       hasItemRender,
       handlePageChange,
