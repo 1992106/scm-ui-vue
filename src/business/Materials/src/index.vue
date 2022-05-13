@@ -48,7 +48,7 @@ import MaterialList from './MaterialList.vue'
 import SelectedList from './SelectedList.vue'
 import { isFunction } from 'lodash-es'
 import { isEmpty } from '@src/utils'
-import { transformRowKey } from '@components/Table/utils'
+import { getValueByRowKey } from '@components/Table/utils'
 
 export default defineComponent({
   name: 'XMaterials',
@@ -115,7 +115,7 @@ export default defineComponent({
       if (state.selectedList.length) {
         state.materialList = (list || []).map(item => {
           const newItem = state.selectedList.find(val => {
-            return transformRowKey(props.rowKey, item) === transformRowKey(props.rowKey, val)
+            return getValueByRowKey(props.rowKey, item) === getValueByRowKey(props.rowKey, val)
           })
           return {
             ...item,
@@ -142,7 +142,7 @@ export default defineComponent({
     const handleDel = row => {
       state.materialList = state.materialList.map(item => {
         const newItem = state.selectedList.find(val => {
-          return transformRowKey(props.rowKey, item) === transformRowKey(props.rowKey, val)
+          return getValueByRowKey(props.rowKey, item) === getValueByRowKey(props.rowKey, val)
         })
         return {
           ...item,
@@ -150,7 +150,7 @@ export default defineComponent({
         }
       })
       const index = state.selectedList.findIndex(val => {
-        return transformRowKey(props.rowKey, row) === transformRowKey(props.rowKey, val)
+        return getValueByRowKey(props.rowKey, row) === getValueByRowKey(props.rowKey, val)
       })
       state.selectedList.splice(index, 1)
     }

@@ -66,13 +66,14 @@ export const toFixed = (value, length = 2) => {
 /**
  * 获取像素大小
  * @param val
- * @returns {number|null|number}
+ * @returns {number|null}
  */
 export const getPixelSize = val => {
   if (typeof val === 'number') {
     return val
   }
-  if (typeof val === 'string' && (val.endsWith('px') || val.endsWith('PX') || !Number.isNaN(+val))) {
+  if (typeof val === 'string' && (['px', 'PX'].some(v => val.endsWith(v)) || !Number.isNaN(+val))) {
+    // 【数字+px】字符串和【数字】字符串
     return parseFloat(val)
   }
   return null

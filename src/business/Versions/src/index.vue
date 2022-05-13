@@ -52,7 +52,7 @@ import VersionList from './VersionList.vue'
 import SelectedList from './SelectedList.vue'
 import { isFunction, cloneDeep } from 'lodash-es'
 import { isEmpty } from '@src/utils'
-import { transformRowKey } from '@components/Table/utils'
+import { getValueByRowKey } from '@components/Table/utils'
 
 export default defineComponent({
   name: 'XVersions',
@@ -128,7 +128,7 @@ export default defineComponent({
       if (state.selectedList.length) {
         state.versionList = (list || []).map(item => {
           const newItem = state.selectedList.find(val => {
-            return transformRowKey(props.rowKey, item) === transformRowKey(props.rowKey, val)
+            return getValueByRowKey(props.rowKey, item) === getValueByRowKey(props.rowKey, val)
           })
           return {
             ...item,
@@ -155,18 +155,18 @@ export default defineComponent({
 
     const handleDel = row => {
       const newItem = state.cloneList.find(val => {
-        return transformRowKey(props.rowKey, row) === transformRowKey(props.rowKey, val)
+        return getValueByRowKey(props.rowKey, row) === getValueByRowKey(props.rowKey, val)
       })
       state.versionList = state.versionList.map(item => {
         return {
           ...item,
-          ...(!isEmpty(newItem) && transformRowKey(props.rowKey, newItem) === transformRowKey(props.rowKey, item)
+          ...(!isEmpty(newItem) && getValueByRowKey(props.rowKey, newItem) === getValueByRowKey(props.rowKey, item)
             ? newItem
             : {})
         }
       })
       const index = state.selectedList.find(val => {
-        return transformRowKey(props.rowKey, row) === transformRowKey(props.rowKey, val)
+        return getValueByRowKey(props.rowKey, row) === getValueByRowKey(props.rowKey, val)
       })
       state.selectedList.splice(index, 1)
     }

@@ -44,6 +44,7 @@ import zhCn from 'ant-design-vue/es/locale/zh_CN'
 import XModal from '@components/Modal'
 import { isFunction } from 'lodash-es'
 import { importFile } from './import'
+import { download } from '@src/utils'
 
 export default defineComponent({
   name: 'XImport',
@@ -92,7 +93,8 @@ export default defineComponent({
       const { customDownload } = props
       if (!isFunction(customDownload)) return
       state.loading = true
-      await customDownload()
+      const data = await customDownload()
+      download(data?.url, data?.fileName)
       state.loading = false
     }
 

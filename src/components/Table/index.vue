@@ -44,7 +44,7 @@ import { defineComponent, computed, mergeProps, ref, reactive, toRef, toRefs, un
 import { Spin, Table } from 'ant-design-vue'
 import { useScroll } from './useScroll'
 import { isEmpty } from '@src/utils'
-import { getSortDirection, transformRowKey } from './utils'
+import { getSortDirection, getValueByRowKey } from './utils'
 
 export default defineComponent({
   name: 'XTable',
@@ -207,7 +207,7 @@ export default defineComponent({
     })
     // 勾选框
     const selectedRowKeys = computed(() => {
-      return props.selectedValue.map(val => transformRowKey(props.rowKey, val))
+      return props.selectedValue.map(val => getValueByRowKey(props.rowKey, val))
     })
     const getRowSelection = computed(() => {
       return props.rowSelection === true
