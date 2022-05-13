@@ -60,7 +60,7 @@ export default defineComponent({
   inheritAttrs: false,
   props: {
     visible: { type: Boolean, default: false },
-    title: { type: String, default: '版型档案' },
+    title: { type: String, default: '物料档案' },
     width: { type: [String, Number], default: '80%' },
     rowKey: { type: [String, Function], default: 'supplierMaterialId' },
     manual: { type: Boolean, default: false },

@@ -179,7 +179,7 @@ export default defineComponent({
       return props.transformCellText ? props.transformCellText : ({ text }) => (isEmpty(text) ? '--' : text)
     })
     // 自动计算表格的宽高
-    useScroll({ autoResize: props.autoResize, extraHeight: props.extraHeight, scroll: toRef(state, 'scroll') })
+    useScroll({ xTable, autoResize: props.autoResize, extraHeight: props.extraHeight, scroll: toRef(state, 'scroll') })
     const getScroll = computed(() => mergeProps(defaultState.scroll, state.scroll, props.scroll))
     // 是否显示较少页面内容
     const showLessItems = computed(() => {

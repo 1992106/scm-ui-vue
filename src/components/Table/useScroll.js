@@ -1,15 +1,27 @@
-import { onBeforeUnmount, onMounted } from 'vue'
+import { onBeforeUnmount, onMounted, unref } from 'vue'
 import { debounce } from 'lodash-es'
 // import { getScrollBarSize } from '@src/utils'
 
-export const useScroll = ({ autoResize, extraHeight, scroll }) => {
+export const useScroll = ({ xTable, autoResize, extraHeight, scroll }) => {
   const onResize = debounce(() => {
     scroll.value = getTableScroll({ extraHeight })
   }, 200)
 
+  const initResize = () => {
+    if (unref(xTable) && window.MutationObserver) {
+      const observer = new MutationObserver(onResize)
+      observer.observe(unref(xTable)?.$el, { attributes: true, childList: true, subtree: true })
+      setTimeout(() => {
+        observer && observer.disconnect()
+      }, 3000)
+    }
+  }
+
   onMounted(() => {
     if (autoResize) {
-      onResize()
+      // 由于Table是动态异步生成，初始化直接调用onResize()无效，所以使用MutationObserver来实现
+      initResize()
+      // onResize()
       window.addEventListener('resize', onResize)
     }
   })
