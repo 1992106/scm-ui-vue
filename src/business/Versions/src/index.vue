@@ -106,15 +106,6 @@ export default defineComponent({
       return (columns || []).map(col => col.slot).filter(Boolean)
     })
 
-    watch(
-      () => props.visible,
-      visible => {
-        if (visible && !props.manual) {
-          handleSearch(null)
-        }
-      }
-    )
-
     const handleSearch = async params => {
       const { customRequest } = props
       if (!isFunction(customRequest)) return
@@ -150,6 +141,16 @@ export default defineComponent({
       state.total = data?.total || 0
       emit('search', state.versionList)
     }
+
+    watch(
+      () => props.visible,
+      visible => {
+        if (visible && !props.manual) {
+          handleSearch(null)
+        }
+      },
+      { immediate: true }
+    )
 
     const handleReset = () => {
       state.searchParams = {}

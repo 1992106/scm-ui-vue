@@ -120,7 +120,6 @@ export default defineComponent({
     })
 
     watchEffect(() => {
-      // 使用函数方法调用时不会触发
       if (!isEmpty(props.pagination)) {
         state.pages = props.pagination
       }
