@@ -80,6 +80,21 @@ export const getPixelSize = val => {
 }
 
 /**
+ * 获取样式大小
+ * @param width
+ * @param height
+ * @returns {{width: (string|*), height: (string|*)}}
+ */
+export const getStyleSize = ({ width, height }) => {
+  const rWidth = getPixelSize(width)
+  const rHeight = getPixelSize(height)
+  return {
+    width: rWidth ? `${rWidth}px` : width,
+    height: rHeight ? `${rHeight}px` : height
+  }
+}
+
+/**
  * 字符串前后去空
  * @param string
  * @returns {string}

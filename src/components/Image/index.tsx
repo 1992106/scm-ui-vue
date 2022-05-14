@@ -2,7 +2,7 @@ import { defineComponent, ref, computed, PropType, watch } from 'vue'
 import { Image, Space } from 'ant-design-vue'
 import XPreview from '@components/Preview/index.vue'
 import { isObject } from 'lodash-es'
-import { compressImage } from '@src/utils'
+import { compressImage, getStyleSize } from '@src/utils'
 import './index.scss'
 
 type PreviewField = string | string[] | { url?: string; src?: string; thumbUrl?: string }[]
@@ -99,6 +99,8 @@ const XImage = defineComponent({
       current.value = index
     }
 
+    const { width, height } = getStyleSize({ width: props.width, height: props.height })
+
     return () => (
       <>
         {compressUrls.value.length === 1 ? (
@@ -106,8 +108,8 @@ const XImage = defineComponent({
           <Image
             {...ctx.attrs}
             style={{ cursor: 'pointer' }}
-            width={props.width}
-            height={props.height}
+            width={width}
+            height={height}
             src={compressUrls.value[0]}
             preview={false}
             // @ts-ignore
@@ -122,8 +124,8 @@ const XImage = defineComponent({
                 {...ctx.attrs}
                 key={index}
                 style={{ cursor: 'pointer' }}
-                width={props.width}
-                height={props.height}
+                width={width}
+                height={height}
                 src={src}
                 preview={false}
                 // @ts-ignore
