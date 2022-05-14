@@ -44,7 +44,7 @@
   </x-modal>
 </template>
 <script lang="ts">
-import { computed, defineComponent, onMounted, reactive, ref, toRefs } from 'vue'
+import { computed, defineComponent, reactive, ref, toRefs, watch } from 'vue'
 import XModal from '@components/Modal'
 import XSearch from '@components/Search/index.vue'
 import Shortcut from './Shortcut.vue'
@@ -106,6 +106,15 @@ export default defineComponent({
       return (columns || []).map(col => col.slot).filter(Boolean)
     })
 
+    watch(
+      () => props.visible,
+      visible => {
+        if (visible && !props.manual) {
+          handleSearch(null)
+        }
+      }
+    )
+
     const handleSearch = async params => {
       const { customRequest } = props
       if (!isFunction(customRequest)) return
@@ -144,8 +153,8 @@ export default defineComponent({
 
     const handleReset = () => {
       state.searchParams = {}
-      state.pages = { page: 1, pageSize: 20 }
       xShortcut.value?.onResetFields?.()
+      state.pages = { page: 1, pageSize: 20 }
       emit('reset')
     }
 
@@ -183,12 +192,6 @@ export default defineComponent({
       state.versionList = []
       state.selectedList = []
     }
-
-    onMounted(() => {
-      if (!props.manual) {
-        handleSearch(null)
-      }
-    })
 
     return {
       xShortcut,

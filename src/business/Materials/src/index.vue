@@ -41,7 +41,7 @@
   </x-modal>
 </template>
 <script lang="ts">
-import { computed, defineComponent, onMounted, reactive, toRefs } from 'vue'
+import { computed, defineComponent, reactive, toRefs, watch } from 'vue'
 import XModal from '@components/Modal'
 import XSearch from '@components/Search/index.vue'
 import MaterialList from './MaterialList.vue'
@@ -96,6 +96,15 @@ export default defineComponent({
       const columns = props.searchProps?.columns || []
       return (columns || []).map(col => col.slot).filter(Boolean)
     })
+
+    watch(
+      () => props.visible,
+      visible => {
+        if (visible && !props.manual) {
+          handleSearch(null)
+        }
+      }
+    )
 
     const handleSearch = async params => {
       const { customRequest } = props
@@ -166,12 +175,6 @@ export default defineComponent({
       state.materialList = []
       state.selectedList = []
     }
-
-    onMounted(() => {
-      if (!props.manual) {
-        handleSearch(null)
-      }
-    })
 
     return {
       ...toRefs(state),

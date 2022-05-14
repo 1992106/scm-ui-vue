@@ -1,13 +1,7 @@
 <template>
   <div class="shortcut-bar">
     <div class="title">更多搜索条件</div>
-    <x-form
-      ref="xForm"
-      layout="vertical"
-      v-bind="$attrs"
-      :columns="getColumns"
-      :row-props="rowProps"
-      :col-props="colProps">
+    <x-form ref="xForm" layout="vertical" :columns="getColumns" :row-props="rowProps" :col-props="colProps">
       <template v-for="slot of getSearchSlots" :key="slot" #[slot]="scope">
         <slot :name="slot" v-bind="scope"></slot>
       </template>

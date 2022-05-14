@@ -6,11 +6,7 @@
       <a-button @click="handleMaterials">物料档案</a-button>
     </a-space>
     <Preview v-model:visible="previewState.visible" :current="previewState.current" :urls="previewState.urls"></Preview>
-    <Versions
-      v-if="versionsState.visible"
-      v-bind="versionsState"
-      v-model:visible="versionsState.visible"
-      @done="doneVersions">
+    <Versions v-bind="versionsState" v-model:visible="versionsState.visible" @done="doneVersions">
       <template #scope>
         <a-space>
           <a-input-number></a-input-number>
@@ -38,11 +34,7 @@
         </div>
       </template>
     </Versions>
-    <Materials
-      v-if="materialsState.visible"
-      v-bind="materialsState"
-      v-model:visible="materialsState.visible"
-      @done="doneMaterials">
+    <Materials v-bind="materialsState" v-model:visible="materialsState.visible" @done="doneMaterials">
       <template #scope>
         <a-space>
           <a-input-number></a-input-number>
@@ -150,8 +142,9 @@ export default {
           }
         ]
       },
+      rowKey: 'id',
       customRequest: async params => {
-        console.log(params)
+        console.log(params, '版型参数')
         const list = []
         const total = 30
         for (let i = 0; i < total; i++) {
@@ -169,7 +162,6 @@ export default {
     // 物料档案
     const materialsState = reactive({
       visible: false,
-      rowKey: record => record?.id,
       searchProps: {
         columns: [
           {
@@ -218,8 +210,9 @@ export default {
           }
         ]
       },
+      rowKey: record => record?.id,
       customRequest: async params => {
-        console.log(params)
+        console.log(params, '物料参数')
         const list = []
         const total = 30
         for (let i = 0; i < total; i++) {
