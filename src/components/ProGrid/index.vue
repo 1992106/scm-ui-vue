@@ -11,8 +11,8 @@
     <!--搜索栏-->
     <template v-if="hasSearchBar" #searchBar>
       <x-search ref="xSearch" v-bind="searchProps" @search="handleSearch" @reset="handleReset" @clear="handleClear">
-        <template v-for="slot of getSearchSlots" :key="slot" #[slot]="scope">
-          <slot :name="slot" v-bind="scope"></slot>
+        <template #formItem="scope">
+          <slot name="formItem" v-bind="scope"></slot>
         </template>
         <template v-if="hasTop" #top>
           <slot name="top"></slot>
@@ -66,12 +66,6 @@ export default defineComponent({
         page: 1,
         pageSize: 20
       }
-    })
-
-    // 搜索插槽
-    const getSearchSlots = computed(() => {
-      const columns = props.searchProps?.columns || []
-      return columns.map(col => col.slot).filter(Boolean)
     })
 
     // grid插槽
@@ -191,7 +185,6 @@ export default defineComponent({
       hasTop,
       hasBottom,
       hasToolBar,
-      getSearchSlots,
       getGridSlots,
       handleQuery,
       handleSearch,

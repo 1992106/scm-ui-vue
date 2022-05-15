@@ -8,12 +8,14 @@
     </a-space>
     <Preview v-model:visible="previewState.visible" :current="previewState.current" :urls="previewState.urls"></Preview>
     <Versions v-bind="versionsState" v-model:visible="versionsState.visible" @done="doneVersions">
-      <template #scope>
-        <a-space>
-          <a-input-number></a-input-number>
-          ~
-          <a-input-number></a-input-number>
-        </a-space>
+      <template #formItem="{ column }">
+        <template v-if="column.field === 'scope'">
+          <a-space>
+            <a-input-number></a-input-number>
+            ~
+            <a-input-number></a-input-number>
+          </a-space>
+        </template>
       </template>
       <template #renderItem="{ item, index, change }">
         <div class="box">
@@ -36,12 +38,14 @@
       </template>
     </Versions>
     <Materials v-bind="materialsState" v-model:visible="materialsState.visible" @done="doneMaterials">
-      <template #scope>
-        <a-space>
-          <a-input-number></a-input-number>
-          ~
-          <a-input-number></a-input-number>
-        </a-space>
+      <template #formItem="{ column }">
+        <template v-if="column.field === 'scope'">
+          <a-space>
+            <a-input-number></a-input-number>
+            ~
+            <a-input-number></a-input-number>
+          </a-space>
+        </template>
       </template>
     </Materials>
   </div>
@@ -122,7 +126,7 @@ export default {
           },
           {
             title: '成本范围',
-            slot: 'scope'
+            field: 'scope'
           }
         ]
       },
@@ -213,7 +217,7 @@ export default {
           },
           {
             title: '范围',
-            slot: 'scope'
+            field: 'scope'
           }
         ]
       },

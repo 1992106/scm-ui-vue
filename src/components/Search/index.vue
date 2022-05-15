@@ -5,23 +5,17 @@
     </div>
     <a-form ref="elForm" v-bind="$attrs" :layout="layout" :label-col="labelCol" :wrapper-col="wrapperCol">
       <a-row v-bind="rowProps">
-        <template v-for="(column, i) in getColumns" :key="column?.field || column?.slot">
-          <a-col v-show="isExpand || i < getIndex" v-bind="colProps">
-            <template v-if="column.type">
-              <a-form-item :label="column?.title" v-bind="validateInfos[column.field]">
+        <template v-for="(column, index) in getColumns" :key="column?.field">
+          <a-col v-show="isExpand || index < getIndex" v-bind="colProps">
+            <a-form-item :label="column?.title" v-bind="validateInfos[column.field]">
+              <slot name="formItem" :record="modelRef[column.field]" :column="column" :index="index">
                 <component
                   :is="column.type"
                   v-model:[column.modelValue]="modelRef[column.field]"
                   v-bind="column?.props || {}"
                   v-on="column?.events || {}"></component>
-              </a-form-item>
-            </template>
-            <!--自定义slot-->
-            <template v-else>
-              <a-form-item :label="column?.title">
-                <slot :name="column.slot" :column="column"></slot>
-              </a-form-item>
-            </template>
+              </slot>
+            </a-form-item>
           </a-col>
         </template>
         <a-col class="actions" v-bind="colProps" :push="getPush">
@@ -202,18 +196,18 @@ export default defineComponent({
     // 获取格式化后的columns
     const getColumns = computed(() => {
       return props.columns.map(column => {
-        const { props = {}, events = {}, slot } = toDisabled(column) // disabled: true => false
+        const { props = {}, events = {} } = toDisabled(column) // disabled: true => false
         const defaultAllState = defaultState[column?.type] || {}
         // column
         const allColumn = pick(column, ['type', 'title', 'field', 'rules'])
         // props
         const defaultProps = defaultAllState.props || {}
-        const otherProps = omit(column, ['type', 'title', 'field', 'slot', 'rules', 'props', 'events'])
+        const otherProps = omit(column, ['type', 'title', 'field', 'rules', 'props', 'events'])
         const allProps = toRaw(mergeProps(defaultProps, otherProps, props))
         // events
         const defaultEvents = defaultAllState.events || []
         const allEvents = mergeEvents(defaultEventsMap, defaultEvents, events)
-        return { ...allColumn, modelValue: getModelValue(column?.type), props: allProps, events: allEvents, slot }
+        return { ...allColumn, modelValue: getModelValue(column?.type), props: allProps, events: allEvents }
       })
     })
 

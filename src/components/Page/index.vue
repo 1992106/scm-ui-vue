@@ -2,8 +2,8 @@
   <div class="x-page">
     <a-spin v-bind="spinProps">
       <x-search ref="xSearch" v-bind="searchProps" @search="handleSearch" @reset="handleReset" @clear="handleClear">
-        <template v-for="slot of getSearchSlots" :key="slot" #[slot]="scope">
-          <slot :name="slot" v-bind="scope"></slot>
+        <template #formItem="scope">
+          <slot name="formItem" v-bind="scope"></slot>
         </template>
         <template v-if="hasTop" #top>
           <slot name="top"></slot>
@@ -91,12 +91,6 @@ export default defineComponent({
       return typeof props.loading === 'object' ? props.loading : { spinning: props.loading }
     })
 
-    // 搜索插槽
-    const getSearchSlots = computed(() => {
-      const columns = props.searchProps.columns
-      return (columns || []).map(col => col.slot).filter(Boolean)
-    })
-
     // TODO：监听页码，当页码为1时，重置页码（父组件手动重置页码：如快捷搜索）
     watch(
       () => props.value?.page,
@@ -174,7 +168,6 @@ export default defineComponent({
       hasBottom,
       hasToolBar,
       spinProps,
-      getSearchSlots,
       handleQuery,
       handleSearch,
       handleReset,

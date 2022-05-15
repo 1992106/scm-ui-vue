@@ -11,8 +11,8 @@
     @cancel="handleCancel">
     <div class="x-versions">
       <x-search ref="xSearch" v-bind="searchProps" @search="handleSearch" @reset="handleReset">
-        <template v-for="slot of getSearchSlots" :key="slot" #[slot]="scope">
-          <slot :name="slot" v-bind="scope"></slot>
+        <template #formItem="scope">
+          <slot name="formItem" v-bind="scope"></slot>
         </template>
       </x-search>
       <div class="content">
@@ -104,12 +104,6 @@ export default defineComponent({
       selectedList: []
     })
 
-    // 搜索插槽
-    const getSearchSlots = computed(() => {
-      const columns = props.searchProps?.columns || []
-      return (columns || []).map(col => col.slot).filter(Boolean)
-    })
-
     const handleSearch = async params => {
       const { customRequest } = props
       if (!isFunction(customRequest)) return
@@ -179,7 +173,7 @@ export default defineComponent({
             : {})
         }
       })
-      const index = state.selectedList.find(val => {
+      const index = state.selectedList.findIndex(val => {
         return getValueByRowKey(props.rowKey, row) === getValueByRowKey(props.rowKey, val)
       })
       state.selectedList.splice(index, 1)
@@ -202,7 +196,6 @@ export default defineComponent({
       xShortcut,
       ...toRefs(state),
       modalVisible,
-      getSearchSlots,
       handleSearch,
       handleReset,
       handleAdd,

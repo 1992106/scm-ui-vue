@@ -11,8 +11,8 @@
     @cancel="handleCancel">
     <div class="x-materials">
       <x-search ref="xSearch" v-bind="searchProps" @search="handleSearch" @reset="handleReset">
-        <template v-for="slot of getSearchSlots" :key="slot" #[slot]="scope">
-          <slot :name="slot" v-bind="scope"></slot>
+        <template #formItem="scope">
+          <slot name="formItem" v-bind="scope"></slot>
         </template>
       </x-search>
       <div class="material-list">
@@ -89,12 +89,6 @@ export default defineComponent({
       total: 0,
       materialList: [],
       selectedList: []
-    })
-
-    // 搜索插槽
-    const getSearchSlots = computed(() => {
-      const columns = props.searchProps?.columns || []
-      return (columns || []).map(col => col.slot).filter(Boolean)
     })
 
     const handleSearch = async params => {
@@ -180,7 +174,6 @@ export default defineComponent({
     return {
       ...toRefs(state),
       modalVisible,
-      getSearchSlots,
       handleSearch,
       handleReset,
       handleAdd,

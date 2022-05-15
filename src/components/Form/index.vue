@@ -6,7 +6,7 @@
         <template v-for="(column, index) in getColumns" :key="column?.field">
           <a-col v-bind="colProps">
             <a-form-item :label="column?.title" v-bind="validateInfos[column.field]">
-              <slot name="formItem" :column="column" :index="index">
+              <slot name="formItem" :record="modelRef[column.field]" :column="column" :index="index">
                 <component
                   :is="column.type"
                   v-model:[column.modelValue]="modelRef[column.field]"
@@ -29,7 +29,7 @@
     <template v-else>
       <template v-for="(column, index) in getColumns" :key="column?.field">
         <a-form-item :label="column?.title" v-bind="validateInfos[column.field]">
-          <slot name="formItem" :column="column" :index="index">
+          <slot name="formItem" :record="modelRef[column.field]" :column="column" :index="index">
             <component
               :is="column.type"
               v-model:[column.modelValue]="modelRef[column.field]"
