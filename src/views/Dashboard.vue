@@ -2,6 +2,7 @@
   <div>
     <a-space>
       <a-button @click="handlePreview">打开预览</a-button>
+      <a-button @click="handleDownloads">打开下载</a-button>
       <a-button @click="handleVersions">版型库</a-button>
       <a-button @click="handleMaterials">物料档案</a-button>
     </a-space>
@@ -47,6 +48,7 @@
 </template>
 <script lang="ts">
 import { reactive } from 'vue'
+import { useStore } from 'vuex'
 import XImage from '@components/Image'
 import Preview from '@components/Preview/index.vue'
 import Versions from '@business/Versions'
@@ -55,6 +57,7 @@ export default {
   name: 'Dashboard',
   components: { XImage, Preview, Versions, Materials },
   setup() {
+    const store = useStore()
     // 预览
     const previewState = reactive({
       visible: false,
@@ -67,6 +70,10 @@ export default {
     })
     const handlePreview = () => {
       previewState.visible = !previewState.visible
+    }
+    // 打开导出中心
+    const handleDownloads = () => {
+      store.commit('user/setVisible', true)
     }
     // 版型库
     const versionsState = reactive({
@@ -231,6 +238,7 @@ export default {
     return {
       previewState,
       handlePreview,
+      handleDownloads,
       versionsState,
       handleVersions,
       doneVersions,

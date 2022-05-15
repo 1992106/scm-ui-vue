@@ -1,8 +1,9 @@
 import { defineComponent, computed, createVNode } from 'vue'
 import { useStore } from 'vuex'
 import { useRoute, useRouter } from 'vue-router'
-import { Menu, Dropdown, Avatar, Modal, notification } from 'ant-design-vue'
+import { Menu, Dropdown, Avatar, Modal, notification, Space } from 'ant-design-vue'
 import { DownOutlined, ExclamationCircleOutlined } from '@ant-design/icons-vue'
+import XDownloads from '@business/Downloads'
 import setting from '@src/config'
 import styles from './index.module.scss'
 
@@ -41,14 +42,22 @@ const MyAvatar = defineComponent({
       </Menu>
     )
 
+    const visible = computed({
+      get: () => store.getters['user/visible'],
+      set: visible => store.commit('user/setVisible', visible)
+    })
+
     return () => (
-      <Dropdown overlay={menu} class={styles.userDropdown}>
-        <div>
-          <Avatar size={28} src={`https://api.multiavatar.com/${userInfo.value.name}.png`} />
-          <span className={styles.name}>{userInfo.value.name}</span>
-          <DownOutlined class={styles.icon} />
-        </div>
-      </Dropdown>
+      <Space>
+        <XDownloads v-model:visible={visible.value} />
+        <Dropdown overlay={menu} class={styles.userDropdown}>
+          <div>
+            <Avatar size={28} src={`https://api.multiavatar.com/${userInfo.value.name}.png`} />
+            <span className={styles.name}>{userInfo.value.name}</span>
+            <DownOutlined class={styles.icon} />
+          </div>
+        </Dropdown>
+      </Space>
     )
   }
 })
