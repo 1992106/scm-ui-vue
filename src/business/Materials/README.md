@@ -29,6 +29,12 @@
 emits: ['update:visible', 'done', 'search', 'reset']
 ```
 
+### Slots
+
+```vue
+<slot name="searchItem"></slot>
+```
+
 ### Example
 
 ```vue

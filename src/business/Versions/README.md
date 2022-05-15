@@ -35,6 +35,8 @@ emits: ['update:visible', 'done', 'search', 'reset']
 ### Slots
 
 ```vue
+<slot name="searchItem"></slot>
+<slot name="shortcutItem"></slot>
 <slot name="renderItem"></slot>
 ```
 

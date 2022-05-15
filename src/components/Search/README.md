@@ -34,6 +34,7 @@ emits: ['search', 'reset', 'clear']
 ```vue
 <slot name="top"></slot>
 <slot name="bottom"></slot>
+<slot name="formItem"></slot>
 ```
 
 ### Methods

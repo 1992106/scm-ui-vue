@@ -22,7 +22,7 @@
           <div v-if="dataSource.length" class="section">
             <div class="scroll">
               <template v-for="(item, index) in dataSource">
-                <slot name="renderItem" :item="item" :index="index"></slot>
+                <slot name="renderItem" :record="item" :index="index"></slot>
               </template>
             </div>
             <x-pagination
