@@ -16,7 +16,11 @@
         </template>
       </x-search>
       <div class="content">
-        <Shortcut ref="xShortcut" v-bind="shortcutProps"></Shortcut>
+        <Shortcut ref="xShortcut" v-bind="shortcutProps">
+          <template #formItem="scope">
+            <slot name="formItem" v-bind="scope"></slot>
+          </template>
+        </Shortcut>
         <VersionList
           v-model:pagination="pages"
           :versionList="versionList"

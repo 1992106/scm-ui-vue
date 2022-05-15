@@ -1,9 +1,9 @@
 <template>
   <div class="shortcut-bar">
     <div class="title">更多搜索条件</div>
-    <x-form ref="xForm" layout="vertical" :columns="getColumns" :row-props="rowProps" :col-props="colProps">
-      <template v-for="slot of getSearchSlots" :key="slot" #[slot]="scope">
-        <slot :name="slot" v-bind="scope"></slot>
+    <x-form ref="xForm" layout="vertical" v-bind="$attrs" :columns="getColumns">
+      <template #formItem="scope">
+        <slot name="formItem" v-bind="scope"></slot>
       </template>
     </x-form>
   </div>
@@ -18,12 +18,7 @@ export default defineComponent({
   components: {
     'x-form': XForm
   },
-  props: {
-    // row
-    rowProps: { type: Object, default: () => ({ gutter: 24 }) },
-    // col
-    colProps: { type: Object, default: () => ({ md: 12, xl: 8 }) }
-  },
+  inheritAttrs: false,
   setup(props, { attrs }) {
     const xForm = ref(null)
 
@@ -31,12 +26,6 @@ export default defineComponent({
     const getColumns = computed(() => {
       const columns = attrs?.columns || []
       return columns.map(column => toDisabled(column)) // disabled: true => false
-    })
-
-    // 搜索slots
-    const getSearchSlots = computed(() => {
-      const columns = attrs?.columns || []
-      return columns.map(col => col.slot).filter(Boolean)
     })
 
     const onGetFormValues = () => {
@@ -50,7 +39,6 @@ export default defineComponent({
     return {
       xForm,
       getColumns,
-      getSearchSlots,
       onGetFormValues,
       onResetFields
     }

@@ -3,23 +3,17 @@
     <!--栅格化布局-->
     <template v-if="gird">
       <a-row v-bind="rowProps">
-        <template v-for="column in getColumns" :key="column?.field || column?.slot">
+        <template v-for="(column, index) in getColumns" :key="column?.field">
           <a-col v-bind="colProps">
-            <template v-if="column.type">
-              <a-form-item :label="column?.title" v-bind="validateInfos[column.field]">
+            <a-form-item :label="column?.title" v-bind="validateInfos[column.field]">
+              <slot name="formItem" :column="column" :index="index">
                 <component
                   :is="column.type"
                   v-model:[column.modelValue]="modelRef[column.field]"
                   v-bind="column?.props || {}"
                   v-on="column?.events || {}"></component>
-              </a-form-item>
-            </template>
-            <!--自定义slot-->
-            <template v-else>
-              <a-form-item :label="column?.title">
-                <slot :name="column.slot" :column="column"></slot>
-              </a-form-item>
-            </template>
+              </slot>
+            </a-form-item>
           </a-col>
         </template>
         <template v-if="hasActions">
@@ -33,22 +27,16 @@
     </template>
     <!--正常表单-->
     <template v-else>
-      <template v-for="column in getColumns" :key="column?.field || column?.slot">
-        <template v-if="column.type">
-          <a-form-item :label="column?.title" v-bind="validateInfos[column.field]">
+      <template v-for="(column, index) in getColumns" :key="column?.field">
+        <a-form-item :label="column?.title" v-bind="validateInfos[column.field]">
+          <slot name="formItem" :column="column" :index="index">
             <component
               :is="column.type"
               v-model:[column.modelValue]="modelRef[column.field]"
               v-bind="column?.props || {}"
               v-on="column?.events || {}"></component>
-          </a-form-item>
-        </template>
-        <!--自定义slot-->
-        <template v-else>
-          <a-form-item :label="column?.title">
-            <slot :name="column.slot" :column="column"></slot>
-          </a-form-item>
-        </template>
+          </slot>
+        </a-form-item>
       </template>
       <template v-if="hasActions">
         <a-form-item>
@@ -105,9 +93,9 @@ export default defineComponent({
       return props.columns.map(column => {
         const { props = {}, events = {} } = column
         // column
-        const allColumn = pick(column, ['type', 'title', 'field', 'slot', 'rules'])
+        const allColumn = pick(column, ['type', 'title', 'field', 'rules'])
         // props
-        const otherProps = omit(column, ['type', 'title', 'field', 'slot', 'rules', 'props', 'events'])
+        const otherProps = omit(column, ['type', 'title', 'field', 'rules', 'props', 'events'])
         const allProps = toRaw(mergeProps(otherProps, props))
 
         return { ...allColumn, modelValue: getModelValue(column?.type), props: allProps, events }
