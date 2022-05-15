@@ -121,13 +121,12 @@ export default defineComponent({
 
     const handleOk = () => {
       emit('done')
+      // TODO: 使用函数方法调用时，通过emit('update:visible', false)不生效，必须手动关闭。
+      state.modalVisible = false // 只是为了兼容使用函数方法调用，才需要手动关闭
       handleCancel()
     }
 
     const handleCancel = () => {
-      // TODO: 使用函数方法调用时，需要手动关闭
-      state.modalVisible = false // 只是为了兼容使用函数方法调用，才需要手动关闭
-      // 使用函数方法调用时，通过emit('update:visible', false)不生效
       emit('update:visible', false)
     }
 

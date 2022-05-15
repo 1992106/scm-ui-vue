@@ -81,17 +81,17 @@ export const getPixelSize = val => {
 
 /**
  * 获取样式大小
- * @param width
- * @param height
- * @returns {{width: (string|*), height: (string|*)}}
+ * @param style
+ * @returns {{}}
  */
-export const getStyleSize = ({ width, height }) => {
-  const rWidth = getPixelSize(width)
-  const rHeight = getPixelSize(height)
-  return {
-    width: rWidth ? `${rWidth}px` : width,
-    height: rHeight ? `${rHeight}px` : height
-  }
+export const getStyleSize = (style = {}) => {
+  return Object.keys(style).reduce((prv, next) => {
+    const size = getPixelSize(style[next])
+    return {
+      ...prv,
+      [next]: size ? `${size}px` : style[next]
+    }
+  }, {})
 }
 
 /**

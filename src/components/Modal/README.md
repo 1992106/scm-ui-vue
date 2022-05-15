@@ -70,16 +70,18 @@ export default defineComponent({
 
     const state = reactive({
       spinning: false,
+      data: [],
       confirmLoading: false
     })
 
     const handleCancel = () => {
-      // 关闭弹窗
-      modalVisible.value = false
+      state.data = []
     }
     
     const handleOk = () => {
       emit('done')
+      // 关闭弹窗
+      modalVisible.value = false
       // 初始化默认值
       handleCancel()
     }
@@ -121,6 +123,7 @@ export default defineComponent({
     const state = reactive({
       modalVisible: false,
       spinning: false,
+      data: [],
       confirmLoading: false
     })
 
@@ -129,6 +132,7 @@ export default defineComponent({
     })
     
     const handleCancel = () => {
+      state.data = []
       // 关闭弹窗
       emit('update:visible', false)
     }

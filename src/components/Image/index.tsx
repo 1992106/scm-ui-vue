@@ -99,7 +99,7 @@ const XImage = defineComponent({
       current.value = index
     }
 
-    const { width, height } = getStyleSize({ width: props.width, height: props.height })
+    const { width, height } = getStyleSize({ width: props.width, height: props.height }) as any
 
     return () => (
       <>
