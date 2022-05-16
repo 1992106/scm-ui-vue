@@ -79,9 +79,13 @@ export default defineComponent({
       const { customRequest } = props
       if (!isFunction(customRequest)) return
       state.spinning = true
-      state.data = []
       const data = await customRequest()
       state.spinning = false
+      if (!data) {
+        state.data = []
+        state.total = 0
+        return
+      }
       state.data = data || []
       state.total = (data || []).length
     }

@@ -165,11 +165,15 @@ export default defineComponent({
       const { customRequest, showPagination } = props
       if (!isFunction(customRequest)) return
       state.spinning = true
-      tableOptions.dataSource = []
       const data = await customRequest({
         ...(showPagination ? state.pages : {})
       })
       state.spinning = false
+      if (!data) {
+        tableOptions.dataSource = []
+        tableOptions.total = 0
+        return
+      }
       if (showPagination) {
         const list = data?.data ?? data?.list ?? []
         tableOptions.dataSource = list.map(row => {
@@ -227,19 +231,19 @@ export default defineComponent({
       if (!isFunction(customSubmit)) return
       validate()
         .then(async () => {
-          state.confirmLoading = true
-          const [err] = await customSubmit({
-            content: modelRef.content,
-            ...(!isEmpty(modelRef.attachments) ? { ids: modelRef.attachments.map(val => val?.id) } : {})
-          })
-          state.confirmLoading = false
-          if (!err) {
+          try {
+            state.confirmLoading = true
+            await customSubmit({
+              content: modelRef.content,
+              ...(!isEmpty(modelRef.attachments) ? { ids: modelRef.attachments.map(val => val?.id) } : {})
+            })
+            state.confirmLoading = false
             emit('done')
             // TODO: 使用函数方法调用时，通过emit('update:visible', false)不生效，必须手动关闭。
             state.modalVisible = false // 只是为了兼容使用函数方法调用，才需要手动关闭
             handleCancel()
-          } else {
-            throw err
+          } catch (err) {
+            console.error(err)
           }
         })
         .catch(err => {

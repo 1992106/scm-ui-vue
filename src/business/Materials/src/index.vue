@@ -99,12 +99,16 @@ export default defineComponent({
         state.searchParams = params
       }
       state.spinning = true
-      state.materialList = []
       const data = await customRequest({
         ...(isEmpty(state.searchParams) ? {} : state.searchParams),
         ...state.pages
       })
       state.spinning = false
+      if (!data) {
+        state.materialList = []
+        state.total = 0
+        return
+      }
       const list = data?.data ?? data?.list ?? []
       if (state.selectedList.length) {
         state.materialList = (list || []).map(item => {

@@ -67,7 +67,7 @@ export default defineComponent({
       const { currentRoute, replace } = router
       const route = unref(currentRoute)
       const { path, params, query } = route
-      store.commit('router/delCachedTabList', path)
+      store.commit('router/delCachedTabList', route)
       replace({
         path: `/redirect${path}`,
         query,

@@ -94,11 +94,15 @@ export default defineComponent({
       const { customRequest, showPagination } = props
       if (!isFunction(customRequest)) return
       state.spinning = true
-      state.data = []
       const data = await customRequest({
         ...(showPagination ? state.pages : {})
       })
       state.spinning = false
+      if (!data) {
+        state.data = []
+        state.total = 0
+        return
+      }
       // TODO
       if (showPagination) {
         state.data = data?.data || data?.list || []

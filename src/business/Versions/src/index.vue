@@ -112,8 +112,6 @@ export default defineComponent({
         state.searchParams = params
       }
       state.spinning = true
-      state.cloneList = []
-      state.versionList = []
       const shortcutParams = xShortcut.value?.onGetFormValues?.()
       const data = await customRequest({
         ...(isEmpty(state.searchParams) ? {} : state.searchParams),
@@ -121,6 +119,12 @@ export default defineComponent({
         ...(isEmpty(shortcutParams) ? {} : shortcutParams)
       })
       state.spinning = false
+      if (!data) {
+        state.cloneList = []
+        state.versionList = []
+        state.total = 0
+        return
+      }
       const list = data?.data ?? data?.list ?? []
       state.cloneList = cloneDeep(list) // 备份数据
       if (state.selectedList.length) {
