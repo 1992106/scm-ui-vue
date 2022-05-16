@@ -78,12 +78,12 @@ export default defineComponent({
       state.modalVisible = props.visible
     })
 
-    const handleImport = async data => {
+    const handleImport = async option => {
       const { customImport } = props
       if (!isFunction(customImport)) return
       state.spinning = true
-      await importFile(customImport, data, () => {
-        emit('done')
+      await importFile(customImport, option, data => {
+        emit('done', data)
         // TODO: 使用函数方法调用时，通过emit('update:visible', false)不生效，必须手动关闭。
         state.modalVisible = false // 只是为了兼容使用函数方法调用，才需要手动关闭
         handleCancel()

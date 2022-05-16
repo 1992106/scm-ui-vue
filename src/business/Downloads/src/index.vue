@@ -79,9 +79,9 @@ export default defineComponent({
       const { customRequest } = props
       if (!isFunction(customRequest)) return
       state.spinning = true
-      const data = await customRequest()
+      const [err, data] = await customRequest()
       state.spinning = false
-      if (!data) {
+      if (err) {
         state.data = []
         state.total = 0
         return

@@ -186,12 +186,12 @@ export default defineComponent({
     const getScroll = computed(() => mergeProps(defaultState.scroll, state.scroll, props.scroll))
     // 是否显示较少页面内容
     const showLessItems = computed(() => {
-      const _showLessItems = props.paginationConfig?.showLessItems || props.pagination?.showLessItems
+      const _showLessItems = props.paginationConfig?.showLessItems ?? props.pagination?.showLessItems
       return typeof _showLessItems === 'undefined' ? false : _showLessItems
     })
     // 分页器
     const getPaginationConfig = computed(() => {
-      const { page, pageSize, current, ...restPagination } = props.pagination // current是为了兼容 antv 原始用法
+      const { page, current, pageSize, ...restPagination } = props.pagination // current是为了兼容 antv 原始用法
       return props.showPagination
         ? mergeProps(
             unref(showLessItems) ? { size: 'small' } : defaultState.defaultPaginationConfig,
@@ -200,7 +200,7 @@ export default defineComponent({
             {
               total: props.total,
               current: page || current || 1,
-              pageSize: pageSize || unref(showLessItems) ? 10 : 20
+              pageSize: pageSize || (unref(showLessItems) ? 10 : 20)
             }
           )
         : false

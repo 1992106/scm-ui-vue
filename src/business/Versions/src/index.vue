@@ -113,13 +113,13 @@ export default defineComponent({
       }
       state.spinning = true
       const shortcutParams = xShortcut.value?.onGetFormValues?.()
-      const data = await customRequest({
+      const [err, data] = await customRequest({
         ...(isEmpty(state.searchParams) ? {} : state.searchParams),
         ...state.pages,
         ...(isEmpty(shortcutParams) ? {} : shortcutParams)
       })
       state.spinning = false
-      if (!data) {
+      if (err) {
         state.cloneList = []
         state.versionList = []
         state.total = 0

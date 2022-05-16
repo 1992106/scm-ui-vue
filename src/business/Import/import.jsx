@@ -16,7 +16,7 @@ const importFile = async (fn, option = {}, callback) => {
     Modal.success({
       title: '导入成功',
       content: data,
-      onOk: callback || (() => Promise.resolve())
+      onOk: () => callback(data)
     })
   } else {
     Modal.error({

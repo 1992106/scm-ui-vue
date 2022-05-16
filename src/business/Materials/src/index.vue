@@ -99,12 +99,12 @@ export default defineComponent({
         state.searchParams = params
       }
       state.spinning = true
-      const data = await customRequest({
+      const [err, data] = await customRequest({
         ...(isEmpty(state.searchParams) ? {} : state.searchParams),
         ...state.pages
       })
       state.spinning = false
-      if (!data) {
+      if (err) {
         state.materialList = []
         state.total = 0
         return

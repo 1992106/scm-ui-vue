@@ -44,7 +44,7 @@ export default defineComponent({
 
     // 是否显示较少页面内容
     const showLessItems = computed(() => {
-      const _showLessItems = attrs?.showLessItems || props.paginationConfig?.showLessItems
+      const _showLessItems = attrs?.showLessItems ?? props.paginationConfig?.showLessItems
       return typeof _showLessItems === 'undefined' ? false : _showLessItems
     })
 
