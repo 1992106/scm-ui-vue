@@ -11,8 +11,8 @@
     @cancel="handleCancel">
     <div class="x-materials">
       <x-search ref="xSearch" v-bind="searchProps" @search="handleSearch" @reset="handleReset">
-        <template #formItem="scope">
-          <slot name="searchItem" v-bind="scope"></slot>
+        <template #formItemRender="scope">
+          <slot name="searchItemRender" v-bind="scope"></slot>
         </template>
       </x-search>
       <div class="material-list">

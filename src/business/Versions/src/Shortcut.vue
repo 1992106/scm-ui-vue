@@ -2,8 +2,8 @@
   <div class="shortcut-bar">
     <div class="title">更多搜索条件</div>
     <x-form ref="xForm" layout="vertical" v-bind="$attrs" :columns="getColumns">
-      <template #formItem="scope">
-        <slot name="formItem" v-bind="scope"></slot>
+      <template #formItemRender="scope">
+        <slot name="formItemRender" v-bind="scope"></slot>
       </template>
     </x-form>
   </div>

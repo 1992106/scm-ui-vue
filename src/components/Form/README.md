@@ -25,8 +25,8 @@ emits: ['submit', 'reset']
 ### Slots
 
 ```vue
-<slot name="formItem"></slot>
-<slot name="renderActions"></slot>
+<slot name="formItemRender"></slot>
+<slot name="actionRender"></slot>
 ```
 
 ### Methods

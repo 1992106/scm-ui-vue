@@ -6,7 +6,7 @@
         <template v-for="(column, index) in getColumns" :key="column?.field">
           <a-col v-bind="colProps">
             <a-form-item :label="column?.title" v-bind="validateInfos[column.field]">
-              <slot name="formItem" :record="modelRef[column.field]" :column="column" :index="index">
+              <slot name="formItemRender" :record="modelRef[column.field]" :column="column" :index="index">
                 <component
                   :is="column.type"
                   v-model:[column.modelValue]="modelRef[column.field]"
@@ -19,7 +19,7 @@
         <template v-if="hasActions">
           <a-col class="actions" v-bind="colProps">
             <a-form-item :label-col="{ span: 0 }" :wrapper-col="{ span: 24 }">
-              <slot name="renderActions" :search="onSubmit" :reset="onReset"></slot>
+              <slot name="actionRender" :search="onSubmit" :reset="onReset"></slot>
             </a-form-item>
           </a-col>
         </template>
@@ -29,7 +29,7 @@
     <template v-else>
       <template v-for="(column, index) in getColumns" :key="column?.field">
         <a-form-item :label="column?.title" v-bind="validateInfos[column.field]">
-          <slot name="formItem" :record="modelRef[column.field]" :column="column" :index="index">
+          <slot name="formItemRender" :record="modelRef[column.field]" :column="column" :index="index">
             <component
               :is="column.type"
               v-model:[column.modelValue]="modelRef[column.field]"
@@ -40,7 +40,7 @@
       </template>
       <template v-if="hasActions">
         <a-form-item>
-          <slot name="renderActions" :search="onSubmit" :reset="onReset"></slot>
+          <slot name="actionRender" :search="onSubmit" :reset="onReset"></slot>
         </a-form-item>
       </template>
     </template>
@@ -164,7 +164,7 @@ export default defineComponent({
     }
 
     // 是否显示插槽
-    const hasActions = computed(() => !!slots['renderActions'])
+    const hasActions = computed(() => !!slots['actionRender'])
 
     return {
       elForm,

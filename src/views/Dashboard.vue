@@ -8,7 +8,7 @@
     </a-space>
     <Preview v-model:visible="previewState.visible" :current="previewState.current" :urls="previewState.urls"></Preview>
     <Versions v-bind="versionsState" v-model:visible="versionsState.visible" @done="doneVersions">
-      <template #formItem="{ column }">
+      <template #searchItemRender="{ column }">
         <template v-if="column.field === 'scope'">
           <a-space>
             <a-input-number></a-input-number>
@@ -38,7 +38,7 @@
       </template>
     </Versions>
     <Materials v-bind="materialsState" v-model:visible="materialsState.visible" @done="doneMaterials">
-      <template #formItem="{ column }">
+      <template #searchItemRender="{ column }">
         <template v-if="column.field === 'scope'">
           <a-space>
             <a-input-number></a-input-number>

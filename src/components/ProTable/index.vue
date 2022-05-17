@@ -9,8 +9,8 @@
     <!--搜索栏-->
     <template v-if="hasSearchBar" #searchBar>
       <x-search ref="xSearch" v-bind="searchProps" @search="handleSearch" @reset="handleReset" @clear="handleClear">
-        <template #formItem="scope">
-          <slot name="formItem" v-bind="scope"></slot>
+        <template #formItemRender="scope">
+          <slot name="formItemRender" v-bind="scope"></slot>
         </template>
         <template v-if="hasTop" #top>
           <slot name="top"></slot>
