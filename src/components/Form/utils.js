@@ -1,4 +1,4 @@
-import { dateToDayjs, getType, isEmpty } from '@src/utils'
+import { dateToDayjs, dayjsToDate, getType, isEmpty } from '@src/utils'
 
 // 是否是多选框
 export const hasMultiple = column => {
@@ -16,37 +16,6 @@ export const hasDate = column => {
 }
 
 export const allDefaultValue = ['defaultValue', 'defaultPickerValue']
-
-// 格式化表单值
-export const formatModel = (columns, values) => {
-  return columns.reduce((prev, next) => {
-    // 在使用useForm时，需要手动设置默认值
-    let value = allDefaultValue.map(val => next?.props[val]).find(Boolean)
-    // 格式化时间（antd不支持new Date()）
-    if (hasDate(next)) {
-      value = dateToDayjs(value, next?.props?.valueFormat)
-    }
-    if (isEmpty(value)) {
-      value = hasMultiple(next) ? [] : undefined
-    }
-    // TODO: AAutoComplete组件默认值为undefined时，点击重置无效
-    if (next.type === 'AAutoComplete') {
-      value = ''
-    }
-    prev[next.field] = isEmpty(values) ? value : values[next.field]
-    return prev
-  }, {})
-}
-
-// 格式化表单规则
-export const formatRules = columns => {
-  return columns.reduce((prev, next) => {
-    if (!isEmpty(next?.rules)) {
-      prev[next.field] = next?.rules
-    }
-    return prev
-  }, {})
-}
 
 /**
  * 删除【对象/数组】空值
@@ -67,6 +36,62 @@ export const toEmpty = object => {
     return object.filter(val => !isEmpty(val))
   }
   return object
+}
+
+// 拍平columns
+export const flatColumns = (columns, result = []) => {
+  columns.forEach(node => {
+    if (node.children) {
+      flatColumns(node.children, result)
+    } else {
+      result.push(node)
+    }
+  })
+  return result
+}
+
+// 格式化表单 useForm model
+export const formatFormModel = columns => {
+  const allColumns = flatColumns(columns)
+  return allColumns.reduce((prev, next) => {
+    // 在使用useForm时，需要手动设置默认值
+    let value = ['defaultValue', 'defaultPickerValue'].map(val => next?.props?.[val]).find(Boolean)
+    // 格式化时间（antd不支持new Date()）
+    if (hasDate(next)) {
+      value = dateToDayjs(value, next?.props?.valueFormat)
+    }
+    if (isEmpty(value)) {
+      value = hasMultiple(next) ? [] : undefined
+    }
+    // TODO: AAutoComplete组件默认值为undefined时，点击重置无效
+    if (next?.type === 'AAutoComplete') {
+      value = ''
+    }
+    prev[next?.field] = value
+    return prev
+  }, {})
+}
+
+// 格式化表单 useForm rules
+export const formatFormRules = columns => {
+  const allColumns = flatColumns(columns)
+  return allColumns.reduce((prev, next) => {
+    if (next?.rules) {
+      prev[next?.field] = next?.rules
+    }
+    return prev
+  }, {})
+}
+
+// 格式化表单 values
+export const formatFormValues = (columns, modelRef) => {
+  const allColumns = flatColumns(columns)
+  const params = allColumns.reduce((prev, column) => {
+    const value = modelRef[column?.field]
+    prev[column?.field] = hasDate(column) ? dayjsToDate(value, column?.props?.valueFormat) : value
+    return prev
+  }, {})
+  return toEmpty(params)
 }
 
 /**

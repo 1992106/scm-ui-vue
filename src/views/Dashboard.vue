@@ -8,21 +8,21 @@
     </a-space>
     <Preview v-model:visible="previewState.visible" :current="previewState.current" :urls="previewState.urls"></Preview>
     <Versions v-bind="versionsState" v-model:visible="versionsState.visible" @done="doneVersions">
-      <template #searchItemRender="{ column }">
+      <template #searchItemRender="{ record, column }">
         <template v-if="column.field === 'scope'">
           <a-space>
-            <a-input-number></a-input-number>
+            <a-input-number v-model:value="record.min"></a-input-number>
             ~
-            <a-input-number></a-input-number>
+            <a-input-number v-model:value="record.max"></a-input-number>
           </a-space>
         </template>
       </template>
-      <template #itemRender="{ item, index, change }">
+      <template #itemRender="{ record, index, change }">
         <div class="box">
-          <a-checkbox v-model:checked="item.checked" @change="change($event.target.checked, item)">
+          <a-checkbox v-model:checked="record.checked" @change="change($event.target.checked, record)">
             {{ index }}
           </a-checkbox>
-          <x-image width="100%" :urls="item?.urls"></x-image>
+          <x-image width="100%" :urls="record?.urls"></x-image>
           <div class="info">
             <p class="line">
               <span>BX2022001</span>
@@ -38,12 +38,12 @@
       </template>
     </Versions>
     <Materials v-bind="materialsState" v-model:visible="materialsState.visible" @done="doneMaterials">
-      <template #searchItemRender="{ column }">
+      <template #searchItemRender="{ record, column }">
         <template v-if="column.field === 'scope'">
           <a-space>
-            <a-input-number></a-input-number>
+            <a-input-number v-model:value="record.min"></a-input-number>
             ~
-            <a-input-number></a-input-number>
+            <a-input-number v-model:value="record.max"></a-input-number>
           </a-space>
         </template>
       </template>
@@ -51,7 +51,7 @@
   </div>
 </template>
 <script lang="ts">
-import { reactive } from 'vue'
+import { computed, onMounted, reactive } from 'vue'
 import { useStore } from 'vuex'
 import XImage from '@components/Image'
 import Preview from '@components/Preview/index.vue'
@@ -62,6 +62,9 @@ export default {
   components: { XImage, Preview, Versions, Materials },
   setup() {
     const store = useStore()
+    const state = reactive({
+      options: []
+    })
     // 预览
     const previewState = reactive({
       visible: false,
@@ -105,7 +108,9 @@ export default {
             title: '版型分类',
             field: 'c',
             props: {
-              placeholder: '请选择'
+              placeholder: '请选择',
+              defaultValue: 3,
+              options: computed(() => state.options)
             }
           },
           {
@@ -126,7 +131,8 @@ export default {
           },
           {
             title: '成本范围',
-            field: 'scope'
+            field: 'scope',
+            children: [{ field: 'min' }, { field: 'max' }]
           }
         ]
       },
@@ -161,7 +167,7 @@ export default {
         for (let i = 0; i < total; i++) {
           list.push({ id: i, checked: false })
         }
-        return { list, total }
+        return [null, { list, total }]
       }
     })
     const handleVersions = () => {
@@ -216,8 +222,9 @@ export default {
             }
           },
           {
-            title: '范围',
-            field: 'scope'
+            title: '成本范围',
+            field: 'scope',
+            children: [{ field: 'min' }, { field: 'max' }]
           }
         ]
       },
@@ -229,7 +236,7 @@ export default {
         for (let i = 0; i < total; i++) {
           list.push({ id: i })
         }
-        return { list, total }
+        return [null, { list, total }]
       }
     })
     const handleMaterials = () => {
@@ -238,6 +245,18 @@ export default {
     const doneMaterials = data => {
       console.log(data, '物料档案')
     }
+
+    onMounted(() => {
+      setTimeout(() => {
+        state.options = [
+          { label: 'a', value: 1 },
+          { label: 'b', value: 2 },
+          { label: 'c', value: 3 },
+          { label: 'd', value: 4 },
+          { label: 'e', value: 5 }
+        ]
+      }, 5000)
+    })
 
     return {
       previewState,

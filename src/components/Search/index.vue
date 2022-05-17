@@ -8,7 +8,7 @@
         <template v-for="(column, index) in getColumns" :key="column?.field">
           <a-col v-show="isExpand || index < getIndex" v-bind="colProps">
             <a-form-item :label="column?.title" v-bind="validateInfos[column.field]">
-              <slot name="formItemRender" :record="modelRef[column.field]" :column="column" :index="index">
+              <slot name="formItemRender" :record="modelRef" :column="column" :index="index">
                 <component
                   :is="column.type"
                   v-model:[column.modelValue]="modelRef[column.field]"
@@ -53,8 +53,8 @@ import { Form } from 'ant-design-vue'
 import { DownOutlined, UpOutlined } from '@ant-design/icons-vue'
 import { omit, pick } from 'lodash-es'
 import { mergeEvents, toDisabled } from './utils'
-import { dateToDayjs, dayjsToDate, isEmpty } from '@src/utils'
-import { formatRules, hasDate, hasMultiple, toEmpty } from '@components/Form/utils'
+import { formatFormModel, formatFormRules, formatFormValues } from '@components/Form/utils'
+import { isEmpty } from '@src/utils'
 
 export default defineComponent({
   name: 'XSearch',
@@ -199,56 +199,29 @@ export default defineComponent({
         const { props = {}, events = {} } = toDisabled(column) // disabled: true => false
         const defaultAllState = defaultState[column?.type] || {}
         // column
-        const allColumn = pick(column, ['type', 'title', 'field', 'rules'])
+        const allColumn = pick(column, ['type', 'title', 'field', 'rules', 'children'])
         // props
         const defaultProps = defaultAllState.props || {}
-        const otherProps = omit(column, ['type', 'title', 'field', 'rules', 'props', 'events'])
-        const allProps = toRaw(mergeProps(defaultProps, otherProps, props))
+        const otherProps = omit(column, ['type', 'title', 'field', 'rules', 'children', 'props', 'events'])
+        const allProps = mergeProps(defaultProps, otherProps, toRaw(props))
         // events
         const defaultEvents = defaultAllState.events || []
         const allEvents = mergeEvents(defaultEventsMap, defaultEvents, events)
+
         return { ...allColumn, modelValue: getModelValue(column?.type), props: allProps, events: allEvents }
       })
     })
 
     const modelRef = reactive({})
-    const getModel = computed(() => {
-      return unref(getColumns).reduce((prev, next) => {
-        // 在使用useForm时，需要手动设置默认值
-        let value = ['defaultValue', 'defaultPickerValue'].map(val => next?.props[val]).find(Boolean)
-        // 格式化时间（antd不支持new Date()）
-        if (hasDate(next)) {
-          value = dateToDayjs(value, next?.props?.valueFormat)
-        }
-        if (isEmpty(value)) {
-          value = hasMultiple(next) ? [] : undefined
-        }
-        // TODO: AAutoComplete组件默认值为undefined时，点击重置无效
-        if (next.type === 'AAutoComplete') {
-          value = ''
-        }
-        prev[next.field] = isEmpty(modelRef) ? value : modelRef[next.field]
-        return prev
-      }, {})
-    })
-
     const rulesRef = reactive({})
-    const getRules = computed(() => {
-      return formatRules(unref(getColumns))
-    })
 
     const { validate, resetFields, validateInfos } = Form.useForm(
-      Object.assign(modelRef, unref(getModel)),
-      Object.assign(rulesRef, unref(getRules))
+      Object.assign(modelRef, formatFormModel(unref(getColumns))),
+      Object.assign(rulesRef, formatFormRules(unref(getColumns)))
     )
 
     const emitData = () => {
-      const params = unref(getColumns).reduce((prev, column) => {
-        const value = modelRef[column.field]
-        prev[column.field] = hasDate(column) ? dayjsToDate(value, column?.props?.valueFormat) : value
-        return prev
-      }, {})
-      return toEmpty(params)
+      return formatFormValues(unref(getColumns), modelRef)
     }
 
     const emitSearch = () => {

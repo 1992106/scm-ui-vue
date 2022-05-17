@@ -6,7 +6,7 @@
         <template v-for="(column, index) in getColumns" :key="column?.field">
           <a-col v-bind="colProps">
             <a-form-item :label="column?.title" v-bind="validateInfos[column.field]">
-              <slot name="formItemRender" :record="modelRef[column.field]" :column="column" :index="index">
+              <slot name="formItemRender" :record="modelRef" :column="column" :index="index">
                 <component
                   :is="column.type"
                   v-model:[column.modelValue]="modelRef[column.field]"
@@ -29,7 +29,7 @@
     <template v-else>
       <template v-for="(column, index) in getColumns" :key="column?.field">
         <a-form-item :label="column?.title" v-bind="validateInfos[column.field]">
-          <slot name="formItemRender" :record="modelRef[column.field]" :column="column" :index="index">
+          <slot name="formItemRender" :record="modelRef" :column="column" :index="index">
             <component
               :is="column.type"
               v-model:[column.modelValue]="modelRef[column.field]"
@@ -51,8 +51,8 @@ import { computed, defineComponent, mergeProps, reactive, ref, toRaw, unref } fr
 import { Form } from 'ant-design-vue'
 import { DownOutlined, UpOutlined } from '@ant-design/icons-vue'
 import { omit, pick } from 'lodash-es'
-import { formatRules, hasDate, hasMultiple, toEmpty } from './utils'
-import { dateToDayjs, dayjsToDate, isEmpty } from '@src/utils'
+import { formatFormModel, formatFormRules, formatFormValues } from './utils'
+import { isEmpty } from '@src/utils'
 
 export default defineComponent({
   name: 'XForm',
@@ -93,44 +93,20 @@ export default defineComponent({
       return props.columns.map(column => {
         const { props = {}, events = {} } = column
         // column
-        const allColumn = pick(column, ['type', 'title', 'field', 'rules'])
+        const allColumn = pick(column, ['type', 'title', 'field', 'rules', 'children'])
         // props
-        const otherProps = omit(column, ['type', 'title', 'field', 'rules', 'props', 'events'])
-        const allProps = toRaw(mergeProps(otherProps, props))
+        const otherProps = omit(column, ['type', 'title', 'field', 'rules', 'children', 'props', 'events'])
+        const allProps = mergeProps(otherProps, toRaw(props))
 
         return { ...allColumn, modelValue: getModelValue(column?.type), props: allProps, events }
       })
     })
 
     const modelRef = reactive({})
-    const getModel = computed(() => {
-      return unref(getColumns).reduce((prev, next) => {
-        // 在使用useForm时，需要手动设置默认值
-        let value = ['defaultValue', 'defaultPickerValue'].map(val => next?.props[val]).find(Boolean)
-        // 格式化时间（antd不支持new Date()）
-        if (hasDate(next)) {
-          value = dateToDayjs(value, next?.props?.valueFormat)
-        }
-        if (isEmpty(value)) {
-          value = hasMultiple(next) ? [] : undefined
-        }
-        // TODO: AAutoComplete组件默认值为undefined时，点击重置无效
-        if (next.type === 'AAutoComplete') {
-          value = ''
-        }
-        prev[next.field] = isEmpty(modelRef) ? value : modelRef[next.field]
-        return prev
-      }, {})
-    })
-
     const rulesRef = reactive({})
-    const getRules = computed(() => {
-      return formatRules(unref(getColumns))
-    })
-
     const { validate, resetFields, validateInfos } = Form.useForm(
-      Object.assign(modelRef, unref(getModel)),
-      Object.assign(rulesRef, unref(getRules))
+      Object.assign(modelRef, formatFormModel(unref(getColumns))),
+      Object.assign(rulesRef, formatFormRules(unref(getColumns)))
     )
 
     // 提交
@@ -146,12 +122,7 @@ export default defineComponent({
 
     // 获取表单值
     const onGetFormValues = () => {
-      const params = unref(getColumns).reduce((prev, column) => {
-        const value = modelRef[column.field]
-        prev[column.field] = hasDate(column) ? dayjsToDate(value, column?.props?.valueFormat) : value
-        return prev
-      }, {})
-      return toEmpty(params)
+      return formatFormValues(unref(getColumns), modelRef)
     }
 
     // 设置表单字段和值
