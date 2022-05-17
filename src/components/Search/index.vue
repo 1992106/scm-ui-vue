@@ -48,7 +48,7 @@
   </div>
 </template>
 <script>
-import { computed, defineComponent, mergeProps, nextTick, reactive, ref, toRaw, unref } from 'vue'
+import { computed, defineComponent, mergeProps, nextTick, reactive, ref, unref } from 'vue'
 import { Form } from 'ant-design-vue'
 import { DownOutlined, UpOutlined } from '@ant-design/icons-vue'
 import { omit, pick } from 'lodash-es'
@@ -203,7 +203,7 @@ export default defineComponent({
         // props
         const defaultProps = defaultAllState.props || {}
         const otherProps = omit(column, ['type', 'title', 'field', 'rules', 'children', 'props', 'events'])
-        const allProps = mergeProps(defaultProps, otherProps, toRaw(props))
+        const allProps = mergeProps(defaultProps, otherProps, props)
         // events
         const defaultEvents = defaultAllState.events || []
         const allEvents = mergeEvents(defaultEventsMap, defaultEvents, events)

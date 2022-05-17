@@ -47,7 +47,7 @@
   </a-form>
 </template>
 <script>
-import { computed, defineComponent, mergeProps, reactive, ref, toRaw, unref } from 'vue'
+import { computed, defineComponent, mergeProps, reactive, ref, unref } from 'vue'
 import { Form } from 'ant-design-vue'
 import { DownOutlined, UpOutlined } from '@ant-design/icons-vue'
 import { omit, pick } from 'lodash-es'
@@ -96,7 +96,7 @@ export default defineComponent({
         const allColumn = pick(column, ['type', 'title', 'field', 'rules', 'children'])
         // props
         const otherProps = omit(column, ['type', 'title', 'field', 'rules', 'children', 'props', 'events'])
-        const allProps = mergeProps(otherProps, toRaw(props))
+        const allProps = mergeProps(otherProps, props)
 
         return { ...allColumn, modelValue: getModelValue(column?.type), props: allProps, events }
       })
