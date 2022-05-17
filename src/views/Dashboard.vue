@@ -17,7 +17,7 @@
           </a-space>
         </template>
       </template>
-      <template #renderItem="{ item, index, change }">
+      <template #itemRender="{ item, index, change }">
         <div class="box">
           <a-checkbox v-model:checked="item.checked" @change="change($event.target.checked, item)">
             {{ index }}

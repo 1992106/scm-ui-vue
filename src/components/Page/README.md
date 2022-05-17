@@ -52,5 +52,5 @@ emits: ['update:value', 'search', 'reset', 'clear']
 <slot name="toolBar"></slot>
 
 <slot></slot>
-<slot name="renderItem"></slot>
+<slot name="itemRender"></slot>
 ```

@@ -31,8 +31,8 @@
           @search="handleSearch"
           @add="handleAdd"
           @del="handleDel">
-          <template #renderItem="scope">
-            <slot name="renderItem" v-bind="scope"></slot>
+          <template #itemRender="scope">
+            <slot name="itemRender" v-bind="scope"></slot>
           </template>
         </VersionList>
       </div>

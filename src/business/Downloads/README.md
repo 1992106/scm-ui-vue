@@ -29,7 +29,7 @@ emits: ['update:visible', 'toggle']
 ### Slots
 
 ```vue
-<slot name="renderItem"></slot>
+<slot name="itemRender"></slot>
 ```
 
 ### Example
