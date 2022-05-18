@@ -1,4 +1,5 @@
 import { dateToDayjs, dayjsToDate, getType, isEmpty } from '@src/utils'
+import { isObject, transform } from 'lodash-es'
 
 // 是否是多选框
 export const hasMultiple = column => {
@@ -15,14 +16,12 @@ export const hasDate = column => {
   return ['ADatePicker', 'AWeekPicker', 'AMonthPicker', 'ARangePicker', 'ATimePicker'].includes(column?.type)
 }
 
-export const allDefaultValue = ['defaultValue', 'defaultPickerValue']
-
 /**
- * 删除【对象/数组】空值
+ * 清空【对象/数组】空值
  * @param object
  * @returns {*}
  */
-export const toEmpty = object => {
+export const cleanEmpty = object => {
   if (getType(object) === 'object') {
     let newObj = {}
     Object.keys(object).forEach(key => {
@@ -91,11 +90,32 @@ export const formatFormValues = (columns, modelRef) => {
     prev[column?.field] = hasDate(column) ? dayjsToDate(value, column?.props?.valueFormat) : value
     return prev
   }, {})
-  return toEmpty(params)
+  return cleanEmpty(params)
 }
 
 /**
- * 深度去前后空格
+ * 深度去除空值
+ * @param collection
+ * @returns {object}
+ */
+export const deepCompact = collection => {
+  const add = Array.isArray(collection)
+    ? (collection, key, value) => collection.push(value)
+    : (collection, key, value) => (collection[key] = value)
+
+  return transform(collection, (collection, value, key) => {
+    if (isObject(value)) {
+      value = deepCompact(value)
+      if (isEmpty(value)) return
+    } else {
+      if (!value) return
+    }
+    add(collection, key, value)
+  })
+}
+
+/**
+ * 深度去除前后空格
  * @param object
  */
 export const deepTrim = object => {
