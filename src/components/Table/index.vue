@@ -19,6 +19,7 @@
         :loading="false"
         :pagination="getPaginationConfig"
         :scroll="getScroll"
+        :tableLayout="tableLayout"
         :size="size"
         :locale="locale"
         :row-selection="getRowSelection"
@@ -71,6 +72,8 @@ export default defineComponent({
     extraHeight: Number,
     // 自动计算表格
     autoResize: { type: Boolean, default: false },
+    // 表格元素的 table-layout 属性，设为 fixed 表示内容不会影响列的布局
+    tableLayout: { type: String, default: 'fixed' },
     // 横向/纵向滚动
     scroll: { type: Object, default: () => ({}) },
     // 选择功能配置项
