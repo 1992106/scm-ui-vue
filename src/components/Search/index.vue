@@ -375,6 +375,10 @@ export default defineComponent({
     .ant-form {
       margin-right: 20px;
 
+      :deep(.ant-form-item) {
+        margin-bottom: 10px;
+      }
+
       :deep(.actions) {
         text-align: right;
 
@@ -384,26 +388,15 @@ export default defineComponent({
         }
       }
 
-      :deep(.ant-form-item) {
-        margin-bottom: 10px;
-
-        .ant-input-affix-wrapper,
-        .ant-calendar-picker,
-        .ant-time-picker,
-        .ant-tree-select {
-          width: 100%;
-        }
-
-        .ant-form-item-control-input-content {
-          .ant-input-number,
-          .ant-picker {
-            width: 100%;
-          }
-        }
-
-        .ant-calendar-picker {
-          span[class='ant-calendar-picker-input ant-input'] {
-            width: 100%;
+      // 水平布局/垂直布局
+      &.ant-form-horizontal,
+      &.ant-form-vertical {
+        :deep(.ant-form-item) {
+          .ant-form-item-control-input-content {
+            .ant-input-number,
+            .ant-picker {
+              width: 100%;
+            }
           }
         }
       }

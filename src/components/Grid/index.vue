@@ -235,7 +235,7 @@ export default defineComponent({
     const getCustomColumns = () => {
       if (props.storageName) {
         const storageColumns = localStorage.getItem(props.storageName)
-        const columns = storageColumns ? JSON.parse(storageColumns || '[]') : []
+        const columns = JSON.parse(storageColumns || '[]')
         if (!isEmpty(columns)) {
           const sourceColumns = props.columns
           const list = mergeStorageAndColumns(columns, sourceColumns) // 对比localStorage和Props（删除移除的，添加新增的）
