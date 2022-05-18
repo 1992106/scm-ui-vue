@@ -15,7 +15,7 @@
         :customCancel="customCancel"
         :empty-text="emptyText" />
     </template>
-    <a-button shape="circle" @click="handleToggle">
+    <a-button shape="circle">
       <template #icon>
         <CloudDownloadOutlined />
       </template>
@@ -55,7 +55,9 @@ export default defineComponent({
         return props.visible
       },
       set: val => {
+        console.log(val, 456)
         emit('update:visible', val)
+        emit('toggle', val)
       }
     })
 
@@ -90,15 +92,9 @@ export default defineComponent({
       state.total = (data || []).length
     }
 
-    const handleToggle = () => {
-      popoverVisible.value = !popoverVisible.value
-      emit('toggle', popoverVisible.value)
-    }
-
     return {
       ...toRefs(state),
-      popoverVisible,
-      handleToggle
+      popoverVisible
     }
   }
 })

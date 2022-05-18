@@ -36,7 +36,7 @@ const MyAvatar = defineComponent({
       await router.push(`/login?redirect=${route.path}`)
     }
 
-    const menu = (
+    const MenuOverlay = (
       <Menu onClick={handleMenuClick}>
         <Menu.Item key='logout'>退出登录</Menu.Item>
       </Menu>
@@ -50,7 +50,7 @@ const MyAvatar = defineComponent({
     return () => (
       <Space>
         <XDownloads v-model:visible={visible.value} />
-        <Dropdown overlay={menu} class={styles.userDropdown}>
+        <Dropdown overlay={MenuOverlay} class={styles.userDropdown}>
           <div>
             <Avatar size={28} src={`https://api.multiavatar.com/${userInfo.value.name}.png`} />
             <span className={styles.name}>{userInfo.value.name}</span>

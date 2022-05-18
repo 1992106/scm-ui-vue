@@ -11,4 +11,4 @@ export { default as XEditor } from './Editor/index.vue'
 // 全局和按需引入
 export { default as XVersions } from './Versions'
 export { default as XMaterials } from './Materials'
-export { default as XDownload } from './Downloads'
+export { default as XDownloads } from './Downloads'
