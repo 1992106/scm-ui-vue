@@ -55,7 +55,6 @@ export default defineComponent({
         return props.visible
       },
       set: val => {
-        console.log(val, 456)
         emit('update:visible', val)
         emit('toggle', val)
       }

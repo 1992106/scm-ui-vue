@@ -22,8 +22,8 @@ const user = {
     }
   },
   actions: {
-    async login({ commit }, { name, password }) {
-      const res = await { name, password }
+    async login({ commit }, { account, password }) {
+      const res = await { account, password }
       const { token = '', user = {} } = res?.data || {}
       if (isEmpty(token) || isEmpty(user)) {
         return {}

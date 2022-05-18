@@ -5,8 +5,8 @@
       <span>SCM-UI</span>
     </div>
     <Form ref="formRef" :model="form" :rules="rules" class="form" @keypress.enter="handleSubmit">
-      <a-form-item name="name">
-        <Input v-model:value="form.name" size="large" placeholder="请输入用户名">
+      <a-form-item name="account">
+        <Input v-model:value="form.account" size="large" placeholder="请输入用户名">
           <template #prefix>
             <UserOutlined />
           </template>
@@ -49,13 +49,13 @@ export default defineComponent({
     const store = useStore()
     const formRef = ref()
     const form = reactive({
-      name: '',
+      account: '',
       password: ''
     })
     const loading = ref(false)
 
     const rules = {
-      name: [{ required: true, message: '请输入用户名！', trigger: 'blur' }],
+      account: [{ required: true, message: '请输入用户名！', trigger: 'blur' }],
       password: [{ required: true, message: '请输入密码！', trigger: 'blur' }]
     }
 
@@ -79,9 +79,9 @@ export default defineComponent({
     const handleSubmit = async () => {
       try {
         loading.value = true
-        const { name, password } = await formRef.value.validate()
+        const { account, password } = await formRef.value.validate()
         const { token } = await store.dispatch('user/login', {
-          name,
+          account,
           password
         })
         loading.value = false

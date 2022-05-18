@@ -95,9 +95,11 @@ export default defineComponent({
       const { customDownload } = props
       if (!isFunction(customDownload)) return
       state.loading = true
-      const data = await customDownload()
-      download(data?.url, data?.fileName)
+      const [err, data] = await customDownload()
       state.loading = false
+      if (!err) {
+        download(data?.url, data?.fileName)
+      }
     }
 
     const handleCancel = () => {

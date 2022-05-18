@@ -54,18 +54,16 @@ export default defineComponent({
     const handleDownload = async row => {
       const { customDownload } = props
       if (!isFunction(customDownload)) return
-      const data = await customDownload({
-        id: row?.id
-      })
-      download(data?.url, data?.fileName)
+      const [err, data] = await customDownload(row)
+      if (!err) {
+        download(data?.url, data?.fileName)
+      }
     }
 
     const handleCancel = async row => {
       const { customCancel } = props
       if (!isFunction(customCancel)) return
-      await customCancel({
-        id: row?.id
-      })
+      await customCancel(row)
     }
 
     return {
