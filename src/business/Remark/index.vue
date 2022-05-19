@@ -199,12 +199,10 @@ export default defineComponent({
           fail: () => {
             tableOptions.dataSource = []
             tableOptions.total = 0
-          },
-          complete: () => {
-            state.spinning = false
           }
         }
       )
+      state.spinning = false
     }
 
     watch(
@@ -250,12 +248,10 @@ export default defineComponent({
                 // TODO: 使用函数方法调用时，通过emit('update:visible', false)不生效，必须手动关闭。
                 state.modalVisible = false // 只是为了兼容使用函数方法调用，才需要手动关闭
                 handleCancel()
-              },
-              complete: () => {
-                state.confirmLoading = false
               }
             }
           )
+          state.confirmLoading = false
         })
         .catch(err => {
           console.error(err)

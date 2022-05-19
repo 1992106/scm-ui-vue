@@ -38,7 +38,7 @@
 </template>
 <script>
 import { defineComponent, reactive, toRefs, watchEffect } from 'vue'
-import { Button, ConfigProvider, Upload } from 'ant-design-vue'
+import { Button, ConfigProvider, Modal, Upload } from 'ant-design-vue'
 import { UploadOutlined } from '@ant-design/icons-vue'
 import zhCn from 'ant-design-vue/es/locale/zh_CN'
 import XModal from '@components/Modal'
@@ -52,7 +52,9 @@ export default defineComponent({
     'x-modal': XModal,
     'a-config-provider': ConfigProvider,
     'a-upload': Upload,
-    'a-button': Button
+    'a-button': Button,
+    // eslint-disable-next-line vue/no-unused-components
+    Modal
   },
   inheritAttrs: false,
   props: {
@@ -97,11 +99,9 @@ export default defineComponent({
       await execRequest(customDownload(), {
         success: data => {
           download(data?.url, data?.fileName)
-        },
-        complete: () => {
-          state.loading = false
         }
       })
+      state.loading = false
     }
 
     const handleCancel = () => {

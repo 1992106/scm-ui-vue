@@ -77,12 +77,12 @@ export default defineComponent({
       xEcharts.value?.resize()
     }
 
-    onMounted(() => {
-      initEcharts()
-      window.addEventListener('resize', handleResize)
+    onActivated(() => {
+      handleResize()
     })
 
-    onActivated(() => {
+    onMounted(() => {
+      initEcharts()
       window.addEventListener('resize', handleResize)
     })
 

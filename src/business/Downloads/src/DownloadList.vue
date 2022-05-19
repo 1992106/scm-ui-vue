@@ -1,9 +1,11 @@
 <template>
   <div class="download-list" :style="getStyle">
     <template v-if="data.length">
-      <div v-for="(file, index) in data" :key="getValueByRowKey(rowKey, file) || index" class="download-item">
-        <div class="download-item__icon"></div>
-        <div class="download-item__box">
+      <div v-for="(file, index) in data" :key="getValueByRowKey(rowKey, file, index)" class="download-item">
+        <div class="download-item__icon">
+          <FileExcelOutlined />
+        </div>
+        <div class="download-item__box" :style="{ color: file?.exportResult === -1 ? '#ccc' : '' }">
           <div class="name" :title="file?.fileName">{{ file?.fileName }}</div>
           <div class="actions">
             <p v-if="file?.taskStatus === 0">
@@ -13,7 +15,10 @@
             <p v-if="file?.taskStatus === 1">正在下载中...</p>
             <template v-if="file?.taskStatus === 2">
               <a v-if="file?.exportResult === 1" @click="handleDownload(file)">下载</a>
-              <!--<a v-else @click="handleRetry(file)">重新导出</a>-->
+              <p v-else>
+                导出失败
+                <!--<a v-else @click="handleRetry(file)">重新导出</a>-->
+              </p>
             </template>
           </div>
         </div>
@@ -27,12 +32,14 @@
 <script>
 import { computed, defineComponent } from 'vue'
 import { Empty } from 'ant-design-vue'
+import { FileExcelOutlined } from '@ant-design/icons-vue'
 import { isFunction } from 'lodash-es'
 import { download, execRequest, getStyleSize } from '@src/utils'
 import { getValueByRowKey } from '@components/Table/utils'
 export default defineComponent({
   name: 'DownloadList',
   components: {
+    FileExcelOutlined,
     'a-empty': Empty
   },
   inheritAttrs: false,
@@ -81,6 +88,7 @@ export default defineComponent({
   .download-list {
     overflow-x: hidden;
     overflow-y: auto;
+    padding: 12px 16px;
 
     .download-item {
       display: flex;
@@ -102,6 +110,10 @@ export default defineComponent({
 
         & > .name {
           @include ellipsis;
+        }
+
+        & > .actions > p {
+          margin-bottom: 0;
         }
       }
     }

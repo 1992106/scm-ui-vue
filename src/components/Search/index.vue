@@ -238,9 +238,10 @@ export default defineComponent({
         })
     }
 
-    const handleReset = () => {
+    const handleReset = bool => {
       resetFields()
       emit('reset', emitData())
+      if (bool === false) return // 手动重置时，是否搜索；默认不搜索
       if (props.resetSearch) {
         emitSearch()
       }
@@ -313,10 +314,8 @@ export default defineComponent({
     }
 
     // 重置方法
-    const onReset = () => {
-      nextTick(() => {
-        handleReset()
-      })
+    const onReset = (bool = false) => {
+      handleReset(bool)
     }
 
     // 获取搜索参数

@@ -174,7 +174,7 @@ export const copyToClipboard = str => {
  * @param complete
  * @returns {Promise<void>}
  */
-export const execRequest = async (result, { success, fail, complete } = {}) => {
+export const execRequest = async (result, { success, fail } = {}) => {
   try {
     const res = await result
     if (Array.isArray(res) && res.length === 2) {
@@ -189,8 +189,6 @@ export const execRequest = async (result, { success, fail, complete } = {}) => {
     }
   } catch (err) {
     fail?.(err)
-  } finally {
-    complete?.()
   }
 }
 

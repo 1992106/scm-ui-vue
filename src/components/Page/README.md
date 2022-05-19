@@ -10,6 +10,7 @@
 | --- | --- | --- | --- |
 | v-model:value | 搜索参数，包含分页、排序和筛选参数 | Object | `-` |
 | searchProps | XSearch props | Object | `{}` |
+| rowKey | key 的取值，可以是字符串或一个函数 | [String, Function] | `-` |
 | dataSource | 表格数据 | Array | `[]` |
 | loading | spin 加载中 props | [Boolean, Object] | `false` |
 | emptyText | 空数据显示的内容 | String | `暂无数据` |

@@ -142,12 +142,10 @@ export default defineComponent({
             state.cloneList = []
             state.versionList = []
             state.total = 0
-          },
-          complete: () => {
-            state.spinning = false
           }
         }
       )
+      state.spinning = false
     }
 
     watch(

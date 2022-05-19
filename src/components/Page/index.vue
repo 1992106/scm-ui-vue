@@ -21,7 +21,7 @@
         <slot>
           <div v-if="dataSource.length" class="section">
             <div class="scroll">
-              <template v-for="(item, index) in dataSource">
+              <template v-for="(item, index) in dataSource" :key="getValueByRowKey(rowKey, item, index)">
                 <slot name="itemRender" :record="item" :index="index"></slot>
               </template>
             </div>
@@ -46,8 +46,8 @@ import { computed, defineComponent, onMounted, reactive, ref, toRefs, unref, wat
 import { Empty, Spin } from 'ant-design-vue'
 import XSearch from '@components/Search/index.vue'
 import XPagination from '@components/Pagination/index.vue'
+import { getValueByRowKey } from '@components/Table/utils'
 import { isEmpty } from '@src/utils'
-
 export default defineComponent({
   name: 'XPage',
   components: {
@@ -60,6 +60,8 @@ export default defineComponent({
   props: {
     value: Object,
     searchProps: { type: Object, default: () => ({}) },
+    // key 的取值
+    rowKey: { type: [String, Function] },
     // 数据
     dataSource: { type: Array, default: () => [] },
     loading: { type: [Boolean, Object], default: false },
@@ -171,7 +173,8 @@ export default defineComponent({
       handleQuery,
       handleSearch,
       handleReset,
-      handleClear
+      handleClear,
+      getValueByRowKey
     }
   }
 })

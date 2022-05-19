@@ -125,12 +125,10 @@ export default defineComponent({
           fail: () => {
             state.materialList = []
             state.total = 0
-          },
-          complete: () => {
-            state.spinning = false
           }
         }
       )
+      state.spinning = false
     }
 
     watch(

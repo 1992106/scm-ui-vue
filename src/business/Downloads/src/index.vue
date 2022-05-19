@@ -6,14 +6,16 @@
     placement="bottomRight"
     trigger="click">
     <template #content>
-      <DownloadList
-        :data="data"
-        :rowKey="rowKey"
-        :width="width"
-        :height="height"
-        :customDownload="customDownload"
-        :customCancel="customCancel"
-        :empty-text="emptyText" />
+      <a-spin :spinning="spinning">
+        <DownloadList
+          :data="data"
+          :rowKey="rowKey"
+          :width="width"
+          :height="height"
+          :customDownload="customDownload"
+          :customCancel="customCancel"
+          :empty-text="emptyText" />
+      </a-spin>
     </template>
     <a-button shape="circle">
       <template #icon>
@@ -82,17 +84,15 @@ export default defineComponent({
       state.spinning = true
       await execRequest(customRequest(), {
         success: data => {
-          state.data = data || []
-          state.total = (data || []).length
+          state.data = data?.list || data?.data || []
+          state.total = data?.total || 0
         },
         fail: () => {
           state.data = []
           state.total = 0
-        },
-        complete: () => {
-          state.spinning = false
         }
       })
+      state.spinning = false
     }
 
     return {
@@ -102,3 +102,15 @@ export default defineComponent({
   }
 })
 </script>
+<style lang="scss">
+.x-downloads {
+  .ant-popover-title {
+    padding-top: 10px;
+    padding-bottom: 8px;
+  }
+
+  .ant-popover-inner-content {
+    padding: 0;
+  }
+}
+</style>
