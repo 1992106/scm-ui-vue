@@ -36,7 +36,7 @@
     </x-modal>
   </a-config-provider>
 </template>
-<script lang="ts">
+<script>
 import { defineComponent, reactive, toRefs, watchEffect } from 'vue'
 import { Button, ConfigProvider, Upload } from 'ant-design-vue'
 import { UploadOutlined } from '@ant-design/icons-vue'
@@ -44,8 +44,7 @@ import zhCn from 'ant-design-vue/es/locale/zh_CN'
 import XModal from '@components/Modal'
 import { isFunction } from 'lodash-es'
 import { importFile } from './import'
-import { download } from '@src/utils'
-
+import { download, execRequest } from '@src/utils'
 export default defineComponent({
   name: 'XImport',
   components: {
@@ -95,11 +94,14 @@ export default defineComponent({
       const { customDownload } = props
       if (!isFunction(customDownload)) return
       state.loading = true
-      const [err, data] = await customDownload()
-      state.loading = false
-      if (!err) {
-        download(data?.url, data?.fileName)
-      }
+      await execRequest(customDownload(), {
+        success: data => {
+          download(data?.url, data?.fileName)
+        },
+        complete: () => {
+          state.loading = false
+        }
+      })
     }
 
     const handleCancel = () => {

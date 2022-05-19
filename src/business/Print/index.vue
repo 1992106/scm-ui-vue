@@ -19,14 +19,13 @@
     </div>
   </div>
 </template>
-<script lang="ts">
+<script>
 import { defineComponent, ref } from 'vue'
 import XQrcode from '@business/Qrcode/index.vue'
 import XBarcode from '@business/Barcode/index.vue'
 import print from './print'
 import { isFunction } from 'lodash-es'
-import { isPromise } from '@src/utils'
-
+import { execRequest } from '@src/utils'
 export default defineComponent({
   name: 'XPrint',
   components: {
@@ -57,20 +56,18 @@ export default defineComponent({
       if (props.onBefore && isFunction(props.onBefore)) {
         result = props.onBefore()
       }
-      if (result && isPromise(result)) {
-        result
-          .then(() => {
+      if (result) {
+        execRequest(result, {
+          success: () => {
             setTimeout(() => {
               printf()
             }, 200)
-          })
-          .catch(err => {
-            console.error(err)
-          })
+          }
+        })
       } else {
         setTimeout(() => {
           printf()
-        })
+        }, 200)
       }
     }
 

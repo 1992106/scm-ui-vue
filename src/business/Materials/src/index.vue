@@ -47,9 +47,8 @@ import XSearch from '@components/Search/index.vue'
 import MaterialList from './MaterialList.vue'
 import SelectedList from './SelectedList.vue'
 import { isFunction } from 'lodash-es'
-import { isEmpty } from '@src/utils'
 import { getValueByRowKey } from '@components/Table/utils'
-
+import { execRequest, isEmpty } from '@src/utils'
 export default defineComponent({
   name: 'XMaterials',
   components: {
@@ -99,32 +98,39 @@ export default defineComponent({
         state.searchParams = params
       }
       state.spinning = true
-      const [err, data] = await customRequest({
-        ...(isEmpty(state.searchParams) ? {} : state.searchParams),
-        ...state.pages
-      })
-      state.spinning = false
-      if (err) {
-        state.materialList = []
-        state.total = 0
-        return
-      }
-      const list = data?.data ?? data?.list ?? []
-      if (state.selectedList.length) {
-        state.materialList = (list || []).map(item => {
-          const newItem = state.selectedList.find(val => {
-            return getValueByRowKey(props.rowKey, item) === getValueByRowKey(props.rowKey, val)
-          })
-          return {
-            ...item,
-            ...(!isEmpty(newItem) ? newItem : {})
+      await execRequest(
+        customRequest({
+          ...(isEmpty(state.searchParams) ? {} : state.searchParams),
+          ...state.pages
+        }),
+        {
+          success: data => {
+            const list = data?.data ?? data?.list ?? []
+            if (state.selectedList.length) {
+              state.materialList = (list || []).map(item => {
+                const newItem = state.selectedList.find(val => {
+                  return getValueByRowKey(props.rowKey, item) === getValueByRowKey(props.rowKey, val)
+                })
+                return {
+                  ...item,
+                  ...(!isEmpty(newItem) ? newItem : {})
+                }
+              })
+            } else {
+              state.materialList = list
+            }
+            state.total = data?.total || 0
+            emit('search', state.materialList)
+          },
+          fail: () => {
+            state.materialList = []
+            state.total = 0
+          },
+          complete: () => {
+            state.spinning = false
           }
-        })
-      } else {
-        state.materialList = list
-      }
-      state.total = data?.total || 0
-      emit('search', state.materialList)
+        }
+      )
     }
 
     watch(

@@ -1,9 +1,9 @@
 <template>
   <a-config-provider :locale="zhCn">
     <x-drawer
-      class="x-log"
       v-bind="$attrs"
       v-model:visible="modalVisible"
+      class="x-log"
       :title="title"
       :width="width"
       :spin-props="spinning"
@@ -48,7 +48,7 @@ import { ConfigProvider, Empty, Timeline, TimelineItem } from 'ant-design-vue'
 import zhCn from 'ant-design-vue/es/locale/zh_CN'
 import XDrawer from '@components/Drawer'
 import { isFunction } from 'lodash-es'
-import { formatTime, isEmpty } from '@src/utils'
+import { execRequest, formatTime, isEmpty } from '@src/utils'
 export default defineComponent({
   name: 'XLog',
   components: {
@@ -94,23 +94,30 @@ export default defineComponent({
       const { customRequest, showPagination } = props
       if (!isFunction(customRequest)) return
       state.spinning = true
-      const [err, data] = await customRequest({
-        ...(showPagination ? state.pages : {})
-      })
-      state.spinning = false
-      if (err) {
-        state.data = []
-        state.total = 0
-        return
-      }
-      // TODO
-      if (showPagination) {
-        state.data = data?.data || data?.list || []
-        state.total = data?.total || 0
-      } else {
-        state.data = data || []
-        state.total = (data || []).length
-      }
+      await execRequest(
+        customRequest({
+          ...(showPagination ? state.pages : {})
+        }),
+        {
+          success: data => {
+            // TODO
+            if (showPagination) {
+              state.data = data?.data || data?.list || []
+              state.total = data?.total || 0
+            } else {
+              state.data = data || []
+              state.total = (data || []).length
+            }
+          },
+          fail: () => {
+            state.data = []
+            state.total = 0
+          },
+          complete: () => {
+            state.spinning = false
+          }
+        }
+      )
     }
 
     watch(

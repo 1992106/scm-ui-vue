@@ -27,8 +27,7 @@ import { message, Upload } from 'ant-design-vue'
 import { PlusOutlined } from '@ant-design/icons-vue'
 import XPreview from '@components/Preview/index.vue'
 import { isFunction } from 'lodash-es'
-import { isEmpty, downloadByUrl } from '@src/utils'
-
+import { isEmpty, downloadByUrl, execRequest } from '@src/utils'
 export default defineComponent({
   name: 'XUpload',
   components: {
@@ -125,32 +124,60 @@ export default defineComponent({
       const { customRequest } = props
       if (!isFunction(customRequest)) return
       const { file } = option
-      try {
-        const data = await customRequest(file)
-        // 上传成功（status: 'done'）
-        // 没有触发option.onSuccess()，手动设置状态为 'done'
-        const uploadFile = {
-          ...data,
-          uid: data?.id,
-          name: data?.fileName,
-          status: 'done',
-          thumbUrl: data?.url || data?.thumbUrl,
-          url: data?.url
+      await execRequest(customRequest(file), {
+        success: data => {
+          // 上传成功（status: 'done'）
+          // 没有触发option.onSuccess()，手动设置状态为 'done'
+          const uploadFile = {
+            ...data,
+            uid: data?.id,
+            name: data?.fileName,
+            status: 'done',
+            thumbUrl: data?.url || data?.thumbUrl,
+            url: data?.url
+          }
+          const index = state.files.findIndex(val => val?.uid === file?.uid)
+          state.files.splice(index, 1, uploadFile)
+          emit('update:file-list', state.files)
+          emit('change', { file: uploadFile, fileList: state.files })
+        },
+        fail: () => {
+          // 上传失败（status: 'error'）
+          // 没有触发option.onError()，手动设置状态为 'error'
+          const uploadFile = state.files.find(val => val?.uid === file?.uid)
+          uploadFile.status = 'error'
+          // 手动删除上传失败的图片
+          setTimeout(() => {
+            state.files = state.files.filter(val => val?.status === 'done')
+          }, 500)
         }
-        const index = state.files.findIndex(val => val?.uid === file?.uid)
-        state.files.splice(index, 1, uploadFile)
-        emit('update:file-list', state.files)
-        emit('change', { file: uploadFile, fileList: state.files })
-      } catch (e) {
-        // 上传失败（status: 'error'）
-        // 没有触发option.onError()，手动设置状态为 'error'
-        const uploadFile = state.files.find(val => val?.uid === file?.uid)
-        uploadFile.status = 'error'
-        // 手动删除上传失败的图片
-        setTimeout(() => {
-          state.files = state.files.filter(val => val?.status === 'done')
-        }, 500)
-      }
+      })
+      // try {
+      //   const data = await customRequest(file)
+      //   // 上传成功（status: 'done'）
+      //   // 没有触发option.onSuccess()，手动设置状态为 'done'
+      //   const uploadFile = {
+      //     ...data,
+      //     uid: data?.id,
+      //     name: data?.fileName,
+      //     status: 'done',
+      //     thumbUrl: data?.url || data?.thumbUrl,
+      //     url: data?.url
+      //   }
+      //   const index = state.files.findIndex(val => val?.uid === file?.uid)
+      //   state.files.splice(index, 1, uploadFile)
+      //   emit('update:file-list', state.files)
+      //   emit('change', { file: uploadFile, fileList: state.files })
+      // } catch (e) {
+      //   // 上传失败（status: 'error'）
+      //   // 没有触发option.onError()，手动设置状态为 'error'
+      //   const uploadFile = state.files.find(val => val?.uid === file?.uid)
+      //   uploadFile.status = 'error'
+      //   // 手动删除上传失败的图片
+      //   setTimeout(() => {
+      //     state.files = state.files.filter(val => val?.status === 'done')
+      //   }, 500)
+      // }
     }
 
     // 上传文件改变时的状态（'uploading' 'done' 'error' 'removed'）

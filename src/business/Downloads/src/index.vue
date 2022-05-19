@@ -22,13 +22,13 @@
     </a-button>
   </a-popover>
 </template>
-<script lang="ts">
+<script>
 import { computed, defineComponent, reactive, toRefs, watch } from 'vue'
 import { Popover } from 'ant-design-vue'
 import { CloudDownloadOutlined } from '@ant-design/icons-vue'
 import DownloadList from './DownloadList.vue'
 import { isFunction } from 'lodash-es'
-
+import { execRequest } from '@src/utils'
 export default defineComponent({
   name: 'XDownloads',
   components: {
@@ -80,15 +80,19 @@ export default defineComponent({
       const { customRequest } = props
       if (!isFunction(customRequest)) return
       state.spinning = true
-      const [err, data] = await customRequest()
-      state.spinning = false
-      if (err) {
-        state.data = []
-        state.total = 0
-        return
-      }
-      state.data = data || []
-      state.total = (data || []).length
+      await execRequest(customRequest(), {
+        success: data => {
+          state.data = data || []
+          state.total = (data || []).length
+        },
+        fail: () => {
+          state.data = []
+          state.total = 0
+        },
+        complete: () => {
+          state.spinning = false
+        }
+      })
     }
 
     return {
@@ -98,7 +102,3 @@ export default defineComponent({
   }
 })
 </script>
-<style scoped lang="scss">
-.x-downloads {
-}
-</style>

@@ -1,5 +1,5 @@
 <template>
-  <a-form ref="elForm" class="x-form" v-bind="$attrs" :layout="layout" :label-col="labelCol" :wrapper-col="wrapperCol">
+  <a-form ref="elForm" v-bind="$attrs" class="x-form" :layout="layout" :label-col="labelCol" :wrapper-col="wrapperCol">
     <!--栅格化布局-->
     <template v-if="gird">
       <a-row v-bind="rowProps">
@@ -53,7 +53,6 @@ import { DownOutlined, UpOutlined } from '@ant-design/icons-vue'
 import { omit, pick } from 'lodash-es'
 import { formatFormModel, formatFormRules, formatFormValues } from './utils'
 import { isEmpty } from '@src/utils'
-
 export default defineComponent({
   name: 'XForm',
   components: {

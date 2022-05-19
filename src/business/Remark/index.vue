@@ -1,9 +1,9 @@
 <template>
   <a-config-provider :locale="zhCn">
     <x-modal
-      class="x-remark"
       v-bind="$attrs"
       v-model:visible="modalVisible"
+      class="x-remark"
       :title="title"
       :width="width"
       destroy-on-close
@@ -71,7 +71,7 @@ import XTable from '@components/Table/index.vue'
 import XUpload from '@components/Upload/index.vue'
 import XImage from '@components/Image'
 import { isFunction } from 'lodash-es'
-import { formatTime, isEmpty, download } from '@src/utils'
+import { formatTime, isEmpty, download, execRequest } from '@src/utils'
 export default defineComponent({
   name: 'XRemark',
   components: {
@@ -165,39 +165,46 @@ export default defineComponent({
       const { customRequest, showPagination } = props
       if (!isFunction(customRequest)) return
       state.spinning = true
-      const [err, data] = await customRequest({
-        ...(showPagination ? state.pages : {})
-      })
-      state.spinning = false
-      if (err) {
-        tableOptions.dataSource = []
-        tableOptions.total = 0
-        return
-      }
-      if (showPagination) {
-        const list = data?.data ?? data?.list ?? []
-        tableOptions.dataSource = list.map(row => {
-          const attachments = getAttachments(row)
-          const content = row?.remark || row?.content
-          return {
-            ...row,
-            content,
-            attachments: formatAttachments(attachments)
+      await execRequest(
+        customRequest({
+          ...(showPagination ? state.pages : {})
+        }),
+        {
+          success: data => {
+            if (showPagination) {
+              const list = data?.data ?? data?.list ?? []
+              tableOptions.dataSource = list.map(row => {
+                const attachments = getAttachments(row)
+                const content = row?.remark || row?.content
+                return {
+                  ...row,
+                  content,
+                  attachments: formatAttachments(attachments)
+                }
+              })
+              tableOptions.total = data?.total || 0
+            } else {
+              tableOptions.dataSource = (data || []).map(row => {
+                const attachments = getAttachments(row)
+                const content = row?.remark || row?.content
+                return {
+                  ...row,
+                  content,
+                  attachments: formatAttachments(attachments)
+                }
+              })
+              tableOptions.total = (data || []).length
+            }
+          },
+          fail: () => {
+            tableOptions.dataSource = []
+            tableOptions.total = 0
+          },
+          complete: () => {
+            state.spinning = false
           }
-        })
-        tableOptions.total = data?.total || 0
-      } else {
-        tableOptions.dataSource = (data || []).map(row => {
-          const attachments = getAttachments(row)
-          const content = row?.remark || row?.content
-          return {
-            ...row,
-            content,
-            attachments: formatAttachments(attachments)
-          }
-        })
-        tableOptions.total = (data || []).length
-      }
+        }
+      )
     }
 
     watch(
@@ -232,17 +239,23 @@ export default defineComponent({
       validate()
         .then(async () => {
           state.confirmLoading = true
-          const [err, data] = await customSubmit({
-            content: modelRef.content,
-            ...(!isEmpty(modelRef.attachments) ? { ids: modelRef.attachments.map(val => val?.id) } : {})
-          })
-          state.confirmLoading = false
-          if (!err) {
-            emit('done', data)
-            // TODO: 使用函数方法调用时，通过emit('update:visible', false)不生效，必须手动关闭。
-            state.modalVisible = false // 只是为了兼容使用函数方法调用，才需要手动关闭
-            handleCancel()
-          }
+          await execRequest(
+            customSubmit({
+              content: modelRef.content,
+              ...(!isEmpty(modelRef.attachments) ? { ids: modelRef.attachments.map(val => val?.id) } : {})
+            }),
+            {
+              success: data => {
+                emit('done', data)
+                // TODO: 使用函数方法调用时，通过emit('update:visible', false)不生效，必须手动关闭。
+                state.modalVisible = false // 只是为了兼容使用函数方法调用，才需要手动关闭
+                handleCancel()
+              },
+              complete: () => {
+                state.confirmLoading = false
+              }
+            }
+          )
         })
         .catch(err => {
           console.error(err)

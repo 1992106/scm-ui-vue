@@ -28,9 +28,8 @@
 import { computed, defineComponent } from 'vue'
 import { Empty } from 'ant-design-vue'
 import { isFunction } from 'lodash-es'
-import { download, getStyleSize } from '@src/utils'
+import { download, execRequest, getStyleSize } from '@src/utils'
 import { getValueByRowKey } from '@components/Table/utils'
-
 export default defineComponent({
   name: 'DownloadList',
   components: {
@@ -54,16 +53,17 @@ export default defineComponent({
     const handleDownload = async row => {
       const { customDownload } = props
       if (!isFunction(customDownload)) return
-      const [err, data] = await customDownload(row)
-      if (!err) {
-        download(data?.url, data?.fileName)
-      }
+      await execRequest(customDownload(row), {
+        success: data => {
+          download(data?.url, data?.fileName)
+        }
+      })
     }
 
     const handleCancel = async row => {
       const { customCancel } = props
       if (!isFunction(customCancel)) return
-      await customCancel(row)
+      await execRequest(customCancel(row))
     }
 
     return {

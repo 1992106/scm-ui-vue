@@ -167,6 +167,41 @@ export const copyToClipboard = str => {
 }
 
 /**
+ * 执行请求
+ * @param result
+ * @param success
+ * @param fail
+ * @param complete
+ * @returns {Promise<void>}
+ */
+export const execRequest = async (result, { success, fail, complete } = {}) => {
+  try {
+    const res = await result
+    if (Array.isArray(res) && res.length === 2) {
+      const [err, data] = await res
+      if (!err) {
+        success?.(data)
+      } else {
+        fail?.(err)
+      }
+    } else {
+      success?.(res)
+    }
+  } catch (err) {
+    fail?.(err)
+  } finally {
+    complete?.()
+  }
+}
+
+/**
+ * 延迟执行
+ * @param delay
+ * @returns {Promise<unknown>}
+ */
+export const sleep = delay => new Promise(resolve => setTimeout(resolve, delay))
+
+/**
  * 广度递归遍历树
  * @param tree
  * @param callback

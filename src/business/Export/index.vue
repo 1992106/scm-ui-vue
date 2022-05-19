@@ -13,12 +13,11 @@
     </div>
   </div>
 </template>
-<script lang="ts">
+<script>
 import { defineComponent, ref } from 'vue'
-import jsPDF from './jsPDF'
 import { isFunction } from 'lodash-es'
-import { isPromise } from '@src/utils'
-
+import jsPDF from './jsPDF'
+import { execRequest } from '@src/utils'
 export default defineComponent({
   name: 'XExport',
   inheritAttrs: false,
@@ -43,14 +42,14 @@ export default defineComponent({
       if (props.onBefore && isFunction(props.onBefore)) {
         result = props.onBefore()
       }
-      if (result && isPromise(result)) {
-        result
-          .then(() => {
-            dispatch()
-          })
-          .catch(err => {
-            console.error(err)
-          })
+      if (result) {
+        execRequest(result, {
+          success: () => {
+            setTimeout(() => {
+              dispatch()
+            }, 200)
+          }
+        })
       } else {
         setTimeout(() => {
           dispatch()

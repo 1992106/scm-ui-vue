@@ -55,9 +55,8 @@ import Shortcut from './Shortcut.vue'
 import VersionList from './VersionList.vue'
 import SelectedList from './SelectedList.vue'
 import { isFunction, cloneDeep } from 'lodash-es'
-import { isEmpty } from '@src/utils'
 import { getValueByRowKey } from '@components/Table/utils'
-
+import { execRequest, isEmpty } from '@src/utils'
 export default defineComponent({
   name: 'XVersions',
   components: {
@@ -113,35 +112,42 @@ export default defineComponent({
       }
       state.spinning = true
       const shortcutParams = xShortcut.value?.onGetFormValues?.()
-      const [err, data] = await customRequest({
-        ...(isEmpty(state.searchParams) ? {} : state.searchParams),
-        ...state.pages,
-        ...(isEmpty(shortcutParams) ? {} : shortcutParams)
-      })
-      state.spinning = false
-      if (err) {
-        state.cloneList = []
-        state.versionList = []
-        state.total = 0
-        return
-      }
-      const list = data?.data ?? data?.list ?? []
-      state.cloneList = cloneDeep(list) // 备份数据
-      if (state.selectedList.length) {
-        state.versionList = (list || []).map(item => {
-          const newItem = state.selectedList.find(val => {
-            return getValueByRowKey(props.rowKey, item) === getValueByRowKey(props.rowKey, val)
-          })
-          return {
-            ...item,
-            ...(!isEmpty(newItem) ? newItem : {})
+      await execRequest(
+        customRequest({
+          ...(isEmpty(state.searchParams) ? {} : state.searchParams),
+          ...(isEmpty(shortcutParams) ? {} : shortcutParams),
+          ...state.pages
+        }),
+        {
+          success: data => {
+            const list = data?.data ?? data?.list ?? []
+            state.cloneList = cloneDeep(list) // 备份数据
+            if (state.selectedList.length) {
+              state.versionList = (list || []).map(item => {
+                const newItem = state.selectedList.find(val => {
+                  return getValueByRowKey(props.rowKey, item) === getValueByRowKey(props.rowKey, val)
+                })
+                return {
+                  ...item,
+                  ...(!isEmpty(newItem) ? newItem : {})
+                }
+              })
+            } else {
+              state.versionList = list
+            }
+            state.total = data?.total || 0
+            emit('search', state.versionList)
+          },
+          fail: () => {
+            state.cloneList = []
+            state.versionList = []
+            state.total = 0
+          },
+          complete: () => {
+            state.spinning = false
           }
-        })
-      } else {
-        state.versionList = list
-      }
-      state.total = data?.total || 0
-      emit('search', state.versionList)
+        }
+      )
     }
 
     watch(

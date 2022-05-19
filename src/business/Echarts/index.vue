@@ -2,7 +2,7 @@
   <div ref="elEcharts" class="x-echarts"></div>
 </template>
 <script>
-import { defineComponent, markRaw, onMounted, onUnmounted, ref, watch } from 'vue'
+import { defineComponent, markRaw, onActivated, onMounted, onUnmounted, ref, watch } from 'vue'
 // 引入 echarts 核心模块，核心模块提供了 echarts 使用必须要的接口。
 import { getInstanceByDom, init, use } from 'echarts/core'
 // 引入提示框，标题，直角坐标系，数据集，内置数据转换器组件，组件后缀都为 Component
@@ -79,6 +79,10 @@ export default defineComponent({
 
     onMounted(() => {
       initEcharts()
+      window.addEventListener('resize', handleResize)
+    })
+
+    onActivated(() => {
       window.addEventListener('resize', handleResize)
     })
 
