@@ -58,15 +58,24 @@ export const routes = [
   {
     path: '/',
     component: markRaw(BaseLayout),
-    redirect: '/index',
+    redirect: '/dashboard',
     children: [
       {
-        path: 'index',
-        name: 'dashboard',
+        path: 'dashboard',
+        name: 'Dashboard',
         component: () => import('@views/Dashboard.vue'),
         meta: {
           title: '仪表盘',
           icon: 'icon-dashboard'
+        }
+      },
+      {
+        path: 'example',
+        name: 'Example',
+        component: () => import('@views/Example.vue'),
+        meta: {
+          title: '业务组件',
+          icon: 'icon-database'
         }
       }
     ]
