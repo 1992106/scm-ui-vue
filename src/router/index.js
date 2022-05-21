@@ -4,14 +4,6 @@ import BaseLayout from '@src/layouts/BaseLayout.vue'
 
 export const routes = [
   {
-    path: '/:pathMatch(.*)*',
-    name: 'ErrorPage',
-    redirect: () => ({ name: '404' }),
-    meta: {
-      hidden: true
-    }
-  },
-  {
     path: '/404',
     name: '404',
     component: () => import('@src/layouts/system/404.vue'),
@@ -57,6 +49,7 @@ export const routes = [
   },
   {
     path: '/',
+    index: 'index',
     component: markRaw(BaseLayout),
     redirect: '/dashboard',
     children: [
@@ -79,6 +72,14 @@ export const routes = [
         }
       }
     ]
+  },
+  {
+    path: '/:pathMatch(.*)*',
+    name: 'ErrorPage',
+    redirect: () => ({ name: '404' }),
+    meta: {
+      hidden: true
+    }
   }
 ]
 
@@ -88,7 +89,7 @@ const router = createRouter({
 })
 
 // 白名单路由
-export const whiteRoutes = ['ErrorPage', '404', '403', 'Login', 'Redirect']
+export const whiteRoutes = ['404', '403', 'Login', 'Redirect', 'ErrorPage', 'index']
 
 // 重置路由
 export const resetRouter = () => {
