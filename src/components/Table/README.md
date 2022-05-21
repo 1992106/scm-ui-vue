@@ -61,3 +61,13 @@ emits: [
 <slot name="footer"></slot>
 <slot name="emptyText"></slot>
 ```
+
+### cellRender
+```vue
+缩略图
+cellRender: { name: 'thumbnail', props: { previewField: '', preview: true } }
+日期
+cellRender: { name: 'date' }
+时间
+cellRender: { name: 'time' }
+```

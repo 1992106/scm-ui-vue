@@ -32,6 +32,14 @@
         @expand="handleExpand"
         @expandedRowsChange="handleExpandedRowsChange"
         @resizeColumn="handleResizeColumn">
+        <template #bodyCell="scope">
+          <slot name="bodyCell" v-bind="scope">
+            <!--自定义:缩略图\日期\时间-->
+            <template v-if="scope?.column?.cellRender">
+              <CellRender v-bind="scope" />
+            </template>
+          </slot>
+        </template>
         <!--插槽-->
         <template v-for="slot of getTableSlots" :key="slot" #[slot]="scope">
           <slot :name="slot" v-bind="scope"></slot>
@@ -43,6 +51,7 @@
 <script>
 import { defineComponent, computed, mergeProps, ref, reactive, toRef, toRefs, unref } from 'vue'
 import { Spin, Table } from 'ant-design-vue'
+import CellRender from './CellRender'
 import { useScroll } from './useScroll'
 import { isEmpty } from '@src/utils'
 import { getSortDirection, getValueByRowKey } from './utils'
@@ -51,7 +60,8 @@ export default defineComponent({
   name: 'XTable',
   components: {
     'a-table': Table,
-    'a-spin': Spin
+    'a-spin': Spin,
+    CellRender
   },
   inheritAttrs: false,
   props: {
@@ -169,7 +179,7 @@ export default defineComponent({
       return Object.keys(slots).filter(val =>
         [
           'headerCell',
-          'bodyCell',
+          // 'bodyCell',
           'customFilterDropdown',
           'customFilterIcon',
           'expandedRowRender',
