@@ -13,7 +13,7 @@
         <x-qrcode v-if="qrcodeProps" v-bind="qrcodeProps"></x-qrcode>
         <x-barcode v-if="barcodeProps" v-bind="barcodeProps"></x-barcode>
         <div class="print-content">
-          <slot></slot>
+          <slot :data="result"></slot>
         </div>
       </div>
     </div>
@@ -50,21 +50,23 @@ export default defineComponent({
   emits: ['done'],
   setup(props, { emit }) {
     const elPrint = ref(null)
+    const result = ref(null)
 
     const handlePrint = () => {
-      let result = null
-      if (props.onBefore && isFunction(props.onBefore)) {
-        result = props.onBefore()
-      }
-      if (result) {
-        execRequest(result, {
-          success: () => {
+      const { onBefore } = props
+      if (onBefore) {
+        // 有onBefore时
+        if (!isFunction(onBefore)) return
+        execRequest(onBefore(), {
+          success: data => {
+            result.value = data
             setTimeout(() => {
               printf()
             }, 200)
           }
         })
       } else {
+        // 没有onBefore时，直接打印
         setTimeout(() => {
           printf()
         }, 200)
@@ -85,6 +87,7 @@ export default defineComponent({
 
     return {
       elPrint,
+      result,
       handlePrint
     }
   }

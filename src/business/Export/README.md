@@ -32,6 +32,6 @@ emits: ['done']
 <x-export
   :onBefore="onBefore"
   buttonText="导出"
-  :buttonProps="{ type: 'primary', loading }">
+  :buttonProps="{ type: 'primary', loading: true }">
 </x-export>
 ```

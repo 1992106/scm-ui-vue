@@ -39,6 +39,6 @@ emits: ['done']
 <x-print
   :onBefore="onBefore"
   buttonText="打印"
-  :buttonProps="{ type: 'primary', loading }">
+  :buttonProps="{ type: 'primary', loading: true }">
 </x-print>
 ```

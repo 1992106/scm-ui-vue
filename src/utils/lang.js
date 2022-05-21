@@ -176,18 +176,26 @@ export const copyToClipboard = str => {
  */
 export const execRequest = async (result, { success, fail } = {}) => {
   try {
-    const res = await result
-    if (Array.isArray(res) && res.length === 2) {
-      const [err, data] = await res
+    const value = await result
+    // 有返回值，且长度是2的数组
+    if (
+      Array.isArray(value) &&
+      value.length === 2 &&
+      ((value[0] == null && !isEmpty(value[1])) || (!isEmpty(value[0]) && value[1] == null))
+    ) {
+      const [err, data] = value
       if (!err) {
         success?.(data)
       } else {
         fail?.(err)
       }
     } else {
-      success?.(res)
+      // 1.有返回值
+      // 2.没有返回值
+      success?.(value)
     }
   } catch (err) {
+    // 抛出异常
     fail?.(err)
   }
 }

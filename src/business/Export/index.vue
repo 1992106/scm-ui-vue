@@ -9,7 +9,7 @@
       </a-button>
     </template>
     <div ref="elExport" class="export-content">
-      <slot></slot>
+      <slot :data="result"></slot>
     </div>
   </div>
 </template>
@@ -36,21 +36,23 @@ export default defineComponent({
   emits: ['done'],
   setup(props, { emit }) {
     const elExport = ref(null)
+    const result = ref(null)
 
     const handleExport = () => {
-      let result = null
-      if (props.onBefore && isFunction(props.onBefore)) {
-        result = props.onBefore()
-      }
-      if (result) {
-        execRequest(result, {
-          success: () => {
+      const { onBefore } = props
+      if (onBefore) {
+        // 有onBefore时
+        if (!isFunction(onBefore)) return
+        execRequest(onBefore(), {
+          success: data => {
+            result.value = data
             setTimeout(() => {
               dispatch()
             }, 200)
           }
         })
       } else {
+        // 没有onBefore时，直接打印
         setTimeout(() => {
           dispatch()
         }, 200)
@@ -92,6 +94,7 @@ export default defineComponent({
 
     return {
       elExport,
+      result,
       handleExport
     }
   }
