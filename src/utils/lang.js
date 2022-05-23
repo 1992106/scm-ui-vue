@@ -1,4 +1,5 @@
 import dayjs from 'dayjs'
+import { isObject, transform } from 'lodash-es'
 
 /**
  * 获取对象tag
@@ -220,6 +221,43 @@ export const recursive = (tree, callback) => {
     callback(node)
     node.children && list.push(...node.children)
   }
+}
+
+/**
+ * 深度去除空值
+ * @param collection
+ * @returns {object}
+ */
+export const deepCompact = collection => {
+  const add = Array.isArray(collection)
+    ? (collection, key, value) => collection.push(value)
+    : (collection, key, value) => (collection[key] = value)
+
+  return transform(collection, (collection, value, key) => {
+    if (isObject(value)) {
+      value = deepCompact(value)
+      if (isEmpty(value)) return
+    } else {
+      if (!value) return
+    }
+    add(collection, key, value)
+  })
+}
+
+/**
+ * 深度去除前后空格
+ * @param object
+ */
+export const deepTrim = object => {
+  Object.keys(object).forEach(key => {
+    if (['object', 'array'].includes(getType(object[key]))) {
+      deepTrim(object[key])
+    } else {
+      if (getType(object[key]) === 'string') {
+        object[key] = object[key].trim()
+      }
+    }
+  })
 }
 
 /**

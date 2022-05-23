@@ -21,6 +21,7 @@ import { defineComponent, unref, watch, computed, ref } from 'vue'
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
 import { ReloadOutlined } from '@ant-design/icons-vue'
+import { whiteRoutes } from '@src/router'
 
 export default defineComponent({
   name: 'MyMultiTabs',
@@ -36,7 +37,7 @@ export default defineComponent({
     watch(
       () => router.currentRoute.value,
       val => {
-        if (['Redirect', 'ErrorPage', 'Login', '403', '404'].includes(router.currentRoute.value.name)) {
+        if (whiteRoutes.includes(router.currentRoute.value.name)) {
           return
         }
         activeKey.value = val.path

@@ -23,6 +23,9 @@ const setting = {
   // 本地储存user的名称
   user_name: 'scm-user',
 
+  //  api接口的名称
+  api_name: 'scm-api',
+
   // 是否开启keep-alive
   keep_alive: true,
 
