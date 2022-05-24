@@ -8,8 +8,8 @@
 
 | 参数 | 说明 | 类型 | 默认值 |
 | --- | --- | --- | --- |
-| v-model:value | 选中tab | [String, Number] | `-` |
-| list | tab列表 | Array | `[]` |
+| v-model:value | 选中`tab` | [String, Number] | `-` |
+| list | `tab`列表 | Array | `[]` |
 
 ### Emits
 

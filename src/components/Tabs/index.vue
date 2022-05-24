@@ -57,7 +57,7 @@ export default defineComponent({
   }
 })
 </script>
-<style scoped lang="scss">
+<style lang="scss" scoped>
 .x-tabs {
   height: 100%;
   background-color: #f0f2f5;

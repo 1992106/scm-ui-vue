@@ -10,12 +10,12 @@
 | --- | --- | --- | --- |
 | v-model:fileList | 已经上传的文件列表 | Array | `[]` |
 | customRequest | 自定义上传 | Function | `-` |
-| listType | 上传列表的内建样式，支持三种基本样式 'text', 'picture' 和 'picture-card' | String | `picture-card` |
+| listType | 上传列表的内建样式，支持三种基本样式 `"text"、"picture"、"picture-card"` | String | `picture-card` |
 | showUploadList | 自定义上传 | [Boolean, Object] | `-` |
 | beforeUpload | 上传文件之前的钩子，参数为上传的文件，若返回 false 则停止上传 | Function | `-` |
-| mode | 上传/预览模式（'upload'/'preview'） | String | `upload` |
-| accept | 上传文件格式('image/*'、'application/*'、'audio/*'、'video/*') | String | `-` |
-| size | 上传文件大小，单位M | Number | `-` |
+| mode | 上传/预览模式(`"upload"、"preview")` | String | `upload` |
+| accept | 上传文件格式`("image/*"、"application/*"、"audio/*"、"video/*")` | String | `-` |
+| size | 上传文件大小，单位`M` | Number | `-` |
 | limit | 上传文件数量 | Number | `-` |
 
 ### Emits

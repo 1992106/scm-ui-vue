@@ -15,6 +15,8 @@
 | width | 宽度 | [String, Number] | `360` |
 | height | 高度 | [String, Number] | `520` |
 | rowKey | key 的取值，可以是字符串或一个函数 | [String, Function] | `id` |
+| placement | 气泡框位置 | String | `bottomRight` |
+| trigger | 触发行为，可选 `hover/focus/click/contextmenu` | String | `click` |
 | customRequest | 自定义请求 | Function | `-` |
 | customDownload | 自定义下载 | Function | `-` |
 | customCancel | 自定义取消 | Function | `-` |
@@ -25,12 +27,6 @@
 
 ```vue
 emits: ['update:visible', 'toggle']
-```
-
-### Slots
-
-```vue
-<slot name="itemRender"></slot>
 ```
 
 ### Example

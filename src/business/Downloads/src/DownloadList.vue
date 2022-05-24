@@ -17,7 +17,7 @@
               <a v-if="file?.exportResult === 1" @click="handleDownload(file)">下载</a>
               <p v-else>
                 导出失败
-                <a @click="handleDelete(file)">删除</a>
+                <a style="float: right" @click="handleDelete(file)">删除</a>
               </p>
             </template>
           </div>
@@ -87,7 +87,7 @@ export default defineComponent({
       if (!isFunction(customDelete)) return
       await execRequest(customDelete(row))
       // 手动删除
-      const index = state.list.findIndex(val => getValueByRowKey(rowKey, val))
+      const index = state.list.findIndex(val => getValueByRowKey(rowKey, val) === getValueByRowKey(rowKey, row))
       state.list.splice(index, 1)
     }
 
@@ -103,7 +103,7 @@ export default defineComponent({
   }
 })
 </script>
-<style scoped lang="scss">
+<style lang="scss" scoped>
 .x-downloads {
   .download-list {
     overflow-x: hidden;

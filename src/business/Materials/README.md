@@ -18,9 +18,9 @@
 | height | 高度 | [String, Number] | `-` |
 | rowKey | key 的取值，可以是字符串或一个函数 | [String, Function] | [String, Function] | `supplierMaterialId` |
 | manual | 是否手动控制搜索 | Boolean | `false` |
-| searchProps | XSearch props | Object | `{}` |
+| searchProps | `XSearch props` | Object | `{}` |
 | customRequest | 自定义请求 | Function | `-` |
-| selectedType | 选择模式(checkbox/radio) | String | `checkbox` |
+| selectedType | 选择模式(`"checkbox"、"radio"`) | String | `checkbox` |
 | emptyText | 空数据显示的内容 | String | `暂无数据` |
 
 ### Emits

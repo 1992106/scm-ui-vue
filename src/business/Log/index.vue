@@ -42,7 +42,7 @@
     </x-drawer>
   </a-config-provider>
 </template>
-<script lang="ts">
+<script>
 import { defineComponent, reactive, toRefs, watch, watchEffect } from 'vue'
 import { ConfigProvider, Empty, Timeline, TimelineItem } from 'ant-design-vue'
 import zhCn from 'ant-design-vue/es/locale/zh_CN'

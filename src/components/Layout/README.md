@@ -11,8 +11,8 @@
 | --- | --- | --- | --- |
 | v-model:value | 选中菜单 | [String, Number] | `-` |
 | list | 菜单列表 | Array | `[]` |
-| menuProps | menu props | Object | `{}` |
-| spinProps | spin 加载中 props | [Boolean, Object] | `false` |
+| menuProps | `AMenu props` | Object | `{}` |
+| spinProps | `ASpin` 加载中 `props` | [Boolean, Object] | `false` |
 
 ### Emits
 

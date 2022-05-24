@@ -12,7 +12,7 @@
 | searchProps | XSearch props | Object | `{}` |
 | rowKey | key 的取值，可以是字符串或一个函数 | [String, Function] | `-` |
 | dataSource | 表格数据 | Array | `[]` |
-| loading | spin 加载中 props | [Boolean, Object] | `false` |
+| loading | `ASpin` 加载中 props | [Boolean, Object] | `false` |
 | emptyText | 空数据显示的内容 | String | `暂无数据` |
 | autoResize | 表格高度 | Boolean | `true` |
 | showPagination | 是否显示分页 | Boolean | `true` |
@@ -28,8 +28,8 @@
 | layout | 表单布局 | String | `inline` |
 | labelCol | 标签布局 | Object | `{ span: 9 }` |
 | wrapperCol | 控件布局 | Object | `{ span: 15 }` |
-| rowProps |a-row props | Object | `{ gutter: 24 }` |
-| colProps | a-col props | Object | `{ span: 6 }` |
+| rowProps | `ARow props` | Object | `{ gutter: 24 }` |
+| colProps | `ACol props` | Object | `{ span: 6 }` |
 | resetSearch | 重置时是否触发搜索 | Boolean | `true` |
 | clearSearch | 清空时是否触发搜索 | Boolean | `false` |
 | showSearch | 是否显示搜索按钮 | Boolean | `true` |

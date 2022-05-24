@@ -19,11 +19,11 @@
 | height | 高度 | [String, Number] | `-` |
 | rowKey | key 的取值，可以是字符串或一个函数 | [String, Function] | `id` |
 | manual | 是否手动控制搜索 | Boolean | `false` |
-| searchProps | XSearch props | Object | `{}` |
-| shortcutProps | XForm props | Object | `{}` |
+| searchProps | `XSearch props` | Object | `{}` |
+| shortcutProps | `XForm props` | Object | `{}` |
 | customRequest | 自定义请求 | Function | `-` |
-| rowProps |a-row props | Object | `-` |
-| colProps | a-col props | Object | `-` |
+| rowProps | `ARow props` | Object | `-` |
+| colProps | `ACol props` | Object | `-` |
 | emptyText | 空数据显示的内容 | String | `暂无数据` |
 
 ### Emits

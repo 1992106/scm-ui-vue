@@ -9,8 +9,8 @@
 | 参数 | 说明 | 类型 | 默认值 |
 | --- | --- | --- | --- |
 | v-model:value | 搜索参数，包含分页、排序和筛选参数 | Object | `-` |
-| searchProps | XSearch props | Object | `{}` |
-| gridProps | XGrid props | Object | `{}` |
+| searchProps | `XSearch props` | Object | `{}` |
+| gridProps | `XGrid props` | Object | `{}` |
 
 #### searchProps
 
@@ -20,8 +20,8 @@
 | layout | 表单布局 | String | `inline` |
 | labelCol | 标签布局 | Object | `{ span: 9 }` |
 | wrapperCol | 控件布局 | Object | `{ span: 15 }` |
-| rowProps |a-row props | Object | `{ gutter: 24 }` |
-| colProps | a-col props | Object | `{ span: 6 }` |
+| rowProps | `ARow props` | Object | `{ gutter: 24 }` |
+| colProps | `ACol props` | Object | `{ span: 6 }` |
 | resetSearch | 重置时是否触发搜索 | Boolean | `true` |
 | clearSearch | 清空时是否触发搜索 | Boolean | `false` |
 | showSearch | 是否显示搜索按钮 | Boolean | `true` |
@@ -37,7 +37,7 @@
 | --- | --- | --- | --- |
 | columns | 表格列配置 | Array | `[]` |
 | data | 表格数据 | Array | `[]` |
-| loading | 表格 loading | Boolean | `false` |
+| loading | 表格 `loading` | Boolean | `false` |
 | emptyText | 空数据显示的内容 | String | `暂无数据` |
 | showPagination | 是否显示分页 | Boolean | `true` |
 | total | 数据总数 | Number | `0` |
@@ -55,7 +55,7 @@
 | footerMethod | 自定义缩放 | Function | `-` |
 | customZoom | 自定义缩放 | Boolean | `true` |
 | customSetting | 自定义设置 | Boolean | `true` |
-| storageName | 本地Storage名称，拖拽列和自定义表头时本地储存 | String | `-` |
+| storageName | 本地`Storage`名称，拖拽列和自定义表头时本地储存 | String | `-` |
 
 ### Emits
 

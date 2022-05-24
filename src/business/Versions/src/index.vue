@@ -214,7 +214,7 @@ export default defineComponent({
   }
 })
 </script>
-<style scoped lang="scss">
+<style lang="scss" scoped>
 .x-versions {
   .x-search {
     padding-top: 0;

@@ -1,10 +1,11 @@
 <template>
   <a-popover
+    v-bind="$attrs"
     v-model:visible="popoverVisible"
+    overlayClassName="x-downloads-overlay"
     :title="title"
-    overlayClassName="x-downloads"
-    placement="bottomRight"
-    trigger="click">
+    :placement="placement"
+    :trigger="trigger">
     <template #content>
       <a-spin :spinning="spinning">
         <DownloadList
@@ -46,6 +47,8 @@ export default defineComponent({
     width: { type: [String, Number], default: 360 },
     height: { type: [String, Number], default: '300' },
     rowKey: { type: [String, Function], default: 'id' },
+    placement: { type: String, default: 'bottomRight' },
+    trigger: { type: String, default: 'click' },
     customRequest: { type: Function, require: true },
     customDownload: { type: Function },
     customCancel: { type: Function },
@@ -105,7 +108,7 @@ export default defineComponent({
 })
 </script>
 <style lang="scss">
-.x-downloads {
+.x-downloads-overlay {
   .ant-popover-title {
     padding-top: 10px;
     padding-bottom: 8px;

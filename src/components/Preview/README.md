@@ -10,7 +10,7 @@
 | --- | --- | --- | --- |
 | v-model:visible | 是否显示 | Boolean | `false` |
 | current | 图片索引 | Number | `0` |
-| urls | 图片src集合 | Array | `[]` |
+| urls | 图片`src`集合 | Array | `[]` |
 
 ### Emits
 

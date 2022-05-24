@@ -8,8 +8,8 @@
 
 | 参数 | 说明 | 类型 | 默认值 |
 | --- | --- | --- | --- |
-| thumbnail | 缩略图src | String | `''` |
-| urls | 图片src集合 | Array | `[]` |
+| thumbnail | 缩略图`src` | String | `''` |
+| urls | 图片`src`集合 | Array | `[]` |
 | width | 宽度 | Number | `-` |
 | height | 高度 | Number | `-` |
 | preview | 是否支持预览 | Boolean | `true` |

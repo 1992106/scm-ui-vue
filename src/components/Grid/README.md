@@ -10,7 +10,7 @@
 | --- | --- | --- | --- |
 | columns | 表格列配置 | Array | `[]` |
 | data | 表格数据 | Array | `[]` |
-| loading | 表格 loading | Boolean | `false` |
+| loading | 表格 `loading` | Boolean | `false` |
 | emptyText | 空数据显示的内容 | String | `暂无数据` |
 | showPagination | 是否显示分页 | Boolean | `true` |
 | total | 数据总数 | Number | `0` |
@@ -28,7 +28,7 @@
 | footerMethod | 自定义缩放 | Function | `-` |
 | customZoom | 自定义缩放 | Boolean | `false` |
 | customSetting | 自定义设置 | Boolean | `false` |
-| storageName | 本地Storage名称，拖拽列和自定义表头时本地储存 | String | `-` |
+| storageName | 本地`Storage`名称，拖拽列和自定义表头时本地储存 | String | `-` |
 
 ### Emits
 

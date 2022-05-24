@@ -192,7 +192,7 @@ export default defineComponent({
   }
 })
 </script>
-<style scoped lang="scss">
+<style lang="scss" scoped>
 .x-materials {
   .x-search {
     padding-top: 0;

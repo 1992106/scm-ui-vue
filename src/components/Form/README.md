@@ -13,8 +13,8 @@
 | labelCol | 标签布局 | Object | `{}` |
 | wrapperCol | 控件布局 | Object | `{}` |
 | gird | 是否栅格化布局 | Boolean | `false` |
-| rowProps |a-row props | Object | `{}` |
-| colProps | a-col props | Object | `{}` |
+| rowProps | `ARow props` | Object | `{}` |
+| colProps | `ACol props` | Object | `{}` |
 
 ### Emits
 

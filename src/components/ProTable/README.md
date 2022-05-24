@@ -9,8 +9,8 @@
 | 参数 | 说明 | 类型 | 默认值 |
 | --- | --- | --- | --- |
 | v-model:value | 搜索参数，包含分页、排序和筛选参数 | Object | `-` |
-| searchProps | XSearch props | Object | `{}` |
-| tableProps | XTable props | Object | `{}` |
+| searchProps | `XSearch props` | Object | `{}` |
+| tableProps | `XTable props` | Object | `{}` |
 
 #### searchProps
 
@@ -20,8 +20,8 @@
 | layout | 表单布局 | String | `inline` |
 | labelCol | 标签布局 | Object | `{ span: 9 }` |
 | wrapperCol | 控件布局 | Object | `{ span: 15 }` |
-| rowProps |a-row props | Object | `{ gutter: 24 }` |
-| colProps | a-col props | Object | `{ span: 6 }` |
+| rowProps | `ARow props` | Object | `{ gutter: 24 }` |
+| colProps | `ACol props` | Object | `{ span: 6 }` |
 | resetSearch | 重置时是否触发搜索 | Boolean | `true` |
 | clearSearch | 清空时是否触发搜索 | Boolean | `false` |
 | showSearch | 是否显示搜索按钮 | Boolean | `true` |

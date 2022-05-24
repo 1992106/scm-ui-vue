@@ -31,13 +31,16 @@ const routers = {
     },
     // 添加进keep-alive列表
     addCachedTabList(state, route) {
-      if (!route.meta.ignoreKeepAlive && state.cachedTabList.findIndex(val => val.fullPath === route.fullPath) === -1) {
+      if (
+        !route.meta?.ignoreKeepAlive &&
+        state.cachedTabList.findIndex(val => val.fullPath === route.fullPath) === -1
+      ) {
         state.cachedTabList.push(route)
       }
     },
     // 删除tab页
     delVisitedRoutes(state, { route, key }) {
-      const tabLen = state.visitedRoutes.length
+      const tabLen = state.visitedRoutes?.length
       // 始终保留一个tab
       if (tabLen > 1) {
         const idx = state.visitedRoutes.findIndex(val => val.path === key)
