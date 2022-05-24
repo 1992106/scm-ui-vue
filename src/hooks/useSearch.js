@@ -93,7 +93,7 @@ function useDefaultValue(columns) {
   }, {})
 }
 
-function useAppHeight(isResize) {
+export function useAppHeight(isResize) {
   // 动态设置id="#app"的高度
   const { proxy } = getCurrentInstance()
   const appRef = proxy.$root?.$el.parentNode

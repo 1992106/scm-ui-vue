@@ -89,9 +89,9 @@ const router = createRouter({
 })
 
 // 白名单路由
-export const whiteRoutes = ['404', '403', 'Login', 'Redirect', 'ErrorPage', 'index']
+export const whiteRoutes = ['404', '403', 'Login', 'Redirect', 'ErrorPage']
 
-// 重置路由
+// 重置路由（使用router.addRoute动态添加路由时，在退出登录的时候需要重置路由）
 export const resetRouter = () => {
   router.getRoutes().forEach(route => {
     const { name } = route

@@ -10,8 +10,8 @@
 | --- | --- | --- | --- |
 | columns | 搜索栏配置 | Array | `[]` |
 | layout | 表单布局 | String | `inline` |
-| labelCol | 标签布局 | Object | `{ span: 10 }` |
-| wrapperCol | 控件布局 | Object | `{ span: 14 }` |
+| labelCol | 标签布局 | Object | `{ span: 9 }` |
+| wrapperCol | 控件布局 | Object | `{ span: 15 }` |
 | rowProps |a-row props | Object | `{ gutter: 24 }` |
 | colProps | a-col props | Object | `{ span: 6 }` |
 | resetSearch | 重置时是否触发搜索 | Boolean | `true` |

@@ -22,8 +22,8 @@
   <x-preview v-model:visible="previewVisible" :current="previewCurrent" :urls="previewUrls"></x-preview>
 </template>
 <script>
-import { defineComponent, reactive, toRefs, watch, watchEffect } from 'vue'
-import { message, Upload } from 'ant-design-vue'
+import { defineComponent, reactive, toRefs, watch } from 'vue'
+import { Form, message, Upload } from 'ant-design-vue'
 import { PlusOutlined } from '@ant-design/icons-vue'
 import XPreview from '@components/Preview/index.vue'
 import { isFunction } from 'lodash-es'
@@ -119,13 +119,15 @@ export default defineComponent({
       { immediate: true, deep: true }
     )
 
+    // 自定义校验
+    const formItemContext = Form.useInjectFormItemContext()
     // 上传图片
     const handleCustomRequest = async option => {
       const { customRequest } = props
       if (!isFunction(customRequest)) return
       const { file } = option
       await execRequest(customRequest(file), {
-        success: data => {
+        success: ({ data }) => {
           // 上传成功（status: 'done'）
           // 没有触发option.onSuccess()，手动设置状态为 'done'
           const uploadFile = {
@@ -140,6 +142,8 @@ export default defineComponent({
           state.files.splice(index, 1, uploadFile)
           emit('update:file-list', state.files)
           emit('change', { file: uploadFile, fileList: state.files })
+          // 自定义表单组件需要手动调用onFieldChange触发校验
+          formItemContext.onFieldChange()
         },
         fail: () => {
           // 上传失败（status: 'error'）
@@ -149,11 +153,11 @@ export default defineComponent({
           // 手动删除上传失败的图片
           setTimeout(() => {
             state.files = state.files.filter(val => val?.status === 'done')
-          }, 500)
+          }, 200)
         }
       })
       // try {
-      //   const data = await customRequest(file)
+      //   const { data } = await customRequest(file)
       //   // 上传成功（status: 'done'）
       //   // 没有触发option.onSuccess()，手动设置状态为 'done'
       //   const uploadFile = {
@@ -189,21 +193,24 @@ export default defineComponent({
         state.files = fileList.filter(val => val.status === 'done')
         emit('update:file-list', state.files)
         emit('change', { file, fileList })
+        // 自定义表单组件需要手动调用onFieldChange触发校验
+        formItemContext.onFieldChange()
       } else if (file.status === undefined) {
-        // TODO: 过滤限制上传的图片
-        state.files = fileList.filter(val => val?.status !== undefined)
+        // onBeforeUpload限制上传的图片status为undefined；故需要过滤限制上传的图片
+        // multiple为true时，多文件上传，需要异步延迟处理
+        setTimeout(() => {
+          state.files = fileList.filter(val => val?.status !== undefined)
+        }, 20)
       }
     }
 
     // 预览图片
-    watchEffect(() => {
-      state.previewUrls = state.files.filter(val => val.status === 'done').map(val => val?.url)
-    })
     const handlePreview = file => {
       if (props.listType === 'text' && props.showUploadList?.showPreviewIcon === false) {
         return false
       }
       const list = state.files.filter(val => val.status === 'done')
+      state.previewUrls = list.map(val => val?.url)
       state.previewCurrent = list.findIndex(v => v.id === file.id)
       state.previewVisible = true
       emit('preview', file)

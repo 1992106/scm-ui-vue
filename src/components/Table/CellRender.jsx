@@ -23,7 +23,6 @@ const CellRender = defineComponent({
         urls = get(record, previewField) || []
       }
 
-      console.log(value, 999)
       return <XImage key={value} width={50} height={50} thumbnail={value} urls={urls} {...restProps} />
     }
 

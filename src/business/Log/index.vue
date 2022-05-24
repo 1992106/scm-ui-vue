@@ -99,7 +99,7 @@ export default defineComponent({
           ...(showPagination ? state.pages : {})
         }),
         {
-          success: data => {
+          success: ({ data }) => {
             // TODO
             if (showPagination) {
               state.data = data?.data || data?.list || []

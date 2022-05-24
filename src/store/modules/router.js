@@ -68,7 +68,7 @@ const routers = {
     reset(state) {
       state.visitedRoutes = []
       state.cachedTabList = []
-      // 使用router.addRoute动态添加路由时，需要重置路由
+      // 使用router.addRoute动态添加路由时，在退出登录的时候需要重置路由
       // resetRouter()
     }
   },

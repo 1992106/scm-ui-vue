@@ -1,5 +1,5 @@
 <template>
-  <a-layout class="x-page">
+  <a-layout class="x-layout">
     <a-layout-sider
       v-bind="$attrs"
       v-model:collapsed="collapsed"
@@ -76,7 +76,7 @@ export default defineComponent({
 })
 </script>
 <style lang="scss" scoped>
-.x-page {
+.x-layout {
   height: calc(100% + 32px);
   background-color: #f0f2f5;
   margin: -16px;

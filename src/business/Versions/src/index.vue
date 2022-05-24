@@ -119,7 +119,7 @@ export default defineComponent({
           ...state.pages
         }),
         {
-          success: data => {
+          success: ({ data }) => {
             const list = data?.data ?? data?.list ?? []
             state.cloneList = cloneDeep(list) // 备份数据
             if (state.selectedList.length) {

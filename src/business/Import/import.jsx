@@ -12,10 +12,10 @@ export const importFile = async (fn, option = {}, ok) => {
   const formData = new FormData()
   formData.append('file', option.file)
   await execRequest(fn(formData, { $msg: 'none', $errorMsg: 'none' }), {
-    success: data => {
+    success: ({ data, msg }) => {
       Modal.success({
         title: '导入成功',
-        content: data === 0 ? '未导入任何数据' : data > 0 ? `成功导入${data}条数据` : null,
+        content: data === 0 ? '未导入任何数据' : data > 0 ? `成功导入${data}条数据` : msg,
         onOk: () => ok(data)
       })
     },

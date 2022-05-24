@@ -14,6 +14,7 @@
 | dataSource | 表格数据 | Array | `[]` |
 | loading | spin 加载中 props | [Boolean, Object] | `false` |
 | emptyText | 空数据显示的内容 | String | `暂无数据` |
+| autoResize | 表格高度 | Boolean | `true` |
 | showPagination | 是否显示分页 | Boolean | `true` |
 | total | 数据总数 | Number | `0` |
 | v-model:pagination | 当前页数和每页条数 | Object | `{ page: 1, pageSize: 20 }` |
@@ -25,8 +26,8 @@
 | --- | --- | --- | --- |
 | columns | 搜索栏配置 | Array | `[]` |
 | layout | 表单布局 | String | `inline` |
-| labelCol | 标签布局 | Object | `{ span: 10 }` |
-| wrapperCol | 控件布局 | Object | `{ span: 14 }` |
+| labelCol | 标签布局 | Object | `{ span: 9 }` |
+| wrapperCol | 控件布局 | Object | `{ span: 15 }` |
 | rowProps |a-row props | Object | `{ gutter: 24 }` |
 | colProps | a-col props | Object | `{ span: 6 }` |
 | resetSearch | 重置时是否触发搜索 | Boolean | `true` |

@@ -14,6 +14,7 @@
           :height="height"
           :customDownload="customDownload"
           :customCancel="customCancel"
+          :customDelete="customDelete"
           :empty-text="emptyText" />
       </a-spin>
     </template>
@@ -48,6 +49,7 @@ export default defineComponent({
     customRequest: { type: Function, require: true },
     customDownload: { type: Function },
     customCancel: { type: Function },
+    customDelete: { type: Function },
     emptyText: { type: String, default: '暂无数据' }
   },
   emits: ['update:visible', 'toggle'],
@@ -83,7 +85,7 @@ export default defineComponent({
       if (!isFunction(customRequest)) return
       state.spinning = true
       await execRequest(customRequest(), {
-        success: data => {
+        success: ({ data }) => {
           state.data = data?.list || data?.data || []
           state.total = data?.total || 0
         },

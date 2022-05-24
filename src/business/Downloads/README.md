@@ -18,6 +18,7 @@
 | customRequest | 自定义请求 | Function | `-` |
 | customDownload | 自定义下载 | Function | `-` |
 | customCancel | 自定义取消 | Function | `-` |
+| customDelete | 自定义删除 | Function | `-` |
 | emptyText | 空数据显示的内容 | String | `暂无数据` |
 
 ### Emits

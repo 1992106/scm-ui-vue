@@ -104,7 +104,7 @@ export default defineComponent({
           ...state.pages
         }),
         {
-          success: data => {
+          success: ({ data }) => {
             const list = data?.data ?? data?.list ?? []
             if (state.selectedList.length) {
               state.materialList = (list || []).map(item => {

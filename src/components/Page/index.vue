@@ -47,6 +47,7 @@ import { Empty, Spin } from 'ant-design-vue'
 import XSearch from '@components/Search/index.vue'
 import XPagination from '@components/Pagination/index.vue'
 import { getValueByRowKey } from '@components/Table/utils'
+import { useAppHeight } from '@hooks/useSearch'
 import { isEmpty } from '@src/utils'
 export default defineComponent({
   name: 'XPage',
@@ -66,6 +67,8 @@ export default defineComponent({
     dataSource: { type: Array, default: () => [] },
     loading: { type: [Boolean, Object], default: false },
     emptyText: { type: String, default: '暂无数据' },
+    // 自动计算表格
+    autoResize: { type: Boolean, default: false },
     // 页码
     showPagination: { type: Boolean, default: true },
     total: { type: Number, default: 0 },
@@ -156,6 +159,8 @@ export default defineComponent({
       const params = unref(xSearch).onGetFormValues()
       emit('update:value', { ...params, ...(props.showPagination ? state.pages : {}) })
     }
+
+    useAppHeight(true)
 
     onMounted(() => {
       onInit()

@@ -1,7 +1,7 @@
 <template>
   <div class="download-list" :style="getStyle">
-    <template v-if="data.length">
-      <div v-for="(file, index) in data" :key="getValueByRowKey(rowKey, file, index)" class="download-item">
+    <template v-if="list.length">
+      <div v-for="(file, index) in list" :key="getValueByRowKey(rowKey, file, index)" class="download-item">
         <div class="download-item__icon">
           <FileExcelOutlined />
         </div>
@@ -17,7 +17,7 @@
               <a v-if="file?.exportResult === 1" @click="handleDownload(file)">下载</a>
               <p v-else>
                 导出失败
-                <!--<a v-else @click="handleRetry(file)">重新导出</a>-->
+                <a @click="handleDelete(file)">删除</a>
               </p>
             </template>
           </div>
@@ -30,7 +30,7 @@
   </div>
 </template>
 <script>
-import { computed, defineComponent } from 'vue'
+import { computed, defineComponent, reactive, toRefs, watchEffect } from 'vue'
 import { Empty } from 'ant-design-vue'
 import { FileExcelOutlined } from '@ant-design/icons-vue'
 import { isFunction } from 'lodash-es'
@@ -50,6 +50,7 @@ export default defineComponent({
     rowKey: [String, Function],
     customDownload: Function,
     customCancel: Function,
+    customDelete: Function,
     emptyText: String
   },
   setup(props) {
@@ -57,11 +58,19 @@ export default defineComponent({
       return getStyleSize({ width: props.width, maxHeight: props.height })
     })
 
+    const state = reactive({
+      list: props.data
+    })
+
+    watchEffect(() => {
+      state.list = props.data
+    })
+
     const handleDownload = async row => {
       const { customDownload } = props
       if (!isFunction(customDownload)) return
       await execRequest(customDownload(row), {
-        success: data => {
+        success: ({ data }) => {
           download(data?.url, data?.fileName)
         }
       })
@@ -73,11 +82,22 @@ export default defineComponent({
       await execRequest(customCancel(row))
     }
 
+    const handleDelete = async row => {
+      const { customDelete, rowKey } = props
+      if (!isFunction(customDelete)) return
+      await execRequest(customDelete(row))
+      // 手动删除
+      const index = state.list.findIndex(val => getValueByRowKey(rowKey, val))
+      state.list.splice(index, 1)
+    }
+
     return {
       simpleImage: Empty.PRESENTED_IMAGE_SIMPLE,
+      ...toRefs(state),
       getStyle,
       handleDownload,
       handleCancel,
+      handleDelete,
       getValueByRowKey
     }
   }
@@ -112,8 +132,14 @@ export default defineComponent({
           @include ellipsis;
         }
 
-        & > .actions > p {
-          margin-bottom: 0;
+        & > .actions {
+          & > p {
+            margin-bottom: 0;
+          }
+
+          a {
+            font-size: 12px;
+          }
         }
       }
     }

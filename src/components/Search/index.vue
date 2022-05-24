@@ -1,5 +1,5 @@
 <template>
-  <div :class="['x-search', hasShowExpand ? 'show-expand' : '']">
+  <div class="x-search">
     <div v-if="hasTop" class="search-top">
       <slot name="top"></slot>
     </div>
@@ -74,9 +74,9 @@ export default defineComponent({
       default: 'horizontal'
     },
     // 标签布局
-    labelCol: { type: Object, default: () => ({ span: 10 }) },
+    labelCol: { type: Object, default: () => ({ span: 9 }) },
     // 控件布局
-    wrapperCol: { type: Object, default: () => ({ span: 14 }) },
+    wrapperCol: { type: Object, default: () => ({ span: 15 }) },
     // row
     rowProps: { type: Object, default: () => ({ gutter: 24 }) },
     // col
@@ -261,8 +261,8 @@ export default defineComponent({
     const hasShowExpand = computed(() => {
       if (props.showExpand && props.colProps?.span) {
         // 判断是否多行，如果只有一行，则不需要【展开/收起】按钮
-        const multiple = 24 / props.colProps.span
-        return props.columns.length >= multiple
+        const max = 24 / props.colProps.span
+        return props.columns.length >= max
       } else {
         return false
       }
@@ -277,10 +277,16 @@ export default defineComponent({
     })
 
     const getPush = computed(() => {
-      if (isExpand.value && props.colProps?.span) {
-        const multiple = 24 / props.colProps.span
+      if (props.colProps?.span) {
+        const max = 24 / props.colProps.span
         const length = getColumns.value.length
-        return (multiple - (length % multiple) - 1) * props.colProps.span
+        let multiple
+        if (length < max) {
+          multiple = max - length - 1
+        } else {
+          multiple = isExpand.value ? max - (length % max) - 1 : 0
+        }
+        return multiple * props.colProps.span
       } else {
         return 0
       }
@@ -355,7 +361,7 @@ export default defineComponent({
   }
 })
 </script>
-<style lang="less" scoped>
+<style lang="scss" scoped>
 .x-search {
   padding-top: 10px;
   background-color: #fff;
@@ -369,42 +375,39 @@ export default defineComponent({
     padding: 0 10px 10px 10px;
   }
 
-  // 展开收起
-  &.show-expand {
-    .ant-form {
-      margin-right: 20px;
+  .ant-form {
+    margin-right: 20px;
 
+    :deep(.ant-form-item) {
+      margin-bottom: 10px;
+    }
+
+    :deep(.actions) {
+      text-align: right;
+
+      .expand {
+        cursor: pointer;
+        min-width: 50px;
+      }
+    }
+
+    // 水平布局/垂直布局
+    &.ant-form-horizontal,
+    &.ant-form-vertical {
       :deep(.ant-form-item) {
-        margin-bottom: 10px;
-      }
-
-      :deep(.actions) {
-        text-align: right;
-
-        .expand {
-          cursor: pointer;
-          min-width: 50px;
-        }
-      }
-
-      // 水平布局/垂直布局
-      &.ant-form-horizontal,
-      &.ant-form-vertical {
-        :deep(.ant-form-item) {
-          .ant-form-item-control-input-content {
-            .ant-input-number,
-            .ant-picker {
-              width: 100%;
-            }
+        .ant-form-item-control-input-content {
+          .ant-input-number,
+          .ant-picker {
+            width: 100%;
           }
         }
       }
+    }
 
-      // 行内布局
-      &.ant-form-inline {
-        :deep(.ant-row) {
-          flex: 1;
-        }
+    // 行内布局
+    &.ant-form-inline {
+      :deep(.ant-row) {
+        flex: 1;
       }
     }
   }

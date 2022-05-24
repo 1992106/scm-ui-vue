@@ -170,7 +170,7 @@ export default defineComponent({
           ...(showPagination ? state.pages : {})
         }),
         {
-          success: data => {
+          success: ({ data }) => {
             if (showPagination) {
               const list = data?.data ?? data?.list ?? []
               tableOptions.dataSource = list.map(row => {
@@ -243,7 +243,7 @@ export default defineComponent({
               ...(!isEmpty(modelRef.attachments) ? { ids: modelRef.attachments.map(val => val?.id) } : {})
             }),
             {
-              success: data => {
+              success: ({ data }) => {
                 emit('done', data)
                 // TODO: 使用函数方法调用时，通过emit('update:visible', false)不生效，必须手动关闭。
                 state.modalVisible = false // 只是为了兼容使用函数方法调用，才需要手动关闭

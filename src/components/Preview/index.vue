@@ -6,7 +6,7 @@
   </div>
 </template>
 <script lang="ts">
-import { computed, defineComponent, PropType, ref } from 'vue'
+import { computed, defineComponent, PropType, ref, watchEffect } from 'vue'
 import { Image, ImagePreviewGroup } from 'ant-design-vue'
 
 export default defineComponent({
@@ -29,7 +29,11 @@ export default defineComponent({
         emit('update:visible', val)
       }
     })
+
     const current = ref(props.current)
+    watchEffect(() => {
+      current.value = props.current
+    })
 
     const handleVisibleChange = bool => {
       isPreview.value = bool
