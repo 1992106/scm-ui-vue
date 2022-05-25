@@ -155,7 +155,7 @@ export default defineComponent({
     })
 
     const getAttachments = row => {
-      return row?.files || row?.fileList || row?.images || row?.imageList || row?.attachments
+      return row?.files || row?.fileList || row?.images || row?.imageList || row?.resources || row?.attachments
     }
     const formatAttachments = attachments => {
       return isEmpty(attachments) ? [] : Array.isArray(attachments) ? attachments : [attachments]

@@ -6,19 +6,9 @@ export const hasOwn = (config, key) => {
   return Object.prototype.hasOwnProperty.call(config, key)
 }
 
-export const isOCAndMars = config => {
-  const url = config?.url
-  return /^http[s]?:\/\/(oc|mars|newmars).*/.test(url)
-}
-
 // 处理参数
 export const disposeParams = config => {
   const key = config.method === 'get' ? 'params' : 'data'
-  // page_size => pageSize
-  if (hasOwn(config, 'pageSize') && isOCAndMars(config)) {
-    config[key].page_size = config[key]?.pageSize
-    delete config[key]?.pageSize
-  }
   // 过滤前后空格
   deepTrim(config[key])
 }
