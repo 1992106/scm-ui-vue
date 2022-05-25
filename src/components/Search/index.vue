@@ -6,7 +6,7 @@
     <a-form ref="elForm" v-bind="$attrs" :layout="layout" :label-col="labelCol" :wrapper-col="wrapperCol">
       <a-row v-bind="rowProps">
         <template v-for="(column, index) in getColumns" :key="column?.field">
-          <a-col v-show="isExpand || index < getIndex" v-bind="colProps">
+          <a-col v-show="canExpand || index < getIndex" v-bind="colProps">
             <a-form-item :label="column?.title" v-bind="validateInfos[column.field]">
               <slot name="formItemRender" :record="modelRef" :column="column" :index="index">
                 <component
@@ -28,7 +28,7 @@
                 <a-button @click="handleReset">{{ resetText }}</a-button>
               </template>
               <div v-if="hasShowExpand" class="expand" @click="handleExpand">
-                <template v-if="isExpand">
+                <template v-if="canExpand">
                   <span>收起</span>
                   <UpOutlined />
                 </template>
@@ -269,7 +269,7 @@ export default defineComponent({
     })
 
     const getIndex = computed(() => {
-      if (props.colProps?.span) {
+      if (props.showExpand && props.colProps?.span) {
         return 24 / props.colProps.span - 1
       } else {
         return getColumns.value.length
@@ -277,14 +277,14 @@ export default defineComponent({
     })
 
     const getPush = computed(() => {
-      if (props.colProps?.span) {
+      if (props.showExpand && props.colProps?.span) {
         const max = 24 / props.colProps.span
         const length = getColumns.value.length
         let multiple
         if (length < max) {
           multiple = max - length - 1
         } else {
-          multiple = isExpand.value ? max - (length % max) - 1 : 0
+          multiple = canExpand.value ? max - (length % max) - 1 : 0
         }
         return multiple * props.colProps.span
       } else {
@@ -293,9 +293,9 @@ export default defineComponent({
     })
 
     // 是否展开/收起
-    const isExpand = ref(props.showExpand ? props.expand : true)
+    const canExpand = ref(props.expand)
     const handleExpand = () => {
-      isExpand.value = !isExpand.value
+      canExpand.value = !canExpand.value
       nextTick(() => {
         dispatchResize()
       })
@@ -351,7 +351,7 @@ export default defineComponent({
       hasShowExpand,
       getIndex,
       getPush,
-      isExpand,
+      canExpand,
       handleExpand,
       onSearch,
       onReset,

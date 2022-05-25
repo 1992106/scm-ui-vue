@@ -107,6 +107,7 @@ const XImage = defineComponent({
           // 单图模式
           <Image
             {...ctx.attrs}
+            key={compressUrls.value[0]}
             style={{ cursor: 'pointer' }}
             width={width}
             height={height}
@@ -122,7 +123,7 @@ const XImage = defineComponent({
             {compressUrls.value.map((src, index) => (
               <Image
                 {...ctx.attrs}
-                key={index}
+                key={src}
                 style={{ cursor: 'pointer' }}
                 width={width}
                 height={height}

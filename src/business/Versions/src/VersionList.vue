@@ -3,7 +3,7 @@
     <template v-if="versionList.length">
       <div class="scroll">
         <a-row v-bind="rowProps">
-          <a-col v-for="(item, index) in versionList" :key="index" v-bind="colProps">
+          <a-col v-for="(item, index) in versionList" :key="getValueByRowKey(rowKey, item, index)" v-bind="colProps">
             <slot name="itemRender" :record="item" :index="index" :change="handleChange"></slot>
           </a-col>
         </a-row>
@@ -20,6 +20,7 @@
 import { defineComponent, computed } from 'vue'
 import { Empty } from 'ant-design-vue'
 import XPagination from '@components/Pagination/index.vue'
+import { getValueByRowKey } from '@components/Table/utils'
 
 export default defineComponent({
   name: 'VersionList',
@@ -27,6 +28,7 @@ export default defineComponent({
     'x-pagination': XPagination
   },
   props: {
+    rowKey: [String, Function],
     versionList: { type: Array, default: () => [] },
     rowProps: Object,
     colProps: Object,
@@ -57,7 +59,8 @@ export default defineComponent({
     return {
       simpleImage: Empty.PRESENTED_IMAGE_SIMPLE,
       pages,
-      handleChange
+      handleChange,
+      getValueByRowKey
     }
   }
 })

@@ -1,16 +1,16 @@
 import axios from 'axios'
 import { message, notification } from 'ant-design-vue'
-import { router } from '@src/router'
+import router from '@src/router'
 import setting from '@src/config'
 import { omit } from 'lodash-es'
 import { getAccessStorage } from '@utils/accessStorage'
-import { disposeParams, isOCAndMars, sleep } from './utils'
+import { disposeParams, sleep } from './utils'
 import { cache } from './LRUCache'
 import { queue } from './requestQueue'
 
 // 全局axios默认值
-axios.defaults.baseURL = process.env.VUE_APP_API_BASE_URL
-// axios.defaults.timeout = setting.request_timeout
+axios.defaults.baseURL = setting.api_url
+axios.defaults.timeout = setting.request_timeout
 
 // 创建axios实例
 const httpService = axios.create({
@@ -69,7 +69,7 @@ httpService.interceptors.response.use(
       const hasMsg = config?.options['$msg'] !== 'none'
       const msg = config?.options['$msg'] || data?.message || data?.msg
       // 业务操作提示：增删改
-      if (!isOCAndMars(config) && hasMsg && msg) {
+      if (hasMsg && msg) {
         message.success(msg)
       }
       return response
@@ -116,10 +116,7 @@ httpService.interceptors.response.use(
     } else {
       notification.error({ message: '系统错误', description: '连接到服务器失败！' })
     }
-    const errorMessage = {
-      status: error?.response?.data?.status || -1000,
-      msg: error?.response?.data?.msg || '未知错误！'
-    }
+    const errorMessage = error?.response || { data: { status: -1000, msg: '未知错误！' } }
     return Promise.reject(errorMessage)
   }
 )
