@@ -9,15 +9,14 @@
           <div class="name" :title="file?.fileName">{{ file?.fileName }}</div>
           <div class="actions">
             <p v-if="file?.taskStatus === 0">
-              任务排队中...
-              <a style="float: right" @click="handleCancel(file)">取消</a>
+              <a @click="handleCancel(file)">取消</a>
             </p>
             <p v-if="file?.taskStatus === 1">正在下载中...</p>
             <template v-if="file?.taskStatus === 2">
               <a v-if="file?.exportResult === 1" @click="handleDownload(file)">下载</a>
               <p v-else>
                 导出失败
-                <a style="float: right" @click="handleDelete(file)">删除</a>
+                <a @click="handleDelete(file)">删除</a>
               </p>
             </template>
           </div>
@@ -136,6 +135,10 @@ export default defineComponent({
           & > p {
             font-size: 12px;
             margin-bottom: 0;
+          }
+
+          a {
+            text-decoration: underline;
           }
         }
       }
