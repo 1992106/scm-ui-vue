@@ -44,7 +44,7 @@
 | v-model:pagination | 当前页数和每页条数 | Object | `{ page: 1, pageSize: 20 }` |
 | paginationConfig | 分页配置项 | Object | `-` |
 | height | 表格高度 | [Number, String] | `auto` |
-| autoResize | 表格高度 | Boolean | `true` |
+| autoResize | 自动计算高度 | Boolean | `true` |
 | rowConfig | 行配置项 | Object | `{ isHover: true, isCurrent: true }` |
 | columnConfig | 列配置项 | Object | `{ resizable: true }` |
 | seqConfig | 序号配置项 | Object | `-` |

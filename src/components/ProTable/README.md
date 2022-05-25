@@ -45,7 +45,7 @@
 | v-model:pagination | 当前页数和每页条数 | Object | `{ page: 1, pageSize: 20 }` |
 | paginationConfig | 分页配置项 | Object | `{ size: 'default', defaultPageSize: 20, showSizeChanger: true, showQuickJumper: true, showTotal: total => `共 ${total} 条`, pageSizeOptions: ['20', '40', '60', '80', '100'] }` |
 | extraHeight | 额外高度 | Number | `12` |
-| autoResize | 自动计算表格 | Boolean | `true` |
+| autoResize | 自动计算高度 | Boolean | `true` |
 | tableLayout | 格元素的 table-layout 属性，设为 fixed 表示内容不会影响列的布局 | String | `fixed` |
 | scroll | 表格是否可滚动，也可以指定滚动区域的宽、高 | Object | `{ x: 100%, scrollToFirstRowOnChange: true }` |
 | rowSelection | 列表项是否可选择 | Object | `{ type: 'checkbox', fixed: true, columnWidth: 50 }` |

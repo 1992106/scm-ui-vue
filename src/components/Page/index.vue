@@ -68,7 +68,7 @@ export default defineComponent({
     loading: { type: [Boolean, Object], default: false },
     emptyText: { type: String, default: '暂无数据' },
     // 自动计算表格
-    autoResize: { type: Boolean, default: false },
+    autoResize: { type: Boolean, default: true },
     // 页码
     showPagination: { type: Boolean, default: true },
     total: { type: Number, default: 0 },
@@ -160,7 +160,8 @@ export default defineComponent({
       emit('update:value', { ...params, ...(props.showPagination ? state.pages : {}) })
     }
 
-    useAppHeight(true)
+    // 自动计算高度
+    useAppHeight(props.autoResize)
 
     onMounted(() => {
       onInit()

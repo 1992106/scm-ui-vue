@@ -134,11 +134,8 @@ export default defineComponent({
 
         & > .actions {
           & > p {
-            margin-bottom: 0;
-          }
-
-          a {
             font-size: 12px;
+            margin-bottom: 0;
           }
         }
       }

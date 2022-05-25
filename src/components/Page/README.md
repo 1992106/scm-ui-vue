@@ -9,12 +9,12 @@
 | 参数 | 说明 | 类型 | 默认值 |
 | --- | --- | --- | --- |
 | v-model:value | 搜索参数，包含分页、排序和筛选参数 | Object | `-` |
-| searchProps | XSearch props | Object | `{}` |
+| searchProps | `XSearch props` | Object | `{}` |
 | rowKey | key 的取值，可以是字符串或一个函数 | [String, Function] | `-` |
 | dataSource | 表格数据 | Array | `[]` |
-| loading | `ASpin` 加载中 props | [Boolean, Object] | `false` |
+| loading | `ASpin` 加载中 `props` | [Boolean, Object] | `false` |
 | emptyText | 空数据显示的内容 | String | `暂无数据` |
-| autoResize | 表格高度 | Boolean | `true` |
+| autoResize | 自动计算高度 | Boolean | `true` |
 | showPagination | 是否显示分页 | Boolean | `true` |
 | total | 数据总数 | Number | `0` |
 | v-model:pagination | 当前页数和每页条数 | Object | `{ page: 1, pageSize: 20 }` |
