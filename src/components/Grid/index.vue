@@ -141,7 +141,7 @@ export default defineComponent({
     radioConfig: Object,
     // 复选框配置项
     checkboxConfig: Object,
-    // 勾选项
+    // 勾选的行数据
     selectedValue: { type: Array, default: () => [] },
     // 排序配置项
     sortConfig: Object,
@@ -603,6 +603,7 @@ export default defineComponent({
   }
 
   .ant-pagination {
+    height: 52px;
     padding: 10px;
   }
 }

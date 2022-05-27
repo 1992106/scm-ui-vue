@@ -85,10 +85,16 @@ export default defineComponent({
       })
     }
 
+    // 提供外部使用
+    const onPrint = () => {
+      handlePrint()
+    }
+    
     return {
       elPrint,
       result,
-      handlePrint
+      handlePrint,
+      onPrint
     }
   }
 })

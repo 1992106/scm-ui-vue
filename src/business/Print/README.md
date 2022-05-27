@@ -33,6 +33,13 @@ emits: ['done']
 <slot></slot>
 ```
 
+### Methods
+
+```vue
+// 打印
+onPrint()
+```
+
 ### Example
 
 ```vue

@@ -48,7 +48,7 @@
   </x-modal>
 </template>
 <script lang="ts">
-import { computed, defineComponent, reactive, ref, toRefs, watch } from 'vue'
+import { computed, defineComponent, nextTick, reactive, ref, toRefs, watch } from 'vue'
 import XModal from '@components/Modal'
 import XSearch from '@components/Search/index.vue'
 import Shortcut from './Shortcut.vue'
@@ -83,6 +83,7 @@ export default defineComponent({
   },
   emits: ['update:visible', 'done', 'search', 'reset'],
   setup(props, { emit }) {
+    const xSearch = ref(null)
     const xShortcut = ref(null)
     const modalVisible = computed({
       get: () => {
@@ -152,7 +153,9 @@ export default defineComponent({
       () => props.visible,
       visible => {
         if (visible && !props.manual) {
-          handleSearch(null)
+          nextTick(() => {
+            xSearch.value?.onSearch()
+          })
         }
       },
       { immediate: true }
@@ -201,6 +204,7 @@ export default defineComponent({
     }
 
     return {
+      xSearch,
       xShortcut,
       ...toRefs(state),
       modalVisible,

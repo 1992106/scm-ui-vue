@@ -92,10 +92,16 @@ export default defineComponent({
       // TODO: 待实现
     }
 
+    // 提供外部调用
+    const onExport = () => {
+      handleExport()
+    }
+
     return {
       elExport,
       result,
-      handleExport
+      handleExport,
+      onExport
     }
   }
 })

@@ -26,6 +26,13 @@ emits: ['done']
 <slot></slot>
 ```
 
+### Methods
+
+```vue
+// 导出
+onExport()
+```
+
 ### Example
 
 ```vue

@@ -6,7 +6,7 @@
         <div>{{ record?.materialName || '--' }}</div>
       </template>
       <template v-if="column.dataIndex === 'thumbnail'">
-        <x-image :width="60" :thumbnail="record?.images?.[0]?.thumbUrl" :urls="record?.images"></x-image>
+        <x-image :width="60" :height="60" :thumbnail="record?.images?.[0]?.thumbUrl" :urls="record?.images"></x-image>
       </template>
       <template v-if="column.dataIndex === 'materialInfo'">
         <div>克重：{{ record?.weight || '--' }}</div>
@@ -121,8 +121,8 @@ export default defineComponent({
     )
 
     watch(
-      () => props.materialList,
-      list => {
+      () => [props.materialList, props.total],
+      ([list, total]) => {
         tableProps.dataSource = list.map(val => {
           const images = val?.prototypeImgs || val?.imageList || val?.images || val?.fileList || val?.files || []
           return {
@@ -130,6 +130,7 @@ export default defineComponent({
             images
           }
         })
+        tableProps.total = total
       },
       { deep: true, immediate: true }
     )

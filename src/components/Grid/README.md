@@ -23,7 +23,7 @@
 | seqConfig | 序号配置项 | Object | `-` |
 | radioConfig | 单选框配置项 | Object | `{ highlight: true }` |
 | checkboxConfig | 复选框配置项 | Object | `{ highlight: true }` |
-| v-model:selectedValue | 勾选数据，行数据 | Array | `[]` |
+| v-model:selectedValue | 勾选的行数据 | Array | `[]` |
 | mergeCells | 自定义缩放 | Array | `-` |
 | footerMethod | 自定义缩放 | Function | `-` |
 | customZoom | 自定义缩放 | Boolean | `false` |

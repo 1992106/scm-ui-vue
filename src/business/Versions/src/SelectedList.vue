@@ -5,7 +5,7 @@
         <a-button type="link" size="small" @click="handleDel(record)">删除</a-button>
       </template>
       <template v-if="column.dataIndex === 'thumbnail'">
-        <x-image :width="60" :thumbnail="record?.images?.[0]?.thumbUrl" :urls="record?.images"></x-image>
+        <x-image :width="60" :height="60" :thumbnail="record?.images?.[0]?.thumbUrl" :urls="record?.images"></x-image>
       </template>
     </template>
   </x-table>

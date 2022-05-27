@@ -103,7 +103,7 @@ export default defineComponent({
 })
 </script>
 <style lang="scss" scoped>
-.x-downloads {
+.x-downloads-overlay {
   .download-list {
     overflow-x: hidden;
     overflow-y: auto;

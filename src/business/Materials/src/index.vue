@@ -41,7 +41,7 @@
   </x-modal>
 </template>
 <script lang="ts">
-import { computed, defineComponent, reactive, toRefs, watch } from 'vue'
+import { computed, defineComponent, nextTick, reactive, ref, toRefs, watch } from 'vue'
 import XModal from '@components/Modal'
 import XSearch from '@components/Search/index.vue'
 import MaterialList from './MaterialList.vue'
@@ -72,6 +72,7 @@ export default defineComponent({
   },
   emits: ['update:visible', 'done', 'search', 'reset'],
   setup(props, { emit }) {
+    const xSearch = ref(null)
     const modalVisible = computed({
       get: () => {
         return props.visible
@@ -93,7 +94,7 @@ export default defineComponent({
     const handleSearch = async params => {
       const { customRequest } = props
       if (!isFunction(customRequest)) return
-      // 初始化和分页搜索时参数为空
+      // 分页搜索时参数为空
       if (params) {
         state.searchParams = params
       }
@@ -135,7 +136,9 @@ export default defineComponent({
       () => props.visible,
       visible => {
         if (visible && !props.manual) {
-          handleSearch(null)
+          nextTick(() => {
+            xSearch.value?.onSearch()
+          })
         }
       },
       { immediate: true }
@@ -180,6 +183,7 @@ export default defineComponent({
     }
 
     return {
+      xSearch,
       ...toRefs(state),
       modalVisible,
       handleSearch,

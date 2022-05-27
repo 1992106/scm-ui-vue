@@ -63,18 +63,17 @@ export default defineComponent({
   background-color: #f0f2f5;
 
   &.ant-tabs {
-    :deep(.ant-tabs-bar) {
-      padding: 5px 10px 10px;
+    :deep(.ant-tabs-nav) {
+      padding: 5px 20px 10px;
       margin-bottom: 10px;
       background-color: $bg-color;
     }
 
-    :deep(.ant-tabs-content) {
+    :deep(.ant-tabs-content-holder) {
       height: calc(100% - 62px);
-      margin-left: 0 !important;
 
-      .ant-tabs-tabpane-inactive {
-        display: none;
+      .ant-tabs-content {
+        height: 100%;
       }
     }
   }

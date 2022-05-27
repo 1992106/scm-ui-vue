@@ -7,3 +7,13 @@
 .ant-image-preview-operations {
   color: rgb(255 255 255 / 100%);
 }
+
+.x-image-empty {
+  border: 1px solid rgba(0, 0, 0, 0.25);
+  padding: 10px;
+  @include flexCCC;
+
+  .ant-empty-normal {
+    margin: 0;
+  }
+}

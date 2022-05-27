@@ -83,12 +83,15 @@ export default defineComponent({
     // 自动计算表格
     autoResize: { type: Boolean, default: false },
     // 表格元素的 table-layout 属性，设为 fixed 表示内容不会影响列的布局
+    // 1.固定表头/列（固定表头：scroll: { y: 100 } | 固定列：column.fixed）
+    // 2.使用了 column.ellipsis
+    // 满足以上任意一个条件时，默认值为 fixed
     tableLayout: { type: String, default: 'fixed' },
     // 横向/纵向滚动
     scroll: { type: Object, default: () => ({}) },
     // 选择功能配置项
     rowSelection: { type: [Boolean, Object] },
-    // 勾选项
+    // 勾选的行数据
     selectedValue: { type: Array, default: () => [] },
     // 行的类名
     rowClassName: Function,
@@ -127,6 +130,7 @@ export default defineComponent({
      * 默认值
      */
     const defaultState = {
+      // 当 scroll="{x: '100%'}" 和 tableLayout="fixed" 组合使用时：如果列宽总和大于表格宽，则会出现横向滚轴，而不会破坏表格布局
       scroll: { x: '100%', scrollToFirstRowOnChange: true },
       defaultColumn: { align: 'center' },
       defaultPaginationConfig: {
@@ -179,7 +183,7 @@ export default defineComponent({
       return Object.keys(slots).filter(val =>
         [
           'headerCell',
-          // 'bodyCell',
+          // 'bodyCell', 在template中单独实现
           'customFilterDropdown',
           'customFilterIcon',
           'expandedRowRender',

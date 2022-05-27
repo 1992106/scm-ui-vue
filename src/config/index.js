@@ -2,6 +2,9 @@ const setting = {
   // 标题
   title: 'SCM UI',
 
+  //  请求名称
+  api_name: 'scm-api',
+
   // 请求路径
   api_url: '',
 
@@ -22,9 +25,6 @@ const setting = {
 
   // 本地储存user的名称
   user_name: 'scm-user',
-
-  //  api接口的名称
-  api_name: 'scm-api',
 
   // 是否开启keep-alive
   keep_alive: true,

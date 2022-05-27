@@ -1,5 +1,5 @@
 import { defineComponent, ref, computed, PropType, watch } from 'vue'
-import { Image, Space } from 'ant-design-vue'
+import { Empty, Image, Space } from 'ant-design-vue'
 import XPreview from '@components/Preview/index.vue'
 import { isObject } from 'lodash-es'
 import { compressImage, getStyleSize } from '@src/utils'
@@ -60,7 +60,7 @@ const XImage = defineComponent({
               compressUrls.value = previewUrls.value
             })
         } else {
-          // 图为空时，使用默认图片展示
+          // 图片为空时，使用默认图片展示
           compressUrls.value = [fallUrl]
         }
       },
@@ -101,46 +101,55 @@ const XImage = defineComponent({
 
     const { width, height } = getStyleSize({ width: props.width, height: props.height }) as any
 
-    return () => (
-      <>
-        {compressUrls.value.length === 1 ? (
-          // 单图模式
-          <Image
-            {...ctx.attrs}
-            key={compressUrls.value[0]}
-            style={{ cursor: 'pointer' }}
-            width={width}
-            height={height}
-            src={compressUrls.value[0]}
-            preview={false}
-            // @ts-ignore
-            onClick={() => handlePreview(0)}
-            fallback={fallUrl}
-          />
-        ) : (
-          // 相册模式
-          <Space>
-            {compressUrls.value.map((src, index) => (
-              <Image
-                {...ctx.attrs}
-                key={src}
-                style={{ cursor: 'pointer' }}
-                width={width}
-                height={height}
-                src={src}
-                preview={false}
-                // @ts-ignore
-                onClick={() => handlePreview(index)}
-                fallback={fallUrl}
-              />
-            ))}
-          </Space>
-        )}
-        {isPreview.value && (
-          <XPreview v-model={[visible.value, 'visible']} current={current.value} urls={previewUrls.value} />
-        )}
-      </>
-    )
+    return () => {
+      if (thumbUrls.value.length === 0) {
+        return (
+          <div class='x-image-empty' style={{ width, height }}>
+            <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description='暂无图片' />
+          </div>
+        )
+      }
+
+      return (
+        <>
+          {compressUrls.value.length === 1 ? (
+            // 单图模式
+            <Image
+              {...ctx.attrs}
+              style={{ cursor: 'pointer' }}
+              width={width}
+              height={height}
+              src={compressUrls.value[0]}
+              preview={false}
+              // @ts-ignore
+              onClick={() => handlePreview(0)}
+              fallback={fallUrl}
+            />
+          ) : (
+            // 相册模式
+            <Space>
+              {compressUrls.value.map((src, index) => (
+                <Image
+                  {...ctx.attrs}
+                  key={index}
+                  style={{ cursor: 'pointer' }}
+                  width={width}
+                  height={height}
+                  src={src}
+                  preview={false}
+                  // @ts-ignore
+                  onClick={() => handlePreview(index)}
+                  fallback={fallUrl}
+                />
+              ))}
+            </Space>
+          )}
+          {isPreview.value && (
+            <XPreview v-model={[visible.value, 'visible']} current={current.value} urls={previewUrls.value} />
+          )}
+        </>
+      )
+    }
   }
 })
 

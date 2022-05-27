@@ -33,7 +33,7 @@
                 </a-space>
               </template>
               <template v-else>
-                <x-image :width="50" :thumbnail="attachments[0]?.thumbUrl" :urls="attachments"></x-image>
+                <x-image :width="50" :height="50" :thumbnail="attachments[0]?.thumbUrl" :urls="attachments"></x-image>
               </template>
             </template>
             <template v-else>--</template>

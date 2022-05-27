@@ -29,7 +29,7 @@
 | showReset | 是否显示重置按钮 | Boolean | `true` |
 | resetText | 重置按钮文字 | Boolean | `重置` |
 | showExpand | 是否显示【展开/收起】按钮 | Boolean | `true` |
-| expand | 是否展开，默认收起 | Boolean | `false` |
+| defaultExpand | 默认收起 | Boolean | `false` |
 
 #### gridProps
 
@@ -50,7 +50,7 @@
 | seqConfig | 序号配置项 | Object | `-` |
 | radioConfig | 单选框配置项 | Object | `{ highlight: true }` |
 | checkboxConfig | 复选框配置项 | Object | `{ highlight: true }` |
-| v-model:selectedValue | 勾选数据，行数据 | Array | `[]` |
+| v-model:selectedValue | 勾选的行数据 | Array | `[]` |
 | mergeCells | 自定义缩放 | Array | `-` |
 | footerMethod | 自定义缩放 | Function | `-` |
 | customZoom | 自定义缩放 | Boolean | `true` |

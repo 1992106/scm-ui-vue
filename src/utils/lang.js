@@ -184,7 +184,7 @@ export const execRequest = async (result, { success, fail } = {}) => {
       value.length === 2 &&
       ((value[0] == null && !isEmpty(value[1])) || (!isEmpty(value[0]) && value[1] == null))
     ) {
-      const [err, data] = value
+      const [err, data = {}] = value
       if (!err) {
         success?.(data)
       } else {
@@ -193,7 +193,7 @@ export const execRequest = async (result, { success, fail } = {}) => {
     } else {
       // 1.有返回值
       // 2.没有返回值
-      success?.(value)
+      success?.(value || {})
     }
   } catch (err) {
     // 抛出异常

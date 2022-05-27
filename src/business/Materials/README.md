@@ -20,7 +20,7 @@
 | manual | 是否手动控制搜索 | Boolean | `false` |
 | searchProps | `XSearch props` | Object | `{}` |
 | customRequest | 自定义请求 | Function | `-` |
-| selectedType | 选择模式(`"checkbox"、"radio"`) | String | `checkbox` |
+| selectedType | 选择模式`("checkbox"、"radio")` | String | `checkbox` |
 | emptyText | 空数据显示的内容 | String | `暂无数据` |
 
 ### Emits

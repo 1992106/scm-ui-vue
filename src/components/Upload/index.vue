@@ -13,11 +13,12 @@
     @preview="handlePreview"
     @download="handleDownload">
     <div v-if="mode === 'upload' && (!limit || files.length < limit)">
-      <slot>
-        <PlusOutlined />
-      </slot>
+      <PlusOutlined />
       <span v-show="limit" class="limit">({{ files.length }}/{{ limit }})</span>
     </div>
+    <template #itemRender="scope">
+      <slot name="itemRender" v-bind="scope"></slot>
+    </template>
   </a-upload>
   <x-preview v-model:visible="previewVisible" :current="previewCurrent" :urls="previewUrls"></x-preview>
 </template>
@@ -53,7 +54,7 @@ export default defineComponent({
     limit: { type: Number }
   },
   emits: ['update:file-list', 'change', 'preview', 'download'],
-  setup(props, { emit }) {
+  setup(props, { emit, slots }) {
     const state = reactive({
       files: [],
       // 预览图片
@@ -206,7 +207,10 @@ export default defineComponent({
 
     // 预览图片
     const handlePreview = file => {
-      if (props.listType === 'text' && props.showUploadList?.showPreviewIcon === false) {
+      if (
+        props.listType === 'text' &&
+        (props.showUploadList === false || props.showUploadList?.showPreviewIcon === false)
+      ) {
         return false
       }
       const list = state.files.filter(val => val.status === 'done')

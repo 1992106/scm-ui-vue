@@ -92,8 +92,8 @@ export default defineComponent({
     resetText: { type: String, default: '重置' },
     // 是否显示【展开/收起】按钮
     showExpand: { type: Boolean, default: true },
-    // 是否展开，默认展开
-    expand: { type: Boolean, default: false }
+    // 默认收起
+    defaultExpand: { type: Boolean, default: false }
   },
   emits: ['search', 'reset', 'clear'],
   setup(props, { emit, slots }) {
@@ -293,7 +293,7 @@ export default defineComponent({
     })
 
     // 是否展开/收起
-    const canExpand = ref(props.expand)
+    const canExpand = ref(props.defaultExpand)
     const handleExpand = () => {
       canExpand.value = !canExpand.value
       nextTick(() => {
@@ -314,9 +314,7 @@ export default defineComponent({
 
     // 搜索方法
     const onSearch = () => {
-      nextTick(() => {
-        handleSearch()
-      })
+      handleSearch()
     }
 
     // 重置方法
@@ -372,11 +370,16 @@ export default defineComponent({
   }
 
   .search-bottom {
-    padding: 0 10px 10px 10px;
+    padding: 10px;
+    border-top: 1px #d9d9d9 dashed;
   }
 
   .ant-form {
     margin-right: 20px;
+
+    .ant-row .ant-col {
+      padding-right: 0 !important;
+    }
 
     :deep(.ant-form-item) {
       margin-bottom: 10px;
