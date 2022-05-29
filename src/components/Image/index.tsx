@@ -42,6 +42,7 @@ const XImage = defineComponent({
         : []
     })
 
+    // 首次加载时，默认显示失败图片
     const compressUrls = ref(thumbUrls.value.map(() => fallUrl))
 
     watch(
@@ -59,9 +60,6 @@ const XImage = defineComponent({
             .catch(() => {
               compressUrls.value = previewUrls.value
             })
-        } else {
-          // 图片为空时，使用默认图片展示
-          compressUrls.value = [fallUrl]
         }
       },
       { immediate: true }
@@ -102,6 +100,7 @@ const XImage = defineComponent({
     const { width, height } = getStyleSize({ width: props.width, height: props.height }) as any
 
     return () => {
+      // 图片为空时，显示暂无图片
       if (thumbUrls.value.length === 0) {
         return (
           <div class='x-image-empty' style={{ width, height }}>

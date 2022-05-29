@@ -13,7 +13,9 @@
     @preview="handlePreview"
     @download="handleDownload">
     <div v-if="mode === 'upload' && (!limit || files.length < limit)">
-      <PlusOutlined />
+      <slot>
+        <PlusOutlined />
+      </slot>
       <span v-show="limit" class="limit">({{ files.length }}/{{ limit }})</span>
     </div>
     <template #itemRender="scope">
@@ -54,7 +56,7 @@ export default defineComponent({
     limit: { type: Number }
   },
   emits: ['update:file-list', 'change', 'preview', 'download'],
-  setup(props, { emit, slots }) {
+  setup(props, { emit }) {
     const state = reactive({
       files: [],
       // 预览图片

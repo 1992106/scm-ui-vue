@@ -31,6 +31,7 @@ import { computed, defineComponent, reactive, toRefs, watch } from 'vue'
 import { Popover } from 'ant-design-vue'
 import { CloudDownloadOutlined } from '@ant-design/icons-vue'
 import DownloadList from './DownloadList.vue'
+import { useTimeoutFn } from '@hooks/useTimeoutFn'
 import { isFunction } from 'lodash-es'
 import { execRequest } from '@src/utils'
 export default defineComponent({
@@ -50,6 +51,7 @@ export default defineComponent({
     placement: { type: String, default: 'bottomRight' },
     trigger: { type: String, default: 'click' },
     customRequest: { type: Function, require: true },
+    interval: { type: Number, default: 1000 },
     customDownload: { type: Function },
     customCancel: { type: Function },
     customDelete: { type: Function },
@@ -70,34 +72,46 @@ export default defineComponent({
     const state = reactive({
       spinning: false,
       data: [],
-      total: 0
+      total: 0,
+      refreshed: false
     })
 
     watch(
       () => props.visible,
       visible => {
         if (visible) {
+          state.refreshed = false
           handleRequest()
         }
       },
       { immediate: true }
     )
 
+    const { isPending, start, stop } = useTimeoutFn(() => {
+      handleRequest()
+    }, props.interval)
+
     const handleRequest = async () => {
-      const { customRequest } = props
+      const { customRequest, interval } = props
       if (!isFunction(customRequest)) return
-      state.spinning = true
+      !isPending && (state.spinning = true)
       await execRequest(customRequest(), {
         success: ({ data }) => {
           state.data = data?.list || data?.data || []
           state.total = data?.total || 0
+          if (interval !== 0 && !isPending && !state.refreshed) {
+            start()
+            state.refreshed = true
+          }
         },
         fail: () => {
           state.data = []
           state.total = 0
+          stop()
+          state.refreshed = false
         }
       })
-      state.spinning = false
+      !isPending && (state.spinning = false)
     }
 
     return {
