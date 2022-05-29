@@ -51,7 +51,7 @@ export default defineComponent({
     placement: { type: String, default: 'bottomRight' },
     trigger: { type: String, default: 'click' },
     customRequest: { type: Function, require: true },
-    interval: { type: Number, default: 1000 },
+    interval: { type: Number, default: 3000 }, // 默认3秒后自动刷新
     customDownload: { type: Function },
     customCancel: { type: Function },
     customDelete: { type: Function },
@@ -72,46 +72,47 @@ export default defineComponent({
     const state = reactive({
       spinning: false,
       data: [],
-      total: 0,
-      refreshed: false
+      total: 0
     })
+
+    const { start, stop } = useTimeoutFn(
+      () => {
+        handleRequest()
+      },
+      props.interval,
+      { immediate: false }
+    )
 
     watch(
       () => props.visible,
-      visible => {
+      async visible => {
         if (visible) {
-          state.refreshed = false
-          handleRequest()
+          await handleRequest()
+          if (props.interval !== 0) {
+            start()
+          }
+        } else {
+          stop()
         }
       },
       { immediate: true }
     )
 
-    const { isPending, start, stop } = useTimeoutFn(() => {
-      handleRequest()
-    }, props.interval)
-
     const handleRequest = async () => {
-      const { customRequest, interval } = props
+      const { customRequest } = props
       if (!isFunction(customRequest)) return
-      !isPending && (state.spinning = true)
+      state.spinning = true
       await execRequest(customRequest(), {
         success: ({ data }) => {
           state.data = data?.list || data?.data || []
           state.total = data?.total || 0
-          if (interval !== 0 && !isPending && !state.refreshed) {
-            start()
-            state.refreshed = true
-          }
         },
         fail: () => {
           state.data = []
           state.total = 0
-          stop()
-          state.refreshed = false
         }
       })
-      !isPending && (state.spinning = false)
+      state.spinning = false
     }
 
     return {

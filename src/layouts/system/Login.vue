@@ -78,8 +78,8 @@ export default defineComponent({
 
     const handleSubmit = async () => {
       try {
-        loading.value = true
         const { account, password } = await formRef.value.validate()
+        loading.value = true
         const { token } = await store.dispatch('user/login', {
           account,
           password

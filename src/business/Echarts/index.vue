@@ -87,7 +87,7 @@ export default defineComponent({
     })
 
     onUnmounted(() => {
-      xEcharts.value?.clear()
+      xEcharts.value?.dispose()
       window.removeEventListener('resize', handleResize)
     })
 

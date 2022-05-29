@@ -107,7 +107,7 @@ export default defineComponent({
     const handleSearch = async params => {
       const { customRequest } = props
       if (!isFunction(customRequest)) return
-      // 初始化和分页时参数为空
+      // 分页时参数为空
       if (params) {
         state.searchParams = params
       }
