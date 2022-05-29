@@ -42,13 +42,16 @@ const XImage = defineComponent({
         : []
     })
 
-    // 首次加载时，默认显示失败图片
-    const compressUrls = ref(thumbUrls.value.map(() => fallUrl))
+    // 压缩的图片
+    const compressUrls = ref([])
 
     watch(
       thumbUrls,
       () => {
         if (thumbUrls.value.length) {
+          // 默认显示失败图片（防止空白）
+          compressUrls.value = thumbUrls.value.map(() => fallUrl)
+          // 压缩图片
           const { width, height, quality } = props
           Promise.allSettled(thumbUrls.value.map(url => compressImage(url, width, height, quality)))
             .then(res => {
@@ -109,40 +112,50 @@ const XImage = defineComponent({
         )
       }
 
+      let renderImage
+
+      if (thumbUrls.value.length === 1) {
+        // 单图模式
+        renderImage = (
+          <Image
+            {...ctx.attrs}
+            style={{ cursor: 'pointer' }}
+            width={width}
+            height={height}
+            src={compressUrls.value[0]}
+            preview={false}
+            // @ts-ignore
+            onClick={() => handlePreview(0)}
+            fallback={fallUrl}
+          />
+        )
+      }
+
+      if (thumbUrls.value.length > 1) {
+        // 相册模式
+        renderImage = (
+          <Space>
+            {compressUrls.value.map((src, index) => (
+              <Image
+                {...ctx.attrs}
+                key={index}
+                style={{ cursor: 'pointer' }}
+                width={width}
+                height={height}
+                src={src}
+                preview={false}
+                // @ts-ignore
+                onClick={() => handlePreview(index)}
+                fallback={fallUrl}
+              />
+            ))}
+          </Space>
+        )
+      }
+
       return (
         <>
-          {compressUrls.value.length === 1 ? (
-            // 单图模式
-            <Image
-              {...ctx.attrs}
-              style={{ cursor: 'pointer' }}
-              width={width}
-              height={height}
-              src={compressUrls.value[0]}
-              preview={false}
-              // @ts-ignore
-              onClick={() => handlePreview(0)}
-              fallback={fallUrl}
-            />
-          ) : (
-            // 相册模式
-            <Space>
-              {compressUrls.value.map((src, index) => (
-                <Image
-                  {...ctx.attrs}
-                  key={index}
-                  style={{ cursor: 'pointer' }}
-                  width={width}
-                  height={height}
-                  src={src}
-                  preview={false}
-                  // @ts-ignore
-                  onClick={() => handlePreview(index)}
-                  fallback={fallUrl}
-                />
-              ))}
-            </Space>
-          )}
+          {renderImage}
           {isPreview.value && (
             <XPreview v-model={[visible.value, 'visible']} current={current.value} urls={previewUrls.value} />
           )}
