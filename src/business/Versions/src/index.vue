@@ -23,6 +23,7 @@
         </Shortcut>
         <VersionList
           v-model:pagination="pages"
+          :rowKey="rowKey"
           :versionList="versionList"
           :rowProps="rowProps"
           :colProps="colProps"

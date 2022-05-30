@@ -314,7 +314,10 @@ export default defineComponent({
 
     // 搜索方法
     const onSearch = () => {
-      handleSearch()
+      // TODO: 调用onSetFieldValue时，需要延迟调用handleSearch
+      nextTick(() => {
+        handleSearch()
+      })
     }
 
     // 重置方法
