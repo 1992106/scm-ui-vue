@@ -1,10 +1,10 @@
 <template>
   <template v-if="!menuInfo?.meta?.hidden">
-    <a-sub-menu v-if="menuInfo.children?.length" :key="menuInfo.name" v-bind="$attrs">
-      <template #:title>
+    <a-sub-menu v-if="menuInfo.children?.length" :key="menuInfo.name">
+      <template #title>
         <span>
           <icon-font v-if="menuInfo.meta?.icon" :type="menuInfo.meta.icon" />
-          <span>{{ menuInfo.meta?.title }}</span>
+          <span>{{ !collapsed ? menuInfo.meta?.title : menuInfo.meta?.title?.at?.() }}</span>
         </span>
       </template>
       <template v-for="item in menuInfo.children">
@@ -19,9 +19,9 @@
         </template>
       </template>
     </a-sub-menu>
-    <a-menu-item v-else :key="menuInfo.name">
+    <a-menu-item v-else :key="menuInfo.name" :title="menuInfo.meta?.title">
       <icon-font v-if="menuInfo.meta?.icon" :type="menuInfo.meta.icon" />
-      <span>{{ menuInfo.meta?.title }}</span>
+      <span>{{ !collapsed ? menuInfo.meta?.title : menuInfo.meta?.title?.at?.() }}</span>
     </a-menu-item>
   </template>
 </template>
@@ -35,6 +35,7 @@ export default defineComponent({
     IconFont
   },
   props: {
+    collapsed: { type: Boolean },
     menuInfo: {
       type: Object,
       default: () => ({})

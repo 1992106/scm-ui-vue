@@ -8,7 +8,7 @@
       @click="clickMenuItem"
       @openChange="onOpenChange">
       <template v-for="item in allRoutes" :key="item.name">
-        <MenuItem :menu-info="item" />
+        <MenuItem :collapsed="collapsed" :menu-info="item" />
       </template>
     </a-menu>
   </div>
