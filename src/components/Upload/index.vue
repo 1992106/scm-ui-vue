@@ -18,14 +18,14 @@
       </slot>
       <span v-show="limit" class="limit">({{ files.length }}/{{ limit }})</span>
     </div>
-    <template #itemRender="scope">
+    <template v-if="hasItemRender" #itemRender="scope">
       <slot name="itemRender" v-bind="scope"></slot>
     </template>
   </a-upload>
   <x-preview v-model:visible="previewVisible" :current="previewCurrent" :urls="previewUrls"></x-preview>
 </template>
 <script>
-import { defineComponent, reactive, toRefs, watch } from 'vue'
+import { computed, defineComponent, reactive, toRefs, watch } from 'vue'
 import { Form, message, Upload } from 'ant-design-vue'
 import { PlusOutlined } from '@ant-design/icons-vue'
 import XPreview from '@components/Preview/index.vue'
@@ -56,7 +56,7 @@ export default defineComponent({
     limit: { type: Number }
   },
   emits: ['update:file-list', 'change', 'preview', 'download'],
-  setup(props, { emit }) {
+  setup(props, { emit, slots }) {
     const state = reactive({
       files: [],
       // 预览图片
@@ -229,8 +229,12 @@ export default defineComponent({
       emit('download', file)
     }
 
+    //
+    const hasItemRender = computed(() => !!slots['itemRender'])
+
     return {
       ...toRefs(state),
+      hasItemRender,
       onBeforeUpload,
       handleCustomRequest,
       handleChange,
