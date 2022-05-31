@@ -260,6 +260,10 @@ export default defineComponent({
     }
   }
 
+  :deep(.ant-upload-list-picture-card) {
+    min-height: 112px;
+  }
+
   :deep(.ant-upload-select-text) .ant-upload {
     display: inline-block;
   }

@@ -70,7 +70,9 @@ export default defineComponent({
       if (!isFunction(customDownload)) return
       await execRequest(customDownload(row), {
         success: ({ data }) => {
-          download(data?.url, data?.fileName)
+          if (data) {
+            download(data?.url, data?.fileName)
+          }
         }
       })
     }
@@ -84,10 +86,13 @@ export default defineComponent({
     const handleDelete = async row => {
       const { customDelete, rowKey } = props
       if (!isFunction(customDelete)) return
-      await execRequest(customDelete(row))
-      // 手动删除
-      const index = state.list.findIndex(val => getValueByRowKey(rowKey, val) === getValueByRowKey(rowKey, row))
-      state.list.splice(index, 1)
+      await execRequest(customDelete(row), {
+        success: () => {
+          // 手动删除
+          const index = state.list.findIndex(val => getValueByRowKey(rowKey, val) === getValueByRowKey(rowKey, row))
+          state.list.splice(index, 1)
+        }
+      })
     }
 
     return {

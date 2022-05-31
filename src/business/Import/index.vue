@@ -98,7 +98,9 @@ export default defineComponent({
       state.loading = true
       await execRequest(customDownload(), {
         success: ({ data }) => {
-          download(data?.url, data?.fileName)
+          if (data) {
+            download(data?.url, data?.fileName)
+          }
         }
       })
       state.loading = false

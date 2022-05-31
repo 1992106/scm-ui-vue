@@ -56,7 +56,7 @@ export default defineComponent({
         },
         {
           title: '角色',
-          dataIndex: 'sizeRoleName'
+          dataIndex: 'styleRoleName'
         },
         {
           title: '面料类型',
