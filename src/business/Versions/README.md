@@ -21,6 +21,7 @@
 | manual | 是否手动控制搜索 | Boolean | `false` |
 | searchProps | `XSearch props` | Object | `{}` |
 | shortcutProps | `XForm props` | Object | `{}` |
+| selectedColumns | `XTable columns` | Array | `-` |
 | customRequest | 自定义请求 | Function | `-` |
 | rowProps | `ARow props` | Object | `-` |
 | colProps | `ACol props` | Object | `-` |
@@ -35,9 +36,10 @@ emits: ['update:visible', 'done', 'search', 'reset']
 ### Slots
 
 ```vue
-<slot name="searchItem"></slot>
-<slot name="shortcutItem"></slot>
+<slot name="searchRender"></slot>
+<slot name="shortcutRender"></slot>
 <slot name="itemRender"></slot>
+<slot name="selectedRender"></slot>
 ```
 
 ### Example

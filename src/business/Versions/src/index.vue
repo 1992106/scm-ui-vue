@@ -12,13 +12,13 @@
     <div class="x-versions">
       <x-search ref="xSearch" v-bind="searchProps" @search="handleSearch" @reset="handleReset">
         <template #formItemRender="scope">
-          <slot name="searchItemRender" v-bind="scope"></slot>
+          <slot name="searchRender" v-bind="scope"></slot>
         </template>
       </x-search>
       <div class="content">
         <Shortcut ref="xShortcut" v-bind="shortcutProps">
           <template #formItemRender="scope">
-            <slot name="shortcutItemRender" v-bind="scope"></slot>
+            <slot name="shortcutRender" v-bind="scope"></slot>
           </template>
         </Shortcut>
         <VersionList
@@ -41,9 +41,14 @@
         <div class="total">已选中{{ selectedList.length }}条</div>
         <SelectedList
           :rowKey="rowKey"
+          :selectedColumns="selectedColumns"
           :selectedList="selectedList"
           :emptyText="emptyText"
-          @del="handleDel"></SelectedList>
+          @del="handleDel">
+          <template #bodyCell="scope">
+            <slot name="selectedRender" v-bind="scope"></slot>
+          </template>
+        </SelectedList>
       </div>
     </div>
   </x-modal>
@@ -77,6 +82,7 @@ export default defineComponent({
     manual: { type: Boolean, default: false },
     searchProps: { type: Object, default: () => ({}) },
     shortcutProps: { type: Object, default: () => ({}) },
+    selectedColumns: { type: Array },
     customRequest: { type: Function, require: true },
     rowProps: { type: Object, default: () => ({ gutter: 24, wrap: true }) },
     colProps: { type: Object, default: () => ({ span: 6 }) },

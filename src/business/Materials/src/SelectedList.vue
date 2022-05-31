@@ -1,30 +1,32 @@
 <template>
   <x-table v-bind="tableProps">
-    <template #bodyCell="{ column, record }">
-      <template v-if="column.dataIndex === 'actions'">
-        <a-button type="link" size="small" @click="handleDel(record)">删除</a-button>
-      </template>
-      <template v-if="column.dataIndex === 'material'">
-        <div>{{ record?.materialSku || '--' }}</div>
-        <div>{{ record?.materialName || '--' }}</div>
-      </template>
-      <template v-if="column.dataIndex === 'supplierMaterial'">
-        <div>{{ record?.supplierMaterialCode || '--' }}</div>
-        <div>{{ record?.supplierMaterialName || '--' }}</div>
-      </template>
-      <template v-if="column.dataIndex === 'materialIngredient'">
-        <template v-if="record?.materialIngredient && Array.isArray(record?.materialIngredient)">
-          <a-tag v-for="item in record?.materialIngredient" :key="item?.zhName">
-            {{ item?.zhName || '--' }}
-          </a-tag>
+    <template #bodyCell="{ text, record, index, column }">
+      <slot name="bodyCell" v-bind="{ text, record, index, column }">
+        <template v-if="column.dataIndex === 'actions'">
+          <a-button type="link" size="small" @click="handleDel(record)">删除</a-button>
         </template>
-        <template v-else>--</template>
-      </template>
+        <template v-if="column.dataIndex === 'material'">
+          <div>{{ record?.materialSku || '--' }}</div>
+          <div>{{ record?.materialName || '--' }}</div>
+        </template>
+        <template v-if="column.dataIndex === 'supplierMaterial'">
+          <div>{{ record?.supplierMaterialCode || '--' }}</div>
+          <div>{{ record?.supplierMaterialName || '--' }}</div>
+        </template>
+        <template v-if="column.dataIndex === 'materialIngredient'">
+          <template v-if="record?.materialIngredient && Array.isArray(record?.materialIngredient)">
+            <a-tag v-for="item in record?.materialIngredient" :key="item?.zhName">
+              {{ item?.zhName || '--' }}
+            </a-tag>
+          </template>
+          <template v-else>--</template>
+        </template>
+      </slot>
     </template>
   </x-table>
 </template>
 <script>
-import { defineComponent, reactive, watch } from 'vue'
+import { defineComponent, mergeProps, reactive, watch } from 'vue'
 import XTable from '@components/Table/index.vue'
 
 export default defineComponent({
@@ -34,11 +36,33 @@ export default defineComponent({
   },
   props: {
     rowKey: [String, Function],
+    selectedColumns: { type: Array },
     selectedList: { type: Array, default: () => [] },
     emptyText: String
   },
   emits: ['del'],
   setup(props, { emit }) {
+    const defaultColumns = [
+      { title: '操作', width: 100, fixed: 'left', dataIndex: 'actions' },
+      { title: '物料编码', width: 160, fixed: 'left', dataIndex: 'material' },
+      { title: '优选供应商', width: 160, dataIndex: 'supplierName' },
+      { title: '颜色', width: 100, dataIndex: 'color' },
+      {
+        title: '物料分类',
+        width: 200,
+        customRender: ({ record }) => {
+          return [record?.oneCategoryName, record?.twoCategoryName, record?.threeCategoryName].filter(Boolean).join('/')
+        },
+        ellipsis: true
+      },
+      { title: '单位', width: 60, dataIndex: 'unit' },
+      { title: '大货价', width: 100, dataIndex: 'bigPrice' },
+      { title: '供应商物料', width: 160, dataIndex: 'supplierMaterial' },
+      { title: '供应商物料颜色', width: 160, dataIndex: 'supplierMaterialColorName' },
+      { title: '供应商物料色号', width: 120, dataIndex: 'supplierMaterialColorNo' },
+      { title: '物料成分', width: 180, dataIndex: 'materialIngredient', ellipsis: true }
+    ]
+
     const tableProps = reactive({
       scroll: {
         y: 200
@@ -46,28 +70,7 @@ export default defineComponent({
       rowKey: props.rowKey,
       emptyText: props.emptyText,
       size: 'small',
-      columns: [
-        { title: '操作', width: 100, fixed: 'left', dataIndex: 'actions' },
-        { title: '物料编码', width: 160, fixed: 'left', dataIndex: 'material' },
-        { title: '优选供应商', width: 160, dataIndex: 'supplierName' },
-        { title: '颜色', width: 100, dataIndex: 'color' },
-        {
-          title: '物料分类',
-          width: 200,
-          customRender: ({ record }) => {
-            return [record?.oneCategoryName, record?.twoCategoryName, record?.threeCategoryName]
-              .filter(Boolean)
-              .join('/')
-          },
-          ellipsis: true
-        },
-        { title: '单位', width: 60, dataIndex: 'unit' },
-        { title: '大货价', width: 100, dataIndex: 'bigPrice' },
-        { title: '供应商物料', width: 160, dataIndex: 'supplierMaterial' },
-        { title: '供应商物料颜色', width: 160, dataIndex: 'supplierMaterialColorName' },
-        { title: '供应商物料色号', width: 120, dataIndex: 'supplierMaterialColorNo' },
-        { title: '物料成分', width: 180, dataIndex: 'materialIngredient', ellipsis: true }
-      ],
+      columns: props.selectedColumns || defaultColumns,
       dataSource: [],
       showPagination: false
     })

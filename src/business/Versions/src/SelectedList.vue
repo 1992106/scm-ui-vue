@@ -1,12 +1,14 @@
 <template>
   <x-table v-bind="tableProps">
-    <template #bodyCell="{ column, record }">
-      <template v-if="column.dataIndex === 'actions'">
-        <a-button type="link" size="small" @click="handleDel(record)">删除</a-button>
-      </template>
-      <template v-if="column.dataIndex === 'thumbnail'">
-        <x-image :width="60" :height="60" :thumbnail="record?.images?.[0]?.thumbUrl" :urls="record?.images"></x-image>
-      </template>
+    <template #bodyCell="{ text, record, index, column }">
+      <slot name="bodyCell" v-bind="{ text, record, index, column }">
+        <template v-if="column.dataIndex === 'actions'">
+          <a-button type="link" size="small" @click="handleDel(record)">删除</a-button>
+        </template>
+        <template v-if="column.dataIndex === 'thumbnail'">
+          <x-image :width="60" :height="60" :thumbnail="record?.images?.[0]?.thumbUrl" :urls="record?.images"></x-image>
+        </template>
+      </slot>
     </template>
   </x-table>
 </template>
@@ -23,11 +25,39 @@ export default defineComponent({
   },
   props: {
     rowKey: [String, Function],
+    selectedColumns: { type: Array },
     selectedList: { type: Array, default: () => [] },
     emptyText: String
   },
   emits: ['del'],
   setup(props, { emit }) {
+    const defaultColumns = [
+      { title: '操作', width: 100, dataIndex: 'actions' },
+      { title: '缩略图', width: 100, dataIndex: 'thumbnail' },
+      {
+        title: '版型编号',
+        dataIndex: 'prototypeNo'
+      },
+      {
+        title: '版型分类',
+        customRender: ({ record }) => {
+          return [record?.oneCategoryName, record?.twoCategoryName, record?.threeCategoryName].filter(Boolean).join('/')
+        }
+      },
+      {
+        title: '类型',
+        dataIndex: 'typeDesc'
+      },
+      {
+        title: '角色',
+        dataIndex: 'styleRoleName'
+      },
+      {
+        title: '面料类型',
+        dataIndex: 'fabricsTypeDesc'
+      }
+    ]
+
     const tableProps = reactive({
       scroll: {
         y: 400
@@ -35,34 +65,7 @@ export default defineComponent({
       rowKey: props.rowKey,
       emptyText: props.emptyText,
       size: 'small',
-      columns: [
-        { title: '操作', width: 100, dataIndex: 'actions' },
-        { title: '缩略图', width: 100, dataIndex: 'thumbnail' },
-        {
-          title: '版型编号',
-          dataIndex: 'prototypeNo'
-        },
-        {
-          title: '版型分类',
-          customRender: ({ record }) => {
-            return [record?.oneCategoryName, record?.twoCategoryName, record?.threeCategoryName]
-              .filter(Boolean)
-              .join('/')
-          }
-        },
-        {
-          title: '类型',
-          dataIndex: 'typeDesc'
-        },
-        {
-          title: '角色',
-          dataIndex: 'styleRoleName'
-        },
-        {
-          title: '面料类型',
-          dataIndex: 'fabricsTypeDesc'
-        }
-      ],
+      columns: props.selectedColumns || defaultColumns,
       dataSource: [],
       showPagination: false
     })

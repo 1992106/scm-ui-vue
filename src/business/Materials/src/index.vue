@@ -12,7 +12,7 @@
     <div class="x-materials">
       <x-search ref="xSearch" v-bind="searchProps" @search="handleSearch" @reset="handleReset">
         <template #formItemRender="scope">
-          <slot name="searchItemRender" v-bind="scope"></slot>
+          <slot name="searchRender" v-bind="scope"></slot>
         </template>
       </x-search>
       <div class="material-list">
@@ -21,21 +21,31 @@
           v-model:pagination="pages"
           v-model:selectedValue="selectedList"
           :rowKey="rowKey"
+          :selectedType="selectedType"
+          :materialColumns="materialColumns"
           :materialList="materialList"
           :total="total"
-          :selectedType="selectedType"
           :emptyText="emptyText"
           @search="handleSearch"
           @add="handleAdd"
-          @del="handleDel"></MaterialList>
+          @del="handleDel">
+          <template #bodyCell="scope">
+            <slot name="materialRender" v-bind="scope"></slot>
+          </template>
+        </MaterialList>
       </div>
       <div class="selected-list">
         <div class="total">已选中{{ selectedList.length }}条</div>
         <SelectedList
           :rowKey="rowKey"
+          :selectedColumns="selectedColumns"
           :selectedList="selectedList"
           :emptyText="emptyText"
-          @del="handleDel"></SelectedList>
+          @del="handleDel">
+          <template #bodyCell="scope">
+            <slot name="selectedRender" v-bind="scope"></slot>
+          </template>
+        </SelectedList>
       </div>
     </div>
   </x-modal>
@@ -66,6 +76,8 @@ export default defineComponent({
     rowKey: { type: [String, Function], default: 'supplierMaterialId' },
     manual: { type: Boolean, default: false },
     searchProps: { type: Object, default: () => ({}) },
+    materialColumns: { type: Array },
+    selectedColumns: { type: Array },
     customRequest: { type: Function, require: true },
     selectedType: { type: String, default: 'checkbox' }, // 选择模式：checkbox 多选和 radio 单选
     emptyText: { type: String, default: '暂无数据' }

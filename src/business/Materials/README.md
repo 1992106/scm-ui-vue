@@ -19,6 +19,8 @@
 | rowKey | key 的取值，可以是字符串或一个函数 | [String, Function] | [String, Function] | `supplierMaterialId` |
 | manual | 是否手动控制搜索 | Boolean | `false` |
 | searchProps | `XSearch props` | Object | `{}` |
+| materialColumns | `XTable columns` | Array | `-` |
+| selectedColumns | `XTable columns` | Array | `-` |
 | customRequest | 自定义请求 | Function | `-` |
 | selectedType | 选择模式`("checkbox"、"radio")` | String | `checkbox` |
 | emptyText | 空数据显示的内容 | String | `暂无数据` |
@@ -32,7 +34,9 @@ emits: ['update:visible', 'done', 'search', 'reset']
 ### Slots
 
 ```vue
-<slot name="searchItem"></slot>
+<slot name="searchRender"></slot>
+<slot name="materialRender"></slot>
+<slot name="selectedRender"></slot>
 ```
 
 ### Example
