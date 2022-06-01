@@ -26,7 +26,7 @@
   </x-table>
 </template>
 <script>
-import { defineComponent, mergeProps, reactive, watch } from 'vue'
+import { defineComponent, reactive, watch } from 'vue'
 import XTable from '@components/Table/index.vue'
 
 export default defineComponent({

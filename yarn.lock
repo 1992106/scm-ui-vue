@@ -3071,7 +3071,7 @@ lines-and-columns@^1.1.6:
   resolved "https://registry.npmjs.org/lines-and-columns/-/lines-and-columns-1.2.4.tgz#eca284f75d2965079309dc0ad9255abb2ebc1632"
   integrity sha512-7ylylesZQ/PV29jhEDl3Ufjo6ZX7gCqJr5F7PKrqc93v7fzSymt1BpwEU8nAUXs8qzzvqhbjhK5QZg6Mt/HkBg==
 
-lint-staged@^12.3.7:
+lint-staged@^12.5.0:
   version "12.5.0"
   resolved "https://registry.npmjs.org/lint-staged/-/lint-staged-12.5.0.tgz#d6925747480ae0e380d13988522f9dd8ef9126e3"
   integrity sha512-BKLUjWDsKquV/JuIcoQW4MSAI3ggwEImF1+sB4zaKvyVx1wBk3FsG7UK9bpnmBTN1pm7EH2BBcMwINJzCRv12g==
@@ -3817,7 +3817,7 @@ prettier-linter-helpers@^1.0.0:
   dependencies:
     fast-diff "^1.1.2"
 
-prettier@^2.6.0:
+prettier@^2.6.2:
   version "2.6.2"
   resolved "https://registry.npmjs.org/prettier/-/prettier-2.6.2.tgz#e26d71a18a74c3d0f0597f55f01fb6c06c206032"
   integrity sha512-PkUpF+qoXTqhOeWL9fu7As8LXsIUZ1WYaJiY/a7McAQzxjk82OF0tibkFXVCDImZtWxbvojFjerkiLb0/q8mew==
@@ -4127,7 +4127,7 @@ sass-loader@^12.6.0:
     klona "^2.0.4"
     neo-async "^2.6.2"
 
-sass@^1.49.9:
+sass@^1.52.1:
   version "1.52.1"
   resolved "https://registry.npmjs.org/sass/-/sass-1.52.1.tgz#554693da808543031f9423911d62c60a1acf7889"
   integrity sha512-fSzYTbr7z8oQnVJ3Acp9hV80dM1fkMN7mSD/25mpcct9F7FPBMOI8krEYALgU1aZoqGhQNhTPsuSmxjnIvAm4Q==

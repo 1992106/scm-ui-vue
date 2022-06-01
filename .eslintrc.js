@@ -36,6 +36,8 @@ module.exports = {
     'vue/multi-word-component-names': 0,
     'vue/no-v-html': 0,
     'vue/no-dupe-keys': 0,
+    'vue/valid-template-root': 0,
+    'vue/no-reserved-component-names': 0,
     '@typescript-eslint/ban-ts-comment': 0,
     '@typescript-eslint/no-explicit-any': 0,
     '@typescript-eslint/no-empty-function': 0,

@@ -89,7 +89,7 @@ export default defineComponent({
     const onPrint = () => {
       handlePrint()
     }
-    
+
     return {
       elPrint,
       result,
