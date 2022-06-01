@@ -6,6 +6,7 @@
     :title="title"
     :width="width"
     :height="height"
+    :spinProps="spinning"
     destroyOnClose
     @ok="handleOk"
     @cancel="handleCancel">
@@ -26,9 +27,7 @@
           :materialList="materialList"
           :total="total"
           :emptyText="emptyText"
-          @search="handleSearch"
-          @add="handleAdd"
-          @del="handleDel">
+          @search="handleSearch">
           <template #bodyCell="scope">
             <slot name="materialRender" v-bind="scope"></slot>
           </template>
@@ -162,10 +161,6 @@ export default defineComponent({
       emit('reset')
     }
 
-    const handleAdd = row => {
-      state.selectedList = [...state.selectedList, row]
-    }
-
     const handleDel = row => {
       state.materialList = state.materialList.map(item => {
         const newItem = state.selectedList.find(val => {
@@ -200,7 +195,6 @@ export default defineComponent({
       modalVisible,
       handleSearch,
       handleReset,
-      handleAdd,
       handleDel,
       handleOk,
       handleCancel

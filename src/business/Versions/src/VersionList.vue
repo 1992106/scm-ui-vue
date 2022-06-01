@@ -4,7 +4,7 @@
       <div class="scroll">
         <a-row v-bind="rowProps">
           <a-col v-for="(item, index) in versionList" :key="getValueByRowKey(rowKey, item, index)" v-bind="colProps">
-            <slot name="itemRender" :record="item" :index="index" :change="handleChange"></slot>
+            <slot name="itemRender" :record="item" :index="index" :onChange="handleChange"></slot>
           </a-col>
         </a-row>
       </div>

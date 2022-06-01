@@ -6,6 +6,7 @@
     :title="title"
     :width="width"
     :height="height"
+    :spinProps="spinning"
     destroyOnClose
     @ok="handleOk"
     @cancel="handleCancel">

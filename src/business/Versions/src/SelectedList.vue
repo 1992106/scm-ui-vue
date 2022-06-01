@@ -1,7 +1,7 @@
 <template>
   <x-table v-bind="tableProps">
     <template #bodyCell="{ text, record, index, column }">
-      <slot name="bodyCell" v-bind="{ text, record, index, column }">
+      <slot name="bodyCell" v-bind="{ text, record, index, column }" :onDelete="handleDel">
         <template v-if="column.dataIndex === 'actions'">
           <a-button type="link" size="small" @click="handleDel(record)">删除</a-button>
         </template>

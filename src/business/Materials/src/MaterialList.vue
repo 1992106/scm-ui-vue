@@ -51,7 +51,7 @@ export default defineComponent({
     pagination: Object,
     emptyText: String
   },
-  emits: ['update:pagination', 'update:selectedValue', 'search', 'add', 'del'],
+  emits: ['update:pagination', 'update:selectedValue', 'search'],
   setup(props, { emit }) {
     const defaultColumns = [
       { title: '物料编码', width: 160, fixed: 'left', dataIndex: 'material' },
