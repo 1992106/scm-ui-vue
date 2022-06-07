@@ -206,6 +206,7 @@ export default defineComponent({
 
     const handleCancel = () => {
       handleReset()
+      state.total = 0
       state.cloneList = []
       state.versionList = []
       state.selectedList = []

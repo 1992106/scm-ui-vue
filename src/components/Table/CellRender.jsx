@@ -17,13 +17,13 @@ const CellRender = defineComponent({
 
     // 缩略图
     const renderThumbnail = () => {
-      const { previewField, ...restProps } = options || {}
+      const { previewField, width = 50, height = 50, ...restProps } = options || {}
       let urls = []
       if (previewField) {
         urls = get(record, previewField) || []
       }
 
-      return <XImage key={value} width={50} height={50} thumbnail={value} urls={urls} {...restProps} />
+      return <XImage width={width} height={height} thumbnail={value} urls={urls} {...restProps} />
     }
 
     // 日期

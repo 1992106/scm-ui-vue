@@ -34,7 +34,7 @@
         @resizeColumn="handleResizeColumn">
         <template #bodyCell="scope">
           <slot name="bodyCell" v-bind="scope">
-            <!--自定义:缩略图\日期\时间-->
+            <!--自定义：缩略图/日期/时间-->
             <template v-if="scope?.column?.cellRender">
               <CellRender v-bind="scope" />
             </template>
