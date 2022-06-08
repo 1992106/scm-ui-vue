@@ -2,23 +2,10 @@
   <x-table v-bind="tableProps" v-model:pagination="pages" v-model:selectedValue="selectedList">
     <template #bodyCell="{ text, record, index, column }">
       <slot name="bodyCell" v-bind="{ text, record, index, column }">
-        <template v-if="column.dataIndex === 'material'">
-          <div>{{ record?.materialSku || '--' }}</div>
-          <div>{{ record?.materialName || '--' }}</div>
-        </template>
-        <template v-if="column.dataIndex === 'thumbnail'">
+        <template v-if="column?.dataIndex === 'thumbnail'">
           <x-image :width="60" :height="60" :thumbnail="record?.images?.[0]?.thumbUrl" :urls="record?.images"></x-image>
         </template>
-        <template v-if="column.dataIndex === 'materialInfo'">
-          <div>克重：{{ record?.weight || '--' }}</div>
-          <div>门幅：{{ record?.width || '--' }}</div>
-          <div>规格：{{ record?.standards || '--' }}</div>
-        </template>
-        <template v-if="column.dataIndex === 'supplierMaterial'">
-          <div>{{ record?.supplierMaterialCode || '--' }}</div>
-          <div>{{ record?.supplierMaterialName || '--' }}</div>
-        </template>
-        <template v-if="column.dataIndex === 'materialIngredient'">
+        <template v-if="column?.dataIndex === 'materialIngredient'">
           <template v-if="record?.materialIngredient && Array.isArray(record?.materialIngredient)">
             <a-tag v-for="item in record?.materialIngredient" :key="item?.zhName">
               {{ item?.zhName || '--' }}
@@ -30,7 +17,7 @@
     </template>
   </x-table>
 </template>
-<script>
+<script lang="jsx">
 import { computed, defineComponent, reactive, watch } from 'vue'
 import XTable from '@components/Table/index.vue'
 import XImage from '@components/Image'
@@ -54,7 +41,19 @@ export default defineComponent({
   emits: ['update:pagination', 'update:selectedValue', 'search'],
   setup(props, { emit }) {
     const defaultColumns = [
-      { title: '物料编码', width: 160, fixed: 'left', dataIndex: 'material' },
+      {
+        title: '物料编码',
+        width: 160,
+        fixed: 'left',
+        customRender: ({ record }) => {
+          return (
+            <>
+              <div>{record?.materialSku || '--'}</div>
+              <div>{record?.materialName || '--'}</div>
+            </>
+          )
+        }
+      },
       { title: '图片', width: 100, fixed: 'left', dataIndex: 'thumbnail' },
       { title: '物料状态', width: 100, dataIndex: 'statusDesc' },
       { title: '优选供应商', width: 160, dataIndex: 'supplierName' },
@@ -67,12 +66,35 @@ export default defineComponent({
         },
         ellipsis: true
       },
-      { title: '物料信息', width: 200, dataIndex: 'materialInfo' },
+      {
+        title: '物料信息',
+        width: 200,
+        customRender: ({ record }) => {
+          return (
+            <>
+              <div>克重：{record?.weight || '--'}</div>
+              <div>门幅：{record?.width || '--'}</div>
+              <div>规格：{record?.standards || '--'}</div>
+            </>
+          )
+        }
+      },
       { title: '单位', width: 60, dataIndex: 'unit' },
       { title: '大货价', width: 100, dataIndex: 'bigPrice' },
-      { title: '供应商物料', width: 160, dataIndex: 'supplierMaterial' },
+      {
+        title: '供应商物料',
+        width: 160,
+        customRender: ({ record }) => {
+          return (
+            <>
+              <div>{record?.supplierMaterialCode || '--'}</div>
+              <div>{record?.supplierMaterialName || '--'}</div>
+            </>
+          )
+        }
+      },
       { title: '供应商物料状态', width: 120, dataIndex: 'supplierMaterialStatusDesc' },
-      { title: '供应商物料颜色', width: 160, dataIndex: 'supplierMaterialColorName' },
+      { title: '供应商物料颜色', width: 160, dataIndex: 'supplierMaterialColor' },
       { title: '供应商物料色号', width: 120, dataIndex: 'supplierMaterialColorNo' },
       { title: '物料成分', width: 180, dataIndex: 'materialIngredient', ellipsis: true }
     ]

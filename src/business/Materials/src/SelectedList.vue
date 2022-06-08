@@ -2,18 +2,10 @@
   <x-table v-bind="tableProps">
     <template #bodyCell="{ text, record, index, column }">
       <slot name="bodyCell" v-bind="{ text, record, index, column }" :onDelete="handleDel">
-        <template v-if="column.dataIndex === 'actions'">
+        <template v-if="column?.dataIndex === 'actions'">
           <a-button type="link" size="small" @click="handleDel(record)">删除</a-button>
         </template>
-        <template v-if="column.dataIndex === 'material'">
-          <div>{{ record?.materialSku || '--' }}</div>
-          <div>{{ record?.materialName || '--' }}</div>
-        </template>
-        <template v-if="column.dataIndex === 'supplierMaterial'">
-          <div>{{ record?.supplierMaterialCode || '--' }}</div>
-          <div>{{ record?.supplierMaterialName || '--' }}</div>
-        </template>
-        <template v-if="column.dataIndex === 'materialIngredient'">
+        <template v-if="column?.dataIndex === 'materialIngredient'">
           <template v-if="record?.materialIngredient && Array.isArray(record?.materialIngredient)">
             <a-tag v-for="item in record?.materialIngredient" :key="item?.zhName">
               {{ item?.zhName || '--' }}
@@ -25,7 +17,7 @@
     </template>
   </x-table>
 </template>
-<script>
+<script lang="jsx">
 import { defineComponent, reactive, watch } from 'vue'
 import XTable from '@components/Table/index.vue'
 
@@ -44,7 +36,19 @@ export default defineComponent({
   setup(props, { emit }) {
     const defaultColumns = [
       { title: '操作', width: 100, fixed: 'left', dataIndex: 'actions' },
-      { title: '物料编码', width: 160, fixed: 'left', dataIndex: 'material' },
+      {
+        title: '物料编码',
+        width: 160,
+        fixed: 'left',
+        customRender: ({ record }) => {
+          return (
+            <>
+              <div>{record?.materialSku || '--'}</div>
+              <div>{record?.materialName || '--'}</div>
+            </>
+          )
+        }
+      },
       { title: '优选供应商', width: 160, dataIndex: 'supplierName' },
       { title: '颜色', width: 100, dataIndex: 'color' },
       {
@@ -57,8 +61,19 @@ export default defineComponent({
       },
       { title: '单位', width: 60, dataIndex: 'unit' },
       { title: '大货价', width: 100, dataIndex: 'bigPrice' },
-      { title: '供应商物料', width: 160, dataIndex: 'supplierMaterial' },
-      { title: '供应商物料颜色', width: 160, dataIndex: 'supplierMaterialColorName' },
+      {
+        title: '供应商物料',
+        width: 160,
+        customRender: ({ record }) => {
+          return (
+            <>
+              <div>{record?.supplierMaterialCode || '--'}</div>
+              <div>{record?.supplierMaterialName || '--'}</div>
+            </>
+          )
+        }
+      },
+      { title: '供应商物料颜色', width: 160, dataIndex: 'supplierMaterialColor' },
       { title: '供应商物料色号', width: 120, dataIndex: 'supplierMaterialColorNo' },
       { title: '物料成分', width: 180, dataIndex: 'materialIngredient', ellipsis: true }
     ]

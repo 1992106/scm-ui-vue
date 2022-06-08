@@ -183,7 +183,7 @@ export default defineComponent({
       return Object.keys(slots).filter(val =>
         [
           'headerCell',
-          // 'bodyCell', 在template中单独实现
+          // 'bodyCell', 在template中实现，内置cellRender
           'customFilterDropdown',
           'customFilterIcon',
           'expandedRowRender',
@@ -196,7 +196,10 @@ export default defineComponent({
       )
     })
     const getTransformCellText = computed(() => {
-      return props.transformCellText ? props.transformCellText : ({ text }) => (isEmpty(text) ? '--' : text)
+      return props.transformCellText
+        ? props.transformCellText
+        : ({ text, record, column, index }) =>
+            column?.customRender ? column.customRender({ text, record, column, index }) : isEmpty(text) ? '--' : text
     })
     // 自动计算表格的宽高
     useScroll({ xTable, autoResize: props.autoResize, extraHeight: props.extraHeight, scroll: toRef(state, 'scroll') })
