@@ -10,7 +10,7 @@
 <script lang="ts">
 import { onActivated, onMounted, onUnmounted, reactive } from 'vue'
 import { useStore } from 'vuex'
-import Preview from '@components/Preview/index.vue'
+import Preview from '@packages/components/Preview/index.vue'
 export default {
   name: 'Dashboard',
   components: { Preview },

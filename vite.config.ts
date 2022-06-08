@@ -35,7 +35,7 @@ const config: UserConfigExport = {
     alias: [
       { find: /^@src/, replacement: pathResolve('src') },
       { find: /^@components/, replacement: pathResolve('src/components') },
-      { find: /^@business/, replacement: pathResolve('src/business') },
+      { find: /^@packages/, replacement: pathResolve('src/packages') },
       { find: /^@views/, replacement: pathResolve('src/views') },
       { find: /^@hooks/, replacement: pathResolve('src/hooks') },
       { find: /^@utils/, replacement: pathResolve('src/utils') }

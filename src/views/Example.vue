@@ -49,9 +49,9 @@
 </template>
 <script lang="ts">
 import { computed, onActivated, onMounted, onUnmounted, reactive } from 'vue'
-import XImage from '@components/Image'
-import Versions from '@business/Versions'
-import Materials from '@business/Materials'
+import XImage from '@packages/components/Image'
+import Versions from '@packages/Versions'
+import Materials from '@packages/Materials'
 export default {
   name: 'Example',
   components: { XImage, Versions, Materials },
