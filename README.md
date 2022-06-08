@@ -35,9 +35,9 @@ app.use(ScmUI)
 | XSearch | 搜索栏，默认支撑配置页展示，搜索、重置、清空功能， |
 | XPagination | 页码，默认支持默认分页、简单分页功能 |
 | XPage | 页面，默认支持XSearch搜索、XPagination分页、自定义插槽功能 |
-| XTable | 表格，默认支持可配置项展示 |
+| XTable | 表格，默认支持可配置项展示，字段显示&隐藏、全屏功能 |
 | XProTable | Pro表格，默认支持XSearch搜索、XPagination分页、XTable表格功能 |
-| XGrid | 网格，默认支持可配置项展示 |
+| XGrid | 网格，默认支持可配置项展示，字段显示&隐藏、全屏功能 |
 | XProGrid | Pro网格，默认支持XSearch搜索、XPagination分页、XGrid表格功能 |
 
 #### 业务组件
