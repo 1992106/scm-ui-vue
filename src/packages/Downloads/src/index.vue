@@ -51,7 +51,7 @@ export default defineComponent({
     placement: { type: String, default: 'bottomRight' },
     trigger: { type: String, default: 'click' },
     customRequest: { type: Function, require: true },
-    interval: { type: Number, default: 3000 }, // 默认3秒后自动刷新
+    delay: { type: Number, default: 3000 }, // 默认3秒后自动刷新
     customDownload: { type: Function },
     customCancel: { type: Function },
     customDelete: { type: Function },
@@ -79,7 +79,7 @@ export default defineComponent({
       () => {
         handleRequest()
       },
-      props.interval,
+      props.delay,
       { immediate: false }
     )
 
@@ -88,7 +88,7 @@ export default defineComponent({
       async visible => {
         if (visible) {
           await handleRequest()
-          if (props.interval !== 0) {
+          if (props.delay !== 0) {
             start()
           }
         } else {

@@ -30,6 +30,8 @@ export default defineComponent({
     fileType: { type: String, default: 'pdf' }, // 支持pdf和excel导出
     // 导出文件名
     fileName: { type: String, default: '' },
+    // 延迟时间
+    delay: { type: Number, default: 500 },
     // 导出前的回调
     onBefore: { type: Function }
   },
@@ -46,16 +48,12 @@ export default defineComponent({
         execRequest(onBefore(), {
           success: data => {
             result.value = data
-            setTimeout(() => {
-              dispatch()
-            }, 200)
+            dispatch()
           }
         })
       } else {
         // 没有onBefore时，直接打印
-        setTimeout(() => {
-          dispatch()
-        }, 200)
+        dispatch()
       }
     }
 
@@ -84,7 +82,7 @@ export default defineComponent({
           fileName: props.fileName,
           handleDone
         })
-      }, 200)
+      }, props.delay)
     }
 
     // 导出excel

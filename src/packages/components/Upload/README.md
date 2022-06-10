@@ -16,7 +16,7 @@
 | mode | 上传/预览模式`("upload"、"preview")` | String | `upload` |
 | accept | 上传文件格式`("image/*"、"application/*"、"audio/*"、"video/*")` | String | `-` |
 | size | 上传文件大小，单位`M` | Number | `-` |
-| limit | 上传文件数量 | Number | `-` |
+| maxCount | 上传文件数量 | Number | `-` |
 
 ### Emits
 

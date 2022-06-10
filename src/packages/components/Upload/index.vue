@@ -6,17 +6,17 @@
     :list-type="listType"
     :show-upload-list="showUploadList"
     :accept="accept"
-    :max-count="limit"
+    :max-count="maxCount"
     :before-upload="onBeforeUpload"
     :custom-request="handleCustomRequest"
     @change="handleChange"
     @preview="handlePreview"
     @download="handleDownload">
-    <div v-if="mode === 'upload' && (!limit || files.length < limit)">
+    <div v-if="mode === 'upload' && (!maxCount || files.length < maxCount)">
       <slot>
         <PlusOutlined />
       </slot>
-      <span v-show="limit" class="limit">({{ files.length }}/{{ limit }})</span>
+      <span v-show="maxCount" class="max-count">({{ files.length }}/{{ maxCount }})</span>
     </div>
     <template v-if="hasItemRender" #itemRender="scope">
       <slot name="itemRender" v-bind="scope"></slot>
@@ -53,7 +53,7 @@ export default defineComponent({
     },
     accept: { type: String }, // 'image/*'、'application/*'、'audio/*'、'video/*'
     size: { type: Number },
-    limit: { type: Number }
+    maxCount: { type: Number }
   },
   emits: ['update:file-list', 'change', 'preview', 'download'],
   setup(props, { emit, slots }) {
@@ -249,7 +249,7 @@ export default defineComponent({
   :deep(.ant-upload) {
     position: relative;
 
-    .limit {
+    .max-count {
       position: absolute;
       bottom: 0;
       right: 0;

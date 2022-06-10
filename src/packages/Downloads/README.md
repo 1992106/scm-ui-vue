@@ -18,7 +18,7 @@
 | placement | 气泡框位置 | String | `bottomRight` |
 | trigger | 触发行为，可选 `hover/focus/click/contextmenu` | String | `click` |
 | customRequest | 自定义请求 | Function | `-` |
-| interval | 默认3秒后自动刷新 | Number | `3000` |
+| delay | 延迟3秒后自动刷新 | Number | `3000` |
 | customDownload | 自定义下载 | Function | `-` |
 | customCancel | 自定义取消 | Function | `-` |
 | customDelete | 自定义删除 | Function | `-` |

@@ -55,7 +55,7 @@
             :customRequest="customUpload"
             :accept="accept"
             :size="size"
-            :limit="limit"></x-upload>
+            :maxCount="maxCount"></x-upload>
         </a-form-item>
       </a-form>
     </x-modal>
@@ -99,7 +99,7 @@ export default defineComponent({
     customUpload: { type: Function },
     accept: { type: String, default: 'image/*' },
     size: { type: Number, default: 3 },
-    limit: { type: Number, default: 1 },
+    maxCount: { type: Number, default: 1 },
     showPagination: { type: Boolean, default: false },
     pagination: { type: Object, default: () => ({ page: 1, pageSize: 10 }) },
     paginationConfig: { type: Object, default: () => ({ showLessItems: true }) },

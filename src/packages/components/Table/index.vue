@@ -132,7 +132,7 @@ export default defineComponent({
     const defaultState = {
       // 当 scroll="{x: '100%'}" 和 tableLayout="fixed" 组合使用时：如果列宽总和大于表格宽，则会出现横向滚轴，而不会破坏表格布局
       scroll: { x: '100%', scrollToFirstRowOnChange: true },
-      defaultColumn: { align: 'center' },
+      defaultColumn: { align: 'center', visible: true },
       defaultPaginationConfig: {
         size: 'default',
         defaultPageSize: 20,
@@ -178,7 +178,15 @@ export default defineComponent({
     const spinProps = computed(() => {
       return typeof props.loading === 'object' ? props.loading : { spinning: props.loading }
     })
-    const getColumns = computed(() => props.columns.map(column => mergeProps(defaultState.defaultColumn, column)))
+    const getColumns = computed(() => {
+      return props.columns
+        .map(column => {
+          // 拖动调整宽度时，width 必须是 number 类型
+          const resizable = !isEmpty(column?.width) && typeof column?.width === 'number'
+          return reactive(mergeProps(defaultState.defaultColumn, { resizable }, column))
+        })
+        .filter(val => val?.visible !== false)
+    })
     const getTableSlots = computed(() => {
       return Object.keys(slots).filter(val =>
         [
@@ -285,6 +293,7 @@ export default defineComponent({
 
     // 点击展开图标时触发
     const handleResizeColumn = (width, column) => {
+      column.width = width
       emit('resizeColumn', width, column)
     }
 
@@ -326,6 +335,11 @@ export default defineComponent({
     .ant-table-title,
     .ant-table-footer {
       padding: 0;
+    }
+
+    // 修复拖拽列时会出现横向滚轴
+    .ant-table-thead .ant-table-cell:last-child {
+      overflow-x: hidden;
     }
   }
 

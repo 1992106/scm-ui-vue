@@ -1,11 +1,9 @@
 const defaultOptions = {
   el: null, // 打印目标dom节点
-  title: '', // 打印标题
   debug: false, // 打开调试模式，会显示iframe
   importCss: true, // 引入head 中的link stylesheet
   importStyle: true, // 引入style标签中的样式
-  loadCss: [], // 需要载入的第三方样式表
-  delay: 300 // 延迟打印时间，确保iframe中的静态资源加载完成
+  loadCss: [] // 需要载入的第三方样式表
 }
 let iframe = null
 let dom = null

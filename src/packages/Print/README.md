@@ -17,7 +17,8 @@
 | buttonProps | 按钮 `props` | Object | `-` |
 | qrcodeProps | 二维码 `props` | Object | `-` |
 | barcodeProps | 条形码 `props` | Object | `-` |
-| title | 打印页头 | String | `-` |
+| title | 打印标题 | String | `''` |
+| delay | 延迟时间 | Number | `500` |
 | onBefore | 打印前的回调 | Function | `-` |
 
 ### Emits

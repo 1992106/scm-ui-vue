@@ -43,7 +43,9 @@ export default defineComponent({
     // 条形码
     barcodeProps: { type: Object },
     // 打印页头
-    title: { type: String },
+    title: { type: String, default: '' },
+    // 延迟时间
+    delay: { type: Number, default: 500 },
     // 打印前的回调
     onBefore: { type: Function, default: null }
   },
@@ -81,6 +83,7 @@ export default defineComponent({
       print({
         el: elPrint.value,
         title: props.title,
+        delay: props.delay,
         handleDone
       })
     }

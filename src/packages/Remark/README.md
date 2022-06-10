@@ -24,7 +24,7 @@
 | customSubmit | 自定义提交 | Function | `-` |
 | accept | 上传类型 | String | `image/*` |
 | size | 上传文件大小，单位`M` | Number | `3` |
-| limit | 上传文件数量 | Number | `1` |
+| maxCount | 上传文件数量 | Number | `1` |
 | showPagination | 是否显示分页 | Boolean | `true` |
 | pagination | 当前页数和每页条数 | Object | `{ page: 1, pageSize: 10 }` |
 | paginationConfig | 分页配置项 | Object | `{ showLessItems: true }` |
