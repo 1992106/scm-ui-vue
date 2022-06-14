@@ -148,7 +148,11 @@ export default defineComponent({
       emit('search', { ...params, ...(unref(showPagination) ? state.pagination : {}) })
     }
 
-    const isResize = computed(() => props.gridProps.height === 'auto' && props.gridProps.autoResize)
+    const isResize = computed(
+      () =>
+        (props.gridProps?.height == null || props.gridProps?.height === 'auto') &&
+        (props.gridProps?.autoResize == null || props.gridProps?.autoResize === true)
+    )
 
     const { paramsRef, handleQuery, handleSearch, onReset, onClear } = useSearch(
       emitSearch,

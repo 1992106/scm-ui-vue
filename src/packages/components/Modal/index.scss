@@ -21,19 +21,25 @@
   }
 
   &.is-fullscreen {
-    .ant-modal-header {
-      padding-right: 80px;
+    .ant-modal-close {
+      right: 20px;
+
+      &-x {
+        width: 64px;
+      }
+
+      .x-modal__fullscreen-actions {
+        height: 100%;
+        @include flexRCC;
+
+        & > span {
+          width: 32px;
+        }
+      }
     }
 
-    .x-modal__fullscreen-actions {
-      height: 100%;
-      width: 64px;
-      margin-left: -18px;
-      @include flexRCC;
-
-      & > span {
-        width: 32px;
-      }
+    .ant-modal-header {
+      padding-right: 80px;
     }
   }
 }

@@ -141,9 +141,11 @@ export default defineComponent({
       emit('search', { ...params, ...(unref(showPagination) ? state.pagination : {}) })
     }
 
+    const isResize = computed(() => props.tableProps?.autoResize == null || props.tableProps?.autoResize === true)
+
     const { paramsRef, handleQuery, handleSearch, onReset, onClear } = useSearch(
       emitSearch,
-      props.tableProps.autoResize,
+      isResize,
       toRef(props, 'searchProps'),
       toRef(props, 'tableProps')
     )
