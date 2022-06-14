@@ -2,7 +2,7 @@
   <x-modal
     v-bind="$attrs"
     v-model:visible="modalVisible"
-    class="x-materials-dialog"
+    class="x-materials__dialog"
     :title="title"
     :width="width"
     :height="height"
@@ -225,7 +225,7 @@ export default defineComponent({
 }
 </style>
 <style lang="scss">
-.x-materials-dialog {
+.x-materials__dialog {
   &.x-modal {
     top: 24px;
   }

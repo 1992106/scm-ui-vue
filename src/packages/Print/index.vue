@@ -9,10 +9,10 @@
       </a-button>
     </template>
     <div style="display: none">
-      <div ref="elPrint" class="print-dialog">
+      <div ref="elPrint" class="x-print__dialog">
         <x-qrcode v-if="qrcodeProps" v-bind="qrcodeProps"></x-qrcode>
         <x-barcode v-if="barcodeProps" v-bind="barcodeProps"></x-barcode>
-        <div class="print-content">
+        <div class="x-print__content">
           <slot :data="result"></slot>
         </div>
       </div>
@@ -45,7 +45,7 @@ export default defineComponent({
     // 打印页头
     title: { type: String, default: '' },
     // 延迟时间
-    delay: { type: Number, default: 500 },
+    delay: { type: Number, default: 1000 },
     // 打印前的回调
     onBefore: { type: Function, default: null }
   },
@@ -60,18 +60,14 @@ export default defineComponent({
         // 有onBefore时
         if (!isFunction(onBefore)) return
         execRequest(onBefore(), {
-          success: data => {
+          success: ({ data }) => {
             result.value = data
-            setTimeout(() => {
-              printf()
-            }, 200)
+            printf()
           }
         })
       } else {
         // 没有onBefore时，直接打印
-        setTimeout(() => {
-          printf()
-        }, 200)
+        printf()
       }
     }
 
@@ -80,12 +76,13 @@ export default defineComponent({
     }
 
     const printf = () => {
-      print({
-        el: elPrint.value,
-        title: props.title,
-        delay: props.delay,
-        handleDone
-      })
+      setTimeout(() => {
+        print({
+          el: elPrint.value,
+          title: props.title,
+          handleDone
+        })
+      }, props.delay)
     }
 
     // 提供外部使用
@@ -103,14 +100,14 @@ export default defineComponent({
 })
 </script>
 <style lang="scss" scoped>
-.print-dialog {
+.x-print__dialog {
   display: flex;
 
   & > div:first-of-type {
     margin-right: 10px;
   }
 
-  .print-content {
+  .x-print__content {
     display: flex;
     flex-direction: column;
     flex: 1;

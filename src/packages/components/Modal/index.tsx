@@ -48,25 +48,25 @@ const XModal = defineComponent({
     })
 
     // 全屏
-    const fullScreenRef = ref(false)
+    const fullscreenRef = ref(false)
     watchEffect(() => {
-      fullScreenRef.value = props.fullscreen
+      fullscreenRef.value = props.fullscreen
     })
 
-    const handleFullScreen = (e: Event) => {
+    const handleFullscreen = (e: Event) => {
       e?.stopPropagation()
       e?.preventDefault()
-      fullScreenRef.value = !unref(fullScreenRef)
-      ctx.emit('fullScreen', fullScreenRef.value)
+      fullscreenRef.value = !unref(fullscreenRef)
+      ctx.emit('fullScreen', fullscreenRef.value)
     }
 
     const renderIcon = () => {
       return props?.showFullscreen ? (
-        <div class='x-model-close-fullscreen'>
+        <div class='x-modal__fullscreen-actions'>
           {props.fullscreen ? (
-            <FullscreenExitOutlined onClick={handleFullScreen} />
+            <FullscreenExitOutlined onClick={handleFullscreen} />
           ) : (
-            <FullscreenOutlined onClick={handleFullScreen} />
+            <FullscreenOutlined onClick={handleFullscreen} />
           )}
           <CloseOutlined />
         </div>
@@ -76,7 +76,7 @@ const XModal = defineComponent({
     }
 
     const wrapClassName = computed(() =>
-      [props.wrapClassName, `${unref(fullScreenRef) ? 'x-model-fullscreen' : ''}`].filter(Boolean).join(' ')
+      [props.wrapClassName, `${unref(fullscreenRef) ? 'x-modal__fullscreen' : ''}`].filter(Boolean).join(' ')
     )
 
     const handleCancel = () => {

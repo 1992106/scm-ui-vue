@@ -3,7 +3,7 @@
     <x-modal
       v-bind="$attrs"
       v-model:visible="modalVisible"
-      class="x-remark"
+      class="x-remark__dialog"
       :title="title"
       :width="width"
       destroy-on-close
@@ -254,7 +254,7 @@ export default defineComponent({
           state.confirmLoading = false
         })
         .catch(err => {
-          console.error(err)
+          console.error('remark error', err)
         })
     }
 
@@ -278,7 +278,7 @@ export default defineComponent({
 })
 </script>
 <style lang="scss" scoped>
-.x-remark {
+.x-remark__dialog {
   .x-table {
     .ant-btn-link {
       white-space: normal;

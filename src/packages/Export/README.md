@@ -11,7 +11,7 @@
 | buttonProps | 按钮 `props` | Object | `-` |
 | fileType | 文件类型 | String | `pdf` |
 | fileName | 文件名 | String | `''` |
-| delay | 延迟时间 | Number | `500` |
+| delay | 延迟时间 | Number | `200` |
 | onBefore | 导出前的回调 | Function | `-` |
 
 ### Emits

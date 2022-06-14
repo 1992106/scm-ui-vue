@@ -17,9 +17,9 @@
         <slot name="toolBar"></slot>
       </div>
       <!--内容-->
-      <div class="x-page-container">
+      <div class="x-page__container">
         <slot>
-          <div v-if="dataSource.length" class="section">
+          <div v-if="dataSource.length" class="x-page__render">
             <div class="scroll">
               <template v-for="(item, index) in dataSource" :key="getValueByRowKey(rowKey, item, index)">
                 <slot name="itemRender" :record="item" :index="index"></slot>
@@ -212,22 +212,25 @@ export default defineComponent({
     margin-bottom: 10px;
   }
 
-  &-container {
+  &__container {
     display: flex;
     flex-direction: column;
     flex: 1;
     overflow-y: auto;
     background-color: #fff;
 
-    .section {
+    .x-page__render {
       display: flex;
       flex-direction: column;
       height: 100%;
 
       .scroll {
         flex: 1;
-        padding: 10px 10px 0;
         overflow-y: auto;
+      }
+
+      .ant-pagination {
+        padding: 10px;
       }
     }
 
@@ -236,10 +239,6 @@ export default defineComponent({
       display: flex;
       align-items: center;
       justify-content: center;
-    }
-
-    .ant-pagination {
-      padding: 10px;
     }
   }
 }

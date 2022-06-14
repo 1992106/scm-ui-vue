@@ -1,11 +1,11 @@
 <template>
-  <div class="download-list" :style="getStyle">
+  <div class="x-download__list" :style="getStyle">
     <template v-if="list.length">
-      <div v-for="(file, index) in list" :key="getValueByRowKey(rowKey, file, index)" class="download-item">
-        <div class="download-item__icon">
+      <div v-for="(file, index) in list" :key="getValueByRowKey(rowKey, file, index)" class="x-download__item">
+        <div class="x-download__item-icon">
           <FileExcelOutlined />
         </div>
-        <div class="download-item__box" :style="{ color: file?.exportResult === -1 ? '#ccc' : '' }">
+        <div class="x-download__item-box" :style="{ color: file?.exportResult === -1 ? '#ccc' : '' }">
           <div class="name" :title="file?.fileName">{{ file?.fileName }}</div>
           <div class="actions">
             <p v-if="file?.taskStatus === 0">
@@ -108,25 +108,25 @@ export default defineComponent({
 })
 </script>
 <style lang="scss" scoped>
-.x-downloads-overlay {
-  .download-list {
+.x-downloads__overlay {
+  .x-download__list {
     overflow-x: hidden;
     overflow-y: auto;
     padding: 12px 16px;
 
-    .download-item {
+    .x-download__item {
       display: flex;
       flex-direction: row;
       align-items: center;
       margin-bottom: 10px;
 
-      .download-item__icon {
+      &-icon {
         width: 30px;
         text-align: left;
         font-size: 20px;
       }
 
-      .download-item__box {
+      &-box {
         display: flex;
         flex-direction: column;
         justify-content: center;

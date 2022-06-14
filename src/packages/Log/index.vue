@@ -3,7 +3,7 @@
     <x-drawer
       v-bind="$attrs"
       v-model:visible="modalVisible"
-      class="x-log"
+      class="x-log__dialog"
       :title="title"
       :width="width"
       :spin-props="spinning"
@@ -151,7 +151,7 @@ export default defineComponent({
 })
 </script>
 <style lang="scss" scoped>
-.x-log {
+.x-log__dialog {
   .color {
     color: $color-primary;
   }

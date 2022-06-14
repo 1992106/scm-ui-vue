@@ -8,7 +8,7 @@
         </template>
       </a-button>
     </template>
-    <div ref="elExport" class="export-content">
+    <div ref="elExport" class="x-export__content">
       <slot :data="result"></slot>
     </div>
   </div>
@@ -31,7 +31,7 @@ export default defineComponent({
     // 导出文件名
     fileName: { type: String, default: '' },
     // 延迟时间
-    delay: { type: Number, default: 500 },
+    delay: { type: Number, default: 200 },
     // 导出前的回调
     onBefore: { type: Function }
   },
@@ -46,7 +46,7 @@ export default defineComponent({
         // 有onBefore时
         if (!isFunction(onBefore)) return
         execRequest(onBefore(), {
-          success: data => {
+          success: ({ data }) => {
             result.value = data
             dispatch()
           }
@@ -106,7 +106,7 @@ export default defineComponent({
 </script>
 <style lang="scss" scoped>
 .x-export {
-  .export-content {
+  &__content {
     position: fixed;
     width: 100%;
     top: -9999px;

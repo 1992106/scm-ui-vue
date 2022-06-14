@@ -1,5 +1,5 @@
 <template>
-  <div class="versions-list">
+  <div class="x-versions-list">
     <template v-if="versionList.length">
       <div class="scroll">
         <a-row v-bind="rowProps">
@@ -67,7 +67,7 @@ export default defineComponent({
 </script>
 <style lang="scss" scoped>
 .x-versions {
-  .versions-list {
+  &__list {
     display: flex;
     flex-direction: column;
     flex: 1;

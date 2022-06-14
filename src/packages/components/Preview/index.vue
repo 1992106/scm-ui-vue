@@ -1,6 +1,12 @@
 <template>
   <div style="display: none">
-    <a-image-preview-group :preview="{ current, visible: isPreview, onVisibleChange: handleVisibleChange }">
+    <a-image-preview-group
+      :preview="{
+        rootClassName: 'x-preview__root',
+        current,
+        visible: isPreview,
+        onVisibleChange: handleVisibleChange
+      }">
       <a-image v-for="src in urls" :key="src" :src="src" />
     </a-image-preview-group>
   </div>
@@ -47,3 +53,16 @@ export default defineComponent({
   }
 })
 </script>
+<style lang="scss">
+.x-preview__root {
+  .ant-image-preview-switch-left,
+  .ant-image-preview-switch-right {
+    color: rgb(0 0 0 / 45%);
+    background: rgb(255 255 255 / 100%);
+  }
+
+  .ant-image-preview-operations {
+    color: rgb(255 255 255 / 100%);
+  }
+}
+</style>

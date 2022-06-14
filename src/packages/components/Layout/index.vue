@@ -116,12 +116,6 @@ export default defineComponent({
 
   .ant-layout-content {
     padding: 10px;
-
-    :deep(.vxe-grid--toolbar-wrapper) {
-      .vxe-toolbar {
-        padding: 0 10px;
-      }
-    }
   }
 }
 </style>

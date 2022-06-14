@@ -48,10 +48,10 @@ export const getTableScroll = ({ id, extraHeight } = {}) => {
   if (tHeader) {
     tHeaderBottom = tHeader.getBoundingClientRect().bottom
   }
-  // 分页器：高度+margin20
+  // 分页器的高度
   const pagination = document.querySelector('.x-table .ant-pagination')
   const paginationHeight = pagination ? pagination.getBoundingClientRect().height : 0
-  // 窗体高度-表格内容顶部的高度-表格内容底部的高度
+  // 表格窗体高度-表格内容顶部的高度-表格内容底部的高度
   const height = `calc(100vh - ${tHeaderBottom + paginationHeight + extraHeight}px)`
 
   // TODO: 设置表格高度不生效

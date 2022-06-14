@@ -1,6 +1,8 @@
 <template>
   <x-table
     ref="xProTable"
+    custom-zoom
+    custom-setting
     auto-resize
     :extra-height="12"
     v-bind="tableProps"
@@ -183,12 +185,3 @@ export default defineComponent({
   }
 })
 </script>
-<style lang="scss" scoped>
-.x-table {
-  background-color: #f0f2f5;
-
-  .x-search {
-    margin-bottom: 10px;
-  }
-}
-</style>

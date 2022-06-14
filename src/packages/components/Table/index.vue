@@ -1,15 +1,34 @@
 <template>
-  <div class="x-table">
+  <div :class="['x-table', isFullscreen ? 'x-table__fullscreen' : '']">
     <a-spin v-bind="spinProps">
       <!--搜索栏-->
-      <template v-if="hasSearchBar">
+      <div v-if="hasSearchBar" class="x-table__search">
         <slot name="searchBar"></slot>
-      </template>
+      </div>
       <!--工具栏-->
-      <div v-if="hasToolBar" class="toolbar">
-        <slot name="toolBar"></slot>
+      <div v-if="hasToolBar" class="x-table__toolbar">
+        <div class="toolbar">
+          <slot name="toolBar"></slot>
+        </div>
+        <a-space v-if="customSetting || customZoom">
+          <template v-if="customSetting">
+            <ColumnSetting
+              :columns="customColumns"
+              :backup-columns="backupColumns"
+              @change="handleSettingColumn"></ColumnSetting>
+          </template>
+          <template v-if="customZoom">
+            <a-button shape="circle" size="middle" @click="toggleFullscreen">
+              <template #icon>
+                <FullscreenOutlined v-if="!isFullscreen" />
+                <FullscreenExitOutlined v-else />
+              </template>
+            </a-button>
+          </template>
+        </a-space>
       </div>
       <a-table
+        v-if="getColumns.length"
         ref="xTable"
         bordered
         v-bind="$attrs"
@@ -45,22 +64,31 @@
           <slot :name="slot" v-bind="scope"></slot>
         </template>
       </a-table>
+      <!--当columns为空时默认现在空块-->
+      <div v-else class="x-table__empty-block" :style="{ height: emptyBlockHeight }"></div>
     </a-spin>
   </div>
 </template>
 <script>
-import { defineComponent, computed, mergeProps, ref, reactive, toRef, toRefs, unref } from 'vue'
+import { defineComponent, computed, mergeProps, ref, reactive, toRef, toRefs, unref, nextTick } from 'vue'
+import { FullscreenExitOutlined, FullscreenOutlined } from '@ant-design/icons-vue'
 import { Spin, Table } from 'ant-design-vue'
+import ColumnSetting from './ColumnSetting.vue'
 import CellRender from './CellRender'
 import { useScroll } from './useScroll'
+import { cloneDeep } from 'lodash-es'
 import { isEmpty } from '@src/utils'
 import { getSortDirection, getValueByRowKey } from './utils'
+import { columnsToStorage, mergeStorageAndColumns, storageToColumns } from './utils'
 
 export default defineComponent({
   name: 'XTable',
   components: {
+    FullscreenOutlined,
+    FullscreenExitOutlined,
     'a-table': Table,
     'a-spin': Spin,
+    ColumnSetting,
     CellRender
   },
   inheritAttrs: false,
@@ -110,7 +138,13 @@ export default defineComponent({
     locale: { type: Object },
     components: Object,
     customRow: Function,
-    customHeaderRow: Function
+    customHeaderRow: Function,
+    // 自定义缩放
+    customZoom: { type: Boolean, default: false },
+    // 自定义设置
+    customSetting: { type: Boolean, default: false },
+    // 本地Storage名称，拖拽列和自定义表头时本地储存
+    storageName: String
   },
   emits: [
     'search',
@@ -164,8 +198,33 @@ export default defineComponent({
     /**
      * data
      */
+    const getTransformColumns = columns => {
+      return columns.map(column => {
+        // 拖动调整宽度时，width 必须是 number 类型
+        const resizable = !isEmpty(column?.width) && typeof column?.width === 'number'
+        return mergeProps(defaultState.defaultColumn, { resizable }, column)
+      })
+    }
+    const getCustomColumns = () => {
+      let columns = props.columns
+      if (props.storageName) {
+        const storageColumns = localStorage.getItem(props.storageName)
+        const oldColumns = JSON.parse(storageColumns || '[]')
+        if (!isEmpty(oldColumns)) {
+          const sourceColumns = props.columns
+          // 对比localStorage和Props（删除移除的，添加新增的）
+          const newColumns = mergeStorageAndColumns(oldColumns, sourceColumns)
+          columns = storageToColumns(newColumns, sourceColumns)
+        }
+      }
+      return getTransformColumns(columns)
+    }
     const state = reactive({
-      scroll: {}
+      scroll: {},
+      isFullscreen: false,
+      emptyBlockHeight: '',
+      customColumns: getCustomColumns(),
+      backupColumns: cloneDeep(props.columns)
     })
     /**
      * refs
@@ -179,13 +238,7 @@ export default defineComponent({
       return typeof props.loading === 'object' ? props.loading : { spinning: props.loading }
     })
     const getColumns = computed(() => {
-      return props.columns
-        .map(column => {
-          // 拖动调整宽度时，width 必须是 number 类型
-          const resizable = !isEmpty(column?.width) && typeof column?.width === 'number'
-          return reactive(mergeProps(defaultState.defaultColumn, { resizable }, column))
-        })
-        .filter(val => val?.visible !== false)
+      return state.customColumns.filter(val => val?.visible !== false)
     })
     const getTableSlots = computed(() => {
       return Object.keys(slots).filter(val =>
@@ -291,10 +344,44 @@ export default defineComponent({
       emit('expandedRowsChange', expandedRows)
     }
 
-    // 点击展开图标时触发
+    // 全屏
+    const toggleFullscreen = () => {
+      state.isFullscreen = !state.isFullscreen
+      // 触发表格计算
+      nextTick(() => {
+        const event = document.createEvent('HTMLEvents')
+        event.initEvent('resize', true, true)
+        window.dispatchEvent(event)
+      })
+    }
+
+    // 拖拽列
     const handleResizeColumn = (width, column) => {
       column.width = width
       emit('resizeColumn', width, column)
+      setColumnsToStorage()
+    }
+
+    // 配置列
+    const handleSettingColumn = columns => {
+      state.customColumns = columns
+      setColumnsToStorage()
+      // 当columns为空时，计算空块的高度
+      if (getColumns.value.length === 0) {
+        const toolbar = document.querySelector('.x-table .x-table__toolbar')
+        const toolbarBottom = toolbar?.getBoundingClientRect()?.bottom ?? 0
+        state.emptyBlockHeight = `calc(100vh - ${toolbarBottom + (props?.extraHeight ?? 0)}px)`
+      }
+    }
+
+    // 设置本地缓存
+    const setColumnsToStorage = () => {
+      if (props.storageName) {
+        const storageColumns = columnsToStorage(state.customColumns)
+        if (storageColumns) {
+          localStorage.setItem(props.storageName, JSON.stringify(storageColumns))
+        }
+      }
     }
 
     // 是否显示插槽
@@ -317,18 +404,32 @@ export default defineComponent({
       handleChange,
       handleExpand,
       handleExpandedRowsChange,
-      handleResizeColumn
+      toggleFullscreen,
+      handleResizeColumn,
+      handleSettingColumn
     }
   }
 })
 </script>
 <style lang="scss" scoped>
 .x-table {
-  .toolbar {
+  background-color: #f0f2f5;
+
+  &__search {
+    margin-bottom: 10px;
+  }
+
+  &__toolbar {
     display: flex;
-    flex-wrap: wrap;
-    padding: 10px;
+    padding: 0 10px;
     background-color: #fff;
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      flex: 1;
+      padding: 10px 0;
+    }
   }
 
   :deep(.ant-table) {
@@ -351,6 +452,23 @@ export default defineComponent({
 
   :deep(.table-striped) {
     background-color: #fafafa;
+  }
+
+  // 空块
+  &__empty-block {
+    background: #fff;
+    border: 1px solid #f0f0f0;
+  }
+
+  // 全屏
+  &__fullscreen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    padding: 10px;
+    z-index: 10001;
   }
 }
 </style>

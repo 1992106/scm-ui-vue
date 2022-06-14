@@ -85,7 +85,7 @@
       <slot :name="slot" v-bind="scope"></slot>
     </template>
     <!--分页-->
-    <template v-if="data.length" #pager>
+    <template v-if="data.length || customColumns.length" #pager>
       <slot name="pagination">
         <x-pagination
           v-model:pagination="pages"
@@ -233,20 +233,21 @@ export default defineComponent({
       })
     }
     const getCustomColumns = () => {
+      let columns = props.columns
       if (props.storageName) {
         const storageColumns = localStorage.getItem(props.storageName)
-        const columns = JSON.parse(storageColumns || '[]')
-        if (!isEmpty(columns)) {
+        const oldColumns = JSON.parse(storageColumns || '[]')
+        if (!isEmpty(oldColumns)) {
           const sourceColumns = props.columns
-          const list = mergeStorageAndColumns(columns, sourceColumns) // 对比localStorage和Props（删除移除的，添加新增的）
-          return storageToColumns(list, sourceColumns)
+          // 对比localStorage和Props（删除移除的，添加新增的）
+          const newColumns = mergeStorageAndColumns(oldColumns, sourceColumns)
+          columns = storageToColumns(newColumns, sourceColumns)
         }
-        return props.columns
       }
-      return props.columns
+      return getTransformCellText(columns)
     }
     const state = reactive({
-      customColumns: getTransformCellText(getCustomColumns()),
+      customColumns: getCustomColumns(),
       backupColumns: cloneDeep(props.columns)
     })
     /**
@@ -506,7 +507,7 @@ export default defineComponent({
       $xGrid.reloadColumn(columns)
       setColumnsToStorage()
     }
-
+    // 设置本地缓存
     const setColumnsToStorage = () => {
       if (props.storageName) {
         const storageColumns = columnsToStorage(state.customColumns)
@@ -560,14 +561,24 @@ export default defineComponent({
 </script>
 <style lang="scss" scoped>
 .x-grid {
-  :deep(.vxe-toolbar) {
-    height: auto;
+  background-color: #f0f2f5;
 
-    .toolbar {
-      display: flex;
-      flex-wrap: wrap;
-      background-color: #fff;
-      margin: 10px 0;
+  :deep(.vxe-grid--form-wrapper) {
+    .x-search {
+      margin-bottom: 10px;
+    }
+  }
+
+  :deep(.vxe-grid--toolbar-wrapper) {
+    .vxe-toolbar {
+      height: auto;
+      padding: 0 10px;
+
+      .toolbar {
+        display: flex;
+        flex-wrap: wrap;
+        margin: 10px 0;
+      }
     }
 
     .vxe-tools--wrapper {
@@ -604,6 +615,11 @@ export default defineComponent({
 
   .ant-pagination {
     height: 52px;
+    padding: 10px;
+  }
+
+  // 全屏
+  .is--maximize {
     padding: 10px;
   }
 }

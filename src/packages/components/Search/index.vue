@@ -296,16 +296,12 @@ export default defineComponent({
     const canExpand = ref(props.defaultExpand)
     const handleExpand = () => {
       canExpand.value = !canExpand.value
+      // 触发表格计算
       nextTick(() => {
-        dispatchResize()
+        const event = document.createEvent('HTMLEvents')
+        event.initEvent('resize', true, true)
+        window.dispatchEvent(event)
       })
-    }
-
-    // 派发事件
-    const dispatchResize = () => {
-      const event = document.createEvent('HTMLEvents')
-      event.initEvent('resize', true, true)
-      window.dispatchEvent(event)
     }
 
     // 是否显示插槽

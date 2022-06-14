@@ -1,5 +1,5 @@
-import { isEmpty, recursive } from '@src/utils'
 import { omit } from 'lodash-es'
+import { isEmpty, recursive } from '@src/utils'
 
 const typeMap = {
   seq: '序号',
@@ -66,6 +66,7 @@ export const columnsToStorage = columns => {
       ...(val?.fixed ? { fixed: val?.fixed } : {}),
       ...(val?.width ? { width: val?.width } : {}),
       ...(val?.minWidth ? { minWidth: val?.minWidth } : {}),
+      ...(val?.maxWidth ? { maxWidth: val?.maxWidth } : {}),
       visible: isEmpty(val?.visible) ? true : val?.visible
     }
   })
@@ -74,7 +75,7 @@ export const columnsToStorage = columns => {
 export const storageToColumns = (storageColumns, columns) => {
   return (storageColumns || []).map(val => {
     const column = (columns || []).find(v => val?.field === getField(v))
-    const omitList = ['fixed', 'width', 'minWidth']
+    const omitList = ['fixed', 'width', 'minWidth', 'maxWidth']
     const restColumn = omit(column || {}, omitList)
     // 递归遍历子设置元素visible
     if (!isEmpty(column.children)) {
@@ -87,6 +88,7 @@ export const storageToColumns = (storageColumns, columns) => {
       ...(val?.fixed ? { fixed: val?.fixed } : {}),
       ...(val?.width ? { width: val?.width } : {}),
       ...(val?.minWidth ? { minWidth: val?.minWidth } : {}),
+      ...(val?.maxWidth ? { maxWidth: val?.maxWidth } : {}),
       visible: val?.visible
     }
   })

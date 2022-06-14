@@ -3,6 +3,7 @@
     <x-modal
       v-bind="$attrs"
       v-model:visible="modalVisible"
+      class="x-import__dialog"
       :title="title"
       :width="width"
       :spin-props="spinning"
@@ -121,10 +122,12 @@ export default defineComponent({
 })
 </script>
 <style lang="scss" scoped>
-:deep(.import-template) {
-  .ant-upload.ant-upload-select-picture-card {
-    width: 120px;
-    height: 120px;
+.x-import__dialog {
+  :deep(.import-template) {
+    .ant-upload.ant-upload-select-picture-card {
+      width: 120px;
+      height: 120px;
+    }
   }
 }
 </style>

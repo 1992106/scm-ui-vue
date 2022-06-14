@@ -53,6 +53,8 @@ const XImage = defineComponent({
           compressUrls.value = thumbUrls.value.map(() => fallUrl)
           // 压缩图片
           const { width, height, quality } = props
+          // 图片质量为0，表示不压缩
+          if (quality === 0) return
           Promise.allSettled(thumbUrls.value.map(url => compressImage(url, width, height, quality)))
             .then(res => {
               // @ts-ignore
@@ -108,7 +110,7 @@ const XImage = defineComponent({
         const w = width || height
         const h = height || width
         return (
-          <div class='x-image-empty' style={{ width: w, height: h }}>
+          <div class='x-image__empty' style={{ width: w, height: h }}>
             <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description='暂无图片' />
           </div>
         )

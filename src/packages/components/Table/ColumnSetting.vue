@@ -1,10 +1,12 @@
 <template>
   <a-tooltip v-model:visible="visible" color="#fff" trigger="click" placement="bottomRight">
-    <button class="vxe-button type--button is--circle" type="button" title="列设置" @click="handleClick">
-      <Iconfont type="icon-setting" size="18"></Iconfont>
-    </button>
+    <a-button shape="circle" size="middle" title="列设置" @click="handleClick">
+      <template #icon>
+        <SettingOutlined />
+      </template>
+    </a-button>
     <template #title>
-      <div class="x-grid__setting">
+      <div class="x-table__setting">
         <div class="setting-head">
           <a-checkbox v-model:checked="checkAll" :indeterminate="indeterminate" @change="handleCheckAll">
             列展示
@@ -15,7 +17,7 @@
           <div v-if="leftFixed.length" class="box">
             <div class="title">固定在左侧</div>
             <draggable :list="leftFixed">
-              <div v-for="item in leftFixed" :key="item.field" class="group">
+              <div v-for="item in leftFixed" :key="item.dataIndex" class="group">
                 <a-checkbox v-model:checked="item.visible">{{ item.title }}</a-checkbox>
                 <a-space :size="2">
                   <Iconfont
@@ -35,7 +37,7 @@
           <div v-if="middleList.length" class="box">
             <div class="title">不固定</div>
             <draggable :list="middleList">
-              <div v-for="item in middleList" :key="item.field" class="group">
+              <div v-for="item in middleList" :key="item.dataIndex" class="group">
                 <a-checkbox v-model:checked="item.visible">{{ item.title }}</a-checkbox>
                 <a-space :size="2">
                   <Iconfont
@@ -55,7 +57,7 @@
           <div v-if="rightFixed.length" class="box">
             <div class="title">固定在右侧</div>
             <draggable :list="rightFixed">
-              <div v-for="item in rightFixed" :key="item.field" class="group">
+              <div v-for="item in rightFixed" :key="item.dataIndex" class="group">
                 <a-checkbox v-model:checked="item.visible">{{ item.title }}</a-checkbox>
                 <a-space :size="2">
                   <Iconfont
@@ -85,6 +87,7 @@
 </template>
 <script>
 import { defineComponent, reactive, toRefs, watch } from 'vue'
+import { SettingOutlined } from '@ant-design/icons-vue'
 import Iconfont from '@components/IconFont'
 import { VueDraggableNext } from 'vue-draggable-next'
 import { cloneDeep, omit } from 'lodash-es'
@@ -94,6 +97,7 @@ export default defineComponent({
   name: 'ColumnSetting',
   components: {
     Iconfont,
+    SettingOutlined,
     draggable: VueDraggableNext
   },
   props: {
@@ -124,7 +128,7 @@ export default defineComponent({
         state.sourceColumns = cloneDeep(props.columns)
         const columns = columnsToStorage(props.columns)
         state.revokeColumns = cloneDeep(columns)
-        state.leftFixed = columns.filter(val => val?.fixed === 'left')
+        state.leftFixed = columns.filter(val => val?.fixed === 'left' || val?.fixed === true)
         state.middleList = columns.filter(val => !val?.fixed)
         state.rightFixed = columns.filter(val => val?.fixed === 'right')
       }
@@ -154,17 +158,17 @@ export default defineComponent({
     )
 
     const removeLeftFixed = column => {
-      const index = state.leftFixed.findIndex(val => val.field === column.field)
+      const index = state.leftFixed.findIndex(val => val.dataIndex === column.dataIndex)
       state.leftFixed.splice(index, 1)
     }
 
     const removeMiddleList = column => {
-      const index = state.middleList.findIndex(val => val.field === column.field)
+      const index = state.middleList.findIndex(val => val.dataIndex === column.dataIndex)
       state.middleList.splice(index, 1)
     }
 
     const removeRightFixed = column => {
-      const index = state.rightFixed.findIndex(val => val.field === column.field)
+      const index = state.rightFixed.findIndex(val => val.dataIndex === column.dataIndex)
       state.rightFixed.splice(index, 1)
     }
 
@@ -202,7 +206,7 @@ export default defineComponent({
     // 重置
     const handleReset = () => {
       const backupColumns = cloneDeep(columnsToStorage(props.backupColumns))
-      state.leftFixed = backupColumns.filter(val => val?.fixed === 'left')
+      state.leftFixed = backupColumns.filter(val => val?.fixed === 'left' || val?.fixed === true)
       state.middleList = backupColumns.filter(val => !val?.fixed)
       state.rightFixed = backupColumns.filter(val => val?.fixed === 'right')
     }
@@ -225,7 +229,7 @@ export default defineComponent({
     // 撤销上一次
     const handleRevoke = () => {
       const revokeColumns = cloneDeep(state.revokeColumns)
-      state.leftFixed = revokeColumns.filter(val => val?.fixed === 'left')
+      state.leftFixed = revokeColumns.filter(val => val?.fixed === 'left' || val?.fixed === true)
       state.middleList = revokeColumns.filter(val => !val?.fixed)
       state.rightFixed = revokeColumns.filter(val => val?.fixed === 'right')
     }
@@ -257,7 +261,7 @@ export default defineComponent({
 })
 </script>
 <style lang="scss" scoped>
-.x-grid__setting {
+.x-table__setting {
   margin: -6px -8px;
   color: $text-color;
   width: 200px;

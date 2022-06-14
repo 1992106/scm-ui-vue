@@ -35,7 +35,7 @@ const prinf = options => {
     if (op.handleDone) {
       op.handleDone()
     }
-  }, op.delay)
+  }, 200)
 }
 
 const createIframe = op => {

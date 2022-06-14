@@ -2,7 +2,7 @@
   <a-popover
     v-bind="$attrs"
     v-model:visible="popoverVisible"
-    overlayClassName="x-downloads-overlay"
+    overlayClassName="x-downloads__overlay"
     :title="title"
     :placement="placement"
     :trigger="trigger">
@@ -123,7 +123,7 @@ export default defineComponent({
 })
 </script>
 <style lang="scss">
-.x-downloads-overlay {
+.x-downloads__overlay {
   .ant-popover-title {
     padding-top: 10px;
     padding-bottom: 8px;
