@@ -9,10 +9,10 @@
       </a-button>
     </template>
     <div style="display: none">
-      <div ref="elPrint" class="x-print__dialog">
+      <div ref="elPrint" class="x-print__content">
         <x-qrcode v-if="qrcodeProps" v-bind="qrcodeProps"></x-qrcode>
         <x-barcode v-if="barcodeProps" v-bind="barcodeProps"></x-barcode>
-        <div class="x-print__content">
+        <div class="x-print__content-box">
           <slot :data="result"></slot>
         </div>
       </div>
@@ -100,14 +100,14 @@ export default defineComponent({
 })
 </script>
 <style lang="scss" scoped>
-.x-print__dialog {
+.x-print__content {
   display: flex;
 
   & > div:first-of-type {
     margin-right: 10px;
   }
 
-  .x-print__content {
+  &-box {
     display: flex;
     flex-direction: column;
     flex: 1;

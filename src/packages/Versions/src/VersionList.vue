@@ -1,5 +1,5 @@
 <template>
-  <div class="x-versions-list">
+  <div class="x-versions__list">
     <template v-if="versionList.length">
       <div class="scroll">
         <a-row v-bind="rowProps">
