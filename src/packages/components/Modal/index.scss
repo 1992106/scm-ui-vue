@@ -18,8 +18,14 @@
         overflow-y: auto;
       }
     }
+  }
 
-    &-actions {
+  &.is-fullscreen {
+    .ant-modal-header {
+      padding-right: 80px;
+    }
+
+    .x-modal__fullscreen-actions {
       height: 100%;
       width: 64px;
       margin-left: -18px;
@@ -29,9 +35,5 @@
         width: 32px;
       }
     }
-  }
-
-  .ant-modal-header {
-    padding-right: 80px;
   }
 }

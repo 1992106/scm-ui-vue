@@ -583,7 +583,7 @@ export default defineComponent({
 
     .vxe-tools--wrapper {
       .vxe-button {
-        margin: 10px 0 10px 20px;
+        margin: 10px 0 10px 10px;
       }
     }
 

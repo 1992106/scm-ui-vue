@@ -48,20 +48,20 @@ const XModal = defineComponent({
     })
 
     // 全屏
-    const fullscreenRef = ref(false)
+    const canFullscreen = ref(false)
     watchEffect(() => {
-      fullscreenRef.value = props.fullscreen
+      canFullscreen.value = props.fullscreen
     })
 
     const handleFullscreen = (e: Event) => {
       e?.stopPropagation()
       e?.preventDefault()
-      fullscreenRef.value = !unref(fullscreenRef)
-      ctx.emit('fullScreen', fullscreenRef.value)
+      canFullscreen.value = !unref(canFullscreen)
+      ctx.emit('fullScreen', canFullscreen.value)
     }
 
     const renderIcon = () => {
-      return props?.showFullscreen ? (
+      return props.showFullscreen ? (
         <div class='x-modal__fullscreen-actions'>
           {props.fullscreen ? (
             <FullscreenExitOutlined onClick={handleFullscreen} />
@@ -76,7 +76,7 @@ const XModal = defineComponent({
     }
 
     const wrapClassName = computed(() =>
-      [props.wrapClassName, `${unref(fullscreenRef) ? 'x-modal__fullscreen' : ''}`].filter(Boolean).join(' ')
+      [props.wrapClassName, `${unref(canFullscreen) ? 'x-modal__fullscreen' : ''}`].filter(Boolean).join(' ')
     )
 
     const handleCancel = () => {
@@ -95,7 +95,7 @@ const XModal = defineComponent({
         {...props}
         {...ctx.attrs}
         wrapClassName={unref(wrapClassName)}
-        class={['x-modal', props?.class]}
+        class={['x-modal', `${props.showFullscreen ? 'is-fullscreen' : ''}`, props?.class]}
         closeIcon={renderIcon()}
         title={ctx.slots?.title?.() || ctx.attrs?.title}
         footer={ctx.slots?.footer?.() || ctx.attrs?.footer}

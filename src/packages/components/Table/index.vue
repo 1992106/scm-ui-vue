@@ -1,5 +1,5 @@
 <template>
-  <div :class="['x-table', isFullscreen ? 'x-table__fullscreen' : '']">
+  <div :class="['x-table', customZoom ? 'is-fullscreen' : '', canFullscreen ? 'x-table__fullscreen' : '']">
     <a-spin v-bind="spinProps">
       <!--搜索栏-->
       <div v-if="hasSearchBar" class="x-table__search">
@@ -20,7 +20,7 @@
           <template v-if="customZoom">
             <a-button shape="circle" size="middle" @click="toggleFullscreen">
               <template #icon>
-                <FullscreenOutlined v-if="!isFullscreen" />
+                <FullscreenOutlined v-if="!canFullscreen" />
                 <FullscreenExitOutlined v-else />
               </template>
             </a-button>
@@ -221,7 +221,7 @@ export default defineComponent({
     }
     const state = reactive({
       scroll: {},
-      isFullscreen: false,
+      canFullscreen: false,
       emptyBlockHeight: '',
       customColumns: getCustomColumns(),
       backupColumns: cloneDeep(props.columns)
@@ -346,7 +346,7 @@ export default defineComponent({
 
     // 全屏
     const toggleFullscreen = () => {
-      state.isFullscreen = !state.isFullscreen
+      state.canFullscreen = !state.canFullscreen
       // 触发表格计算
       nextTick(() => {
         const event = document.createEvent('HTMLEvents')
@@ -429,6 +429,12 @@ export default defineComponent({
       flex-wrap: wrap;
       flex: 1;
       padding: 10px 0;
+    }
+  }
+
+  &.is-fullscreen {
+    .x-table__toolbar .toolbar {
+      padding-left: 10px;
     }
   }
 
