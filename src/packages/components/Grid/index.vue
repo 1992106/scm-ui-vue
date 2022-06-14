@@ -85,7 +85,7 @@
       <slot :name="slot" v-bind="scope"></slot>
     </template>
     <!--分页-->
-    <template v-if="data.length || customColumns.length" #pager>
+    <template v-if="canPagination" #pager>
       <slot name="pagination">
         <x-pagination
           v-model:pagination="pages"
@@ -297,6 +297,9 @@ export default defineComponent({
     const getScrollY = computed(() => mergeProps(defaultState.defaultScrollY, props.scrollY))
     const getTreeConfig = computed(() => (props.stripe ? null : props.treeConfig))
     const selectedType = computed(() => props.columns.find(column => column?.type))
+    const canPagination = computed(
+      () => props.data?.length || state.customColumns.filter(val => val?.visible !== false).length
+    )
     /**
      * methods
      */
@@ -539,6 +542,7 @@ export default defineComponent({
       getScrollX,
       getScrollY,
       getTreeConfig,
+      canPagination,
       handleRadioChange,
       handleCheckboxChange,
       handleCheckboxAll,
