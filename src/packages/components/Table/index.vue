@@ -74,7 +74,7 @@
 <script>
 import { defineComponent, computed, mergeProps, ref, reactive, toRef, toRefs, unref, nextTick } from 'vue'
 import { FullscreenExitOutlined, FullscreenOutlined } from '@ant-design/icons-vue'
-import { Spin, Table } from 'ant-design-vue'
+import { Button, Space, Spin, Table } from 'ant-design-vue'
 import ColumnSetting from './ColumnSetting.vue'
 import CellRender from './CellRender'
 import { useScroll } from './useScroll'
@@ -89,6 +89,8 @@ export default defineComponent({
     FullscreenExitOutlined,
     'a-table': Table,
     'a-spin': Spin,
+    'a-space': Space,
+    'a-button': Button,
     ColumnSetting,
     CellRender
   },
