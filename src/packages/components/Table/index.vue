@@ -1,5 +1,5 @@
 <template>
-  <div :class="['x-table', customZoom ? 'is-fullscreen' : '', canFullscreen ? 'x-table__fullscreen' : '']">
+  <div :class="['x-table', canFullscreen ? 'x-table__fullscreen' : '']">
     <a-spin v-bind="spinProps">
       <!--搜索栏-->
       <div v-if="hasSearchBar" class="x-table__search">
@@ -10,22 +10,24 @@
         <div class="toolbar">
           <slot name="toolBar"></slot>
         </div>
-        <a-space v-if="customSetting || customZoom">
-          <template v-if="customSetting">
-            <ColumnSetting
-              :columns="customColumns"
-              :backup-columns="backupColumns"
-              @change="handleSettingColumn"></ColumnSetting>
-          </template>
-          <template v-if="customZoom">
-            <a-button shape="circle" size="middle" @click="toggleFullscreen">
-              <template #icon>
-                <FullscreenOutlined v-if="!canFullscreen" />
-                <FullscreenExitOutlined v-else />
-              </template>
-            </a-button>
-          </template>
-        </a-space>
+        <div v-if="customSetting || customZoom" class="custom">
+          <a-space>
+            <template v-if="customSetting">
+              <ColumnSetting
+                :columns="customColumns"
+                :backup-columns="backupColumns"
+                @change="handleSettingColumn"></ColumnSetting>
+            </template>
+            <template v-if="customZoom">
+              <a-button shape="circle" size="middle" @click="toggleFullscreen">
+                <template #icon>
+                  <FullscreenOutlined v-if="!canFullscreen" />
+                  <FullscreenExitOutlined v-else />
+                </template>
+              </a-button>
+            </template>
+          </a-space>
+        </div>
       </div>
       <a-table
         v-if="getColumns.length"
@@ -78,8 +80,7 @@ import CellRender from './CellRender'
 import { useScroll } from './useScroll'
 import { cloneDeep } from 'lodash-es'
 import { isEmpty } from '@src/utils'
-import { getSortDirection, getValueByRowKey } from './utils'
-import { columnsToStorage, mergeStorageAndColumns, storageToColumns } from './utils'
+import { columnsToStorage, getSortDirection, getValueByRowKey, mergeStorageAndColumns, storageToColumns } from './utils'
 
 export default defineComponent({
   name: 'XTable',
@@ -370,7 +371,7 @@ export default defineComponent({
       if (getColumns.value.length === 0) {
         const toolbar = document.querySelector('.x-table .x-table__toolbar')
         const toolbarBottom = toolbar?.getBoundingClientRect()?.bottom ?? 0
-        state.emptyBlockHeight = `calc(100vh - ${toolbarBottom + (props?.extraHeight ?? 0)}px)`
+        state.emptyBlockHeight = `calc(100vh - ${toolbarBottom + (props.extraHeight ?? 0)}px)`
       }
     }
 
@@ -386,7 +387,7 @@ export default defineComponent({
 
     // 是否显示插槽
     const hasSearchBar = computed(() => !!slots['searchBar'])
-    const hasToolBar = computed(() => !!slots['toolBar'])
+    const hasToolBar = computed(() => !!slots['toolBar'] || props.customSetting || props.customZoom)
 
     return {
       xTable,
@@ -428,13 +429,10 @@ export default defineComponent({
       display: flex;
       flex-wrap: wrap;
       flex: 1;
-      padding: 10px 0;
     }
-  }
 
-  &.is-fullscreen {
-    .x-table__toolbar .toolbar {
-      padding-left: 10px;
+    .custom {
+      padding: 10px 0 10px 10px;
     }
   }
 

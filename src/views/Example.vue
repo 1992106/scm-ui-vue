@@ -48,11 +48,11 @@
   </div>
 </template>
 <script lang="ts">
-import { computed, onActivated, onMounted, onUnmounted, reactive } from 'vue'
+import { computed, defineComponent, onActivated, onMounted, onUnmounted, reactive } from 'vue'
 import XImage from '@packages/components/Image'
 import Versions from '@packages/Versions'
 import Materials from '@packages/Materials'
-export default {
+export default defineComponent({
   name: 'Example',
   components: { XImage, Versions, Materials },
   setup() {
@@ -250,7 +250,7 @@ export default {
       doneMaterials
     }
   }
-}
+})
 </script>
 <style lang="scss" scoped>
 .box {

@@ -31,6 +31,7 @@ module.exports = {
   rules: {
     'prettier/prettier': [2, { endOfLine: 'auto' }],
     'vue/require-default-prop': 0,
+    'vue/require-prop-types': 0,
     'vue/v-on-event-hyphenation': 0,
     'vue/attribute-hyphenation': 0,
     'vue/multi-word-component-names': 0,

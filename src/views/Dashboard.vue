@@ -8,10 +8,10 @@
   </div>
 </template>
 <script lang="ts">
-import { onActivated, onMounted, onUnmounted, reactive } from 'vue'
+import { defineComponent, onActivated, onMounted, onUnmounted, reactive } from 'vue'
 import { useStore } from 'vuex'
 import Preview from '@packages/components/Preview/index.vue'
-export default {
+export default defineComponent({
   name: 'Dashboard',
   components: { Preview },
   setup() {
@@ -49,6 +49,6 @@ export default {
       handleDownloads
     }
   }
-}
+})
 </script>
 <style lang="scss" scoped></style>
