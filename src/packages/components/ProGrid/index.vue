@@ -41,7 +41,7 @@
 import { computed, defineComponent, onMounted, reactive, ref, toRef, toRefs, unref, watch, watchEffect } from 'vue'
 import XGrid from '../Grid/index.vue'
 import XSearch from '../Search/index.vue'
-import { useSearch } from '@src/hooks/useSearch'
+import { useSearch } from '@packages/hooks/useSearch'
 import { isEmpty } from '@src/utils'
 
 export default defineComponent({

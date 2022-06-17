@@ -47,7 +47,7 @@ import { Empty, Spin } from 'ant-design-vue'
 import XSearch from '../Search/index.vue'
 import XPagination from '../Pagination/index.vue'
 import { getValueByRowKey } from '../Table/utils'
-import { useAppHeight } from '@hooks/useSearch'
+import { useAppHeight } from '@packages/hooks/useSearch'
 import { isEmpty } from '@src/utils'
 export default defineComponent({
   name: 'XPage',
