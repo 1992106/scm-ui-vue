@@ -33,26 +33,44 @@ export const useScroll = ({ xTable, autoResize, extraHeight, scroll }) => {
 
 export const getTableScroll = ({ id, extraHeight } = {}) => {
   let tHeader
+  let summary
+  let pagination
   if (id) {
     tHeader = document.getElementById(id)
       ? document.getElementById(id).querySelector('.x-table .ant-table .ant-table-header')
       : null
+    summary = document.getElementById(id)
+      ? document.getElementById(id).querySelector('.x-table .ant-table .ant-table-summary')
+      : null
+    pagination = document.getElementById(id)
+      ? document.getElementById(id).querySelector('.x-table .ant-table-pagination')
+      : null
   } else {
     tHeader = document.querySelector('.x-table .ant-table .ant-table-header')
-  }
-  if (typeof extraHeight === 'undefined') {
-    extraHeight = 0 // 页面内边距或外边距
+    summary = document.querySelector('.x-table .ant-table .ant-table-summary')
+    pagination = document.querySelector('.x-table .ant-table-pagination')
   }
   // 表格内容距离顶部的距离
   let tHeaderBottom = 0
   if (tHeader) {
     tHeaderBottom = tHeader.getBoundingClientRect().bottom
   }
+  // 总结栏
+  let summaryHeight = 0
+  if (summary) {
+    summaryHeight = summary.getBoundingClientRect().height
+  }
   // 分页器的高度
-  const pagination = document.querySelector('.x-table .ant-pagination')
-  const paginationHeight = pagination ? pagination.getBoundingClientRect().height : 0
+  let paginationHeight = 0
+  if (pagination) {
+    paginationHeight = pagination.getBoundingClientRect().height
+  }
+  // 其它高度：页面内边距或外边距
+  if (typeof extraHeight === 'undefined') {
+    extraHeight = 0
+  }
   // 表格窗体高度-表格内容顶部的高度-表格内容底部的高度
-  const height = `calc(100vh - ${tHeaderBottom + paginationHeight + extraHeight}px)`
+  const height = `calc(100vh - ${tHeaderBottom + summaryHeight + paginationHeight + extraHeight}px)`
 
   // TODO: 设置表格高度不生效
   // const bodyEl = document.querySelector('.x-table .ant-table .ant-table-body')
