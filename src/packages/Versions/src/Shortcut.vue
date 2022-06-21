@@ -11,7 +11,7 @@
 <script>
 import { computed, defineComponent, ref, unref } from 'vue'
 import XForm from '@packages/components/Form/index.vue'
-import { toDisabled } from '@packages/components/Search/utils'
+import { cleanDisabled } from '@packages/components/Search/utils'
 
 export default defineComponent({
   name: 'Shortcut',
@@ -25,7 +25,7 @@ export default defineComponent({
     // 搜索columns
     const getColumns = computed(() => {
       const columns = attrs?.columns || []
-      return columns.map(column => toDisabled(column)) // disabled: true => false
+      return columns.map(column => cleanDisabled(column)) // disabled: true => false
     })
 
     const onGetFormValues = () => {

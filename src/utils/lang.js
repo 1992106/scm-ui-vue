@@ -97,11 +97,11 @@ export const getStyleSize = (style = {}) => {
 
 /**
  * 字符串前后去空
- * @param string
+ * @param str
  * @returns {string}
  */
-export const trim = string => {
-  return (string || '').replace(/^[\s\uFEFF]+|[\s\uFEFF]+$/g, '')
+export const trim = str => {
+  return (str || '').replace(/^\s*|\s*$/g, '')
 }
 
 /**

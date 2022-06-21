@@ -52,7 +52,7 @@ import { computed, defineComponent, mergeProps, nextTick, reactive, ref, unref }
 import { Form } from 'ant-design-vue'
 import { DownOutlined, UpOutlined } from '@ant-design/icons-vue'
 import { omit, pick } from 'lodash-es'
-import { mergeEvents, toDisabled } from './utils'
+import { mergeEvents, cleanDisabled } from './utils'
 import { formatFormModel, formatFormRules, formatFormValues } from '../Form/utils'
 import { isEmpty } from '@src/utils'
 
@@ -196,7 +196,7 @@ export default defineComponent({
     // 获取格式化后的columns
     const getColumns = computed(() => {
       return props.columns.map(column => {
-        const { props = {}, events = {} } = toDisabled(column) // disabled: true => false
+        const { props = {}, events = {} } = cleanDisabled(column) // disabled: true => false
         const defaultAllState = defaultState[column?.type] || {}
         // column
         const allColumn = pick(column, ['type', 'title', 'field', 'rules', 'children'])

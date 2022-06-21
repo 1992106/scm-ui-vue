@@ -16,7 +16,7 @@ export const mergeEvents = (defaultEventsMap, defaultEvents = [], events = {}) =
   return { ...events, ...newEvents }
 }
 
-export const toDisabled = column => {
+export const cleanDisabled = column => {
   const props = column?.props || {}
   const options = cloneDeep(props?.options || [])
   const treeData = cloneDeep(props?.treeData || [])
