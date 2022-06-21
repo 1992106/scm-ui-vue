@@ -1,6 +1,7 @@
 import { computed, getCurrentInstance, onMounted, onUnmounted, ref, unref } from 'vue'
 import { debounce, isFunction } from 'lodash-es'
-import { isEmpty } from '@src/utils'
+import { dayjsToDate, isEmpty } from '@src/utils'
+import { hasDate } from '../components/Form/utils'
 
 export function useSearch(fn, isResize = true, searchProps, gridProps) {
   // 是否默认首次search
@@ -87,6 +88,10 @@ function useDefaultValue(columns) {
   return (columns || []).reduce((prev, next) => {
     let value = allDefaultValue.map(val => next?.props?.[val]).find(Boolean)
     if (!isEmpty(value)) {
+      // 格式化时间（antd不支持new Date()）
+      if (hasDate(next)) {
+        value = dayjsToDate(value, next?.props?.valueFormat)
+      }
       prev[next.field] = value
     }
     return prev

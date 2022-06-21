@@ -310,11 +310,12 @@ export default defineComponent({
     }
     // 排序、筛选变化时触发
     const handleChange = (pagination, filters, sorter, extra) => {
+      const action = extra?.action
       const column = sorter?.column || {}
-      if (!isEmpty(filters) && isEmpty(column?.onFilter)) {
+      if (action === 'filter' && !isEmpty(filters) && isEmpty(column?.onFilter)) {
         // 服务端筛选
         emit('search', filters, 'filter')
-      } else if (!isEmpty(sorter) && column?.sorter === true) {
+      } else if (action === 'sort' && !isEmpty(sorter) && column?.sorter === true) {
         // 服务端排序
         const { order, field } = sorter
         if (!isEmpty(order)) {
@@ -323,7 +324,7 @@ export default defineComponent({
         } else {
           emit('search', {}, 'sort')
         }
-      } else if (!isEmpty(pagination)) {
+      } else if (action === 'paginate' && !isEmpty(pagination)) {
         // 分页
         const { current, pageSize } = pagination
         emit('update:pagination', {

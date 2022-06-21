@@ -288,14 +288,14 @@ export function dateFormat(date, fmt) {
   date = new Date(date)
   const o = {
     'M+': date.getMonth() + 1, // 月
-    'q+': Math.floor((date.getMonth() + 3) / 3), // 季节
-    'd+': date.getDate(), // 日
+    'Q+': Math.floor((date.getMonth() + 3) / 3), // 季节
+    'D+': date.getDate(), // 日
     'H+': date.getHours(), // 时
     'm+': date.getMinutes(), // 分
     's+': date.getSeconds(), // 秒
     S: date.getMilliseconds() // 毫秒
   }
-  if (/(y+)/.test(fmt)) {
+  if (/(Y+)/.test(fmt)) {
     fmt = fmt.replace(RegExp.$1, (date.getFullYear() + '').substr(4 - RegExp.$1.length))
   }
   for (let k in o) {
@@ -307,11 +307,11 @@ export function dateFormat(date, fmt) {
 }
 
 export function formatDate(value, format) {
-  return dateFormat(value, format || 'yyyy-MM-dd')
+  return dateFormat(value, format || 'YYYY-MM-DD')
 }
 
 export function formatTime(value, format) {
-  return dateFormat(value, format || 'yyyy-MM-dd HH:mm:ss')
+  return dateFormat(value, format || 'YYYY-MM-DD HH:mm:ss')
 }
 
 export const dayjsToDate = (value, valueFormat = 'YYYY-MM-DD') => {
@@ -324,8 +324,8 @@ export const dayjsToDate = (value, valueFormat = 'YYYY-MM-DD') => {
 
 export const dateToDayjs = (value, valueFormat = 'YYYY-MM-DD') => {
   if (Array.isArray(value)) {
-    return value.map(val => (isEmpty(val) ? null : dayjs.isDayjs(val) ? val : dayjs(val, valueFormat)))
+    return value.map(val => (isEmpty(val) ? null : dayjs.isDayjs(val) ? val : dayjs(dateFormat(val, valueFormat))))
   } else {
-    return isEmpty(value) ? null : dayjs.isDayjs(value) ? value : dayjs(value, valueFormat)
+    return isEmpty(value) ? null : dayjs.isDayjs(value) ? value : dayjs(dateFormat(value, valueFormat))
   }
 }
