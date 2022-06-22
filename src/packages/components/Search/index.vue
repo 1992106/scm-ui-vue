@@ -52,9 +52,9 @@ import { computed, defineComponent, mergeProps, nextTick, reactive, ref, unref }
 import { Form } from 'ant-design-vue'
 import { DownOutlined, UpOutlined } from '@ant-design/icons-vue'
 import { omit, pick } from 'lodash-es'
+import { isEmpty, triggerResize } from '@src/utils'
 import { mergeEvents, cleanDisabled } from './utils'
-import { formatFormModel, formatFormRules, formatFormValues } from '../Form/utils'
-import { isEmpty } from '@src/utils'
+import { formatFormModel, formatFormRules, formatFormValues, getModelValue } from '../Form/utils'
 
 export default defineComponent({
   name: 'XSearch',
@@ -191,8 +191,6 @@ export default defineComponent({
         emitSearch()
       }
     }
-    // 获取v-model绑定名称
-    const getModelValue = type => (['ASwitch'].includes(type) ? 'checked' : 'value')
     // 获取格式化后的columns
     const getColumns = computed(() => {
       return props.columns.map(column => {
@@ -298,9 +296,7 @@ export default defineComponent({
       canExpand.value = !canExpand.value
       // 触发表格计算
       nextTick(() => {
-        const event = document.createEvent('HTMLEvents')
-        event.initEvent('resize', true, true)
-        window.dispatchEvent(event)
+        triggerResize()
       })
     }
 
@@ -375,10 +371,6 @@ export default defineComponent({
 
   .ant-form {
     margin-right: 20px;
-
-    .ant-row .ant-col {
-      padding-right: 0 !important;
-    }
 
     :deep(.ant-form-item) {
       margin-bottom: 10px;

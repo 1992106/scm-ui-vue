@@ -79,7 +79,7 @@ import ColumnSetting from './ColumnSetting.vue'
 import CellRender from './CellRender'
 import { useScroll } from './useScroll'
 import { cloneDeep } from 'lodash-es'
-import { isEmpty } from '@src/utils'
+import { isEmpty, triggerResize } from '@src/utils'
 import { columnsToStorage, getSortDirection, getValueByRowKey, mergeStorageAndColumns, storageToColumns } from './utils'
 
 export default defineComponent({
@@ -351,9 +351,7 @@ export default defineComponent({
       state.canFullscreen = !state.canFullscreen
       // 触发表格计算
       nextTick(() => {
-        const event = document.createEvent('HTMLEvents')
-        event.initEvent('resize', true, true)
-        window.dispatchEvent(event)
+        triggerResize()
       })
     }
 

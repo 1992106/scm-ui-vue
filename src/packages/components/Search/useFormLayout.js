@@ -1,4 +1,5 @@
 import { getCurrentInstance } from 'vue'
+import { triggerResize } from '@src/utils'
 
 export function useFormLayout() {
   const { proxy } = getCurrentInstance()
@@ -27,7 +28,7 @@ export function useFormLayout() {
     }
     // TODO: 手动触发resize事件，调整表格高度
     setTimeout(() => {
-      dispatchResize()
+      triggerResize()
     }, 200)
   }
 
@@ -48,12 +49,6 @@ export function useFormLayout() {
     return childNodes.reduce((total, node) => {
       return total + node.offsetWidth
     }, 0)
-  }
-
-  const dispatchResize = () => {
-    const event = document.createEvent('HTMLEvents')
-    event.initEvent('resize', true, true)
-    window.dispatchEvent(event)
   }
 
   const hasExpand = () => {

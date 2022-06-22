@@ -51,8 +51,9 @@ import { computed, defineComponent, mergeProps, reactive, ref, unref } from 'vue
 import { Form } from 'ant-design-vue'
 import { DownOutlined, UpOutlined } from '@ant-design/icons-vue'
 import { omit, pick } from 'lodash-es'
-import { formatFormModel, formatFormRules, formatFormValues } from './utils'
 import { isEmpty } from '@src/utils'
+import { formatFormModel, formatFormRules, formatFormValues, getModelValue } from './utils'
+
 export default defineComponent({
   name: 'XForm',
   components: {
@@ -85,8 +86,6 @@ export default defineComponent({
   setup(props, { emit, slots }) {
     const elForm = ref(null)
 
-    // 获取v-model绑定名称
-    const getModelValue = type => (['ASwitch'].includes(type) ? 'checked' : 'value')
     // 获取格式化后的columns
     const getColumns = computed(() => {
       return props.columns.map(column => {

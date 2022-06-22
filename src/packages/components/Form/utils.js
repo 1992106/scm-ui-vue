@@ -38,7 +38,7 @@ export const cleanEmpty = object => {
 
 // 拍平columns
 export const flatColumns = (columns, result = []) => {
-  columns.forEach(node => {
+  ;(columns || []).forEach(node => {
     if (node.children) {
       flatColumns(node.children, result)
     } else {
@@ -47,6 +47,9 @@ export const flatColumns = (columns, result = []) => {
   })
   return result
 }
+
+// 获取v-model绑定名称
+export const getModelValue = type => (['ASwitch'].includes(type) ? 'checked' : 'value')
 
 // 格式化表单 useForm model
 export const formatFormModel = columns => {
@@ -84,9 +87,9 @@ export const formatFormRules = columns => {
 // 格式化表单 values
 export const formatFormValues = (columns, modelRef) => {
   const allColumns = flatColumns(columns)
-  const params = allColumns.reduce((prev, column) => {
-    const value = modelRef[column?.field]
-    prev[column?.field] = hasDate(column) ? dayjsToDate(value, column?.props?.valueFormat) : value
+  const params = allColumns.reduce((prev, next) => {
+    const value = modelRef[next?.field]
+    prev[next?.field] = hasDate(next) ? dayjsToDate(value, next?.props?.valueFormat) : value
     return prev
   }, {})
   return cleanEmpty(params)

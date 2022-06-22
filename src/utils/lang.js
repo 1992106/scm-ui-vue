@@ -329,3 +329,10 @@ export const dateToDayjs = (value, valueFormat = 'YYYY-MM-DD') => {
     return isEmpty(value) ? null : dayjs.isDayjs(value) ? value : dayjs(dateFormat(value, valueFormat))
   }
 }
+
+// 触发resize事件
+export const triggerResize = () => {
+  const event = document.createEvent('HTMLEvents')
+  event.initEvent('resize', true, true)
+  window.dispatchEvent(event)
+}
