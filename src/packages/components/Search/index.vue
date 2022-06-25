@@ -54,7 +54,14 @@ import { DownOutlined, UpOutlined } from '@ant-design/icons-vue'
 import { omit, pick } from 'lodash-es'
 import { isEmpty, triggerResize } from '@src/utils'
 import { mergeEvents, cleanDisabled } from './utils'
-import { formatFormModel, formatFormRules, formatFormValues, getModelValue } from '../Form/utils'
+import {
+  formatDateToDayjs,
+  formatFormModel,
+  formatFormRules,
+  formatFormValues,
+  getModelValue,
+  hasDate
+} from '../Form/utils'
 
 export default defineComponent({
   name: 'XSearch',
@@ -155,16 +162,16 @@ export default defineComponent({
       },
       ADatePicker: {
         props: {
+          picker: 'date',
           allowClear: true,
-          format: 'YYYY-MM-DD',
           valueFormat: 'YYYY-MM-DD'
         },
         events: ['change']
       },
       ARangePicker: {
         props: {
+          picker: 'date',
           allowClear: true,
-          format: 'YYYY-MM-DD',
           valueFormat: 'YYYY-MM-DD'
         },
         events: ['change']
@@ -174,7 +181,7 @@ export default defineComponent({
     const defaultEventsMap = {
       // 实现清除事件
       change: $event => {
-        // Input或Cascader/DatePicker/TreeSelect组件不支持clear，使用change模拟clear事件
+        // Input或Cascader/DatePicker/TreeSelect组件不支持clear事件，使用change模拟clear事件
         if (($event?.type === 'click' && !$event.target.value) || isEmpty($event)) {
           emit('clear', emitData())
         }
@@ -201,6 +208,10 @@ export default defineComponent({
         // props
         const defaultProps = defaultAllState.props || {}
         const otherProps = omit(column, ['type', 'title', 'field', 'rules', 'children', 'props', 'events'])
+        // 格式化时间
+        if (hasDate(column)) {
+          formatDateToDayjs(props)
+        }
         const allProps = mergeProps(defaultProps, otherProps, props)
         // events
         const defaultEvents = defaultAllState.events || []

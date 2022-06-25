@@ -15,6 +15,13 @@ export const hasDate = column => {
   return ['ADatePicker', 'AWeekPicker', 'AMonthPicker', 'ARangePicker', 'ATimePicker'].includes(column?.type)
 }
 
+// 格式化日期：antd不支持new Date()，需要转化成dayjs
+export const formatDateToDayjs = props => {
+  const { defaultValue, defaultPickerValue } = props
+  defaultValue && (props.defaultValue = dateToDayjs(defaultValue))
+  defaultPickerValue && (props.defaultPickerValue = dateToDayjs(defaultPickerValue))
+}
+
 /**
  * 清空【对象/数组】空值
  * @param object
@@ -57,10 +64,6 @@ export const formatFormModel = columns => {
   return allColumns.reduce((prev, next) => {
     // 在使用useForm时，需要手动设置默认值
     let value = ['defaultValue', 'defaultPickerValue'].map(val => next?.props?.[val]).find(Boolean)
-    // 格式化时间（antd不支持new Date()）
-    if (hasDate(next)) {
-      value = dateToDayjs(value, next?.props?.valueFormat)
-    }
     if (isEmpty(value)) {
       value = hasMultiple(next) ? [] : undefined
     }

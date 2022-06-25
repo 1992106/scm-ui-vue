@@ -52,7 +52,7 @@ import { Form } from 'ant-design-vue'
 import { DownOutlined, UpOutlined } from '@ant-design/icons-vue'
 import { omit, pick } from 'lodash-es'
 import { isEmpty } from '@src/utils'
-import { formatFormModel, formatFormRules, formatFormValues, getModelValue } from './utils'
+import { formatDateToDayjs, formatFormModel, formatFormRules, formatFormValues, getModelValue, hasDate } from './utils'
 
 export default defineComponent({
   name: 'XForm',
@@ -94,6 +94,10 @@ export default defineComponent({
         const allColumn = pick(column, ['type', 'title', 'field', 'rules', 'children'])
         // props
         const otherProps = omit(column, ['type', 'title', 'field', 'rules', 'children', 'props', 'events'])
+        // 格式化时间
+        if (hasDate(column)) {
+          formatDateToDayjs(props)
+        }
         const allProps = mergeProps(otherProps, props)
 
         return { ...allColumn, modelValue: getModelValue(column?.type), props: allProps, events }

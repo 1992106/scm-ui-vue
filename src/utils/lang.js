@@ -324,9 +324,24 @@ export const dayjsToDate = (value, valueFormat = 'YYYY-MM-DD') => {
 
 export const dateToDayjs = (value, valueFormat = 'YYYY-MM-DD') => {
   if (Array.isArray(value)) {
-    return value.map(val => (isEmpty(val) ? null : dayjs.isDayjs(val) ? val : dayjs(dateFormat(val, valueFormat))))
+    return value.map(
+      val =>
+        isEmpty(val)
+          ? null
+          : dayjs.isDayjs(val)
+          ? val
+          : typeof val === 'string'
+          ? dayjs(val, valueFormat)
+          : dayjs(dayjs(val).format(valueFormat), valueFormat) // dayjs不支持new Date + format
+    )
   } else {
-    return isEmpty(value) ? null : dayjs.isDayjs(value) ? value : dayjs(dateFormat(value, valueFormat))
+    return isEmpty(value)
+      ? null
+      : dayjs.isDayjs(value)
+      ? value
+      : typeof val === 'string'
+      ? dayjs(value, valueFormat)
+      : dayjs(dayjs(value).format(valueFormat), valueFormat) // dayjs不支持new Date + format
   }
 }
 
