@@ -3,6 +3,7 @@
     <a-space>
       <a-button @click="handleVersions">版型库</a-button>
       <a-button @click="handleMaterials">物料档案</a-button>
+      <a-button @click="handleBatchTraceability">批量导入溯源包</a-button>
     </a-space>
     <Versions v-bind="versionsState" v-model:visible="versionsState.visible" @done="doneVersions">
       <template #searchItemRender="{ record, column }">
@@ -45,6 +46,10 @@
         </template>
       </template>
     </Materials>
+    <BatchImportTraceability
+      v-model:visible="traceabilityState.batchVisible"
+      @done="doneTraceability"></BatchImportTraceability>
+    <EditTraceability v-model:visible="traceabilityState.editVisible" @done="doneTraceability"></EditTraceability>
   </div>
 </template>
 <script lang="ts">
@@ -52,9 +57,16 @@ import { computed, defineComponent, onActivated, onMounted, onUnmounted, reactiv
 import XImage from '@packages/components/Image'
 import Versions from '@packages/Versions'
 import Materials from '@packages/Materials'
+import { XBatchImportTraceability, XEditTraceability } from '@packages/Traceability'
 export default defineComponent({
   name: 'Example',
-  components: { XImage, Versions, Materials },
+  components: {
+    XImage,
+    Versions,
+    Materials,
+    BatchImportTraceability: XBatchImportTraceability,
+    EditTraceability: XEditTraceability
+  },
   setup() {
     const state = reactive({
       options: []
@@ -223,6 +235,21 @@ export default defineComponent({
       console.log(data, '物料档案')
     }
 
+    // 溯源包
+    const traceabilityState = reactive({
+      batchVisible: false,
+      editVisible: false
+    })
+    const handleBatchTraceability = () => {
+      traceabilityState.batchVisible = !traceabilityState.batchVisible
+    }
+    const handleEditTraceability = () => {
+      traceabilityState.editVisible = !traceabilityState.editVisible
+    }
+    const doneTraceability = data => {
+      console.log(data, '溯源包')
+    }
+
     onMounted(() => {
       console.log('onMounted', 'Example组件')
       setTimeout(() => {
@@ -247,7 +274,11 @@ export default defineComponent({
       doneVersions,
       materialsState,
       handleMaterials,
-      doneMaterials
+      doneMaterials,
+      traceabilityState,
+      handleBatchTraceability,
+      handleEditTraceability,
+      doneTraceability
     }
   }
 })
