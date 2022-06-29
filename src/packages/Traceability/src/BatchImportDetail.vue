@@ -30,12 +30,25 @@ export default defineComponent({
   inheritAttrs: false,
   props: {
     visible: { type: Boolean, default: false },
-    title: { type: String, default: '编辑溯源包' },
+    title: { type: String, default: '导入明细' },
     width: { type: [String, Number] },
     height: { type: [String, Number] },
     // rowKey: { type: [String, Function], default: 'id' },
     manual: { type: Boolean, default: false },
     customRequest: { type: Function, require: true },
+    // 主表
+    materialColumns: { type: Array },
+    photocopyColumns: { type: Array },
+    // 织布
+    weavingRowKey: { type: [String, Function], default: 'itemId' },
+    weavingColumns: { type: Array, default: () => [] },
+    customUploadWeaving: { type: Function },
+    customDownloadWeaving: { type: Function },
+    // 染整
+    dyeingRowKey: { type: [String, Function], default: 'itemId' },
+    dyeingColumns: { type: Array },
+    customUploadDyeing: { type: Function },
+    customDownloadDyeing: { type: Function },
     emptyText: { type: String, default: '暂无数据' }
   },
   emits: ['update:visible', 'done'],

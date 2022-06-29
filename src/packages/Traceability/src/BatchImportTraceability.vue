@@ -32,7 +32,7 @@
           <template #header>
             <a-space>
               {{ `溯源包${index + 1}` }}
-              <a-button type="link">删除</a-button>
+              <a-button type="link" @click="handleDelete($event, index)">删除</a-button>
             </a-space>
           </template>
           <XTraceability :index="index"></XTraceability>
@@ -60,25 +60,26 @@ export default defineComponent({
   inheritAttrs: false,
   props: {
     visible: { type: Boolean, default: false },
-    title: { type: String, default: '批量导入溯源包' },
+    title: { type: String, default: '批量导入' },
     width: { type: [String, Number] },
     height: { type: [String, Number] },
-    // rowKey: { type: [String, Function], default: 'id' },
     manual: { type: Boolean, default: false },
     // 主表
     customUploadMaster: { type: Function, require: true },
     customDownloadMaster: { type: Function },
+    customUpload: { type: Function },
     materialColumns: { type: Array },
-    customUploadFile: { type: Function },
     photocopyColumns: { type: Array },
     // 织布
+    weavingRowKey: { type: [String, Function], default: 'itemId' },
+    weavingColumns: { type: Array, default: () => [] },
     customUploadWeaving: { type: Function },
     customDownloadWeaving: { type: Function },
-    weavingColumns: { type: Array },
     // 染整
+    dyeingRowKey: { type: [String, Function], default: 'itemId' },
+    dyeingColumns: { type: Array },
     customUploadDyeing: { type: Function },
     customDownloadDyeing: { type: Function },
-    dyeingColumns: { type: Array },
     emptyText: { type: String, default: '暂无数据' }
   },
   emits: ['update:visible', 'done'],
@@ -94,8 +95,8 @@ export default defineComponent({
 
     const state = reactive({
       spinning: false,
-      disabled: false,
       loading: false,
+      disabled: false,
       activeKey: [],
       traceabilityList: []
     })
@@ -120,6 +121,7 @@ export default defineComponent({
       state.disabled = true
       await execRequest(customUploadMaster(), {
         success: ({ data }) => {
+          //TODO: 根据【'坯纱采购合同号'】，如果有重复，则更新，如果没有则新增
           state.traceabilityList.push({
             masterData: data || [{}],
             photocopyData: [
@@ -136,6 +138,7 @@ export default defineComponent({
             weavingData: [],
             dyeingData: []
           })
+          state.activeKey = state.traceabilityList.map((_, i) => i)
         },
         fail: () => {}
       })
@@ -154,6 +157,11 @@ export default defineComponent({
         }
       })
       state.loading = false
+    }
+
+    const handleDelete = (event, index) => {
+      event.stopPropagation()
+      state.traceabilityList.splice(index, 1)
     }
 
     const handleOk = () => {
@@ -176,6 +184,7 @@ export default defineComponent({
       beforeUpload,
       handleUpload,
       handleDownload,
+      handleDelete,
       handleOk,
       handleCancel
     }

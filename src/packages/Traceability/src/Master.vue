@@ -86,7 +86,7 @@
             <x-image urls="record[column.dataIndex]"></x-image>
           </template>
           <template v-else>
-            <x-upload v-model:file-list="record[column.dataIndex]" :custom-request="customUploadFile" />
+            <x-upload v-model:file-list="record[column.dataIndex]" :custom-request="customUpload" />
           </template>
         </slot>
       </template>
@@ -109,8 +109,8 @@ export default defineComponent({
   props: {
     rowKey: [String, Function],
     mode: { type: String, required: true },
+    customUpload: { type: Function },
     materialColumns: { type: Array },
-    customUploadFile: { type: Function },
     photocopyColumns: { type: Array },
     emptyText: String
   },

@@ -36,6 +36,22 @@ export default defineComponent({
     // rowKey: { type: [String, Function], default: 'id' },
     manual: { type: Boolean, default: false },
     customRequest: { type: Function, require: true },
+    // 主表
+    customUploadMaster: { type: Function, require: true },
+    customDownloadMaster: { type: Function },
+    materialColumns: { type: Array },
+    customUpload: { type: Function },
+    photocopyColumns: { type: Array },
+    // 织布
+    weavingRowKey: { type: [String, Function], default: 'itemId' },
+    weavingColumns: { type: Array, default: () => [] },
+    customUploadWeaving: { type: Function },
+    customDownloadWeaving: { type: Function },
+    // 染整
+    dyeingRowKey: { type: [String, Function], default: 'itemId' },
+    dyeingColumns: { type: Array },
+    customUploadDyeing: { type: Function },
+    customDownloadDyeing: { type: Function },
     emptyText: { type: String, default: '暂无数据' }
   },
   emits: ['update:visible', 'done'],

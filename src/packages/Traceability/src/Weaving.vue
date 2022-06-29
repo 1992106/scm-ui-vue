@@ -2,7 +2,7 @@
   <div class="weaving-info">
     <a-form v-if="tableOptions.dataSource.length === 0">
       <a-form-item label="请导入织布明细" name="file">
-        <a-upload :before-upload="beforeUpload" @change="handleUpload">
+        <a-upload :showUploadList="false" :before-upload="beforeUpload" @change="handleUpload">
           <a-button>
             <UploadOutlined></UploadOutlined>
             上传
@@ -19,7 +19,10 @@
     <template v-else>
       <div>
         织布信息
-        <a-button type="link">继续导入</a-button>
+        <a-upload :showUploadList="false" :before-upload="beforeUpload" @change="handleUpload">
+          <a-button type="link">继续导入</a-button>
+        </a-upload>
+        <a-button type="link" :loading="loading" @click="handleDownload">查看模板</a-button>
       </div>
       <x-table v-bind="tableOptions">
         <template #headerCell="{ title, column }">
@@ -62,13 +65,13 @@
               <a-input v-model:value="record.textileMill"></a-input>
             </template>
             <template v-if="column.dataIndex === 'actions'">
-              <a-button type="link" size="small" @click="handleDel(record)">删除</a-button>
+              <a-button type="link" size="small" @click="handleDel(index)">删除</a-button>
             </template>
           </slot>
         </template>
-        <template #summary>
+        <template v-if="mode !== 'view'" #summary>
           <a-table-summary-row>
-            <a-table-summary-cell :col-span="8" align="center">
+            <a-table-summary-cell :col-span="colSpanLength" align="center">
               <a-button type="link" size="small" @click="handleAdd">添加一行</a-button>
             </a-table-summary-cell>
           </a-table-summary-row>
@@ -78,7 +81,7 @@
   </div>
 </template>
 <script>
-import { defineComponent, inject, reactive, watch } from 'vue'
+import { computed, defineComponent, inject, reactive, toRefs, watch } from 'vue'
 import { UploadOutlined } from '@ant-design/icons-vue'
 import XTable from '@packages/components/Table/index.vue'
 import { isFunction } from 'lodash-es'
@@ -91,17 +94,17 @@ export default defineComponent({
     UploadOutlined
   },
   props: {
-    rowKey: [String, Function],
     mode: { type: String, required: true },
-    customUploadWeaving: { type: Function },
-    customDownloadWeaving: { type: Function },
-    weavingColumns: { type: Array },
+    weavingRowKey: [String, Function],
+    weavingColumns: Array,
+    customUploadWeaving: Function,
+    customDownloadWeaving: Function,
     emptyText: String
   },
   emits: ['del'],
   setup(props) {
     const state = reactive({
-      spinning: false,
+      loading: false,
       disabled: false
     })
 
@@ -119,13 +122,18 @@ export default defineComponent({
       { title: '操作', width: 60, dataIndex: 'actions' }
     ]
     const tableOptions = reactive({
-      rowKey: props.rowKey,
+      rowKey: props.weavingRowKey,
       emptyText: props.emptyText,
       size: 'small',
-      columns: props.weavingColumns || defaultColumns,
+      columns: (props.weavingColumns || defaultColumns).map(column => ({
+        ...column,
+        visible: column?.dataIndex === 'actions' ? props.mode !== 'view' : true
+      })),
       dataSource: [],
       showPagination: false
     })
+    // 获取总结栏长度
+    const colSpanLength = computed(() => tableOptions.columns.filter(val => val?.visible !== false).length)
 
     watch(
       () => traceabilityData.value?.weavingData,
@@ -141,7 +149,15 @@ export default defineComponent({
       state.disabled = true
       await execRequest(customUploadWeaving(), {
         success: ({ data }) => {
-          tableOptions.dataSource.push({})
+          tableOptions.dataSource.push({
+            weavingOrderNo: '',
+            greyClothNo: '',
+            blankYarnPurchaseNo: '',
+            cottonComponentsRate: '',
+            colorClothWeight: '',
+            colorClothLength: '',
+            textileMill: ''
+          })
         },
         fail: () => {}
       })
@@ -162,13 +178,27 @@ export default defineComponent({
       state.loading = false
     }
 
-    const handleDel = () => {}
+    const handleDel = index => {
+      tableOptions.dataSource.splice(index, 1)
+    }
 
-    const handleAdd = () => {}
+    const handleAdd = () => {
+      tableOptions.dataSource.push({
+        weavingOrderNo: '',
+        greyClothNo: '',
+        blankYarnPurchaseNo: '',
+        cottonComponentsRate: '',
+        colorClothWeight: '',
+        colorClothLength: '',
+        textileMill: ''
+      })
+    }
 
     return {
+      ...toRefs(state),
       beforeUpload,
       tableOptions,
+      colSpanLength,
       handleUpload,
       handleDownload,
       handleDel,
