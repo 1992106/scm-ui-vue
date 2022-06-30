@@ -39,8 +39,8 @@ export default defineComponent({
     // 主表
     customUploadMaster: { type: Function, require: true },
     customDownloadMaster: { type: Function },
-    materialColumns: { type: Array },
     customUpload: { type: Function },
+    materialColumns: { type: Array },
     photocopyColumns: { type: Array },
     // 织布
     weavingRowKey: { type: [String, Function], default: 'itemId' },
@@ -52,6 +52,8 @@ export default defineComponent({
     dyeingColumns: { type: Array },
     customUploadDyeing: { type: Function },
     customDownloadDyeing: { type: Function },
+    // 公共
+    size: { type: Number, default: 4 },
     emptyText: { type: String, default: '暂无数据' }
   },
   emits: ['update:visible', 'done'],

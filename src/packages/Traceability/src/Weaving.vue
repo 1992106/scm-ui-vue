@@ -19,19 +19,19 @@
     <template v-else>
       <div>
         织布信息
+        <a-button type="link" :loading="loading" @click="handleDownload">查看模板</a-button>
         <a-upload :showUploadList="false" :before-upload="beforeUpload" @change="handleUpload">
           <a-button type="link">继续导入</a-button>
         </a-upload>
-        <a-button type="link" :loading="loading" @click="handleDownload">查看模板</a-button>
       </div>
       <x-table v-bind="tableOptions">
         <template #headerCell="{ title, column }">
           <slot name="headerCell" v-bind="{ title, column }">
             <div>
-              <span v-if="column.required === true" class="required">*</span>
+              <span v-if="column?.required === true" class="required">*</span>
               {{ title }}
             </div>
-            <div v-if="column.tips">{{ column.tips }}</div>
+            <div v-if="column?.subTItle">{{ column.subTItle }}</div>
           </slot>
         </template>
         <template #bodyCell="{ text, record, index, column }">

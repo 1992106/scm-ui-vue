@@ -48,7 +48,7 @@ import { message } from 'ant-design-vue'
 import XDrawer from '@packages/components/Drawer'
 import XTraceability from './index.vue'
 import { isFunction } from 'lodash-es'
-import { download, execRequest } from '@src/utils'
+import { download, execRequest, isEmpty } from '@src/utils'
 export default defineComponent({
   name: 'XBatchImportTraceability',
   components: {
@@ -80,6 +80,8 @@ export default defineComponent({
     dyeingColumns: { type: Array },
     customUploadDyeing: { type: Function },
     customDownloadDyeing: { type: Function },
+    // 公共
+    size: { type: Number, default: 4 },
     emptyText: { type: String, default: '暂无数据' }
   },
   emits: ['update:visible', 'done'],
@@ -102,12 +104,14 @@ export default defineComponent({
     })
 
     const beforeUpload = file => {
-      const isExcel = file.type === 'image/jpeg' || file.type === 'image/png'
+      const isExcel =
+        file.type === 'application/vnd.ms-excel' ||
+        file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
       if (!isExcel) {
         message.error('文件格式只能是xlx,xlsx！')
       }
 
-      const isLt4M = file.size / 1024 / 1024 < 4
+      const isLt4M = !isEmpty(props.size) ? file.size / 1024 / 1024 < props.size : true
       if (!isLt4M) {
         message.error('文件不能大于4M！')
       }
@@ -121,26 +125,41 @@ export default defineComponent({
       state.disabled = true
       await execRequest(customUploadMaster(), {
         success: ({ data }) => {
-          //TODO: 根据【'坯纱采购合同号'】，如果有重复，则更新，如果没有则新增
-          state.traceabilityList.push({
-            masterData: data || [{}],
-            photocopyData: [
-              {
-                certificateImgs: [],
-                contractImgs: [],
-                logisticsImgs: [],
-                contractYarnImgs: [],
-                logisticsYarnImgs: [],
-                packingImgs: [],
-                invoiceImgs: []
-              }
-            ],
-            weavingData: [],
-            dyeingData: []
-          })
+          // 根据【'坯纱采购合同号'】，如果有重复，则更新，如果没有则新增
+          const masterData = state.traceabilityList?.masterData || []
+          const purchaseContractNos = masterData.map(val => val?.purchaseContractNo)
+          const oldList = (data || []).filter(val => purchaseContractNos.includes(val?.purchaseContractNo))
+          const newList = (data || []).filter(val => !purchaseContractNos.includes(val?.purchaseContractNo))
+          // 更新数据
+          if (oldList.length) {
+            ;(data || []).forEach(item => {
+              const index = masterData.findIndex(val => val?.purchaseContractNo === item?.purchaseContractNo)
+              state.traceabilityList.masterData.splice(index, 0, item)
+            })
+          }
+          // 插入数据
+          if (newList.length) {
+            ;(data || []).forEach(item => {
+              state.traceabilityList.push({
+                masterData: item,
+                photocopyData: [
+                  {
+                    certificateImgs: [],
+                    contractImgs: [],
+                    logisticsImgs: [],
+                    contractYarnImgs: [],
+                    logisticsYarnImgs: [],
+                    packingImgs: [],
+                    invoiceImgs: []
+                  }
+                ],
+                weavingData: [],
+                dyeingData: []
+              })
+            })
+          }
           state.activeKey = state.traceabilityList.map((_, i) => i)
-        },
-        fail: () => {}
+        }
       })
       state.disabled = false
     }
@@ -162,6 +181,7 @@ export default defineComponent({
     const handleDelete = (event, index) => {
       event.stopPropagation()
       state.traceabilityList.splice(index, 1)
+      state.activeKey.pop()
     }
 
     const handleOk = () => {

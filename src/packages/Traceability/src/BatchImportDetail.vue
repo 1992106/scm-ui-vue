@@ -49,6 +49,8 @@ export default defineComponent({
     dyeingColumns: { type: Array },
     customUploadDyeing: { type: Function },
     customDownloadDyeing: { type: Function },
+    // 公共
+    size: { type: Number, default: 4 },
     emptyText: { type: String, default: '暂无数据' }
   },
   emits: ['update:visible', 'done'],

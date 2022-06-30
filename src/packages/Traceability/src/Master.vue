@@ -5,10 +5,10 @@
       <template #headerCell="{ title, column }">
         <slot name="headerCell" v-bind="{ title, column }">
           <div>
-            <span v-if="column.required === true" class="required">*</span>
+            <span v-if="column?.required === true" class="required">*</span>
             {{ title }}
           </div>
-          <div v-if="column.tips">{{ column.tips }}</div>
+          <div v-if="column?.subTitle">{{ column.subTitle }}</div>
         </slot>
       </template>
       <template #bodyCell="{ text, record, index, column }">
@@ -107,7 +107,6 @@ export default defineComponent({
     'x-image': XImage
   },
   props: {
-    rowKey: [String, Function],
     mode: { type: String, required: true },
     customUpload: { type: Function },
     materialColumns: { type: Array },
@@ -120,10 +119,10 @@ export default defineComponent({
 
     const defaultMaterialColumns = [
       { title: '物料名称', width: 120, dataIndex: 'materialName', required: true },
-      { title: '面料供应商', width: 120, dataIndex: '', required: true },
+      { title: '面料供应商', width: 120, dataIndex: 'materialSupplierCode', required: true },
       { title: '棉花供应商', width: 120, dataIndex: 'cottonSupplierName', required: true },
       { title: '材料原产地证明编号', width: 160, dataIndex: 'materialOriginCertificateNo', required: true },
-      { title: '材料产地', width: 120, dataIndex: 'materialOriginPlace', required: true, tips: '(国家.中文简体)' },
+      { title: '材料产地', width: 120, dataIndex: 'materialOriginPlace', required: true, subTitle: '(国家.中文简体)' },
       { title: '材料采购合同号', width: 140, dataIndex: 'purchaseContractNo', required: true },
       { title: '材料采购时间', width: 120, dataIndex: 'purchaseTime', required: true },
       { title: '材料采购数量(KG)', width: 140, dataIndex: 'purchaseQuantity', required: true },
@@ -132,17 +131,17 @@ export default defineComponent({
         width: 180,
         dataIndex: 'materialLadeBillNo',
         required: true,
-        tips: '(当坯纱产地=中国时选填)'
+        subTitle: '(当坯纱产地=中国时选填)'
       },
       { title: '坯纱采购合同号', width: 140, dataIndex: 'blankYarnPurchaseNo', required: true },
-      { title: '坯纱产地', width: 120, dataIndex: 'blankYarnOriginPlace', required: true, tips: '(国家.中文简体)' },
+      { title: '坯纱产地', width: 120, dataIndex: 'blankYarnOriginPlace', required: true, subTitle: '(国家.中文简体)' },
       { title: '坯纱总采购总量(KG)', width: 160, dataIndex: 'blankYarnPurchaseQuantity', required: true },
       { title: '坯纱采购发票号', width: 140, dataIndex: 'blankYarnInvoiceNo', required: true },
       { title: '坯纱装箱单号', width: 120, dataIndex: 'blankYarnPackingNo' },
       { title: '坯纱提货单/物流单号', width: 200, dataIndex: 'logisticsNo' }
     ]
     const materialOptions = reactive({
-      rowKey: props.rowKey,
+      rowKey: 'uid',
       emptyText: props.emptyText,
       size: 'small',
       columns: props.materialColumns || defaultMaterialColumns,
@@ -153,7 +152,7 @@ export default defineComponent({
     watch(
       () => traceabilityData.value?.masterData,
       list => {
-        materialOptions.dataSource = list || []
+        materialOptions.dataSource = (list || []).map(val => ({ ...val, uid: Date.now() }))
       },
       { deep: true, immediate: true }
     )
@@ -171,7 +170,7 @@ export default defineComponent({
       scroll: {
         y: 320
       },
-      rowKey: props.rowKey,
+      rowKey: 'uid',
       emptyText: props.emptyText,
       size: 'small',
       columns: props.photocopyColumns || defaultPhotocopyColumns,
@@ -182,7 +181,7 @@ export default defineComponent({
     watch(
       () => traceabilityData.value?.photocopyData,
       list => {
-        photocopyOptions.dataSource = list || []
+        photocopyOptions.dataSource = (list || []).map(val => ({ ...val, uid: Date.now() }))
       },
       { deep: true, immediate: true }
     )
