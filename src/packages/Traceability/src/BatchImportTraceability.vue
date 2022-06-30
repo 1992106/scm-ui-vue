@@ -141,7 +141,7 @@ export default defineComponent({
           if (newList.length) {
             ;(data || []).forEach(item => {
               state.traceabilityList.push({
-                masterData: item,
+                masterData: [item],
                 photocopyData: [
                   {
                     certificateImgs: [],

@@ -36,25 +36,11 @@
         </template>
         <template #bodyCell="{ text, record, index, column }">
           <slot name="bodyCell" v-bind="{ text, record, index, column }" :onDelete="handleDel">
-            <!--染整缸号-->
-            <template v-if="column.dataIndex === 'dyeVatNo'">
-              <a-input v-model:value="record.dyeVatNo"></a-input>
+            <template v-if="column?.type === 'AInput'">
+              <a-input v-model:value="record[column.dataIndex]"></a-input>
             </template>
-            <!--色布/色纱重量(KG)-->
-            <template v-if="column.dataIndex === 'colorClothWeight'">
-              <a-input v-model:value="record.colorClothWeight"></a-input>
-            </template>
-            <!--色布米数(M)-->
-            <template v-if="column.dataIndex === 'colorClothLength'">
-              <a-input v-model:value="record.colorClothLength"></a-input>
-            </template>
-            <!--染整颜色-->
-            <template v-if="column.dataIndex === 'color'">
-              <a-input v-model:value="record.color"></a-input>
-            </template>
-            <!--染厂-->
-            <template v-if="column.dataIndex === 'dyeFactory'">
-              <a-input v-model:value="record.dyeFactory"></a-input>
+            <template v-if="column?.type === 'AInputNumber'">
+              <a-input-number v-model:value="record[column.dataIndex]"></a-input-number>
             </template>
             <template v-if="column.dataIndex === 'actions'">
               <a-button type="link" size="small" @click="handleDel(index)">删除</a-button>
@@ -104,11 +90,11 @@ export default defineComponent({
     const traceabilityData = inject('traceabilityData')
 
     const defaultColumns = [
-      { title: '染整缸号', width: 100, dataIndex: 'dyeVatNo', required: true },
-      { title: '色布/色纱重量(KG)', width: 100, dataIndex: 'colorClothWeight', required: true },
-      { title: '色布米数(M)', width: 100, dataIndex: 'colorClothLength', required: true },
-      { title: '染整颜色', width: 100, dataIndex: 'color', required: true },
-      { title: '染厂', width: 100, dataIndex: 'dyeFactory', required: true },
+      { title: '染整缸号', width: 100, dataIndex: 'dyeVatNo', type: 'AInput', required: true },
+      { title: '色布/色纱重量(KG)', width: 100, dataIndex: 'colorClothWeight', type: 'AInputNumber', required: true },
+      { title: '色布米数(M)', width: 100, dataIndex: 'colorClothLength', type: 'AInputNumber', required: true },
+      { title: '染整颜色', width: 100, dataIndex: 'color', type: 'AInput', required: true },
+      { title: '染厂', width: 100, dataIndex: 'dyeFactory', type: 'AInput', required: true },
       { title: '操作', width: 60, dataIndex: 'actions' }
     ]
     const tableOptions = reactive({

@@ -36,33 +36,11 @@
         </template>
         <template #bodyCell="{ text, record, index, column }">
           <slot name="bodyCell" v-bind="{ text, record, index, column }" :onDelete="handleDel">
-            <!--织单号-->
-            <template v-if="column.dataIndex === 'weavingOrderNo'">
-              <a-input v-model:value="record.weavingOrderNo"></a-input>
+            <template v-if="column?.type === 'AInput'">
+              <a-input v-model:value="record[column.dataIndex]"></a-input>
             </template>
-            <!--坯布条编码-->
-            <template v-if="column.dataIndex === 'greyClothNo'">
-              <a-input v-model:value="record.greyClothNo"></a-input>
-            </template>
-            <!--坯纱采购合同号-->
-            <template v-if="column.dataIndex === 'blankYarnPurchaseNo'">
-              <a-input v-model:value="record.blankYarnPurchaseNo"></a-input>
-            </template>
-            <!--棉成分占比(0到100)-->
-            <template v-if="column.dataIndex === 'cottonComponentsRate'">
-              <a-input v-model:value="record.cottonComponentsRate"></a-input>
-            </template>
-            <!--坯布重量(KG)-->
-            <template v-if="column.dataIndex === 'colorClothWeight'">
-              <a-input v-model:value="record.colorClothWeight"></a-input>
-            </template>
-            <!--坯布米数(M)-->
-            <template v-if="column.dataIndex === 'colorClothLength'">
-              <a-input v-model:value="record.colorClothLength"></a-input>
-            </template>
-            <!--织厂-->
-            <template v-if="column.dataIndex === 'textileMill'">
-              <a-input v-model:value="record.textileMill"></a-input>
+            <template v-if="column?.type === 'AInputNumber'">
+              <a-input-number v-model:value="record[column.dataIndex]"></a-input-number>
             </template>
             <template v-if="column.dataIndex === 'actions'">
               <a-button type="link" size="small" @click="handleDel(index)">删除</a-button>
@@ -112,13 +90,19 @@ export default defineComponent({
     const traceabilityData = inject('traceabilityData')
 
     const defaultColumns = [
-      { title: '织单号', width: 100, dataIndex: 'weavingOrderNo', required: true },
-      { title: '坯布条编码', width: 100, dataIndex: 'greyClothNo', required: true },
-      { title: '坯纱采购合同号', width: 100, dataIndex: 'blankYarnPurchaseNo', required: true },
-      { title: '棉成分占比(0到100)', width: 100, dataIndex: 'cottonComponentsRate', required: true },
-      { title: '坯布重量(KG)', width: 100, dataIndex: 'colorClothWeight', required: true },
-      { title: '坯布米数(M)', width: 100, dataIndex: 'colorClothLength', required: true },
-      { title: '织厂', width: 100, dataIndex: 'textileMill', required: true },
+      { title: '织单号', width: 100, dataIndex: 'weavingOrderNo', type: 'AInput', required: true },
+      { title: '坯布条编码', width: 100, dataIndex: 'greyClothNo', type: 'AInput', required: true },
+      { title: '坯纱采购合同号', width: 100, dataIndex: 'blankYarnPurchaseNo', type: 'AInput', required: true },
+      {
+        title: '棉成分占比(0到100)',
+        width: 100,
+        dataIndex: 'cottonComponentsRate',
+        type: 'AInputNumber',
+        required: true
+      },
+      { title: '坯布重量(KG)', width: 100, dataIndex: 'colorClothWeight', type: 'AInputNumber', required: true },
+      { title: '坯布米数(M)', width: 100, dataIndex: 'colorClothLength', type: 'AInput', required: true },
+      { title: '织厂', width: 100, dataIndex: 'textileMill', type: 'AInput', required: true },
       { title: '操作', width: 60, dataIndex: 'actions' }
     ]
     const tableOptions = reactive({

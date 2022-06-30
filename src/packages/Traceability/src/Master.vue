@@ -14,61 +14,14 @@
       <template #bodyCell="{ text, record, index, column }">
         <slot name="bodyCell" v-bind="{ text, record, index, column }">
           <template v-if="mode !== 'view'">
-            <!--物料名称-->
-            <template v-if="column.dataIndex === 'materialName'">
-              <a-input v-model:value="record.materialName"></a-input>
+            <template v-if="column?.type === 'AInput'">
+              <a-input v-model:value="record[column.dataIndex]"></a-input>
             </template>
-            <!--棉花供应商-->
-            <template v-if="column.dataIndex === 'cottonSupplierName'">
-              <a-input v-model:value="record.cottonSupplierName"></a-input>
+            <template v-if="column?.type === 'AInputNumber'">
+              <a-input-number v-model:value="record[column.dataIndex]"></a-input-number>
             </template>
-            <!--材料原产地证明编号-->
-            <template v-if="column.dataIndex === 'materialOriginCertificateNo'">
-              <a-input v-model:value="record.materialOriginCertificateNo"></a-input>
-            </template>
-            <!--材料产地(国家.中文简体)-->
-            <template v-if="column.dataIndex === 'materialOriginPlace'">
-              <a-input v-model:value="record.materialOriginPlace"></a-input>
-            </template>
-            <!--材料采购合同号-->
-            <template v-if="column.dataIndex === 'purchaseContractNo'">
-              <a-input v-model:value="record.purchaseContractNo"></a-input>
-            </template>
-            <!--材料采购时间-->
-            <template v-if="column.dataIndex === 'purchaseTime'">
-              <a-input v-model:value="record.purchaseTime"></a-input>
-            </template>
-            <!--材料采购数量(KG)-->
-            <template v-if="column.dataIndex === 'purchaseQuantity'">
-              <a-input v-model:value="record.purchaseQuantity"></a-input>
-            </template>
-            <!--材料提货单号-->
-            <template v-if="column.dataIndex === 'materialLadeBillNo'">
-              <a-input v-model:value="record.materialLadeBillNo"></a-input>
-            </template>
-            <!--坯纱采购合同号-->
-            <template v-if="column.dataIndex === 'blankYarnPurchaseNo'">
-              <a-input v-model:value="record.blankYarnPurchaseNo"></a-input>
-            </template>
-            <!--坯纱产地(国家.中文简体)-->
-            <template v-if="column.dataIndex === 'blankYarnOriginPlace'">
-              <a-input v-model:value="record.blankYarnOriginPlace"></a-input>
-            </template>
-            <!--坯纱总采购总量(KG)-->
-            <template v-if="column.dataIndex === 'blankYarnPurchaseQuantity'">
-              <a-input v-model:value="record.blankYarnPurchaseQuantity"></a-input>
-            </template>
-            <!--坯纱采购发票号-->
-            <template v-if="column.dataIndex === 'blankYarnInvoiceNo'">
-              <a-input v-model:value="record.blankYarnInvoiceNo"></a-input>
-            </template>
-            <!--坯纱装箱单号-->
-            <template v-if="column.dataIndex === 'blankYarnPackingNo'">
-              <a-input v-model:value="record.blankYarnPackingNo"></a-input>
-            </template>
-            <!--坯纱提货单/物流单号-->
-            <template v-if="column.dataIndex === 'logisticsNo'">
-              <a-input v-model:value="record.logisticsNo"></a-input>
+            <template v-if="column?.type === 'ASelect'">
+              <a-select v-model:value="record[column.dataIndex]"></a-select>
             </template>
           </template>
         </slot>
@@ -83,7 +36,7 @@
       <template #bodyCell="{ text, record, index, column }">
         <slot name="bodyCell" v-bind="{ text, record, index, column }">
           <template v-if="mode === 'view'">
-            <x-image urls="record[column.dataIndex]"></x-image>
+            <x-image :urls="record[column.dataIndex]"></x-image>
           </template>
           <template v-else>
             <x-upload v-model:file-list="record[column.dataIndex]" :custom-request="customUpload" />
@@ -118,27 +71,54 @@ export default defineComponent({
     const traceabilityData = inject('traceabilityData')
 
     const defaultMaterialColumns = [
-      { title: '物料名称', width: 120, dataIndex: 'materialName', required: true },
-      { title: '面料供应商', width: 120, dataIndex: 'materialSupplierCode', required: true },
-      { title: '棉花供应商', width: 120, dataIndex: 'cottonSupplierName', required: true },
-      { title: '材料原产地证明编号', width: 160, dataIndex: 'materialOriginCertificateNo', required: true },
-      { title: '材料产地', width: 120, dataIndex: 'materialOriginPlace', required: true, subTitle: '(国家.中文简体)' },
-      { title: '材料采购合同号', width: 140, dataIndex: 'purchaseContractNo', required: true },
-      { title: '材料采购时间', width: 120, dataIndex: 'purchaseTime', required: true },
-      { title: '材料采购数量(KG)', width: 140, dataIndex: 'purchaseQuantity', required: true },
+      { title: '物料名称', width: 120, dataIndex: 'materialName', type: 'AInput', required: true },
+      { title: '面料供应商', width: 120, dataIndex: 'materialSupplierCode', type: 'ASelect', required: true },
+      { title: '棉花供应商', width: 120, dataIndex: 'cottonSupplierName', type: 'AInput', required: true },
+      {
+        title: '材料原产地证明编号',
+        width: 160,
+        dataIndex: 'materialOriginCertificateNo',
+        type: 'AInput',
+        required: true
+      },
+      {
+        title: '材料产地',
+        subTitle: '(国家.中文简体)',
+        width: 120,
+        dataIndex: 'materialOriginPlace',
+        type: 'AInput',
+        required: true
+      },
+      { title: '材料采购合同号', width: 140, dataIndex: 'purchaseContractNo', type: 'AInput', required: true },
+      { title: '材料采购时间', width: 120, dataIndex: 'purchaseTime', type: 'AInput', required: true },
+      { title: '材料采购数量(KG)', width: 140, dataIndex: 'purchaseQuantity', type: 'AInputNumber', required: true },
       {
         title: '材料提货单号',
+        subTitle: '(当坯纱产地=中国时选填)',
         width: 180,
         dataIndex: 'materialLadeBillNo',
-        required: true,
-        subTitle: '(当坯纱产地=中国时选填)'
+        type: 'AInput',
+        required: true
       },
-      { title: '坯纱采购合同号', width: 140, dataIndex: 'blankYarnPurchaseNo', required: true },
-      { title: '坯纱产地', width: 120, dataIndex: 'blankYarnOriginPlace', required: true, subTitle: '(国家.中文简体)' },
-      { title: '坯纱总采购总量(KG)', width: 160, dataIndex: 'blankYarnPurchaseQuantity', required: true },
-      { title: '坯纱采购发票号', width: 140, dataIndex: 'blankYarnInvoiceNo', required: true },
-      { title: '坯纱装箱单号', width: 120, dataIndex: 'blankYarnPackingNo' },
-      { title: '坯纱提货单/物流单号', width: 200, dataIndex: 'logisticsNo' }
+      { title: '坯纱采购合同号', width: 140, dataIndex: 'blankYarnPurchaseNo', type: 'AInput', required: true },
+      {
+        title: '坯纱产地',
+        subTitle: '(国家.中文简体)',
+        width: 120,
+        dataIndex: 'blankYarnOriginPlace',
+        type: 'AInput',
+        required: true
+      },
+      {
+        title: '坯纱总采购总量(KG)',
+        width: 160,
+        dataIndex: 'blankYarnPurchaseQuantity',
+        type: 'AInput',
+        required: true
+      },
+      { title: '坯纱采购发票号', width: 140, dataIndex: 'blankYarnInvoiceNo', type: 'AInput', required: true },
+      { title: '坯纱装箱单号', width: 120, dataIndex: 'blankYarnPackingNo', type: 'AInput' },
+      { title: '坯纱提货单/物流单号', width: 200, dataIndex: 'logisticsNo', type: 'AInput' }
     ]
     const materialOptions = reactive({
       rowKey: 'uid',
@@ -197,6 +177,18 @@ export default defineComponent({
 .master-info {
   .x-table {
     margin-bottom: 16px;
+
+    :deep(.x-upload) {
+      .ant-upload-list-picture-card {
+        min-height: 64px;
+      }
+
+      .ant-upload.ant-upload-select-picture-card,
+      .ant-upload-list-picture-card-container {
+        width: 64px;
+        height: 64px;
+      }
+    }
   }
 }
 </style>
