@@ -43,7 +43,9 @@
               <a-input-number v-model:value="record[column.dataIndex]"></a-input-number>
             </template>
             <template v-if="column.dataIndex === 'actions'">
-              <a-button type="link" size="small" @click="handleDel(index)">删除</a-button>
+              <a-button v-show="record?.itemId == null" type="link" size="small" @click="handleDel(index)">
+                删除
+              </a-button>
             </template>
           </slot>
         </template>
@@ -91,10 +93,22 @@ export default defineComponent({
 
     const defaultColumns = [
       { title: '染整缸号', width: 100, dataIndex: 'dyeVatNo', type: 'AInput', required: true },
-      { title: '色布/色纱重量(KG)', width: 100, dataIndex: 'colorClothWeight', type: 'AInputNumber', required: true },
-      { title: '色布米数(M)', width: 100, dataIndex: 'colorClothLength', type: 'AInputNumber', required: true },
-      { title: '染整颜色', width: 100, dataIndex: 'color', type: 'AInput', required: true },
-      { title: '染厂', width: 100, dataIndex: 'dyeFactory', type: 'AInput', required: true },
+      {
+        title: '色布/色纱重量(KG)',
+        subTitle: '针织必填/梭织不能填',
+        width: 100,
+        dataIndex: 'colorClothWeight',
+        type: 'AInputNumber'
+      },
+      {
+        title: '色布米数(M)',
+        subTitle: '针织不能填/梭织必填',
+        width: 100,
+        dataIndex: 'colorClothLength',
+        type: 'AInputNumber'
+      },
+      { title: '染整颜色', width: 100, dataIndex: 'color', type: 'AInput' },
+      { title: '染厂', width: 100, dataIndex: 'dyeFactory', type: 'AInput' },
       { title: '操作', width: 60, dataIndex: 'actions' }
     ]
     const tableOptions = reactive({
@@ -114,7 +128,8 @@ export default defineComponent({
     watch(
       () => traceabilityData.value?.dyeingData,
       list => {
-        tableOptions.dataSource = list || []
+        const now = Date.now().toString()
+        tableOptions.dataSource = (list || []).map((val, i) => ({ ...val, uid: now + i }))
       },
       { deep: true, immediate: true }
     )
@@ -125,15 +140,20 @@ export default defineComponent({
       state.disabled = true
       await execRequest(customUploadDyeing(), {
         success: ({ data }) => {
-          tableOptions.dataSource.push({
-            dyeVatNo: '',
-            colorClothWeight: '',
-            colorClothLength: '',
-            color: '',
-            dyeFactory: ''
-          })
-        },
-        fail: () => {}
+          if (data.length) {
+            const now = Date.now().toString()
+            data.forEach((item, index) => {
+              tableOptions.dataSource.push({
+                uid: now + index,
+                dyeVatNo: '',
+                colorClothWeight: '',
+                colorClothLength: '',
+                color: '',
+                dyeFactory: ''
+              })
+            })
+          }
+        }
       })
       state.disabled = false
     }
@@ -158,6 +178,7 @@ export default defineComponent({
 
     const handleAdd = () => {
       tableOptions.dataSource.push({
+        uid: Date.now(),
         dyeVatNo: '',
         colorClothWeight: '',
         colorClothLength: '',

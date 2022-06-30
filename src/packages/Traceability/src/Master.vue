@@ -33,6 +33,14 @@
       <a-button type="link">查看模板</a-button>
     </div>
     <x-table v-bind="photocopyOptions">
+      <template #headerCell="{ title, column }">
+        <slot name="headerCell" v-bind="{ title, column }">
+          <div>
+            <span v-if="column?.required === true" class="required">*</span>
+            {{ title }}
+          </div>
+        </slot>
+      </template>
       <template #bodyCell="{ text, record, index, column }">
         <slot name="bodyCell" v-bind="{ text, record, index, column }">
           <template v-if="mode === 'view'">
@@ -132,19 +140,19 @@ export default defineComponent({
     watch(
       () => traceabilityData.value?.masterData,
       list => {
-        materialOptions.dataSource = (list || []).map(val => ({ ...val, uid: Date.now() }))
+        materialOptions.dataSource = list || []
       },
       { deep: true, immediate: true }
     )
 
     const defaultPhotocopyColumns = [
-      { title: '棉花产地证明', width: '14%', dataIndex: 'certificateImgs' },
-      { title: '棉花采购合同', width: '14%', dataIndex: 'contractImgs' },
-      { title: '棉花提货单', width: '14%', dataIndex: 'logisticsImgs' },
-      { title: '棉纱采购合同', width: '14%', dataIndex: 'contractYarnImgs' },
-      { title: '棉纱提货单', width: '14%', dataIndex: 'logisticsYarnImgs' },
-      { title: '棉纱装箱单', width: '14%', dataIndex: 'packingImgs' },
-      { title: '棉纱采购发票', width: '14%', dataIndex: 'invoiceImgs' }
+      { title: '1.棉花产地证明', width: '14%', dataIndex: 'certificateImgs', required: true },
+      { title: '2.棉花采购合同', width: '14%', dataIndex: 'contractImgs' },
+      { title: '3.棉花提货单', width: '14%', dataIndex: 'logisticsImgs' },
+      { title: '4.棉纱采购合同', width: '14%', dataIndex: 'contractYarnImgs' },
+      { title: '5.棉纱提货单', width: '14%', dataIndex: 'logisticsYarnImgs' },
+      { title: '6.棉纱装箱单', width: '14%', dataIndex: 'packingImgs' },
+      { title: '7.棉纱采购发票', width: '14%', dataIndex: 'invoiceImgs' }
     ]
     const photocopyOptions = reactive({
       scroll: {
@@ -161,7 +169,7 @@ export default defineComponent({
     watch(
       () => traceabilityData.value?.photocopyData,
       list => {
-        photocopyOptions.dataSource = (list || []).map(val => ({ ...val, uid: Date.now() }))
+        photocopyOptions.dataSource = list || []
       },
       { deep: true, immediate: true }
     )
@@ -187,6 +195,10 @@ export default defineComponent({
       .ant-upload-list-picture-card-container {
         width: 64px;
         height: 64px;
+      }
+
+      .ant-upload-list-picture-card .ant-upload-list-item-info::before {
+        left: 0;
       }
     }
   }

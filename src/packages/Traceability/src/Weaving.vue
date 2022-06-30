@@ -43,7 +43,9 @@
               <a-input-number v-model:value="record[column.dataIndex]"></a-input-number>
             </template>
             <template v-if="column.dataIndex === 'actions'">
-              <a-button type="link" size="small" @click="handleDel(index)">删除</a-button>
+              <a-button v-show="record?.itemId == null" type="link" size="small" @click="handleDel(index)">
+                删除
+              </a-button>
             </template>
           </slot>
         </template>
@@ -90,19 +92,30 @@ export default defineComponent({
     const traceabilityData = inject('traceabilityData')
 
     const defaultColumns = [
-      { title: '织单号', width: 100, dataIndex: 'weavingOrderNo', type: 'AInput', required: true },
       { title: '坯布条编码', width: 100, dataIndex: 'greyClothNo', type: 'AInput', required: true },
-      { title: '坯纱采购合同号', width: 100, dataIndex: 'blankYarnPurchaseNo', type: 'AInput', required: true },
+      { title: '坯纱采购合同号', width: 100, dataIndex: 'blankYarnPurchaseNo', type: 'AInput' },
       {
         title: '棉成分占比(0到100)',
         width: 100,
         dataIndex: 'cottonComponentsRate',
-        type: 'AInputNumber',
-        required: true
+        type: 'AInputNumber'
       },
-      { title: '坯布重量(KG)', width: 100, dataIndex: 'colorClothWeight', type: 'AInputNumber', required: true },
-      { title: '坯布米数(M)', width: 100, dataIndex: 'colorClothLength', type: 'AInput', required: true },
-      { title: '织厂', width: 100, dataIndex: 'textileMill', type: 'AInput', required: true },
+      { title: '织单号', width: 100, dataIndex: 'weavingOrderNo', type: 'AInput' },
+      {
+        title: '坯布重量(KG)',
+        subTitle: '针织必填/梭织不能填',
+        width: 100,
+        dataIndex: 'colorClothWeight',
+        type: 'AInputNumber'
+      },
+      {
+        title: '坯布米数(M)',
+        subTitle: '针织不能填/梭织必填',
+        width: 100,
+        dataIndex: 'colorClothLength',
+        type: 'AInputNumber'
+      },
+      { title: '织厂', width: 100, dataIndex: 'textileMill', type: 'AInput' },
       { title: '操作', width: 60, dataIndex: 'actions' }
     ]
     const tableOptions = reactive({
@@ -122,7 +135,8 @@ export default defineComponent({
     watch(
       () => traceabilityData.value?.weavingData,
       list => {
-        tableOptions.dataSource = list || []
+        const now = Date.now().toString()
+        tableOptions.dataSource = (list || []).map((val, i) => ({ ...val, uid: now + i }))
       },
       { deep: true, immediate: true }
     )
@@ -133,17 +147,22 @@ export default defineComponent({
       state.disabled = true
       await execRequest(customUploadWeaving(), {
         success: ({ data }) => {
-          tableOptions.dataSource.push({
-            weavingOrderNo: '',
-            greyClothNo: '',
-            blankYarnPurchaseNo: '',
-            cottonComponentsRate: '',
-            colorClothWeight: '',
-            colorClothLength: '',
-            textileMill: ''
-          })
-        },
-        fail: () => {}
+          if (data.length) {
+            const now = Date.now().toString()
+            data.forEach((item, index) => {
+              tableOptions.dataSource.push({
+                uid: now + index,
+                weavingOrderNo: '',
+                greyClothNo: '',
+                blankYarnPurchaseNo: '',
+                cottonComponentsRate: '',
+                colorClothWeight: '',
+                colorClothLength: '',
+                textileMill: ''
+              })
+            })
+          }
+        }
       })
       state.disabled = false
     }
@@ -168,6 +187,7 @@ export default defineComponent({
 
     const handleAdd = () => {
       tableOptions.dataSource.push({
+        uid: Date.now(),
         weavingOrderNo: '',
         greyClothNo: '',
         blankYarnPurchaseNo: '',

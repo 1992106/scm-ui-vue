@@ -71,12 +71,12 @@ export default defineComponent({
     materialColumns: { type: Array },
     photocopyColumns: { type: Array },
     // 织布
-    weavingRowKey: { type: [String, Function], default: 'itemId' },
+    weavingRowKey: { type: [String, Function], default: 'uid' },
     weavingColumns: { type: Array, default: () => [] },
     customUploadWeaving: { type: Function },
     customDownloadWeaving: { type: Function },
     // 染整
-    dyeingRowKey: { type: [String, Function], default: 'itemId' },
+    dyeingRowKey: { type: [String, Function], default: 'uid' },
     dyeingColumns: { type: Array },
     customUploadDyeing: { type: Function },
     customDownloadDyeing: { type: Function },
@@ -127,23 +127,25 @@ export default defineComponent({
         success: ({ data }) => {
           // 根据【'坯纱采购合同号'】，如果有重复，则更新，如果没有则新增
           const masterData = state.traceabilityList?.masterData || []
-          const purchaseContractNos = masterData.map(val => val?.purchaseContractNo)
-          const oldList = (data || []).filter(val => purchaseContractNos.includes(val?.purchaseContractNo))
-          const newList = (data || []).filter(val => !purchaseContractNos.includes(val?.purchaseContractNo))
+          const uids = masterData.map(val => val?.uid)
+          const oldList = (data || []).filter(val => uids.includes(val?.uid))
+          const newList = (data || []).filter(val => !uids.includes(val?.uid))
           // 更新数据
           if (oldList.length) {
-            ;(data || []).forEach(item => {
-              const index = masterData.findIndex(val => val?.purchaseContractNo === item?.purchaseContractNo)
+            oldList.forEach(item => {
+              const index = masterData.findIndex(val => val?.uid === item?.uid)
               state.traceabilityList.masterData.splice(index, 0, item)
             })
           }
           // 插入数据
-          if (newList.length) {
-            ;(data || []).forEach(item => {
+          if (newList.length === 0) {
+            const now = Date.now().toString()
+            newList.forEach((item, index) => {
               state.traceabilityList.push({
-                masterData: [item],
+                masterData: [{ ...item, uid: now + index }],
                 photocopyData: [
                   {
+                    uid: now,
                     certificateImgs: [],
                     contractImgs: [],
                     logisticsImgs: [],
