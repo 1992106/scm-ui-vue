@@ -135,7 +135,7 @@ export default defineComponent({
     )
 
     const handleOk = () => {
-      emit('done', state.traceabilityList)
+      emit('done', state.traceabilityList[0])
       modalVisible.value = false
       handleCancel()
     }

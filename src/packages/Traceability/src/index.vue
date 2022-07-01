@@ -1,7 +1,7 @@
 <template>
   <div class="x-traceability">
     <Master :mode="masterMode" v-bind="masterProps"></Master>
-    <div class="other-info">
+    <div v-if="showWeaving || showDyeing" class="other-info">
       <Weaving :mode="weavingMode" v-bind="weavingProps"></Weaving>
       <div style="width: 20px"></div>
       <Dyeing :mode="dyeingMode" v-bind="dyeingProps"></Dyeing>
@@ -38,7 +38,9 @@ export default defineComponent({
     return {
       masterMode: useMode['master'],
       weavingMode: useMode['weaving'],
-      dyeingMode: useMode['dyeing']
+      showWeaving: computed(() => !!props.weavingProps?.visible),
+      dyeingMode: useMode['dyeing'],
+      showDyeing: computed(() => !!props.dyeingProps?.visible)
     }
   }
 })

@@ -7,11 +7,11 @@
     :width="width"
     :height="height"
     :spinProps="spinning"
+    :footer="null"
     destroyOnClose
-    @ok="handleOk"
     @cancel="handleCancel">
     <XTraceability
-      :index="index"
+      :index="0"
       :emptyText="emptyText"
       :masterProps="{
         materialColumns,
@@ -120,12 +120,6 @@ export default defineComponent({
       { immediate: true }
     )
 
-    const handleOk = () => {
-      emit('done', {})
-      modalVisible.value = false
-      handleCancel()
-    }
-
     const handleCancel = () => {
       state.traceabilityList = []
     }
@@ -137,7 +131,6 @@ export default defineComponent({
       ...toRefs(state),
       modalVisible,
       getDetail,
-      handleOk,
       handleCancel
     }
   }

@@ -8,9 +8,29 @@
     :height="height"
     :spinProps="spinning"
     destroyOnClose
-    @ok="handleOk"
     @cancel="handleCancel">
-    <XTraceability :index="0"></XTraceability>
+    <XTraceability
+      :index="0"
+      :emptyText="emptyText"
+      :masterProps="{
+        materialColumns,
+        photocopyColumns
+      }"
+      :weavingProps="{
+        weavingRowKey,
+        weavingColumns,
+        visible: false
+      }"
+      :dyeingProps="{
+        dyeingRowKey,
+        dyeingColumns,
+        visible: false
+      }"></XTraceability>
+    <template #footer>
+      <a-button @click="handleCancel">取消</a-button>
+      <a-button type="primary" danger @click="handleOk(0)">不通过</a-button>
+      <a-button type="primary" @click="handleOk(1)">通过</a-button>
+    </template>
   </x-drawer>
 </template>
 <script lang="ts">
@@ -21,7 +41,7 @@ import { isFunction } from 'lodash-es'
 // import { getValueByRowKey } from '@packages/components/Table/utils'
 import { execRequest } from '@src/utils'
 export default defineComponent({
-  name: 'XBatchImportDetail',
+  name: 'XAuditTraceability',
   components: {
     XDrawer,
     'x-drawer': XDrawer,
@@ -30,27 +50,22 @@ export default defineComponent({
   inheritAttrs: false,
   props: {
     visible: { type: Boolean, default: false },
-    title: { type: String, default: '导入明细' },
+    title: { type: String, default: '审核溯源包' },
     width: { type: [String, Number] },
     height: { type: [String, Number] },
+    // rowKey: { type: [String, Function], default: 'id' },
     manual: { type: Boolean, default: false },
     customRequest: { type: Function, require: true },
+    emptyText: { type: String, default: '暂无数据' },
     // 主表
     materialColumns: { type: Array },
     photocopyColumns: { type: Array },
     // 织布
     weavingRowKey: { type: [String, Function], default: 'itemId' },
     weavingColumns: { type: Array, default: () => [] },
-    customImportWeaving: { type: Function },
-    customDownloadWeaving: { type: Function },
     // 染整
     dyeingRowKey: { type: [String, Function], default: 'itemId' },
-    dyeingColumns: { type: Array },
-    customImportDyeing: { type: Function },
-    customDownloadDyeing: { type: Function },
-    // 公共
-    size: { type: Number, default: 4 },
-    emptyText: { type: String, default: '暂无数据' }
+    dyeingColumns: { type: Array }
   },
   emits: ['update:visible', 'done'],
   setup(props, { emit }) {
@@ -111,25 +126,25 @@ export default defineComponent({
       { immediate: true }
     )
 
-    const handleOk = () => {
-      emit('done', state.traceabilityList[0])
+    const handleCancel = () => {
+      state.traceabilityList = []
       modalVisible.value = false
+    }
+
+    const handleOk = type => {
+      emit('done', { isPass: type, data: state.traceabilityList[0] })
       handleCancel()
     }
 
-    const handleCancel = () => {
-      state.traceabilityList = []
-    }
-
-    provide('mode', { master: 'view', weaving: 'action', dyeing: 'action' })
+    provide('mode', { master: 'view', weaving: 'view', dyeing: 'view' })
     provide('traceabilityList', state.traceabilityList)
 
     return {
       ...toRefs(state),
       modalVisible,
       getDetail,
-      handleOk,
-      handleCancel
+      handleCancel,
+      handleOk
     }
   }
 })
