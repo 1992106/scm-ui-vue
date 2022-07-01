@@ -11,8 +11,12 @@
     @ok="handleOk"
     @cancel="handleCancel">
     <a-form>
-      <a-form-item label="请导入主表" name="file" :rules="[{ required: true, message: '请导入主表！' }]">
-        <a-upload :showUploadList="false" :before-upload="beforeUpload" :disabled="disabled" @change="handleUpload">
+      <a-form-item label="请导入主表" :required="true">
+        <a-upload
+          :showUploadList="false"
+          :before-upload="beforeUpload"
+          :disabled="disabled"
+          :custom-request="handleUpload">
           <a-button>
             <UploadOutlined></UploadOutlined>
             上传
@@ -119,14 +123,14 @@ export default defineComponent({
       return isExcel && isLt4M
     }
 
-    const handleUpload = async () => {
-      const { customUploadMaster = Function.prototype } = props
+    const handleUpload = async ({ file }) => {
+      const { customUploadMaster } = props
       if (!isFunction(customUploadMaster)) return
       state.disabled = true
-      await execRequest(customUploadMaster(), {
+      await execRequest(customUploadMaster(file), {
         success: ({ data }) => {
           // 根据【'坯纱采购合同号'】，如果有重复，则更新，如果没有则新增
-          const masterData = state.traceabilityList?.masterData || []
+          const masterData = state.traceabilityList.masterData || []
           const uids = masterData.map(val => val?.uid)
           const oldList = (data || []).filter(val => uids.includes(val?.uid))
           const newList = (data || []).filter(val => !uids.includes(val?.uid))
@@ -138,14 +142,12 @@ export default defineComponent({
             })
           }
           // 插入数据
-          if (newList.length === 0) {
-            const now = Date.now().toString()
-            newList.forEach((item, index) => {
+          if (newList.length) {
+            newList.forEach(item => {
               state.traceabilityList.push({
-                masterData: [{ ...item, uid: now + index }],
+                masterData: [item],
                 photocopyData: [
                   {
-                    uid: now,
                     certificateImgs: [],
                     contractImgs: [],
                     logisticsImgs: [],
@@ -187,7 +189,7 @@ export default defineComponent({
     }
 
     const handleOk = () => {
-      emit('done', {})
+      emit('done', state.traceabilityList)
       modalVisible.value = false
       handleCancel()
     }

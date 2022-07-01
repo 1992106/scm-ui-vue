@@ -33,7 +33,6 @@ export default defineComponent({
     title: { type: String, default: '编辑溯源包' },
     width: { type: [String, Number] },
     height: { type: [String, Number] },
-    // rowKey: { type: [String, Function], default: 'id' },
     manual: { type: Boolean, default: false },
     customRequest: { type: Function, require: true },
     // 主表
@@ -79,7 +78,24 @@ export default defineComponent({
       state.spinning = true
       await execRequest(customRequest(), {
         success: ({ data }) => {
-          state.traceabilityList = [{}]
+          state.traceabilityList = [
+            {
+              masterData: data?.traceabilityResp ? [data?.traceabilityResp] : [],
+              photocopyData: [
+                {
+                  certificateImgs: data?.certificateImgs || [],
+                  contractImgs: data?.contractImgs || [],
+                  logisticsImgs: data?.logisticsImgs || [],
+                  contractYarnImgs: data?.contractYarnImgs || [],
+                  logisticsYarnImgs: data?.logisticsYarnImgs || [],
+                  packingImgs: data?.packingImgs || [],
+                  invoiceImgs: data?.invoiceImgs || []
+                }
+              ],
+              weavingData: data?.greyClothList || [],
+              dyeingData: data?.dyeVatList || []
+            }
+          ]
         },
         fail: () => {
           state.traceabilityList = []
@@ -99,7 +115,7 @@ export default defineComponent({
     )
 
     const handleOk = () => {
-      emit('done', {})
+      emit('done', state.traceabilityList)
       modalVisible.value = false
       handleCancel()
     }

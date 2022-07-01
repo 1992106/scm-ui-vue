@@ -140,7 +140,8 @@ export default defineComponent({
     watch(
       () => traceabilityData.value?.masterData,
       list => {
-        materialOptions.dataSource = list || []
+        const now = Date.now().toString()
+        materialOptions.dataSource = (list || []).map((val, i) => ({ ...val, uid: val?.id || now + i }))
       },
       { deep: true, immediate: true }
     )
@@ -169,7 +170,8 @@ export default defineComponent({
     watch(
       () => traceabilityData.value?.photocopyData,
       list => {
-        photocopyOptions.dataSource = list || []
+        const now = Date.now().toString()
+        photocopyOptions.dataSource = (list || []).map((val, i) => ({ ...val, uid: now + i }))
       },
       { deep: true, immediate: true }
     )

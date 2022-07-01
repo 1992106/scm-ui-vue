@@ -16,3 +16,9 @@ export { default as XEditor } from './Editor/index.vue'
 export { default as XVersions } from './Versions'
 export { default as XMaterials } from './Materials'
 export { default as XDownloads } from './Downloads'
+export {
+  default as XTraceability,
+  XBatchImportTraceability,
+  XEditTraceability,
+  XViewTraceability
+} from './Traceability'

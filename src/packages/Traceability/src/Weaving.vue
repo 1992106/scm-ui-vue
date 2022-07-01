@@ -136,7 +136,7 @@ export default defineComponent({
       () => traceabilityData.value?.weavingData,
       list => {
         const now = Date.now().toString()
-        tableOptions.dataSource = (list || []).map((val, i) => ({ ...val, uid: now + i }))
+        tableOptions.dataSource = (list || []).map((val, i) => ({ ...val, uid: val?.itemId || now + i }))
       },
       { deep: true, immediate: true }
     )
@@ -187,7 +187,7 @@ export default defineComponent({
 
     const handleAdd = () => {
       tableOptions.dataSource.push({
-        uid: Date.now(),
+        uid: Date.now().toString(),
         weavingOrderNo: '',
         greyClothNo: '',
         blankYarnPurchaseNo: '',
