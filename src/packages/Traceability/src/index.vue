@@ -1,10 +1,10 @@
 <template>
   <div class="x-traceability">
-    <Master :mode="masterMode" :rowKey="rowKey"></Master>
+    <Master :mode="masterMode" v-bind="masterProps"></Master>
     <div class="other-info">
-      <Weaving :mode="weavingMode" :rowKey="rowKey"></Weaving>
+      <Weaving :mode="weavingMode" v-bind="weavingProps"></Weaving>
       <div style="width: 20px"></div>
-      <Dyeing :mode="dyeingMode" :rowKey="rowKey"></Dyeing>
+      <Dyeing :mode="dyeingMode" v-bind="dyeingProps"></Dyeing>
     </div>
   </div>
 </template>
@@ -22,8 +22,10 @@ export default defineComponent({
     Dyeing
   },
   props: {
-    rowKey: [String, Function],
-    index: { type: Number, default: 1 }
+    index: { type: Number, default: 1 },
+    masterProps: Object,
+    weavingProps: Object,
+    dyeingProps: Object
   },
   setup(props) {
     const useMode = inject('mode')

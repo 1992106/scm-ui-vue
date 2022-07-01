@@ -15,13 +15,15 @@
         <slot name="bodyCell" v-bind="{ text, record, index, column }">
           <template v-if="mode !== 'view'">
             <template v-if="column?.type === 'AInput'">
-              <a-input v-model:value="record[column.dataIndex]"></a-input>
+              <a-input v-model:value="record[column.dataIndex]" @change="handleChange('material')"></a-input>
             </template>
             <template v-if="column?.type === 'AInputNumber'">
-              <a-input-number v-model:value="record[column.dataIndex]"></a-input-number>
+              <a-input-number
+                v-model:value="record[column.dataIndex]"
+                @change="handleChange('material')"></a-input-number>
             </template>
             <template v-if="column?.type === 'ASelect'">
-              <a-select v-model:value="record[column.dataIndex]"></a-select>
+              <a-select v-model:value="record[column.dataIndex]" @change="handleChange('material')"></a-select>
             </template>
           </template>
         </slot>
@@ -47,7 +49,11 @@
             <x-image :urls="record[column.dataIndex]"></x-image>
           </template>
           <template v-else>
-            <x-upload v-model:file-list="record[column.dataIndex]" :custom-request="customUpload" />
+            <x-upload
+              v-model:file-list="record[column.dataIndex]"
+              :custom-request="customUpload"
+              :before-upload="beforeUpload"
+              @change="handleChange('photocopy')" />
           </template>
         </slot>
       </template>
@@ -55,7 +61,7 @@
   </div>
 </template>
 <script>
-import { defineComponent, inject, reactive, watch } from 'vue'
+import { defineComponent, inject, nextTick, reactive, watch } from 'vue'
 import XTable from '@packages/components/Table/index.vue'
 import XUpload from '@packages/components/Upload/index.vue'
 import XImage from '@packages/components/Image'
@@ -70,6 +76,7 @@ export default defineComponent({
   props: {
     mode: { type: String, required: true },
     customUpload: { type: Function },
+    beforeUpload: { type: Function },
     materialColumns: { type: Array },
     photocopyColumns: { type: Array },
     emptyText: String
@@ -136,15 +143,19 @@ export default defineComponent({
       dataSource: [],
       showPagination: false
     })
-
     watch(
       () => traceabilityData.value?.masterData,
       list => {
         const now = Date.now().toString()
         materialOptions.dataSource = (list || []).map((val, i) => ({ ...val, uid: val?.id || now + i }))
       },
-      { deep: true, immediate: true }
+      { immediate: true }
     )
+    const asyncMasterData = () => {
+      nextTick(() => {
+        Object.assign(traceabilityData.value.masterData[0], materialOptions.dataSource[0])
+      })
+    }
 
     const defaultPhotocopyColumns = [
       { title: '1.棉花产地证明', width: '14%', dataIndex: 'certificateImgs', required: true },
@@ -166,19 +177,33 @@ export default defineComponent({
       dataSource: [],
       showPagination: false
     })
-
     watch(
       () => traceabilityData.value?.photocopyData,
       list => {
         const now = Date.now().toString()
         photocopyOptions.dataSource = (list || []).map((val, i) => ({ ...val, uid: now + i }))
       },
-      { deep: true, immediate: true }
+      { immediate: true }
     )
+
+    const asyncPhotocopyData = () => {
+      nextTick(() => {
+        Object.assign(traceabilityData.value.photocopyData[0], photocopyOptions.dataSource[0])
+      })
+    }
+
+    const handleChange = key => {
+      if (key === 'material') {
+        asyncMasterData()
+      } else if (key === 'photocopy') {
+        asyncPhotocopyData()
+      }
+    }
 
     return {
       materialOptions,
-      photocopyOptions
+      photocopyOptions,
+      handleChange
     }
   }
 })

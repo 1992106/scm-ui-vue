@@ -10,7 +10,29 @@
     destroyOnClose
     @ok="handleOk"
     @cancel="handleCancel">
-    <XTraceability :index="0"></XTraceability>
+    <XTraceability
+      :index="0"
+      :emptyText="emptyText"
+      :masterProps="{
+        materialColumns,
+        customUpload,
+        beforeUpload,
+        photocopyColumns
+      }"
+      :weavingProps="{
+        weavingRowKey,
+        weavingColumns,
+        customImportWeaving,
+        beforeImportWeaving,
+        customDownloadWeaving
+      }"
+      :dyeingProps="{
+        dyeingRowKey,
+        dyeingColumns,
+        customImportDyeing,
+        beforeImportDyeing,
+        customDownloadDyeing
+      }"></XTraceability>
   </x-drawer>
 </template>
 <script lang="ts">
@@ -18,7 +40,6 @@ import { computed, defineComponent, provide, reactive, toRefs, watch } from 'vue
 import XDrawer from '@packages/components/Drawer'
 import XTraceability from './index.vue'
 import { isFunction } from 'lodash-es'
-// import { getValueByRowKey } from '@packages/components/Table/utils'
 import { execRequest } from '@src/utils'
 export default defineComponent({
   name: 'XEditTraceability',
@@ -35,25 +56,24 @@ export default defineComponent({
     height: { type: [String, Number] },
     manual: { type: Boolean, default: false },
     customRequest: { type: Function, require: true },
+    emptyText: { type: String, default: '暂无数据' },
     // 主表
-    customUploadMaster: { type: Function, require: true },
-    customDownloadMaster: { type: Function },
-    customUpload: { type: Function },
     materialColumns: { type: Array },
+    customUpload: { type: Function },
+    beforeUpload: { type: Function },
     photocopyColumns: { type: Array },
     // 织布
-    weavingRowKey: { type: [String, Function], default: 'itemId' },
+    weavingRowKey: { type: [String, Function], default: 'uid' },
     weavingColumns: { type: Array, default: () => [] },
-    customUploadWeaving: { type: Function },
+    customImportWeaving: { type: Function },
+    beforeImportWeaving: { type: Function },
     customDownloadWeaving: { type: Function },
     // 染整
-    dyeingRowKey: { type: [String, Function], default: 'itemId' },
+    dyeingRowKey: { type: [String, Function], default: 'uid' },
     dyeingColumns: { type: Array },
-    customUploadDyeing: { type: Function },
-    customDownloadDyeing: { type: Function },
-    // 公共
-    size: { type: Number, default: 4 },
-    emptyText: { type: String, default: '暂无数据' }
+    customImportDyeing: { type: Function },
+    beforeImportDyeing: { type: Function },
+    customDownloadDyeing: { type: Function }
   },
   emits: ['update:visible', 'done'],
   setup(props, { emit }) {

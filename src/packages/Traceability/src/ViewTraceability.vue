@@ -10,7 +10,21 @@
     destroyOnClose
     @ok="handleOk"
     @cancel="handleCancel">
-    <XTraceability :index="0"></XTraceability>
+    <XTraceability
+      :index="index"
+      :emptyText="emptyText"
+      :masterProps="{
+        materialColumns,
+        photocopyColumns
+      }"
+      :weavingProps="{
+        weavingRowKey,
+        weavingColumns
+      }"
+      :dyeingProps="{
+        dyeingRowKey,
+        dyeingColumns
+      }"></XTraceability>
   </x-drawer>
 </template>
 <script lang="ts">
@@ -36,6 +50,7 @@ export default defineComponent({
     // rowKey: { type: [String, Function], default: 'id' },
     manual: { type: Boolean, default: false },
     customRequest: { type: Function, require: true },
+    emptyText: { type: String, default: '暂无数据' },
     // 主表
     materialColumns: { type: Array },
     photocopyColumns: { type: Array },
@@ -44,8 +59,7 @@ export default defineComponent({
     weavingColumns: { type: Array, default: () => [] },
     // 染整
     dyeingRowKey: { type: [String, Function], default: 'itemId' },
-    dyeingColumns: { type: Array },
-    emptyText: { type: String, default: '暂无数据' }
+    dyeingColumns: { type: Array }
   },
   emits: ['update:visible', 'done'],
   setup(props, { emit }) {

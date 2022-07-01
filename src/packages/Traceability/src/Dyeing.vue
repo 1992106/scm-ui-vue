@@ -2,7 +2,11 @@
   <div class="dyeing-info">
     <a-form v-if="tableOptions.dataSource.length === 0">
       <a-form-item label="请导入染整明细" name="file">
-        <a-upload :before-upload="beforeUpload" @change="handleUpload">
+        <a-upload
+          :showUploadList="false"
+          :before-upload="beforeImport"
+          :disabled="disabled"
+          :custom-request="handleImportDyeing">
           <a-button>
             <UploadOutlined></UploadOutlined>
             上传
@@ -20,7 +24,11 @@
       <div>
         染整信息
         <a-button type="link" :loading="loading" @click="handleDownload">查看模板</a-button>
-        <a-upload :showUploadList="false" :before-upload="beforeUpload" @change="handleUpload">
+        <a-upload
+          :showUploadList="false"
+          :before-upload="beforeImport"
+          :disabled="disabled"
+          :custom-request="handleImportDyeing">
           <a-button type="link">继续导入</a-button>
         </a-upload>
       </div>
@@ -37,10 +45,10 @@
         <template #bodyCell="{ text, record, index, column }">
           <slot name="bodyCell" v-bind="{ text, record, index, column }" :onDelete="handleDel">
             <template v-if="column?.type === 'AInput'">
-              <a-input v-model:value="record[column.dataIndex]"></a-input>
+              <a-input v-model:value="record[column.dataIndex]" @change="handleChange"></a-input>
             </template>
             <template v-if="column?.type === 'AInputNumber'">
-              <a-input-number v-model:value="record[column.dataIndex]"></a-input-number>
+              <a-input-number v-model:value="record[column.dataIndex]" @change="handleChange"></a-input-number>
             </template>
             <template v-if="column.dataIndex === 'actions'">
               <a-button v-show="record?.itemId == null" type="link" size="small" @click="handleDel(index)">
@@ -61,7 +69,8 @@
   </div>
 </template>
 <script>
-import { computed, defineComponent, inject, reactive, toRefs, watch } from 'vue'
+import { computed, defineComponent, inject, nextTick, reactive, toRefs, watch } from 'vue'
+import { message } from 'ant-design-vue'
 import { UploadOutlined } from '@ant-design/icons-vue'
 import XTable from '@packages/components/Table/index.vue'
 import { isFunction } from 'lodash-es'
@@ -77,7 +86,8 @@ export default defineComponent({
     mode: { type: String, required: true },
     dyeingRowKey: [String, Function],
     dyeingColumns: Array,
-    customUploadDyeing: Function,
+    customImportDyeing: Function,
+    beforeImportDyeing: Function,
     customDownloadDyeing: Function,
     emptyText: String
   },
@@ -88,7 +98,6 @@ export default defineComponent({
       disabled: false
     })
 
-    const beforeUpload = inject('beforeUpload')
     const traceabilityData = inject('traceabilityData')
 
     const defaultColumns = [
@@ -131,14 +140,40 @@ export default defineComponent({
         const now = Date.now().toString()
         tableOptions.dataSource = (list || []).map((val, i) => ({ ...val, uid: val?.itemId || now + i }))
       },
-      { deep: true, immediate: true }
+      { immediate: true }
     )
 
-    const handleUpload = async () => {
-      const { customUploadDyeing = Function.prototype } = props
-      if (!isFunction(customUploadDyeing)) return
+    const handleChange = () => {
+      nextTick(() => {
+        Object.assign(traceabilityData.value.dyeingData[0], tableOptions.dataSource[0])
+      })
+    }
+
+    const beforeImport = file => {
+      if (isFunction(props.beforeImportDyeing)) {
+        return props.beforeImportDyeing(file)
+      }
+
+      const isExcel =
+        file.type === 'application/vnd.ms-excel' ||
+        file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+      if (!isExcel) {
+        message.error('文件格式只能是xlx,xlsx！')
+      }
+
+      const isLt4M = file.size / 1024 / 1024 < 4
+      if (!isLt4M) {
+        message.error('文件不能大于4M！')
+      }
+
+      return isExcel && isLt4M
+    }
+
+    const handleImportDyeing = async ({ file }) => {
+      const { customImportDyeing } = props
+      if (!isFunction(customImportDyeing)) return
       state.disabled = true
-      await execRequest(customUploadDyeing(), {
+      await execRequest(customImportDyeing(file), {
         success: ({ data }) => {
           if (data.length) {
             const now = Date.now().toString()
@@ -189,10 +224,11 @@ export default defineComponent({
 
     return {
       ...toRefs(state),
-      beforeUpload,
+      beforeImport,
       tableOptions,
+      handleChange,
       colSpanLength,
-      handleUpload,
+      handleImportDyeing,
       handleDownload,
       handleDel,
       handleAdd

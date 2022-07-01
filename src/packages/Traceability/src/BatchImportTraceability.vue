@@ -14,9 +14,9 @@
       <a-form-item label="请导入主表" :required="true">
         <a-upload
           :showUploadList="false"
-          :before-upload="beforeUpload"
+          :before-upload="beforeImport"
           :disabled="disabled"
-          :custom-request="handleUpload">
+          :custom-request="handleImportMaster">
           <a-button>
             <UploadOutlined></UploadOutlined>
             上传
@@ -39,7 +39,29 @@
               <a-button type="link" @click="handleDelete($event, index)">删除</a-button>
             </a-space>
           </template>
-          <XTraceability :index="index"></XTraceability>
+          <XTraceability
+            :index="index"
+            :emptyText="emptyText"
+            :masterProps="{
+              materialColumns,
+              customUpload,
+              beforeUpload,
+              photocopyColumns
+            }"
+            :weavingProps="{
+              weavingRowKey,
+              weavingColumns,
+              customImportWeaving,
+              beforeImportWeaving,
+              customDownloadWeaving
+            }"
+            :dyeingProps="{
+              dyeingRowKey,
+              dyeingColumns,
+              customImportDyeing,
+              beforeImportDyeing,
+              customDownloadDyeing
+            }"></XTraceability>
         </a-collapse-panel>
       </template>
     </a-collapse>
@@ -52,7 +74,7 @@ import { message } from 'ant-design-vue'
 import XDrawer from '@packages/components/Drawer'
 import XTraceability from './index.vue'
 import { isFunction } from 'lodash-es'
-import { download, execRequest, isEmpty } from '@src/utils'
+import { download, execRequest } from '@src/utils'
 export default defineComponent({
   name: 'XBatchImportTraceability',
   components: {
@@ -68,25 +90,27 @@ export default defineComponent({
     width: { type: [String, Number] },
     height: { type: [String, Number] },
     manual: { type: Boolean, default: false },
+    emptyText: { type: String, default: '暂无数据' },
     // 主表
-    customUploadMaster: { type: Function, require: true },
+    customImportMaster: { type: Function, require: true },
+    beforeImportMaster: { type: Function },
     customDownloadMaster: { type: Function },
-    customUpload: { type: Function },
     materialColumns: { type: Array },
+    customUpload: { type: Function },
+    beforeUpload: { type: Function },
     photocopyColumns: { type: Array },
     // 织布
     weavingRowKey: { type: [String, Function], default: 'uid' },
     weavingColumns: { type: Array, default: () => [] },
-    customUploadWeaving: { type: Function },
+    customImportWeaving: { type: Function },
+    beforeImportWeaving: { type: Function },
     customDownloadWeaving: { type: Function },
     // 染整
     dyeingRowKey: { type: [String, Function], default: 'uid' },
     dyeingColumns: { type: Array },
-    customUploadDyeing: { type: Function },
-    customDownloadDyeing: { type: Function },
-    // 公共
-    size: { type: Number, default: 4 },
-    emptyText: { type: String, default: '暂无数据' }
+    customImportDyeing: { type: Function },
+    beforeImportDyeing: { type: Function },
+    customDownloadDyeing: { type: Function }
   },
   emits: ['update:visible', 'done'],
   setup(props, { emit }) {
@@ -107,7 +131,11 @@ export default defineComponent({
       traceabilityList: []
     })
 
-    const beforeUpload = file => {
+    const beforeImport = file => {
+      if (isFunction(props.beforeImportMaster)) {
+        return props.beforeImportMaster(file)
+      }
+
       const isExcel =
         file.type === 'application/vnd.ms-excel' ||
         file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
@@ -115,7 +143,7 @@ export default defineComponent({
         message.error('文件格式只能是xlx,xlsx！')
       }
 
-      const isLt4M = !isEmpty(props.size) ? file.size / 1024 / 1024 < props.size : true
+      const isLt4M = file.size / 1024 / 1024 < 4
       if (!isLt4M) {
         message.error('文件不能大于4M！')
       }
@@ -123,17 +151,17 @@ export default defineComponent({
       return isExcel && isLt4M
     }
 
-    const handleUpload = async ({ file }) => {
-      const { customUploadMaster } = props
-      if (!isFunction(customUploadMaster)) return
+    const handleImportMaster = async ({ file }) => {
+      const { customImportMaster } = props
+      if (!isFunction(customImportMaster)) return
       state.disabled = true
-      await execRequest(customUploadMaster(file), {
+      await execRequest(customImportMaster(file), {
         success: ({ data }) => {
           // 根据【'坯纱采购合同号'】，如果有重复，则更新，如果没有则新增
           const masterData = state.traceabilityList.masterData || []
-          const uids = masterData.map(val => val?.uid)
-          const oldList = (data || []).filter(val => uids.includes(val?.uid))
-          const newList = (data || []).filter(val => !uids.includes(val?.uid))
+          const blankYarnPurchaseNos = masterData.map(val => val?.blankYarnPurchaseNo)
+          const oldList = (data || []).filter(val => blankYarnPurchaseNos.includes(val?.blankYarnPurchaseNo))
+          const newList = (data || []).filter(val => !blankYarnPurchaseNos.includes(val?.blankYarnPurchaseNo))
           // 更新数据
           if (oldList.length) {
             oldList.forEach(item => {
@@ -200,13 +228,12 @@ export default defineComponent({
 
     provide('mode', { master: 'action', weaving: 'action', dyeing: 'action' })
     provide('traceabilityList', state.traceabilityList)
-    provide('beforeUpload', beforeUpload)
 
     return {
       ...toRefs(state),
       modalVisible,
-      beforeUpload,
-      handleUpload,
+      beforeImport,
+      handleImportMaster,
       handleDownload,
       handleDelete,
       handleOk,

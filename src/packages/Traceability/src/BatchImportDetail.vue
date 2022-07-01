@@ -41,12 +41,12 @@ export default defineComponent({
     // 织布
     weavingRowKey: { type: [String, Function], default: 'itemId' },
     weavingColumns: { type: Array, default: () => [] },
-    customUploadWeaving: { type: Function },
+    customImportWeaving: { type: Function },
     customDownloadWeaving: { type: Function },
     // 染整
     dyeingRowKey: { type: [String, Function], default: 'itemId' },
     dyeingColumns: { type: Array },
-    customUploadDyeing: { type: Function },
+    customImportDyeing: { type: Function },
     customDownloadDyeing: { type: Function },
     // 公共
     size: { type: Number, default: 4 },

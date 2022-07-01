@@ -2,7 +2,11 @@
   <div class="weaving-info">
     <a-form v-if="tableOptions.dataSource.length === 0">
       <a-form-item label="请导入织布明细" name="file">
-        <a-upload :showUploadList="false" :before-upload="beforeUpload" @change="handleUpload">
+        <a-upload
+          :showUploadList="false"
+          :before-upload="beforeImport"
+          :disabled="disabled"
+          :custom-request="handleImportWeaving">
           <a-button>
             <UploadOutlined></UploadOutlined>
             上传
@@ -20,7 +24,11 @@
       <div>
         织布信息
         <a-button type="link" :loading="loading" @click="handleDownload">查看模板</a-button>
-        <a-upload :showUploadList="false" :before-upload="beforeUpload" @change="handleUpload">
+        <a-upload
+          :showUploadList="false"
+          :before-upload="beforeImport"
+          :disabled="disabled"
+          :custom-request="handleImportWeaving">
           <a-button type="link">继续导入</a-button>
         </a-upload>
       </div>
@@ -37,10 +45,10 @@
         <template #bodyCell="{ text, record, index, column }">
           <slot name="bodyCell" v-bind="{ text, record, index, column }" :onDelete="handleDel">
             <template v-if="column?.type === 'AInput'">
-              <a-input v-model:value="record[column.dataIndex]"></a-input>
+              <a-input v-model:value="record[column.dataIndex]" @change="handleChange"></a-input>
             </template>
             <template v-if="column?.type === 'AInputNumber'">
-              <a-input-number v-model:value="record[column.dataIndex]"></a-input-number>
+              <a-input-number v-model:value="record[column.dataIndex]" @change="handleChange"></a-input-number>
             </template>
             <template v-if="column.dataIndex === 'actions'">
               <a-button v-show="record?.itemId == null" type="link" size="small" @click="handleDel(index)">
@@ -61,7 +69,8 @@
   </div>
 </template>
 <script>
-import { computed, defineComponent, inject, reactive, toRefs, watch } from 'vue'
+import { computed, defineComponent, inject, nextTick, reactive, toRefs, watch } from 'vue'
+import { message } from 'ant-design-vue'
 import { UploadOutlined } from '@ant-design/icons-vue'
 import XTable from '@packages/components/Table/index.vue'
 import { isFunction } from 'lodash-es'
@@ -77,7 +86,8 @@ export default defineComponent({
     mode: { type: String, required: true },
     weavingRowKey: [String, Function],
     weavingColumns: Array,
-    customUploadWeaving: Function,
+    customImportWeaving: Function,
+    beforeImportWeaving: Function,
     customDownloadWeaving: Function,
     emptyText: String
   },
@@ -88,7 +98,6 @@ export default defineComponent({
       disabled: false
     })
 
-    const beforeUpload = inject('beforeUpload')
     const traceabilityData = inject('traceabilityData')
 
     const defaultColumns = [
@@ -138,14 +147,40 @@ export default defineComponent({
         const now = Date.now().toString()
         tableOptions.dataSource = (list || []).map((val, i) => ({ ...val, uid: val?.itemId || now + i }))
       },
-      { deep: true, immediate: true }
+      { immediate: true }
     )
 
-    const handleUpload = async () => {
-      const { customUploadWeaving = Function.prototype } = props
-      if (!isFunction(customUploadWeaving)) return
+    const handleChange = () => {
+      nextTick(() => {
+        Object.assign(traceabilityData.value.weavingData[0], tableOptions.dataSource[0])
+      })
+    }
+
+    const beforeImport = file => {
+      if (isFunction(props.beforeImportWeaving)) {
+        return props.beforeImportWeaving(file)
+      }
+
+      const isExcel =
+        file.type === 'application/vnd.ms-excel' ||
+        file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+      if (!isExcel) {
+        message.error('文件格式只能是xlx,xlsx！')
+      }
+
+      const isLt4M = file.size / 1024 / 1024 < 4
+      if (!isLt4M) {
+        message.error('文件不能大于4M！')
+      }
+
+      return isExcel && isLt4M
+    }
+
+    const handleImportWeaving = async ({ file }) => {
+      const { customImportWeaving } = props
+      if (!isFunction(customImportWeaving)) return
       state.disabled = true
-      await execRequest(customUploadWeaving(), {
+      await execRequest(customImportWeaving(file), {
         success: ({ data }) => {
           if (data.length) {
             const now = Date.now().toString()
@@ -200,10 +235,11 @@ export default defineComponent({
 
     return {
       ...toRefs(state),
-      beforeUpload,
+      beforeImport,
       tableOptions,
+      handleChange,
       colSpanLength,
-      handleUpload,
+      handleImportWeaving,
       handleDownload,
       handleDel,
       handleAdd
