@@ -308,7 +308,7 @@ export default defineComponent({
       const result = props.rowClassName ? props.rowClassName(record, index) : null
       return [index % 2 === 1 ? 'table-striped' : null, result].filter(Boolean)
     }
-    // 排序、筛选变化时触发
+    // 分页、排序、筛选变化时触发
     const handleChange = (pagination, filters, sorter, extra) => {
       const action = extra?.action
       const column = sorter?.column || {}
@@ -341,7 +341,7 @@ export default defineComponent({
       emit('expand', expanded, record)
     }
 
-    // 点击展开图标时触发
+    // 展开的行变化时触发
     const handleExpandedRowsChange = expandedRows => {
       emit('expandedRowsChange', expandedRows)
     }
