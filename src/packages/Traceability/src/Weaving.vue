@@ -15,7 +15,7 @@
         <template #extra>
           <div>
             支持扩展名：xlx,xlsx；文件大小：4M以下
-            <a-button type="link" :loading="loading" @click="handleDownload">查看模板</a-button>
+            <a-button type="link" :loading="loading" @click="handleDownloadWeaving">查看模板</a-button>
           </div>
         </template>
       </a-form-item>
@@ -24,7 +24,7 @@
       <div>
         织布信息
         <template v-if="mode !== 'view'">
-          <a-button type="link" :loading="loading" @click="handleDownload">查看模板</a-button>
+          <a-button type="link" :loading="loading" @click="handleDownloadWeaving">查看模板</a-button>
           <a-upload
             :showUploadList="false"
             :before-upload="beforeImport"
@@ -215,7 +215,7 @@ export default defineComponent({
       state.disabled = false
     }
 
-    const handleDownload = async () => {
+    const handleDownloadWeaving = async () => {
       const { customDownloadWeaving } = props
       if (!isFunction(customDownloadWeaving)) return
       state.loading = true
@@ -253,7 +253,7 @@ export default defineComponent({
       handleChange,
       summaryLength,
       handleImportWeaving,
-      handleDownload,
+      handleDownloadWeaving,
       handleDel,
       handleAdd
     }

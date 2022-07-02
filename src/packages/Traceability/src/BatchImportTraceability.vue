@@ -25,7 +25,7 @@
         <template #extra>
           <div>
             支持扩展名：xlx,xlsx；文件大小：4M以下
-            <a-button type="link" :loading="loading" @click="handleDownload">查看模板</a-button>
+            <a-button type="link" :loading="loading" @click="handleDownloadMaster">查看模板</a-button>
           </div>
         </template>
       </a-form-item>
@@ -224,7 +224,7 @@ export default defineComponent({
       state.disabled = false
     }
 
-    const handleDownload = async () => {
+    const handleDownloadMaster = async () => {
       const { customDownloadMaster } = props
       if (!isFunction(customDownloadMaster)) return
       state.loading = true
@@ -261,7 +261,7 @@ export default defineComponent({
       modalVisible,
       beforeImport,
       handleImportMaster,
-      handleDownload,
+      handleDownloadMaster,
       handleDelete,
       handleOk,
       handleCancel
