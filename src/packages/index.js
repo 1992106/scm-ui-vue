@@ -19,6 +19,8 @@ export { default as XDownloads } from './Downloads'
 export {
   default as XTraceability,
   XBatchImportTraceability,
+  XBatchImportDetail,
   XEditTraceability,
+  XAuditTraceability,
   XViewTraceability
 } from './Traceability'

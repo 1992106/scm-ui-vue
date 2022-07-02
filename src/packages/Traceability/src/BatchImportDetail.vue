@@ -70,7 +70,6 @@ import { execRequest } from '@src/utils'
 export default defineComponent({
   name: 'XBatchImportDetail',
   components: {
-    XDrawer,
     'x-drawer': XDrawer,
     XTraceability
   },
@@ -155,7 +154,6 @@ export default defineComponent({
 
     const handleOk = () => {
       emit('done', state.traceabilityList[0])
-      handleCancel()
     }
 
     const handleCancel = () => {

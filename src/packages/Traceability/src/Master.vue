@@ -34,7 +34,7 @@
       <template v-else>
         请提供原件复印件
         <span class="tips">（支持扩展名： .png .jpg.pdf 单文件大小：4M以下，单个类型文件最多20个）</span>
-        <a-button type="link">查看模板</a-button>
+        <a-button type="link" :loading="loading" @click="handleDownloadPhotocopy">下载示例文件</a-button>
       </template>
     </div>
     <x-table v-bind="photocopyOptions">
@@ -67,10 +67,12 @@
   </div>
 </template>
 <script>
-import { defineComponent, inject, nextTick, reactive, watch } from 'vue'
+import { defineComponent, inject, nextTick, reactive, toRefs, watch } from 'vue'
 import XTable from '@packages/components/Table/index.vue'
 import XUpload from '@packages/components/Upload/index.vue'
 import XImage from '@packages/components/Image'
+import { isFunction } from 'lodash-es'
+import { download, execRequest } from '@src/utils'
 
 export default defineComponent({
   name: 'Master',
@@ -85,10 +87,15 @@ export default defineComponent({
     beforeUpload: { type: Function },
     materialColumns: { type: Array },
     photocopyColumns: { type: Array },
+    customDownloadPhotocopy: { type: Function },
     emptyText: String
   },
   emits: ['del'],
   setup(props) {
+    const state = reactive({
+      loading: false
+    })
+
     const traceabilityData = inject('traceabilityData')
 
     const defaultMaterialColumns = [
@@ -206,10 +213,26 @@ export default defineComponent({
       }
     }
 
+    const handleDownloadPhotocopy = async () => {
+      const { customDownloadPhotocopy } = props
+      if (!isFunction(customDownloadPhotocopy)) return
+      state.loading = true
+      await execRequest(customDownloadPhotocopy(), {
+        success: ({ data }) => {
+          if (data) {
+            download(data?.url, data?.fileName)
+          }
+        }
+      })
+      state.loading = false
+    }
+
     return {
+      ...toRefs(state),
       materialOptions,
       photocopyOptions,
-      handleChange
+      handleChange,
+      handleDownloadPhotocopy
     }
   }
 })

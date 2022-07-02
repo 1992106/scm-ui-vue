@@ -17,7 +17,8 @@
         materialColumns,
         customUpload,
         beforeUpload,
-        photocopyColumns
+        photocopyColumns,
+        customDownloadPhotocopy
       }"
       :weavingProps="{
         weavingRowKey,
@@ -72,7 +73,6 @@ import { execRequest } from '@src/utils'
 export default defineComponent({
   name: 'XEditTraceability',
   components: {
-    XDrawer,
     'x-drawer': XDrawer,
     XTraceability
   },
@@ -90,6 +90,7 @@ export default defineComponent({
     customUpload: { type: Function },
     beforeUpload: { type: Function },
     photocopyColumns: { type: Array },
+    customDownloadPhotocopy: { type: Function },
     // 织布
     weavingRowKey: { type: [String, Function], default: 'uid' },
     weavingColumns: { type: Array },
@@ -159,7 +160,6 @@ export default defineComponent({
 
     const handleOk = () => {
       emit('done', state.traceabilityList[0])
-      handleCancel()
     }
 
     const handleCancel = () => {

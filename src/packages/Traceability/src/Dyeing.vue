@@ -110,23 +110,23 @@ export default defineComponent({
     const traceabilityData = inject('traceabilityData')
 
     const defaultColumns = [
-      { title: '染整缸号', width: 100, dataIndex: 'dyeVatNo', type: 'AInput', required: true },
+      { title: '染整缸号', width: 120, dataIndex: 'dyeVatNo', type: 'AInput', required: true },
       {
         title: '色布/色纱重量(KG)',
         subTitle: '针织必填/梭织不能填',
-        width: 100,
+        width: 160,
         dataIndex: 'colorClothWeight',
         type: 'AInputNumber'
       },
       {
         title: '色布米数(M)',
         subTitle: '针织不能填/梭织必填',
-        width: 100,
+        width: 160,
         dataIndex: 'colorClothLength',
         type: 'AInputNumber'
       },
-      { title: '染整颜色', width: 100, dataIndex: 'color', type: 'AInput' },
-      { title: '染厂', width: 100, dataIndex: 'dyeFactory', type: 'AInput' },
+      { title: '染整颜色', width: 120, dataIndex: 'color', type: 'AInput' },
+      { title: '染厂', width: 120, dataIndex: 'dyeFactory', type: 'AInput' },
       { title: '操作', width: 60, dataIndex: 'actions' }
     ]
     const tableOptions = reactive({

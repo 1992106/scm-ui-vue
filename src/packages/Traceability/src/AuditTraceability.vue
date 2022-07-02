@@ -70,7 +70,6 @@ import { execRequest } from '@src/utils'
 export default defineComponent({
   name: 'XAuditTraceability',
   components: {
-    XDrawer,
     'x-drawer': XDrawer,
     XTraceability
   },
@@ -154,7 +153,6 @@ export default defineComponent({
 
     const handleOk = type => {
       emit('done', { isPass: type, data: state.traceabilityList[0] })
-      state.traceabilityList = []
     }
 
     provide('mode', { master: 'view', weaving: 'view', dyeing: 'view' })

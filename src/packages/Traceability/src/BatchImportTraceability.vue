@@ -31,67 +31,66 @@
       </a-form-item>
     </a-form>
     <a-collapse v-model:activeKey="activeKey" expandIconPosition="right">
-      <template v-for="(_, index) in traceabilityList" :key="index">
-        <a-collapse-panel :key="index">
-          <template #header>
-            <a-space>
-              {{ `溯源包${index + 1}` }}
-              <a-button type="link" @click="handleDelete($event, index)">删除</a-button>
-            </a-space>
+      <a-collapse-panel v-for="(_, index) in traceabilityList" :key="index">
+        <template #header>
+          <a-space>
+            {{ `溯源包${index + 1}` }}
+            <a-button type="link" @click="handleDelete($event, index)">删除</a-button>
+          </a-space>
+        </template>
+        <XTraceability
+          :index="index"
+          :emptyText="emptyText"
+          :masterProps="{
+            materialColumns,
+            customUpload,
+            beforeUpload,
+            photocopyColumns,
+            customDownloadPhotocopy
+          }"
+          :weavingProps="{
+            weavingRowKey,
+            weavingColumns,
+            customImportWeaving,
+            beforeImportWeaving,
+            customDownloadWeaving
+          }"
+          :dyeingProps="{
+            dyeingRowKey,
+            dyeingColumns,
+            customImportDyeing,
+            beforeImportDyeing,
+            customDownloadDyeing
+          }">
+          <!--主表-->
+          <template #materialHeaderCell="scope">
+            <slot name="materialHeaderCell" v-bind="scope"></slot>
           </template>
-          <XTraceability
-            :index="index"
-            :emptyText="emptyText"
-            :masterProps="{
-              materialColumns,
-              customUpload,
-              beforeUpload,
-              photocopyColumns
-            }"
-            :weavingProps="{
-              weavingRowKey,
-              weavingColumns,
-              customImportWeaving,
-              beforeImportWeaving,
-              customDownloadWeaving
-            }"
-            :dyeingProps="{
-              dyeingRowKey,
-              dyeingColumns,
-              customImportDyeing,
-              beforeImportDyeing,
-              customDownloadDyeing
-            }">
-            <!--主表-->
-            <template #materialHeaderCell="scope">
-              <slot name="materialHeaderCell" v-bind="scope"></slot>
-            </template>
-            <template #materialBodyCell="scope">
-              <slot name="materialBodyCell" v-bind="scope"></slot>
-            </template>
-            <template #photocopyHeaderCell="scope">
-              <slot name="photocopyHeaderCell" v-bind="scope"></slot>
-            </template>
-            <template #photocopyBodyCell="scope">
-              <slot name="photocopyBodyCell" v-bind="scope"></slot>
-            </template>
-            <!--织布-->
-            <template #weavingHeaderCell="scope">
-              <slot name="weavingHeaderCell" v-bind="scope"></slot>
-            </template>
-            <template #weavingBodyCell="scope">
-              <slot name="weavingBodyCell" v-bind="scope"></slot>
-            </template>
-            <!--染整-->
-            <template #dyeingHeaderCell="scope">
-              <slot name="dyeingHeaderCell" v-bind="scope"></slot>
-            </template>
-            <template #dyeingBodyCell="scope">
-              <slot name="dyeingBodyCell" v-bind="scope"></slot>
-            </template>
-          </XTraceability>
-        </a-collapse-panel>
-      </template>
+          <template #materialBodyCell="scope">
+            <slot name="materialBodyCell" v-bind="scope"></slot>
+          </template>
+          <template #photocopyHeaderCell="scope">
+            <slot name="photocopyHeaderCell" v-bind="scope"></slot>
+          </template>
+          <template #photocopyBodyCell="scope">
+            <slot name="photocopyBodyCell" v-bind="scope"></slot>
+          </template>
+          <!--织布-->
+          <template #weavingHeaderCell="scope">
+            <slot name="weavingHeaderCell" v-bind="scope"></slot>
+          </template>
+          <template #weavingBodyCell="scope">
+            <slot name="weavingBodyCell" v-bind="scope"></slot>
+          </template>
+          <!--染整-->
+          <template #dyeingHeaderCell="scope">
+            <slot name="dyeingHeaderCell" v-bind="scope"></slot>
+          </template>
+          <template #dyeingBodyCell="scope">
+            <slot name="dyeingBodyCell" v-bind="scope"></slot>
+          </template>
+        </XTraceability>
+      </a-collapse-panel>
     </a-collapse>
   </x-drawer>
 </template>
@@ -106,7 +105,6 @@ import { download, execRequest } from '@src/utils'
 export default defineComponent({
   name: 'XBatchImportTraceability',
   components: {
-    XDrawer,
     'x-drawer': XDrawer,
     UploadOutlined,
     XTraceability
@@ -127,6 +125,7 @@ export default defineComponent({
     customUpload: { type: Function },
     beforeUpload: { type: Function },
     photocopyColumns: { type: Array },
+    customDownloadPhotocopy: { type: Function },
     // 织布
     weavingRowKey: { type: [String, Function], default: 'uid' },
     weavingColumns: { type: Array },
@@ -246,7 +245,6 @@ export default defineComponent({
 
     const handleOk = () => {
       emit('done', state.traceabilityList)
-      handleCancel()
     }
 
     const handleCancel = () => {
@@ -269,10 +267,6 @@ export default defineComponent({
   }
 })
 </script>
-<style lang="scss" scoped>
-.x-traceability {
-}
-</style>
 <style lang="scss">
 .x-traceability__dialog {
   &.x-modal {

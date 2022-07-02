@@ -65,7 +65,6 @@ import { execRequest } from '@src/utils'
 export default defineComponent({
   name: 'XViewTraceability',
   components: {
-    XDrawer,
     'x-drawer': XDrawer,
     XTraceability
   },

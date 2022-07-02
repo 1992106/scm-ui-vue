@@ -110,31 +110,31 @@ export default defineComponent({
     const traceabilityData = inject('traceabilityData')
 
     const defaultColumns = [
-      { title: '坯布条编码', width: 100, dataIndex: 'greyClothNo', type: 'AInput', required: true },
-      { title: '坯纱采购合同号', width: 100, dataIndex: 'blankYarnPurchaseNo', type: 'AInput' },
+      { title: '坯布条编码', width: 120, dataIndex: 'greyClothNo', type: 'AInput', required: true },
+      { title: '坯纱采购合同号', width: 140, dataIndex: 'blankYarnPurchaseNo', type: 'AInput' },
       {
         title: '棉成分占比',
         subTitle: '(0到100)',
-        width: 100,
+        width: 120,
         dataIndex: 'cottonComponentsRate',
         type: 'AInputNumber'
       },
-      { title: '织单号', width: 100, dataIndex: 'weavingOrderNo', type: 'AInput' },
+      { title: '织单号', width: 120, dataIndex: 'weavingOrderNo', type: 'AInput' },
       {
         title: '坯布重量(KG)',
         subTitle: '针织必填/梭织不能填',
-        width: 100,
+        width: 160,
         dataIndex: 'colorClothWeight',
         type: 'AInputNumber'
       },
       {
         title: '坯布米数(M)',
         subTitle: '针织不能填/梭织必填',
-        width: 100,
+        width: 160,
         dataIndex: 'colorClothLength',
         type: 'AInputNumber'
       },
-      { title: '织厂', width: 100, dataIndex: 'textileMill', type: 'AInput' },
+      { title: '织厂', width: 120, dataIndex: 'textileMill', type: 'AInput' },
       { title: '操作', width: 60, dataIndex: 'actions' }
     ]
     const tableOptions = reactive({
