@@ -3,7 +3,7 @@
     <div class="title">主要信息</div>
     <x-table v-bind="materialOptions">
       <template #headerCell="{ title, column }">
-        <slot name="headerCell" v-bind="{ title, column }">
+        <slot name="materialHeaderCell" v-bind="{ title, column }">
           <div>
             <span v-if="column?.required === true" class="required">*</span>
             {{ title }}
@@ -12,7 +12,10 @@
         </slot>
       </template>
       <template #bodyCell="{ text, record, index, column }">
-        <slot name="bodyCell" v-bind="{ text, record, index, column }">
+        <slot
+          name="materialBodyCell"
+          v-bind="{ text, record, index, column }"
+          :onUpdate="() => handleChange('material')">
           <template v-if="mode !== 'view'">
             <template v-if="column?.type === 'AInput'">
               <a-input v-model:value="record[column.dataIndex]" @change="handleChange('material')"></a-input>
@@ -22,21 +25,20 @@
                 v-model:value="record[column.dataIndex]"
                 @change="handleChange('material')"></a-input-number>
             </template>
-            <template v-if="column?.type === 'ASelect'">
-              <a-select v-model:value="record[column.dataIndex]" @change="handleChange('material')"></a-select>
-            </template>
           </template>
         </slot>
       </template>
     </x-table>
     <div class="title">
-      请提供原件复印件
-      <span class="tips">（支持扩展名： .png .jpg.pdf 单文件大小：4M以下，单个类型文件最多20个）</span>
-      <a-button type="link">查看模板</a-button>
+      原件复印件
+      <template v-if="mode !== 'view'">
+        <span class="tips">（支持扩展名： .png .jpg.pdf 单文件大小：4M以下，单个类型文件最多20个）</span>
+        <a-button type="link">查看模板</a-button>
+      </template>
     </div>
     <x-table v-bind="photocopyOptions">
       <template #headerCell="{ title, column }">
-        <slot name="headerCell" v-bind="{ title, column }">
+        <slot name="photocopyHeaderCell" v-bind="{ title, column }">
           <div>
             <span v-if="column?.required === true" class="required">*</span>
             {{ title }}
@@ -44,7 +46,10 @@
         </slot>
       </template>
       <template #bodyCell="{ text, record, index, column }">
-        <slot name="bodyCell" v-bind="{ text, record, index, column }">
+        <slot
+          name="photocopyBodyCell"
+          v-bind="{ text, record, index, column }"
+          :onUpdate="() => handleChange('photocopy')">
           <template v-if="mode === 'view'">
             <x-image :urls="record[column.dataIndex]"></x-image>
           </template>
@@ -144,7 +149,7 @@ export default defineComponent({
       showPagination: false
     })
     watch(
-      () => traceabilityData.value.masterData,
+      () => traceabilityData.value.materialData,
       list => {
         const now = Date.now().toString()
         materialOptions.dataSource = (list || []).map((val, i) => ({ ...val, uid: val?.id || now + i }))
@@ -153,7 +158,7 @@ export default defineComponent({
     )
     const asyncMasterData = () => {
       nextTick(() => {
-        Object.assign(traceabilityData.value.masterData[0], materialOptions.dataSource[0])
+        Object.assign(traceabilityData.value.materialData[0], materialOptions.dataSource[0])
       })
     }
 

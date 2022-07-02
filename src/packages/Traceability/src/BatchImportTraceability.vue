@@ -61,7 +61,35 @@
               customImportDyeing,
               beforeImportDyeing,
               customDownloadDyeing
-            }"></XTraceability>
+            }">
+            <!--主表-->
+            <template #materialHeaderCell="scope">
+              <slot name="materialHeaderCell" v-bind="scope"></slot>
+            </template>
+            <template #materialBodyCell="scope">
+              <slot name="materialBodyCell" v-bind="scope"></slot>
+            </template>
+            <template #photocopyHeaderCell="scope">
+              <slot name="photocopyHeaderCell" v-bind="scope"></slot>
+            </template>
+            <template #photocopyBodyCell="scope">
+              <slot name="photocopyBodyCell" v-bind="scope"></slot>
+            </template>
+            <!--织布-->
+            <template #weavingHeaderCell="scope">
+              <slot name="weavingHeaderCell" v-bind="scope"></slot>
+            </template>
+            <template #weavingBodyCell="scope">
+              <slot name="weavingBodyCell" v-bind="scope"></slot>
+            </template>
+            <!--染整-->
+            <template #dyeingHeaderCell="scope">
+              <slot name="dyeingHeaderCell" v-bind="scope"></slot>
+            </template>
+            <template #dyeingBodyCell="scope">
+              <slot name="dyeingBodyCell" v-bind="scope"></slot>
+            </template>
+          </XTraceability>
         </a-collapse-panel>
       </template>
     </a-collapse>
@@ -87,7 +115,7 @@ export default defineComponent({
   props: {
     visible: { type: Boolean, default: false },
     title: { type: String, default: '批量导入' },
-    width: { type: [String, Number] },
+    width: { type: [String, Number], default: 'calc(100% - 240px)' },
     height: { type: [String, Number] },
     manual: { type: Boolean, default: false },
     emptyText: { type: String, default: '暂无数据' },
@@ -158,22 +186,22 @@ export default defineComponent({
       await execRequest(customImportMaster(file), {
         success: ({ data }) => {
           // 根据【'坯纱采购合同号'】，如果有重复，则更新，如果没有则新增
-          const masterData = state.traceabilityList.masterData || []
-          const blankYarnPurchaseNos = masterData.map(val => val?.blankYarnPurchaseNo)
+          const materialData = state.traceabilityList.materialData || []
+          const blankYarnPurchaseNos = materialData.map(val => val?.blankYarnPurchaseNo)
           const oldList = (data || []).filter(val => blankYarnPurchaseNos.includes(val?.blankYarnPurchaseNo))
           const newList = (data || []).filter(val => !blankYarnPurchaseNos.includes(val?.blankYarnPurchaseNo))
           // 更新数据
           if (oldList.length) {
             oldList.forEach(item => {
-              const index = masterData.findIndex(val => val?.uid === item?.uid)
-              state.traceabilityList.masterData.splice(index, 0, item)
+              const index = materialData.findIndex(val => val?.uid === item?.uid)
+              state.traceabilityList.materialData.splice(index, 0, item)
             })
           }
           // 插入数据
           if (newList.length) {
             newList.forEach(item => {
               state.traceabilityList.push({
-                masterData: [item],
+                materialData: [item],
                 photocopyData: [
                   {
                     certificateImgs: [],

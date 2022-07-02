@@ -1,6 +1,6 @@
 <template>
   <div class="weaving-info">
-    <a-form v-if="tableOptions.dataSource.length === 0">
+    <a-form v-if="!showTable">
       <a-form-item label="请导入织布明细" name="file">
         <a-upload
           :showUploadList="false"
@@ -23,18 +23,20 @@
     <template v-else>
       <div>
         织布信息
-        <a-button type="link" :loading="loading" @click="handleDownload">查看模板</a-button>
-        <a-upload
-          :showUploadList="false"
-          :before-upload="beforeImport"
-          :disabled="disabled"
-          :custom-request="handleImportWeaving">
-          <a-button type="link">继续导入</a-button>
-        </a-upload>
+        <template v-if="mode !== 'view'">
+          <a-button type="link" :loading="loading" @click="handleDownload">查看模板</a-button>
+          <a-upload
+            :showUploadList="false"
+            :before-upload="beforeImport"
+            :disabled="disabled"
+            :custom-request="handleImportWeaving">
+            <a-button type="link">继续导入</a-button>
+          </a-upload>
+        </template>
       </div>
       <x-table v-bind="tableOptions">
         <template #headerCell="{ title, column }">
-          <slot name="headerCell" v-bind="{ title, column }">
+          <slot name="weavingHeaderCell" v-bind="{ title, column }">
             <div>
               <span v-if="column?.required === true" class="required">*</span>
               {{ title }}
@@ -43,17 +45,23 @@
           </slot>
         </template>
         <template #bodyCell="{ text, record, index, column }">
-          <slot name="bodyCell" v-bind="{ text, record, index, column }" :onDelete="handleDel">
-            <template v-if="column?.type === 'AInput'">
-              <a-input v-model:value="record[column.dataIndex]" @change="handleChange"></a-input>
-            </template>
-            <template v-if="column?.type === 'AInputNumber'">
-              <a-input-number v-model:value="record[column.dataIndex]" @change="handleChange"></a-input-number>
-            </template>
-            <template v-if="column.dataIndex === 'actions'">
-              <a-button v-show="record?.itemId == null" type="link" size="small" @click="handleDel(index)">
-                删除
-              </a-button>
+          <slot
+            name="weavingBodyCell"
+            v-bind="{ text, record, index, column }"
+            :onDelete="handleDel"
+            :onUpdate="handleChange">
+            <template v-if="mode !== 'view'">
+              <template v-if="column?.type === 'AInput'">
+                <a-input v-model:value="record[column.dataIndex]" @change="handleChange"></a-input>
+              </template>
+              <template v-if="column?.type === 'AInputNumber'">
+                <a-input-number v-model:value="record[column.dataIndex]" @change="handleChange"></a-input-number>
+              </template>
+              <template v-if="column.dataIndex === 'actions'">
+                <a-button v-show="record?.itemId == null" type="link" size="small" @click="handleDel(index)">
+                  删除
+                </a-button>
+              </template>
             </template>
           </slot>
         </template>
@@ -95,7 +103,8 @@ export default defineComponent({
   setup(props) {
     const state = reactive({
       loading: false,
-      disabled: false
+      disabled: false,
+      showTable: props.mode === 'view'
     })
 
     const traceabilityData = inject('traceabilityData')
@@ -146,6 +155,7 @@ export default defineComponent({
       list => {
         const now = Date.now().toString()
         tableOptions.dataSource = (list || []).map((val, i) => ({ ...val, uid: val?.itemId || now + i }))
+        state.showTable = list && list?.length > 0
       },
       { immediate: true }
     )

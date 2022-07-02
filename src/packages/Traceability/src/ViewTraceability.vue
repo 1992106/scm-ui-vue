@@ -24,10 +24,38 @@
       :dyeingProps="{
         dyeingRowKey,
         dyeingColumns
-      }"></XTraceability>
+      }">
+      <!--主表-->
+      <template #materialHeaderCell="scope">
+        <slot name="materialHeaderCell" v-bind="scope"></slot>
+      </template>
+      <template #materialBodyCell="scope">
+        <slot name="materialBodyCell" v-bind="scope"></slot>
+      </template>
+      <template #photocopyHeaderCell="scope">
+        <slot name="photocopyHeaderCell" v-bind="scope"></slot>
+      </template>
+      <template #photocopyBodyCell="scope">
+        <slot name="photocopyBodyCell" v-bind="scope"></slot>
+      </template>
+      <!--织布-->
+      <template #weavingHeaderCell="scope">
+        <slot name="weavingHeaderCell" v-bind="scope"></slot>
+      </template>
+      <template #weavingBodyCell="scope">
+        <slot name="weavingBodyCell" v-bind="scope"></slot>
+      </template>
+      <!--染整-->
+      <template #dyeingHeaderCell="scope">
+        <slot name="dyeingHeaderCell" v-bind="scope"></slot>
+      </template>
+      <template #dyeingBodyCell="scope">
+        <slot name="dyeingBodyCell" v-bind="scope"></slot>
+      </template>
+    </XTraceability>
   </x-drawer>
 </template>
-<script lang="ts">
+<script>
 import { computed, defineComponent, provide, reactive, toRefs, watch } from 'vue'
 import XDrawer from '@packages/components/Drawer'
 import XTraceability from './index.vue'
@@ -45,7 +73,7 @@ export default defineComponent({
   props: {
     visible: { type: Boolean, default: false },
     title: { type: String, default: '查看溯源包' },
-    width: { type: [String, Number] },
+    width: { type: [String, Number], default: 'calc(100% - 240px)' },
     height: { type: [String, Number] },
     // rowKey: { type: [String, Function], default: 'id' },
     manual: { type: Boolean, default: false },
@@ -84,27 +112,22 @@ export default defineComponent({
       state.spinning = true
       await execRequest(customRequest(), {
         success: ({ data }) => {
-          state.traceabilityList = [
-            {
-              masterData: data?.traceabilityResp ? [data?.traceabilityResp] : [],
-              photocopyData: [
-                {
-                  certificateImgs: data?.certificateImgs || [],
-                  contractImgs: data?.contractImgs || [],
-                  logisticsImgs: data?.logisticsImgs || [],
-                  contractYarnImgs: data?.contractYarnImgs || [],
-                  logisticsYarnImgs: data?.logisticsYarnImgs || [],
-                  packingImgs: data?.packingImgs || [],
-                  invoiceImgs: data?.invoiceImgs || []
-                }
-              ],
-              weavingData: data?.greyClothList || [],
-              dyeingData: data?.dyeVatList || []
-            }
-          ]
-        },
-        fail: () => {
-          state.traceabilityList = []
+          state.traceabilityList.push({
+            materialData: data?.traceabilityResp ? [data?.traceabilityResp] : [],
+            photocopyData: [
+              {
+                certificateImgs: data?.certificateImgs || [],
+                contractImgs: data?.contractImgs || [],
+                logisticsImgs: data?.logisticsImgs || [],
+                contractYarnImgs: data?.contractYarnImgs || [],
+                logisticsYarnImgs: data?.logisticsYarnImgs || [],
+                packingImgs: data?.packingImgs || [],
+                invoiceImgs: data?.invoiceImgs || []
+              }
+            ],
+            weavingData: data?.greyClothList || [],
+            dyeingData: data?.dyeVatList || []
+          })
         }
       })
       state.spinning = false
