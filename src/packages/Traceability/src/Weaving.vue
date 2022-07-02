@@ -113,7 +113,8 @@ export default defineComponent({
       { title: '坯布条编码', width: 100, dataIndex: 'greyClothNo', type: 'AInput', required: true },
       { title: '坯纱采购合同号', width: 100, dataIndex: 'blankYarnPurchaseNo', type: 'AInput' },
       {
-        title: '棉成分占比(0到100)',
+        title: '棉成分占比',
+        subTitle: '(0到100)',
         width: 100,
         dataIndex: 'cottonComponentsRate',
         type: 'AInputNumber'

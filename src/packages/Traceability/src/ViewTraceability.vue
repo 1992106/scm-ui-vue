@@ -136,7 +136,7 @@ export default defineComponent({
     watch(
       () => props.visible,
       visible => {
-        if (visible && !props.manual) {
+        if (visible) {
           getDetail()
         }
       },

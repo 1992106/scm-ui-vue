@@ -30,8 +30,9 @@
       </template>
     </x-table>
     <div class="title">
-      原件复印件
-      <template v-if="mode !== 'view'">
+      <template v-if="mode === 'view'">原件复印件</template>
+      <template v-else>
+        请提供原件复印件
         <span class="tips">（支持扩展名： .png .jpg.pdf 单文件大小：4M以下，单个类型文件最多20个）</span>
         <a-button type="link">查看模板</a-button>
       </template>
@@ -91,9 +92,9 @@ export default defineComponent({
     const traceabilityData = inject('traceabilityData')
 
     const defaultMaterialColumns = [
-      { title: '物料名称', width: 120, dataIndex: 'materialName', type: 'AInput', required: true },
-      { title: '面料供应商', width: 120, dataIndex: 'materialSupplierCode', type: 'ASelect', required: true },
-      { title: '棉花供应商', width: 120, dataIndex: 'cottonSupplierName', type: 'AInput', required: true },
+      { title: '物料名称', width: 140, dataIndex: 'materialName', type: 'AInput', required: true },
+      { title: '面料供应商', width: 180, dataIndex: 'materialSupplierCode', type: 'ASelect', required: true },
+      { title: '棉花供应商', width: 160, dataIndex: 'cottonSupplierName', type: 'AInput', required: true },
       {
         title: '材料原产地证明编号',
         width: 160,

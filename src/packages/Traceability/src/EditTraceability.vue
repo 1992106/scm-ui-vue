@@ -150,7 +150,7 @@ export default defineComponent({
     watch(
       () => props.visible,
       visible => {
-        if (visible && !props.manual) {
+        if (visible) {
           getDetail()
         }
       },
@@ -159,7 +159,6 @@ export default defineComponent({
 
     const handleOk = () => {
       emit('done', state.traceabilityList[0])
-      modalVisible.value = false
       handleCancel()
     }
 

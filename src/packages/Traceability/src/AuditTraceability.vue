@@ -140,7 +140,7 @@ export default defineComponent({
     watch(
       () => props.visible,
       visible => {
-        if (visible && !props.manual) {
+        if (visible) {
           getDetail()
         }
       },
@@ -154,7 +154,7 @@ export default defineComponent({
 
     const handleOk = type => {
       emit('done', { isPass: type, data: state.traceabilityList[0] })
-      handleCancel()
+      state.traceabilityList = []
     }
 
     provide('mode', { master: 'view', weaving: 'view', dyeing: 'view' })

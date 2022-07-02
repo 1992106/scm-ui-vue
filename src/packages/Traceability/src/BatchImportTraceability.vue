@@ -32,7 +32,7 @@
     </a-form>
     <a-collapse v-model:activeKey="activeKey" expandIconPosition="right">
       <template v-for="(_, index) in traceabilityList" :key="index">
-        <a-collapse-panel>
+        <a-collapse-panel :key="index">
           <template #header>
             <a-space>
               {{ `溯源包${index + 1}` }}
@@ -186,7 +186,7 @@ export default defineComponent({
       await execRequest(customImportMaster(file), {
         success: ({ data }) => {
           // 根据【'坯纱采购合同号'】，如果有重复，则更新，如果没有则新增
-          const materialData = state.traceabilityList.materialData || []
+          const materialData = state.traceabilityList?.materialData || []
           const blankYarnPurchaseNos = materialData.map(val => val?.blankYarnPurchaseNo)
           const oldList = (data || []).filter(val => blankYarnPurchaseNos.includes(val?.blankYarnPurchaseNo))
           const newList = (data || []).filter(val => !blankYarnPurchaseNos.includes(val?.blankYarnPurchaseNo))
@@ -246,7 +246,6 @@ export default defineComponent({
 
     const handleOk = () => {
       emit('done', state.traceabilityList)
-      modalVisible.value = false
       handleCancel()
     }
 
