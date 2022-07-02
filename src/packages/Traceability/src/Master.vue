@@ -144,7 +144,7 @@ export default defineComponent({
       showPagination: false
     })
     watch(
-      () => traceabilityData.value?.masterData,
+      () => traceabilityData.value.masterData,
       list => {
         const now = Date.now().toString()
         materialOptions.dataSource = (list || []).map((val, i) => ({ ...val, uid: val?.id || now + i }))
@@ -178,7 +178,7 @@ export default defineComponent({
       showPagination: false
     })
     watch(
-      () => traceabilityData.value?.photocopyData,
+      () => traceabilityData.value.photocopyData,
       list => {
         const now = Date.now().toString()
         photocopyOptions.dataSource = (list || []).map((val, i) => ({ ...val, uid: now + i }))

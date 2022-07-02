@@ -38,9 +38,9 @@ export default defineComponent({
     return {
       masterMode: useMode['master'],
       weavingMode: useMode['weaving'],
-      showWeaving: computed(() => !!props.weavingProps?.visible),
+      showWeaving: computed(() => props.weavingProps?.visible !== false),
       dyeingMode: useMode['dyeing'],
-      showDyeing: computed(() => !!props.dyeingProps?.visible)
+      showDyeing: computed(() => props.weavingProps?.visible !== false)
     }
   }
 })

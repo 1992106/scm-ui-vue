@@ -38,7 +38,6 @@ import { computed, defineComponent, provide, reactive, toRefs, watch } from 'vue
 import XDrawer from '@packages/components/Drawer'
 import XTraceability from './index.vue'
 import { isFunction } from 'lodash-es'
-// import { getValueByRowKey } from '@packages/components/Table/utils'
 import { execRequest } from '@src/utils'
 export default defineComponent({
   name: 'XAuditTraceability',
@@ -53,7 +52,6 @@ export default defineComponent({
     title: { type: String, default: '审核溯源包' },
     width: { type: [String, Number] },
     height: { type: [String, Number] },
-    // rowKey: { type: [String, Function], default: 'id' },
     manual: { type: Boolean, default: false },
     customRequest: { type: Function, require: true },
     emptyText: { type: String, default: '暂无数据' },
@@ -61,10 +59,10 @@ export default defineComponent({
     materialColumns: { type: Array },
     photocopyColumns: { type: Array },
     // 织布
-    weavingRowKey: { type: [String, Function], default: 'itemId' },
-    weavingColumns: { type: Array, default: () => [] },
+    weavingRowKey: { type: [String, Function], default: 'uid' },
+    weavingColumns: { type: Array },
     // 染整
-    dyeingRowKey: { type: [String, Function], default: 'itemId' },
+    dyeingRowKey: { type: [String, Function], default: 'uid' },
     dyeingColumns: { type: Array }
   },
   emits: ['update:visible', 'done'],

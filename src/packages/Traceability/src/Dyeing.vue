@@ -59,7 +59,7 @@
         </template>
         <template v-if="mode !== 'view'" #summary>
           <a-table-summary-row>
-            <a-table-summary-cell :col-span="colSpanLength" align="center">
+            <a-table-summary-cell :col-span="summaryLength" align="center">
               <a-button type="link" size="small" @click="handleAdd">添加一行</a-button>
             </a-table-summary-cell>
           </a-table-summary-row>
@@ -132,10 +132,10 @@ export default defineComponent({
       showPagination: false
     })
     // 获取总结栏长度
-    const colSpanLength = computed(() => tableOptions.columns.filter(val => val?.visible !== false).length)
+    const summaryLength = computed(() => tableOptions.columns.filter(val => val?.visible !== false).length)
 
     watch(
-      () => traceabilityData.value?.dyeingData,
+      () => traceabilityData.value.dyeingData,
       list => {
         const now = Date.now().toString()
         tableOptions.dataSource = (list || []).map((val, i) => ({ ...val, uid: val?.itemId || now + i }))
@@ -175,18 +175,20 @@ export default defineComponent({
       state.disabled = true
       await execRequest(customImportDyeing(file), {
         success: ({ data }) => {
-          if (data.length) {
+          if (Array.isArray(data) && data.length) {
             const now = Date.now().toString()
-            data.forEach((item, index) => {
-              tableOptions.dataSource.push({
+            const newList = data.forEach((item, index) => {
+              return {
                 uid: now + index,
-                dyeVatNo: '',
-                colorClothWeight: '',
-                colorClothLength: '',
-                color: '',
-                dyeFactory: ''
-              })
+                dyeVatNo: item?.dyeVatNo,
+                colorClothWeight: item?.colorClothWeight || null,
+                colorClothLength: item?.colorClothLength || null,
+                color: item?.color,
+                dyeFactory: item?.dyeFactory
+              }
             })
+            const oldList = traceabilityData.value.dyeingData
+            traceabilityData.value.dyeingData = [...oldList, ...newList]
           }
         }
       })
@@ -227,7 +229,7 @@ export default defineComponent({
       beforeImport,
       tableOptions,
       handleChange,
-      colSpanLength,
+      summaryLength,
       handleImportDyeing,
       handleDownload,
       handleDel,

@@ -55,10 +55,10 @@ export default defineComponent({
     materialColumns: { type: Array },
     photocopyColumns: { type: Array },
     // 织布
-    weavingRowKey: { type: [String, Function], default: 'itemId' },
-    weavingColumns: { type: Array, default: () => [] },
+    weavingRowKey: { type: [String, Function], default: 'uid' },
+    weavingColumns: { type: Array },
     // 染整
-    dyeingRowKey: { type: [String, Function], default: 'itemId' },
+    dyeingRowKey: { type: [String, Function], default: 'uid' },
     dyeingColumns: { type: Array }
   },
   emits: ['update:visible', 'done'],

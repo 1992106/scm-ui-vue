@@ -10,7 +10,27 @@
     destroyOnClose
     @ok="handleOk"
     @cancel="handleCancel">
-    <XTraceability :index="0"></XTraceability>
+    <XTraceability
+      :index="0"
+      :emptyText="emptyText"
+      :masterProps="{
+        materialColumns,
+        photocopyColumns
+      }"
+      :weavingProps="{
+        weavingRowKey,
+        weavingColumns,
+        customImportWeaving,
+        beforeImportWeaving,
+        customDownloadWeaving
+      }"
+      :dyeingProps="{
+        dyeingRowKey,
+        dyeingColumns,
+        customImportDyeing,
+        beforeImportDyeing,
+        customDownloadDyeing
+      }"></XTraceability>
   </x-drawer>
 </template>
 <script lang="ts">
@@ -18,7 +38,6 @@ import { computed, defineComponent, provide, reactive, toRefs, watch } from 'vue
 import XDrawer from '@packages/components/Drawer'
 import XTraceability from './index.vue'
 import { isFunction } from 'lodash-es'
-// import { getValueByRowKey } from '@packages/components/Table/utils'
 import { execRequest } from '@src/utils'
 export default defineComponent({
   name: 'XBatchImportDetail',
@@ -35,22 +54,22 @@ export default defineComponent({
     height: { type: [String, Number] },
     manual: { type: Boolean, default: false },
     customRequest: { type: Function, require: true },
+    emptyText: { type: String, default: '暂无数据' },
     // 主表
     materialColumns: { type: Array },
     photocopyColumns: { type: Array },
     // 织布
-    weavingRowKey: { type: [String, Function], default: 'itemId' },
-    weavingColumns: { type: Array, default: () => [] },
+    weavingRowKey: { type: [String, Function], default: 'uid' },
+    weavingColumns: { type: Array },
     customImportWeaving: { type: Function },
+    beforeImportWeaving: { type: Function },
     customDownloadWeaving: { type: Function },
     // 染整
-    dyeingRowKey: { type: [String, Function], default: 'itemId' },
+    dyeingRowKey: { type: [String, Function], default: 'uid' },
     dyeingColumns: { type: Array },
     customImportDyeing: { type: Function },
-    customDownloadDyeing: { type: Function },
-    // 公共
-    size: { type: Number, default: 4 },
-    emptyText: { type: String, default: '暂无数据' }
+    beforeImportDyeing: { type: Function },
+    customDownloadDyeing: { type: Function }
   },
   emits: ['update:visible', 'done'],
   setup(props, { emit }) {
