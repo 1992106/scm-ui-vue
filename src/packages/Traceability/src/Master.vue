@@ -165,7 +165,7 @@ export default defineComponent({
       () => traceabilityData.value.materialData,
       list => {
         const now = Date.now().toString()
-        materialOptions.dataSource = (list || []).map((val, i) => ({ ...val, uid: val?.id || now + i }))
+        materialOptions.dataSource = (list || []).map((val, i) => ({ ...val, uid: val?.uid || now + i }))
       },
       { immediate: true }
     )
@@ -199,7 +199,7 @@ export default defineComponent({
       () => traceabilityData.value.photocopyData,
       list => {
         const now = Date.now().toString()
-        photocopyOptions.dataSource = (list || []).map((val, i) => ({ ...val, uid: now + i }))
+        photocopyOptions.dataSource = (list || []).map((val, i) => ({ ...val, uid: val?.uid || now + i }))
       },
       { immediate: true }
     )

@@ -20,15 +20,17 @@
       :weavingProps="{
         weavingRowKey,
         weavingColumns,
-        customImportWeaving,
         beforeImportWeaving,
+        limitWeaving,
+        customImportWeaving,
         customDownloadWeaving
       }"
       :dyeingProps="{
         dyeingRowKey,
         dyeingColumns,
-        customImportDyeing,
         beforeImportDyeing,
+        limitDyeing,
+        customImportDyeing,
         customDownloadDyeing
       }">
       <!--主表-->
@@ -88,14 +90,16 @@ export default defineComponent({
     // 织布
     weavingRowKey: { type: [String, Function], default: 'uid' },
     weavingColumns: { type: Array },
-    customImportWeaving: { type: Function },
     beforeImportWeaving: { type: Function },
+    limitWeaving: { type: Number, default: 9999 },
+    customImportWeaving: { type: Function },
     customDownloadWeaving: { type: Function },
     // 染整
     dyeingRowKey: { type: [String, Function], default: 'uid' },
     dyeingColumns: { type: Array },
-    customImportDyeing: { type: Function },
     beforeImportDyeing: { type: Function },
+    limitDyeing: { type: Number, default: 9999 },
+    customImportDyeing: { type: Function },
     customDownloadDyeing: { type: Function }
   },
   emits: ['update:visible', 'done'],

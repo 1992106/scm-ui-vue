@@ -82,7 +82,7 @@ import { message } from 'ant-design-vue'
 import { UploadOutlined } from '@ant-design/icons-vue'
 import XTable from '@packages/components/Table/index.vue'
 import { isFunction } from 'lodash-es'
-import { download, execRequest } from '@src/utils'
+import { download, execRequest, isEmpty } from '@src/utils'
 
 export default defineComponent({
   name: 'Weaving',
@@ -94,8 +94,9 @@ export default defineComponent({
     mode: { type: String, required: true },
     weavingRowKey: [String, Function],
     weavingColumns: Array,
-    customImportWeaving: Function,
     beforeImportWeaving: Function,
+    limitWeaving: Number,
+    customImportWeaving: Function,
     customDownloadWeaving: Function,
     emptyText: String
   },
@@ -146,6 +147,7 @@ export default defineComponent({
         visible: column?.dataIndex === 'actions' ? props.mode !== 'view' : true
       })),
       dataSource: [],
+      total: 0,
       showPagination: false
     })
     // 获取总结栏长度
@@ -155,7 +157,7 @@ export default defineComponent({
       () => traceabilityData.value.weavingData,
       list => {
         const now = Date.now().toString()
-        tableOptions.dataSource = (list || []).map((val, i) => ({ ...val, uid: val?.itemId || now + i }))
+        tableOptions.dataSource = (list || []).map((val, i) => ({ ...val, uid: val?.uid || now + i }))
         state.showTable = list && list?.length > 0
       },
       { immediate: true }
@@ -187,9 +189,17 @@ export default defineComponent({
       return isExcel && isLt4M
     }
 
+    const importLimit = () => {
+      if (!isEmpty(props.limitWeaving) && state.total > props.limitWeaving) {
+        message.error('最多只能添加9999条明细！')
+        return true
+      }
+    }
+
     const handleImportWeaving = async ({ file }) => {
       const { customImportWeaving } = props
       if (!isFunction(customImportWeaving)) return
+      if (importLimit()) return
       state.disabled = true
       await execRequest(customImportWeaving(file), {
         success: ({ data }) => {
@@ -208,7 +218,8 @@ export default defineComponent({
               }
             })
             const oldList = traceabilityData.value.weavingData
-            traceabilityData.value.weavingData = [...oldList, ...newList]
+            traceabilityData.value.weavingData = [...newList, ...oldList]
+            state.total = state.total + data.length
           }
         }
       })
@@ -231,12 +242,13 @@ export default defineComponent({
 
     const handleDel = index => {
       tableOptions.dataSource.splice(index, 1)
+      state.total = state.total - 1
     }
 
     const handleAdd = () => {
+      if (importLimit()) return
       const oldList = traceabilityData.value.weavingData
       traceabilityData.value.weavingData = [
-        ...oldList,
         {
           weavingOrderNo: '',
           greyClothNo: '',
@@ -245,8 +257,10 @@ export default defineComponent({
           colorClothWeight: '',
           colorClothLength: '',
           textileMill: ''
-        }
+        },
+        ...oldList
       ]
+      state.total += 1
     }
 
     return {

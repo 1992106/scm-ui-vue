@@ -42,23 +42,25 @@
           :emptyText="emptyText"
           :masterProps="{
             materialColumns,
-            customUpload,
-            beforeUpload,
             photocopyColumns,
+            beforeUpload,
+            customUpload,
             customDownloadPhotocopy
           }"
           :weavingProps="{
             weavingRowKey,
             weavingColumns,
-            customImportWeaving,
             beforeImportWeaving,
+            limitWeaving,
+            customImportWeaving,
             customDownloadWeaving
           }"
           :dyeingProps="{
             dyeingRowKey,
             dyeingColumns,
-            customImportDyeing,
             beforeImportDyeing,
+            limitDyeing,
+            customImportDyeing,
             customDownloadDyeing
           }">
           <!--主表-->
@@ -107,7 +109,7 @@ import { message } from 'ant-design-vue'
 import XDrawer from '@packages/components/Drawer'
 import XTraceability from './index.vue'
 import { isFunction } from 'lodash-es'
-import { download, execRequest } from '@src/utils'
+import { download, execRequest, isEmpty } from '@src/utils'
 export default defineComponent({
   name: 'XBatchImportTraceability',
   components: {
@@ -124,25 +126,28 @@ export default defineComponent({
     manual: { type: Boolean, default: false },
     emptyText: { type: String, default: '暂无数据' },
     // 主表
-    customImportMaterial: { type: Function, require: true },
     beforeImportMaterial: { type: Function },
+    limitMaterial: { type: Number, default: 99 },
+    customImportMaterial: { type: Function, require: true },
     customDownloadMaterial: { type: Function },
     materialColumns: { type: Array },
-    customUpload: { type: Function },
     beforeUpload: { type: Function },
+    customUpload: { type: Function },
     customDownloadPhotocopy: { type: Function },
     photocopyColumns: { type: Array },
     // 织布
     weavingRowKey: { type: [String, Function], default: 'uid' },
     weavingColumns: { type: Array },
-    customImportWeaving: { type: Function },
     beforeImportWeaving: { type: Function },
+    limitWeaving: { type: Number, default: 9999 },
+    customImportWeaving: { type: Function },
     customDownloadWeaving: { type: Function },
     // 染整
     dyeingRowKey: { type: [String, Function], default: 'uid' },
     dyeingColumns: { type: Array },
-    customImportDyeing: { type: Function },
     beforeImportDyeing: { type: Function },
+    limitDyeing: { type: Number, default: 9999 },
+    customImportDyeing: { type: Function },
     customDownloadDyeing: { type: Function }
   },
   emits: ['update:visible', 'done'],
@@ -184,9 +189,17 @@ export default defineComponent({
       return isExcel && isLt4M
     }
 
+    const importLimit = () => {
+      if (!isEmpty(props.limitMaterial) && state.traceabilityList.length > props.limitMaterial) {
+        message.error('最多只能导入99条！')
+        return true
+      }
+    }
+
     const handleImportMaterial = async ({ file }) => {
       const { customImportMaterial } = props
       if (!isFunction(customImportMaterial)) return
+      if (importLimit()) return
       state.disabled = true
       await execRequest(customImportMaterial(file), {
         success: ({ data }) => {
@@ -205,7 +218,7 @@ export default defineComponent({
           // 插入数据
           if (newList.length) {
             newList.forEach(item => {
-              state.traceabilityList.push({
+              state.traceabilityList.unshift({
                 materialData: [item],
                 photocopyData: [
                   {
