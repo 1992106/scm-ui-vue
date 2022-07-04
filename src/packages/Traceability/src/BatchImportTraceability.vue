@@ -8,7 +8,6 @@
     :height="height"
     :spinProps="spinning"
     destroyOnClose
-    @ok="handleOk"
     @cancel="handleCancel">
     <a-form>
       <a-form-item label="请导入主表" :required="true">
@@ -16,7 +15,7 @@
           :showUploadList="false"
           :before-upload="beforeImport"
           :disabled="disabled"
-          :custom-request="handleImportMaster">
+          :custom-request="handleImportMaterial">
           <a-button>
             <UploadOutlined></UploadOutlined>
             上传
@@ -25,7 +24,7 @@
         <template #extra>
           <div>
             支持扩展名：xlx,xlsx；文件大小：4M以下
-            <a-button type="link" :loading="loading" @click="handleDownloadMaster">查看模板</a-button>
+            <a-button type="link" :loading="loading" @click="handleDownloadMaterial">查看模板</a-button>
           </div>
         </template>
       </a-form-item>
@@ -92,6 +91,13 @@
         </XTraceability>
       </a-collapse-panel>
     </a-collapse>
+    <template #footer>
+      <a-space>
+        <a-button @click="handleCancel">取消</a-button>
+        <a-button type="primary" danger @click="handleOk(1)">保存</a-button>
+        <a-button type="primary" @click="handleOk(2)">保存并提交</a-button>
+      </a-space>
+    </template>
   </x-drawer>
 </template>
 <script>
@@ -118,14 +124,14 @@ export default defineComponent({
     manual: { type: Boolean, default: false },
     emptyText: { type: String, default: '暂无数据' },
     // 主表
-    customImportMaster: { type: Function, require: true },
-    beforeImportMaster: { type: Function },
-    customDownloadMaster: { type: Function },
+    customImportMaterial: { type: Function, require: true },
+    beforeImportMaterial: { type: Function },
+    customDownloadMaterial: { type: Function },
     materialColumns: { type: Array },
     customUpload: { type: Function },
     beforeUpload: { type: Function },
-    photocopyColumns: { type: Array },
     customDownloadPhotocopy: { type: Function },
+    photocopyColumns: { type: Array },
     // 织布
     weavingRowKey: { type: [String, Function], default: 'uid' },
     weavingColumns: { type: Array },
@@ -159,8 +165,8 @@ export default defineComponent({
     })
 
     const beforeImport = file => {
-      if (isFunction(props.beforeImportMaster)) {
-        return props.beforeImportMaster(file)
+      if (isFunction(props.beforeImportMaterial)) {
+        return props.beforeImportMaterial(file)
       }
 
       const isExcel =
@@ -178,11 +184,11 @@ export default defineComponent({
       return isExcel && isLt4M
     }
 
-    const handleImportMaster = async ({ file }) => {
-      const { customImportMaster } = props
-      if (!isFunction(customImportMaster)) return
+    const handleImportMaterial = async ({ file }) => {
+      const { customImportMaterial } = props
+      if (!isFunction(customImportMaterial)) return
       state.disabled = true
-      await execRequest(customImportMaster(file), {
+      await execRequest(customImportMaterial(file), {
         success: ({ data }) => {
           // 根据【'坯纱采购合同号'】，如果有重复，则更新，如果没有则新增
           const materialData = state.traceabilityList?.materialData || []
@@ -223,11 +229,11 @@ export default defineComponent({
       state.disabled = false
     }
 
-    const handleDownloadMaster = async () => {
-      const { customDownloadMaster } = props
-      if (!isFunction(customDownloadMaster)) return
+    const handleDownloadMaterial = async () => {
+      const { customDownloadMaterial } = props
+      if (!isFunction(customDownloadMaterial)) return
       state.loading = true
-      await execRequest(customDownloadMaster(), {
+      await execRequest(customDownloadMaterial(), {
         success: ({ data }) => {
           if (data) {
             download(data?.url, data?.fileName)
@@ -243,12 +249,13 @@ export default defineComponent({
       state.activeKey.pop()
     }
 
-    const handleOk = () => {
-      emit('done', state.traceabilityList)
+    const handleOk = action => {
+      emit('done', { action, data: state.traceabilityList })
     }
 
     const handleCancel = () => {
       state.traceabilityList = []
+      modalVisible.value = false
     }
 
     provide('mode', { master: 'action', weaving: 'action', dyeing: 'action' })
@@ -258,8 +265,8 @@ export default defineComponent({
       ...toRefs(state),
       modalVisible,
       beforeImport,
-      handleImportMaster,
-      handleDownloadMaster,
+      handleImportMaterial,
+      handleDownloadMaterial,
       handleDelete,
       handleOk,
       handleCancel

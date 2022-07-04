@@ -49,13 +49,13 @@
             name="dyeingBodyCell"
             v-bind="{ text, record, index, column }"
             :onDelete="handleDel"
-            :onUpdate="handleChange">
+            :onUpdate="() => handleChange(index)">
             <template v-if="mode !== 'view'">
               <template v-if="column?.type === 'AInput'">
-                <a-input v-model:value="record[column.dataIndex]" @change="handleChange"></a-input>
+                <a-input v-model:value="record[column.dataIndex]" @change="handleChange(index)"></a-input>
               </template>
               <template v-if="column?.type === 'AInputNumber'">
-                <a-input-number v-model:value="record[column.dataIndex]" @change="handleChange"></a-input-number>
+                <a-input-number v-model:value="record[column.dataIndex]" @change="handleChange(index)"></a-input-number>
               </template>
               <template v-if="column.dataIndex === 'actions'">
                 <a-button v-show="record?.itemId == null" type="link" size="small" @click="handleDel(index)">
@@ -153,9 +153,10 @@ export default defineComponent({
       { immediate: true }
     )
 
-    const handleChange = () => {
+    const handleChange = index => {
       nextTick(() => {
-        Object.assign(traceabilityData.value.dyeingData[0], tableOptions.dataSource[0])
+        console.log(traceabilityData.value.dyeingData, tableOptions.dataSource, index, 456)
+        Object.assign(traceabilityData.value.dyeingData[index], tableOptions.dataSource[index])
       })
     }
 
@@ -187,7 +188,7 @@ export default defineComponent({
         success: ({ data }) => {
           if (Array.isArray(data) && data.length) {
             const now = Date.now().toString()
-            const newList = data.forEach((item, index) => {
+            const newList = data.map((item, index) => {
               return {
                 uid: now + index,
                 dyeVatNo: item?.dyeVatNo,
@@ -224,14 +225,18 @@ export default defineComponent({
     }
 
     const handleAdd = () => {
-      tableOptions.dataSource.push({
-        uid: Date.now().toString(),
-        dyeVatNo: '',
-        colorClothWeight: '',
-        colorClothLength: '',
-        color: '',
-        dyeFactory: ''
-      })
+      const oldList = traceabilityData.value.dyeingData
+      traceabilityData.value.dyeingData = [
+        ...oldList,
+        {
+          uid: Date.now().toString(),
+          dyeVatNo: '',
+          colorClothWeight: '',
+          colorClothLength: '',
+          color: '',
+          dyeFactory: ''
+        }
+      ]
     }
 
     return {

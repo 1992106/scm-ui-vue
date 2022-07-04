@@ -49,13 +49,13 @@
             name="weavingBodyCell"
             v-bind="{ text, record, index, column }"
             :onDelete="handleDel"
-            :onUpdate="handleChange">
+            :onUpdate="() => handleChange(index)">
             <template v-if="mode !== 'view'">
               <template v-if="column?.type === 'AInput'">
-                <a-input v-model:value="record[column.dataIndex]" @change="handleChange"></a-input>
+                <a-input v-model:value="record[column.dataIndex]" @change="handleChange(index)"></a-input>
               </template>
               <template v-if="column?.type === 'AInputNumber'">
-                <a-input-number v-model:value="record[column.dataIndex]" @change="handleChange"></a-input-number>
+                <a-input-number v-model:value="record[column.dataIndex]" @change="handleChange(index)"></a-input-number>
               </template>
               <template v-if="column.dataIndex === 'actions'">
                 <a-button v-show="record?.itemId == null" type="link" size="small" @click="handleDel(index)">
@@ -161,9 +161,9 @@ export default defineComponent({
       { immediate: true }
     )
 
-    const handleChange = () => {
+    const handleChange = index => {
       nextTick(() => {
-        Object.assign(traceabilityData.value.weavingData[0], tableOptions.dataSource[0])
+        Object.assign(traceabilityData.value.weavingData[index], tableOptions.dataSource[index])
       })
     }
 
@@ -234,16 +234,19 @@ export default defineComponent({
     }
 
     const handleAdd = () => {
-      tableOptions.dataSource.push({
-        uid: Date.now().toString(),
-        weavingOrderNo: '',
-        greyClothNo: '',
-        blankYarnPurchaseNo: '',
-        cottonComponentsRate: '',
-        colorClothWeight: '',
-        colorClothLength: '',
-        textileMill: ''
-      })
+      const oldList = traceabilityData.value.weavingData
+      traceabilityData.value.weavingData = [
+        ...oldList,
+        {
+          weavingOrderNo: '',
+          greyClothNo: '',
+          blankYarnPurchaseNo: '',
+          cottonComponentsRate: '',
+          colorClothWeight: '',
+          colorClothLength: '',
+          textileMill: ''
+        }
+      ]
     }
 
     return {

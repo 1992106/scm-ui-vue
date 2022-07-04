@@ -16,7 +16,12 @@
           name="materialBodyCell"
           v-bind="{ text, record, index, column }"
           :onUpdate="() => handleChange('material')">
-          <template v-if="mode !== 'view'">
+          <template v-if="mode === 'view'">
+            <template v-if="column?.dataIndex === 'materialSupplierCode'">
+              <span>{{ record?.materialSupplierName || '--' }}</span>
+            </template>
+          </template>
+          <template v-else>
             <template v-if="column?.type === 'AInput'">
               <a-input v-model:value="record[column.dataIndex]" @change="handleChange('material')"></a-input>
             </template>
@@ -164,7 +169,7 @@ export default defineComponent({
       },
       { immediate: true }
     )
-    const asyncMasterData = () => {
+    const asyncMaterialData = () => {
       nextTick(() => {
         Object.assign(traceabilityData.value.materialData[0], materialOptions.dataSource[0])
       })
@@ -207,7 +212,7 @@ export default defineComponent({
 
     const handleChange = key => {
       if (key === 'material') {
-        asyncMasterData()
+        asyncMaterialData()
       } else if (key === 'photocopy') {
         asyncPhotocopyData()
       }

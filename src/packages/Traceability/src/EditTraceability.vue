@@ -89,8 +89,8 @@ export default defineComponent({
     materialColumns: { type: Array },
     customUpload: { type: Function },
     beforeUpload: { type: Function },
-    photocopyColumns: { type: Array },
     customDownloadPhotocopy: { type: Function },
+    photocopyColumns: { type: Array },
     // 织布
     weavingRowKey: { type: [String, Function], default: 'uid' },
     weavingColumns: { type: Array },

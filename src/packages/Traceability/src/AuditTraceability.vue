@@ -55,9 +55,11 @@
       </template>
     </XTraceability>
     <template #footer>
-      <a-button @click="handleCancel">取消</a-button>
-      <a-button type="primary" danger @click="handleOk(0)">不通过</a-button>
-      <a-button type="primary" @click="handleOk(1)">通过</a-button>
+      <a-space>
+        <a-button @click="handleCancel">取消</a-button>
+        <a-button type="primary" danger @click="handleOk(0)">不通过</a-button>
+        <a-button type="primary" @click="handleOk(1)">通过</a-button>
+      </a-space>
     </template>
   </x-drawer>
 </template>
