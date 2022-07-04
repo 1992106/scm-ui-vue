@@ -130,8 +130,7 @@ export default defineComponent({
         subTitle: '(当坯纱产地=中国时选填)',
         width: 180,
         dataIndex: 'materialLadeBillNo',
-        type: 'AInput',
-        required: true
+        type: 'AInput'
       },
       { title: '坯纱采购合同号', width: 140, dataIndex: 'blankYarnPurchaseNo', type: 'AInput', required: true },
       {

@@ -111,7 +111,7 @@ export default defineComponent({
     const traceabilityData = inject('traceabilityData')
 
     const defaultColumns = [
-      { title: '坯布条编码', width: 120, dataIndex: 'greyClothNo', type: 'AInput', required: true },
+      { title: '坯布条编码', width: 120, dataIndex: 'greyClothNo', fixed: 'left', type: 'AInput', required: true },
       { title: '坯纱采购合同号', width: 140, dataIndex: 'blankYarnPurchaseNo', type: 'AInput' },
       {
         title: '棉成分占比',
@@ -136,7 +136,7 @@ export default defineComponent({
         type: 'AInputNumber'
       },
       { title: '织厂', width: 120, dataIndex: 'textileMill', type: 'AInput' },
-      { title: '操作', width: 60, dataIndex: 'actions' }
+      { title: '操作', width: 60, dataIndex: 'actions', fixed: 'right' }
     ]
     const tableOptions = reactive({
       rowKey: props.weavingRowKey,
