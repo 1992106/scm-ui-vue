@@ -135,7 +135,7 @@ export default defineComponent({
         title: '坯布重量(KG)',
         subTitle: '针织必填/梭织不能填',
         width: 160,
-        dataIndex: 'colorClothWeight',
+        dataIndex: 'greyClothWeight',
         type: 'AInputNumber',
         props: {
           precision: 2,
@@ -147,7 +147,7 @@ export default defineComponent({
         title: '坯布米数(M)',
         subTitle: '针织不能填/梭织必填',
         width: 160,
-        dataIndex: 'colorClothLength',
+        dataIndex: 'greyClothLength',
         type: 'AInputNumber',
         props: {
           precision: 2,
@@ -231,8 +231,8 @@ export default defineComponent({
                 weavingOrderNo: item?.weavingOrderNo,
                 greyClothNo: item?.greyClothNo,
                 cottonComponentsRate: item?.cottonComponentsRate || null,
-                colorClothWeight: item?.colorClothWeight || null,
-                colorClothLength: item?.colorClothLength || null,
+                greyClothWeight: item?.greyClothWeight || null,
+                greyClothLength: item?.greyClothLength || null,
                 textileMill: item?.textileMill
               }
             })
@@ -272,8 +272,8 @@ export default defineComponent({
           weavingOrderNo: '',
           greyClothNo: '',
           cottonComponentsRate: '',
-          colorClothWeight: '',
-          colorClothLength: '',
+          greyClothWeight: '',
+          greyClothLength: '',
           textileMill: ''
         },
         ...oldList
