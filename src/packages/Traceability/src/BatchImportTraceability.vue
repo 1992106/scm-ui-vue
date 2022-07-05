@@ -191,7 +191,7 @@ export default defineComponent({
 
     const importLimit = () => {
       if (!isEmpty(props.limitMaterial) && state.traceabilityList.length > props.limitMaterial) {
-        message.error('最多只能导入99条！')
+        message.error(`最多只能导入${props.limitMaterial}条！`)
         return true
       }
     }

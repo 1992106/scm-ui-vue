@@ -21,7 +21,7 @@
       </a-form-item>
     </a-form>
     <template v-else>
-      <div>
+      <div class="title">
         织布信息
         <template v-if="mode !== 'view'">
           <a-button type="link" :loading="loading" @click="handleDownloadWeaving">查看模板</a-button>
@@ -52,10 +52,16 @@
             :onUpdate="() => handleChange(index)">
             <template v-if="mode !== 'view'">
               <template v-if="column?.type === 'AInput'">
-                <a-input v-model:value="record[column.dataIndex]" @change="handleChange(index)"></a-input>
+                <a-input
+                  v-model:value="record[column.dataIndex]"
+                  v-bind="column.props"
+                  @change="handleChange(index)"></a-input>
               </template>
               <template v-if="column?.type === 'AInputNumber'">
-                <a-input-number v-model:value="record[column.dataIndex]" @change="handleChange(index)"></a-input-number>
+                <a-input-number
+                  v-model:value="record[column.dataIndex]"
+                  v-bind="column.props"
+                  @change="handleChange(index)"></a-input-number>
               </template>
               <template v-if="column.dataIndex === 'actions'">
                 <a-button v-show="record?.itemId == null" type="link" size="small" @click="handleDel(index)">
@@ -112,13 +118,17 @@ export default defineComponent({
 
     const defaultColumns = [
       { title: '坯布条编码', width: 120, dataIndex: 'greyClothNo', fixed: 'left', type: 'AInput', required: true },
-      { title: '坯纱采购合同号', width: 140, dataIndex: 'blankYarnPurchaseNo', type: 'AInput' },
       {
         title: '棉成分占比',
         subTitle: '(0到100)',
         width: 120,
         dataIndex: 'cottonComponentsRate',
-        type: 'AInputNumber'
+        type: 'AInputNumber',
+        props: {
+          precision: 2,
+          min: 1,
+          max: 100
+        }
       },
       { title: '织单号', width: 120, dataIndex: 'weavingOrderNo', type: 'AInput' },
       {
@@ -126,14 +136,24 @@ export default defineComponent({
         subTitle: '针织必填/梭织不能填',
         width: 160,
         dataIndex: 'colorClothWeight',
-        type: 'AInputNumber'
+        type: 'AInputNumber',
+        props: {
+          precision: 2,
+          min: 1,
+          max: 10000000
+        }
       },
       {
         title: '坯布米数(M)',
         subTitle: '针织不能填/梭织必填',
         width: 160,
         dataIndex: 'colorClothLength',
-        type: 'AInputNumber'
+        type: 'AInputNumber',
+        props: {
+          precision: 2,
+          min: 1,
+          max: 10000000
+        }
       },
       { title: '织厂', width: 120, dataIndex: 'textileMill', type: 'AInput' },
       { title: '操作', width: 60, dataIndex: 'actions', fixed: 'right' }
@@ -158,7 +178,7 @@ export default defineComponent({
       list => {
         const now = Date.now().toString()
         tableOptions.dataSource = (list || []).map((val, i) => ({ ...val, uid: val?.uid || now + i }))
-        state.showTable = list && list?.length > 0
+        state.showTable = props.mode === 'view' ? true : list && list?.length > 0
       },
       { immediate: true }
     )
@@ -191,7 +211,7 @@ export default defineComponent({
 
     const importLimit = () => {
       if (!isEmpty(props.limitWeaving) && state.total > props.limitWeaving) {
-        message.error('最多只能添加9999条明细！')
+        message.error(`最多只能添加${props.limitWeaving}条！`)
         return true
       }
     }
@@ -210,7 +230,6 @@ export default defineComponent({
                 uid: now + index,
                 weavingOrderNo: item?.weavingOrderNo,
                 greyClothNo: item?.greyClothNo,
-                blankYarnPurchaseNo: item?.blankYarnPurchaseNo,
                 cottonComponentsRate: item?.cottonComponentsRate || null,
                 colorClothWeight: item?.colorClothWeight || null,
                 colorClothLength: item?.colorClothLength || null,
@@ -252,7 +271,6 @@ export default defineComponent({
         {
           weavingOrderNo: '',
           greyClothNo: '',
-          blankYarnPurchaseNo: '',
           cottonComponentsRate: '',
           colorClothWeight: '',
           colorClothLength: '',

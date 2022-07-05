@@ -20,15 +20,28 @@
             <template v-if="column?.dataIndex === 'materialSupplierCode'">
               <span>{{ record?.materialSupplierName || '--' }}</span>
             </template>
+            <template v-if="column?.dataIndex === 'materialOriginPlace'">
+              <div v-html="record?.materialOriginPlace"></div>
+            </template>
           </template>
           <template v-else>
             <template v-if="column?.type === 'AInput'">
-              <a-input v-model:value="record[column.dataIndex]" @change="handleChange('material')"></a-input>
+              <a-input
+                v-model:value="record[column.dataIndex]"
+                v-bind="column.props"
+                @change="handleChange('material')"></a-input>
             </template>
             <template v-if="column?.type === 'AInputNumber'">
               <a-input-number
                 v-model:value="record[column.dataIndex]"
+                v-bind="column.props"
                 @change="handleChange('material')"></a-input-number>
+            </template>
+            <template v-if="column?.type === 'ADatePicker'">
+              <a-date-picker
+                v-model:value="record[column.dataIndex]"
+                v-bind="column.props"
+                @change="handleChange('material')"></a-date-picker>
             </template>
           </template>
         </slot>
@@ -91,6 +104,11 @@ export default defineComponent({
     customUpload: { type: Function },
     beforeUpload: { type: Function },
     materialColumns: { type: Array },
+    materialHighlight: {
+      type: String,
+      default:
+        '新疆|维吾尔|天山区|新市区|米东区|水磨沟区|头屯河区|达坂城区|沙依巴克区|乌鲁木齐县|独山子区|白碱滩区|乌尔禾区|克拉玛依区|高昌区|鄯善县|托克逊县|伊州区|伊吾县|巴里坤哈萨克自治县|昌吉市|阜康市|奇台县|呼图壁县|玛纳斯县|吉木萨尔县|木垒哈萨克自治县|博乐市|阿拉山口市|精河县|温泉县|库尔勒市|轮台县|尉犁县|若羌县|且末县|和静县|和硕县|博湖县|焉耆回族自治县|阿克苏市|库车市|温宿县|沙雅县|新和县|拜城县|乌什县|柯坪县|阿瓦提县|阿图什市|乌恰县|阿克陶县|阿合奇县|喀什市|疏附县|疏勒县|泽普县|莎车县|叶城县|伽师县|巴楚县|英吉沙县|麦盖提县|岳普湖县|塔什库尔干塔吉克自治县|和田市|和田县|于田县|墨玉县|皮山县|洛浦县|策勒县|民丰县|伊宁市|奎屯市|霍尔果斯市|伊宁县|霍城县|巩留县|新源县|昭苏县|特克斯县|尼勒克县|察布查尔锡伯自治县|塔城市|乌苏市|沙湾市|额敏县|托里县|裕民县|和布克赛尔蒙古自治县|阿勒泰市县|青河县|布尔津县|哈巴河县|吉木乃县|石河子市|阿拉尔市|图木舒克市|五家渠市|北屯市|铁门关市|双河市|可克达拉市|昆玉市|胡杨河市|新星市'
+    },
     photocopyColumns: { type: Array },
     customDownloadPhotocopy: { type: Function },
     emptyText: String
@@ -123,8 +141,28 @@ export default defineComponent({
         required: true
       },
       { title: '材料采购合同号', width: 140, dataIndex: 'purchaseContractNo', type: 'AInput', required: true },
-      { title: '材料采购时间', width: 120, dataIndex: 'purchaseTime', type: 'AInput', required: true },
-      { title: '材料采购数量(KG)', width: 140, dataIndex: 'purchaseQuantity', type: 'AInputNumber', required: true },
+      {
+        title: '材料采购时间',
+        width: 140,
+        dataIndex: 'purchaseTime',
+        type: 'ADatePicker',
+        required: true,
+        props: {
+          valueFormat: 'YYYY-MM-DD'
+        }
+      },
+      {
+        title: '材料采购数量(KG)',
+        width: 140,
+        dataIndex: 'purchaseQuantity',
+        type: 'AInputNumber',
+        required: true,
+        props: {
+          precision: 2,
+          min: 1,
+          max: 10000000
+        }
+      },
       {
         title: '材料提货单号',
         subTitle: '(当坯纱产地=中国时选填)',
@@ -145,10 +183,15 @@ export default defineComponent({
         title: '坯纱总采购总量(KG)',
         width: 160,
         dataIndex: 'blankYarnPurchaseQuantity',
-        type: 'AInput',
-        required: true
+        type: 'AInputNumber',
+        required: true,
+        props: {
+          precision: 2,
+          min: 1,
+          max: 10000000
+        }
       },
-      { title: '坯纱采购发票号', width: 140, dataIndex: 'blankYarnInvoiceNo', type: 'AInput', required: true },
+      { title: '坯纱采购发票号', width: 140, dataIndex: 'blankYarnInvoiceNo', type: 'AInput' },
       { title: '坯纱装箱单号', width: 120, dataIndex: 'blankYarnPackingNo', type: 'AInput' },
       { title: '坯纱提货单/物流单号', width: 200, dataIndex: 'logisticsNo', type: 'AInput' }
     ]
@@ -164,7 +207,20 @@ export default defineComponent({
       () => traceabilityData.value.materialData,
       list => {
         const now = Date.now().toString()
-        materialOptions.dataSource = (list || []).map((val, i) => ({ ...val, uid: val?.uid || now + i }))
+        materialOptions.dataSource = (list || []).map((val, i) => ({
+          ...val,
+          ...(props.mode === 'view' && val?.materialOriginPlace && props.materialHighlight
+            ? {
+                materialOriginPlace: val?.materialOriginPlace.replace(
+                  new RegExp(props.materialHighlight, 'ig'),
+                  text => {
+                    return `<span style="color:red">${text}</span>`
+                  }
+                )
+              }
+            : {}),
+          uid: val?.uid || now + i
+        }))
       },
       { immediate: true }
     )
@@ -224,7 +280,7 @@ export default defineComponent({
       await execRequest(customDownloadPhotocopy(), {
         success: ({ data }) => {
           if (data) {
-            download(data?.url, data?.fileName)
+            download(data?.url, data?.name)
           }
         }
       })

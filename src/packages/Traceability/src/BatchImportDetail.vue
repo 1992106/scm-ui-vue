@@ -15,6 +15,7 @@
       :emptyText="emptyText"
       :masterProps="{
         materialColumns,
+        materialHighlight,
         photocopyColumns
       }"
       :weavingProps="{
@@ -86,6 +87,7 @@ export default defineComponent({
     emptyText: { type: String, default: '暂无数据' },
     // 主表
     materialColumns: { type: Array },
+    materialHighlight: { type: String },
     photocopyColumns: { type: Array },
     // 织布
     weavingRowKey: { type: [String, Function], default: 'uid' },

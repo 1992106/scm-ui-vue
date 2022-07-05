@@ -21,7 +21,7 @@
       </a-form-item>
     </a-form>
     <template v-else>
-      <div>
+      <div class="title">
         染整信息
         <template v-if="mode !== 'view'">
           <a-button type="link" :loading="loading" @click="handleDownloadDyeing">查看模板</a-button>
@@ -52,10 +52,16 @@
             :onUpdate="() => handleChange(index)">
             <template v-if="mode !== 'view'">
               <template v-if="column?.type === 'AInput'">
-                <a-input v-model:value="record[column.dataIndex]" @change="handleChange(index)"></a-input>
+                <a-input
+                  v-model:value="record[column.dataIndex]"
+                  v-bind="column.props"
+                  @change="handleChange(index)"></a-input>
               </template>
               <template v-if="column?.type === 'AInputNumber'">
-                <a-input-number v-model:value="record[column.dataIndex]" @change="handleChange(index)"></a-input-number>
+                <a-input-number
+                  v-model:value="record[column.dataIndex]"
+                  v-bind="column.props"
+                  @change="handleChange(index)"></a-input-number>
               </template>
               <template v-if="column.dataIndex === 'actions'">
                 <a-button v-show="record?.itemId == null" type="link" size="small" @click="handleDel(index)">
@@ -117,14 +123,24 @@ export default defineComponent({
         subTitle: '针织必填/梭织不能填',
         width: 160,
         dataIndex: 'colorClothWeight',
-        type: 'AInputNumber'
+        type: 'AInputNumber',
+        props: {
+          precision: 2,
+          min: 1,
+          max: 10000000
+        }
       },
       {
         title: '色布米数(M)',
         subTitle: '针织不能填/梭织必填',
         width: 160,
         dataIndex: 'colorClothLength',
-        type: 'AInputNumber'
+        type: 'AInputNumber',
+        props: {
+          precision: 2,
+          min: 1,
+          max: 10000000
+        }
       },
       { title: '染整颜色', width: 120, dataIndex: 'color', type: 'AInput' },
       { title: '染厂', width: 120, dataIndex: 'dyeFactory', type: 'AInput' },
@@ -150,7 +166,7 @@ export default defineComponent({
       list => {
         const now = Date.now().toString()
         tableOptions.dataSource = (list || []).map((val, i) => ({ ...val, uid: val?.uid || now + i }))
-        state.showTable = list && list?.length > 0
+        state.showTable = props.mode === 'view' ? true : list && list?.length > 0
       },
       { immediate: true }
     )
@@ -184,7 +200,7 @@ export default defineComponent({
 
     const importLimit = () => {
       if (!isEmpty(props.limitDyeing) && state.total > props.limitDyeing) {
-        message.error('最多只能添加9999条明细！')
+        message.error(`最多只能添加${props.limitDyeing}条！`)
         return true
       }
     }
