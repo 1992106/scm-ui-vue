@@ -34,7 +34,7 @@
           </a-upload>
         </template>
       </div>
-      <x-table v-bind="tableOptions">
+      <x-table v-bind="tableOptions" v-model:pagination="tableOptions.pagination">
         <template #headerCell="{ title, column }">
           <slot name="dyeingHeaderCell" v-bind="{ title, column }">
             <div>
@@ -156,7 +156,11 @@ export default defineComponent({
       })),
       dataSource: [],
       total: 0,
-      showPagination: false
+      showPagination: true,
+      pagination: {
+        page: 1,
+        pageSize: 20
+      }
     })
     // 获取总结栏长度
     const summaryLength = computed(() => tableOptions.columns.filter(val => val?.visible !== false).length)
@@ -173,7 +177,6 @@ export default defineComponent({
 
     const handleChange = index => {
       nextTick(() => {
-        console.log(traceabilityData.value.dyeingData, tableOptions.dataSource, index, 456)
         Object.assign(traceabilityData.value.dyeingData[index], tableOptions.dataSource[index])
       })
     }
@@ -199,7 +202,7 @@ export default defineComponent({
     }
 
     const importLimit = () => {
-      if (!isEmpty(props.limitDyeing) && state.total > props.limitDyeing) {
+      if (!isEmpty(props.limitDyeing) && tableOptions.total >= props.limitDyeing) {
         message.error(`最多只能添加${props.limitDyeing}条！`)
         return true
       }
@@ -226,7 +229,7 @@ export default defineComponent({
             })
             const oldList = traceabilityData.value.dyeingData
             traceabilityData.value.dyeingData = [...newList, ...oldList]
-            state.total = state.total + data.length
+            tableOptions.total = tableOptions.total + data.length
           }
         }
       })
@@ -249,7 +252,7 @@ export default defineComponent({
 
     const handleDel = index => {
       tableOptions.dataSource.splice(index, 1)
-      state.total = state.total - 1
+      tableOptions.total = tableOptions.total - 1
     }
 
     const handleAdd = () => {
@@ -266,7 +269,7 @@ export default defineComponent({
         },
         ...oldList
       ]
-      state.total += 1
+      tableOptions.total += 1
     }
 
     return {

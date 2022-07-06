@@ -34,7 +34,7 @@
           </a-upload>
         </template>
       </div>
-      <x-table v-bind="tableOptions">
+      <x-table v-bind="tableOptions" v-model:pagination="tableOptions.pagination">
         <template #headerCell="{ title, column }">
           <slot name="weavingHeaderCell" v-bind="{ title, column }">
             <div>
@@ -168,7 +168,11 @@ export default defineComponent({
       })),
       dataSource: [],
       total: 0,
-      showPagination: false
+      showPagination: true,
+      pagination: {
+        page: 1,
+        pageSize: 20
+      }
     })
     // 获取总结栏长度
     const summaryLength = computed(() => tableOptions.columns.filter(val => val?.visible !== false).length)
@@ -210,7 +214,7 @@ export default defineComponent({
     }
 
     const importLimit = () => {
-      if (!isEmpty(props.limitWeaving) && state.total > props.limitWeaving) {
+      if (!isEmpty(props.limitWeaving) && tableOptions.total >= props.limitWeaving) {
         message.error(`最多只能添加${props.limitWeaving}条！`)
         return true
       }
@@ -238,7 +242,7 @@ export default defineComponent({
             })
             const oldList = traceabilityData.value.weavingData
             traceabilityData.value.weavingData = [...newList, ...oldList]
-            state.total = state.total + data.length
+            tableOptions.total = tableOptions.total + data.length
           }
         }
       })
@@ -261,7 +265,7 @@ export default defineComponent({
 
     const handleDel = index => {
       tableOptions.dataSource.splice(index, 1)
-      state.total = state.total - 1
+      tableOptions.total = tableOptions.total - 1
     }
 
     const handleAdd = () => {
@@ -278,7 +282,7 @@ export default defineComponent({
         },
         ...oldList
       ]
-      state.total += 1
+      tableOptions.total += 1
     }
 
     return {

@@ -134,7 +134,7 @@ export default defineComponent({
       },
       {
         title: '材料产地',
-        subTitle: '(国家.中文简体)',
+        subTitle: '（国家+地区.中文简体）',
         width: 120,
         dataIndex: 'materialOriginPlace',
         type: 'AInput',
@@ -152,7 +152,7 @@ export default defineComponent({
         }
       },
       {
-        title: '材料采购数量(KG)',
+        title: '材料采购数量（KG）',
         width: 140,
         dataIndex: 'purchaseQuantity',
         type: 'AInputNumber',
@@ -165,7 +165,7 @@ export default defineComponent({
       },
       {
         title: '材料提货单号',
-        subTitle: '(当坯纱产地=中国时选填)',
+        subTitle: '（当坯纱产地=中国时选填）',
         width: 180,
         dataIndex: 'materialLadeBillNo',
         type: 'AInput'
@@ -173,14 +173,14 @@ export default defineComponent({
       { title: '坯纱采购合同号', width: 140, dataIndex: 'blankYarnPurchaseNo', type: 'AInput', required: true },
       {
         title: '坯纱产地',
-        subTitle: '(国家.中文简体)',
+        subTitle: '（国家+地区.中文简体）',
         width: 120,
         dataIndex: 'blankYarnOriginPlace',
         type: 'AInput',
         required: true
       },
       {
-        title: '坯纱总采购总量(KG)',
+        title: '坯纱总采购总量（KG）',
         width: 160,
         dataIndex: 'blankYarnPurchaseQuantity',
         type: 'AInputNumber',
@@ -232,12 +232,12 @@ export default defineComponent({
 
     const defaultPhotocopyColumns = [
       { title: '1.棉花产地证明', width: '14%', dataIndex: 'certificateImgs', required: true },
-      { title: '2.棉花采购合同', width: '14%', dataIndex: 'contractImgs' },
-      { title: '3.棉花提货单', width: '14%', dataIndex: 'logisticsImgs' },
-      { title: '4.棉纱采购合同', width: '14%', dataIndex: 'contractYarnImgs' },
-      { title: '5.棉纱提货单', width: '14%', dataIndex: 'logisticsYarnImgs' },
-      { title: '6.棉纱装箱单', width: '14%', dataIndex: 'packingImgs' },
-      { title: '7.棉纱采购发票', width: '14%', dataIndex: 'invoiceImgs' }
+      { title: '2.棉花采购合同/发票', width: '14%', dataIndex: 'contractImgs' },
+      { title: '3.棉花提货单/装箱单', width: '14%', dataIndex: 'logisticsImgs' },
+      { title: '4.坯纱采购合同', width: '14%', dataIndex: 'contractYarnImgs' },
+      { title: '5.坯纱采购发票', width: '14%', dataIndex: 'logisticsYarnImgs' },
+      { title: '6.坯纱送货单/装箱单/提货单', width: '14%', dataIndex: 'packingImgs' },
+      { title: '7.委外加工合同', width: '14%', dataIndex: 'invoiceImgs' }
     ]
     const photocopyOptions = reactive({
       scroll: {

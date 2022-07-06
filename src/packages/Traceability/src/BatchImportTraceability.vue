@@ -127,7 +127,7 @@ export default defineComponent({
     emptyText: { type: String, default: '暂无数据' },
     // 主表
     beforeImportMaterial: { type: Function },
-    limitMaterial: { type: Number, default: 99 },
+    limitMaterial: { type: Number, default: 20 },
     customImportMaterial: { type: Function, require: true },
     customDownloadMaterial: { type: Function },
     materialColumns: { type: Array },
@@ -190,7 +190,7 @@ export default defineComponent({
     }
 
     const importLimit = () => {
-      if (!isEmpty(props.limitMaterial) && state.traceabilityList.length > props.limitMaterial) {
+      if (!isEmpty(props.limitMaterial) && state.traceabilityList.length >= props.limitMaterial) {
         message.error(`最多只能导入${props.limitMaterial}条！`)
         return true
       }
