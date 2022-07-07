@@ -298,7 +298,7 @@ export default defineComponent({
     const getTreeConfig = computed(() => (props.stripe ? null : props.treeConfig))
     const selectedType = computed(() => props.columns.find(column => column?.type))
     const canPagination = computed(
-      () => props.data?.length > 0 && state.customColumns?.filter(val => val?.visible).length > 0
+      () => props.data?.length > 0 && state.customColumns?.filter(val => val?.visible !== false).length > 0
     )
     /**
      * methods
