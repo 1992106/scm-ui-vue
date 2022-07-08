@@ -51,7 +51,7 @@
       <template v-if="mode === 'view'">原件复印件</template>
       <template v-else>
         请提供原件复印件
-        <span class="tips">（支持扩展名： .png .jpg.pdf 单文件大小：4M以下，单个类型文件最多20个）</span>
+        <span class="tips">（支持扩展名： .png.jpg.jpeg.pdf 单文件大小：4M以下，单个类型文件最多20个）</span>
         <a-button type="link" :loading="loading" @click="handleDownloadPhotocopy">下载示例文件</a-button>
       </template>
     </div>
@@ -76,6 +76,7 @@
             <x-upload
               v-model:file-list="record[column.dataIndex]"
               :custom-request="customUpload"
+              :accept="accept"
               :maxCount="maxCount"
               :before-upload="onBeforeImport"
               @change="handleChange('photocopy')" />
@@ -104,6 +105,7 @@ export default defineComponent({
   props: {
     mode: { type: String, required: true },
     beforeUpload: { type: Function },
+    accept: { type: String, default: '.png,.jpg,.jpeg,.pdf' },
     maxCount: { type: Number, default: 20 },
     customUpload: { type: Function },
     materialColumns: { type: Array },
@@ -281,9 +283,9 @@ export default defineComponent({
         return props.beforeUpload(file)
       }
 
-      const isExcel = ['image/jpeg', 'image/png', 'image/pdf'].includes(file.type)
+      const isExcel = ['image/png', 'image/jpg', 'image/jpeg', 'application/pdf'].includes(file.type)
       if (!isExcel) {
-        message.error('文件格式只能是xlx,xlsx！')
+        message.error('文件格式只能是.png.jpg.jpeg.pdf！')
       }
 
       const isLt4M = file.size / 1024 / 1024 < 4
