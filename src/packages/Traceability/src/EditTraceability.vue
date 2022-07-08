@@ -17,6 +17,7 @@
         materialColumns,
         photocopyColumns,
         beforeUpload,
+        maxCount,
         customUpload,
         customDownloadPhotocopy
       }"
@@ -90,6 +91,7 @@ export default defineComponent({
     // 主表
     materialColumns: { type: Array },
     beforeUpload: { type: Function },
+    maxCount: { type: Number },
     customUpload: { type: Function },
     customDownloadPhotocopy: { type: Function },
     photocopyColumns: { type: Array },

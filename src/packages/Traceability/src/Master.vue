@@ -76,7 +76,8 @@
             <x-upload
               v-model:file-list="record[column.dataIndex]"
               :custom-request="customUpload"
-              :before-upload="beforeUpload"
+              :maxCount="maxCount"
+              :before-upload="onBeforeImport"
               @change="handleChange('photocopy')" />
           </template>
         </slot>
@@ -86,6 +87,7 @@
 </template>
 <script>
 import { defineComponent, inject, nextTick, reactive, toRefs, watch } from 'vue'
+import { message } from 'ant-design-vue'
 import XTable from '@packages/components/Table/index.vue'
 import XUpload from '@packages/components/Upload/index.vue'
 import XImage from '@packages/components/Image'
@@ -101,8 +103,9 @@ export default defineComponent({
   },
   props: {
     mode: { type: String, required: true },
-    customUpload: { type: Function },
     beforeUpload: { type: Function },
+    maxCount: { type: Number, default: 20 },
+    customUpload: { type: Function },
     materialColumns: { type: Array },
     materialHighlight: {
       type: String,
@@ -273,6 +276,24 @@ export default defineComponent({
       }
     }
 
+    const onBeforeImport = file => {
+      if (isFunction(props.beforeUpload)) {
+        return props.beforeUpload(file)
+      }
+
+      const isExcel = ['image/jpeg', 'image/png', 'image/pdf'].includes(file.type)
+      if (!isExcel) {
+        message.error('文件格式只能是xlx,xlsx！')
+      }
+
+      const isLt4M = file.size / 1024 / 1024 < 4
+      if (!isLt4M) {
+        message.error('文件不能大于4M！')
+      }
+
+      return isExcel && isLt4M
+    }
+
     const handleDownloadPhotocopy = async () => {
       const { customDownloadPhotocopy } = props
       if (!isFunction(customDownloadPhotocopy)) return
@@ -291,6 +312,7 @@ export default defineComponent({
       ...toRefs(state),
       materialOptions,
       photocopyOptions,
+      onBeforeImport,
       handleChange,
       handleDownloadPhotocopy
     }
