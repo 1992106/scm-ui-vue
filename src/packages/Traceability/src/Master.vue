@@ -21,7 +21,7 @@
               <span>{{ record?.materialSupplierName || '--' }}</span>
             </template>
             <template v-if="column?.dataIndex === 'materialOriginPlace'">
-              <div v-html="record?.materialOriginPlace"></div>
+              <span :title="record?.materialOriginPlace" v-html="record?.materialOriginPlaceHtml"></span>
             </template>
           </template>
           <template v-else>
@@ -70,7 +70,7 @@
           v-bind="{ text, record, index, column }"
           :onUpdate="() => handleChange('photocopy')">
           <template v-if="mode === 'view'">
-            <x-image :urls="record[column.dataIndex]"></x-image>
+            <x-image :width="64" :height="64" :urls="record[column.dataIndex]"></x-image>
           </template>
           <template v-else>
             <x-upload
@@ -232,7 +232,7 @@ export default defineComponent({
           ...val,
           ...(props.mode === 'view' && val?.materialOriginPlace && props.materialHighlight
             ? {
-                materialOriginPlace: val?.materialOriginPlace.replace(
+                materialOriginPlaceHtml: val?.materialOriginPlace.replace(
                   new RegExp(props.materialHighlight, 'ig'),
                   text => {
                     return `<span style="color:red">${text}</span>`
