@@ -107,11 +107,13 @@ const XImage = defineComponent({
     return () => {
       // 图片为空时，显示暂无图片
       if (thumbUrls.value.length === 0) {
-        const w = width || height
-        const h = height || width
         return (
-          <div class='x-image__empty' style={{ width: w, height: h }}>
-            <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description='暂无图片' />
+          <div class='x-image__empty'>
+            <Empty
+              style={{ width: width, height: height }}
+              image={Empty.PRESENTED_IMAGE_SIMPLE}
+              description='暂无图片'
+            />
           </div>
         )
       }
