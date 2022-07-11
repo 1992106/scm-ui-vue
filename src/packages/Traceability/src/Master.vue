@@ -127,9 +127,23 @@ export default defineComponent({
     const traceabilityData = inject('traceabilityData')
 
     const defaultMaterialColumns = [
-      { title: '物料名称', width: 140, dataIndex: 'materialName', type: 'AInput', required: true },
-      { title: '面料供应商', width: 180, dataIndex: 'materialSupplierCode', type: 'ASelect', required: true },
-      { title: '棉花供应商', width: 160, dataIndex: 'cottonSupplierName', type: 'AInput', required: true },
+      { title: '物料名称', width: 160, dataIndex: 'materialName', ellipsis: true, type: 'AInput', required: true },
+      {
+        title: '面料供应商',
+        width: 180,
+        dataIndex: 'materialSupplierCode',
+        ellipsis: true,
+        type: 'ASelect',
+        required: true
+      },
+      {
+        title: '棉花供应商',
+        width: 160,
+        dataIndex: 'cottonSupplierName',
+        ellipsis: true,
+        type: 'AInput',
+        required: true
+      },
       {
         title: '材料原产地证明编号',
         width: 160,
@@ -140,12 +154,13 @@ export default defineComponent({
       {
         title: '材料产地',
         subTitle: '（国家+地区.中文简体）',
-        width: 120,
+        width: 160,
         dataIndex: 'materialOriginPlace',
+        ellipsis: true,
         type: 'AInput',
         required: true
       },
-      { title: '材料采购合同号', width: 140, dataIndex: 'purchaseContractNo', type: 'AInput', required: true },
+      { title: '材料采购合同号', width: 160, dataIndex: 'purchaseContractNo', type: 'AInput', required: true },
       {
         title: '材料采购时间',
         width: 140,
@@ -175,12 +190,13 @@ export default defineComponent({
         dataIndex: 'materialLadeBillNo',
         type: 'AInput'
       },
-      { title: '坯纱采购合同号', width: 140, dataIndex: 'blankYarnPurchaseNo', type: 'AInput', required: true },
+      { title: '坯纱采购合同号', width: 160, dataIndex: 'blankYarnPurchaseNo', type: 'AInput', required: true },
       {
         title: '坯纱产地',
         subTitle: '（国家+地区.中文简体）',
-        width: 120,
+        width: 160,
         dataIndex: 'blankYarnOriginPlace',
+        ellipsis: true,
         type: 'AInput',
         required: true
       },
@@ -197,7 +213,7 @@ export default defineComponent({
         }
       },
       { title: '坯纱采购发票号', width: 140, dataIndex: 'blankYarnInvoiceNo', type: 'AInput' },
-      { title: '坯纱装箱单号', width: 120, dataIndex: 'blankYarnPackingNo', type: 'AInput' },
+      { title: '坯纱装箱单号', width: 140, dataIndex: 'blankYarnPackingNo', type: 'AInput' },
       { title: '坯纱提货单/物流单号', width: 200, dataIndex: 'logisticsNo', type: 'AInput' }
     ]
     const materialOptions = reactive({
