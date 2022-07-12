@@ -97,13 +97,13 @@ function useDefaultValue(columns) {
 export function useAppHeight(isResize) {
   // 动态设置id="#app"的高度
   const { proxy } = getCurrentInstance()
-  const appRef = proxy.$root?.$el.parentNode
+  const appRef = proxy.$root?.$el?.parentNode
   const setHeight = debounce(
     () => {
       if (appRef) {
-        const { top } = appRef?.getBoundingClientRect?.() || {}
+        const { top } = appRef.getBoundingClientRect?.() || {}
         const height = window.innerHeight - (top || 0)
-        appRef.style.height = `${height}px`
+        appRef.style.cssText += `;height: ${height}px; z-index: 999; position: relative;`
       }
     },
     200,
