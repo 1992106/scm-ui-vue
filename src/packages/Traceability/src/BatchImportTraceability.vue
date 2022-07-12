@@ -208,15 +208,20 @@ export default defineComponent({
       await execRequest(customImportMaterial(file), {
         success: ({ data }) => {
           // 根据【'坯纱采购合同号'】，如果有重复，则更新，如果没有则新增
-          const materialData = state.traceabilityList?.materialData || []
+          const materialData = state.traceabilityList?.map(val => val?.materialData || [])
           const blankYarnPurchaseNos = materialData.map(val => val?.blankYarnPurchaseNo)
           const oldList = (data || []).filter(val => blankYarnPurchaseNos.includes(val?.blankYarnPurchaseNo))
           const newList = (data || []).filter(val => !blankYarnPurchaseNos.includes(val?.blankYarnPurchaseNo))
           // 更新数据
           if (oldList.length) {
-            oldList.forEach(item => {
-              const index = materialData.findIndex(val => val?.uid === item?.uid)
-              state.traceabilityList.materialData.splice(index, 0, item)
+            state.traceabilityList.forEach(item => {
+              item.materialData = item.materialData.map(item => {
+                const tempObj = oldList.find(val => val?.uid === item?.uid) || {}
+                return {
+                  ...item,
+                  ...tempObj
+                }
+              })
             })
           }
           // 插入数据

@@ -23,6 +23,9 @@
             <template v-if="column?.dataIndex === 'materialOriginPlace'">
               <span :title="record?.materialOriginPlace" v-html="record?.materialOriginPlaceHtml"></span>
             </template>
+            <template v-if="column?.dataIndex === 'blankYarnOriginPlace'">
+              <span :title="record?.blankYarnOriginPlace" v-html="record?.blankYarnOriginPlaceHtml"></span>
+            </template>
           </template>
           <template v-else>
             <template v-if="column?.type === 'AInput'">
@@ -230,14 +233,28 @@ export default defineComponent({
         const now = Date.now().toString()
         materialOptions.dataSource = (list || []).map((val, i) => ({
           ...val,
-          ...(props.mode === 'view' && val?.materialOriginPlace && props.materialHighlight
+          ...(props.mode === 'view' && props.materialHighlight
             ? {
-                materialOriginPlaceHtml: val?.materialOriginPlace.replace(
-                  new RegExp(props.materialHighlight, 'ig'),
-                  text => {
-                    return `<span style="color:red">${text}</span>`
-                  }
-                )
+                ...(val?.materialOriginPlace
+                  ? {
+                      materialOriginPlaceHtml: val.materialOriginPlace.replace(
+                        new RegExp(props.materialHighlight, 'ig'),
+                        text => {
+                          return `<span style="color:red">${text}</span>`
+                        }
+                      )
+                    }
+                  : {}),
+                ...(val?.blankYarnOriginPlace
+                  ? {
+                      blankYarnOriginPlaceHtml: val.blankYarnOriginPlace.replace(
+                        new RegExp(props.materialHighlight, 'ig'),
+                        text => {
+                          return `<span style="color:red">${text}</span>`
+                        }
+                      )
+                    }
+                  : {})
               }
             : {}),
           uid: val?.uid || now + i

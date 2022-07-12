@@ -50,7 +50,7 @@
             v-bind="{ text, record, index, column }"
             :onDelete="handleDel"
             :onUpdate="() => handleChange(index)">
-            <template v-if="mode !== 'view' && record?.itemId == null">
+            <template v-if="mode !== 'view' && master === 'view' ? record?.itemId == null : true">
               <template v-if="column?.type === 'AInput'">
                 <a-input
                   v-model:value="record[column.dataIndex]"
@@ -96,6 +96,7 @@ export default defineComponent({
   },
   props: {
     mode: { type: String, required: true },
+    master: { type: String, required: true },
     dyeingRowKey: [String, Function],
     dyeingColumns: Array,
     beforeImportDyeing: Function,

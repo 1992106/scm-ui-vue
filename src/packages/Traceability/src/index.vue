@@ -16,7 +16,7 @@
     </Master>
     <a-row v-if="showWeaving || showDyeing" :gutter="20">
       <a-col :span="14">
-        <Weaving :mode="weavingMode" v-bind="weavingProps">
+        <Weaving :master="masterMode" :mode="weavingMode" v-bind="weavingProps">
           <template #weavingHeaderCell="scope">
             <slot name="weavingHeaderCell" v-bind="scope"></slot>
           </template>
@@ -26,7 +26,7 @@
         </Weaving>
       </a-col>
       <a-col :span="10">
-        <Dyeing :mode="dyeingMode" v-bind="dyeingProps">
+        <Dyeing :master="masterMode" :mode="dyeingMode" v-bind="dyeingProps">
           <template #dyeingHeaderCell="scope">
             <slot name="dyeingHeaderCell" v-bind="scope"></slot>
           </template>
