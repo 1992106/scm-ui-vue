@@ -140,7 +140,7 @@ const XImage = defineComponent({
       if (thumbUrls.value.length > 1) {
         // 相册模式
         renderImage = (
-          <Space>
+          <Space wrap={true}>
             {compressUrls.value.map((src, index) => (
               <Image
                 {...ctx.attrs}

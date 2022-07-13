@@ -49,22 +49,22 @@
             name="dyeingBodyCell"
             v-bind="{ text, record, index, column }"
             :onDelete="handleDel"
-            :onUpdate="() => handleChange(index)">
-            <template v-if="mode !== 'view' && master === 'view' ? record?.itemId == null : true">
+            :onUpdate="() => handleChange(record)">
+            <template v-if="mode !== 'view' && (master === 'view' ? record?.itemId == null : true)">
               <template v-if="column?.type === 'AInput'">
                 <a-input
                   v-model:value="record[column.dataIndex]"
                   v-bind="column.props"
-                  @change="handleChange(index)"></a-input>
+                  @change="handleChange(record)"></a-input>
               </template>
               <template v-if="column?.type === 'AInputNumber'">
                 <a-input-number
                   v-model:value="record[column.dataIndex]"
                   v-bind="column.props"
-                  @change="handleChange(index)"></a-input-number>
+                  @change="handleChange(record)"></a-input-number>
               </template>
               <template v-if="column.dataIndex === 'actions'">
-                <a-button type="link" size="small" @click="handleDel(index)">删除</a-button>
+                <a-button type="link" size="small" @click="handleDel(record)">删除</a-button>
               </template>
             </template>
           </slot>
@@ -170,11 +170,13 @@ export default defineComponent({
         const now = Date.now().toString()
         tableOptions.dataSource = (list || []).map((val, i) => ({ ...val, uid: val?.uid || now + i }))
         state.showTable = props.mode === 'view' ? true : list && list?.length > 0
+        tableOptions.total = tableOptions.total + (list || []).length
       },
       { immediate: true }
     )
 
-    const handleChange = index => {
+    const handleChange = row => {
+      const index = tableOptions.dataSource.findIndex(val => val?.uid === row?.uid)
       nextTick(() => {
         Object.assign(traceabilityData.value.dyeingData[index], tableOptions.dataSource[index])
       })
@@ -249,8 +251,10 @@ export default defineComponent({
       state.loading = false
     }
 
-    const handleDel = index => {
+    const handleDel = row => {
+      const index = tableOptions.dataSource.findIndex(val => val?.uid === row?.uid)
       tableOptions.dataSource.splice(index, 1)
+      traceabilityData.value.dyeingData.splice(index, 1)
       tableOptions.total = tableOptions.total - 1
     }
 
@@ -261,8 +265,8 @@ export default defineComponent({
         {
           uid: Date.now().toString(),
           dyeVatNo: '',
-          colorClothWeight: '',
-          colorClothLength: '',
+          colorClothWeight: null,
+          colorClothLength: null,
           color: '',
           dyeFactory: ''
         },

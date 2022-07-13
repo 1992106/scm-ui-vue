@@ -72,18 +72,19 @@
           name="photocopyBodyCell"
           v-bind="{ text, record, index, column }"
           :onUpdate="() => handleChange('photocopy')">
-          <template v-if="mode === 'view'">
-            <x-image :width="64" :height="64" :urls="record[column.dataIndex]"></x-image>
-          </template>
-          <template v-else>
-            <x-upload
-              v-model:file-list="record[column.dataIndex]"
-              :custom-request="customUpload"
-              :accept="accept"
-              :maxCount="maxCount"
-              :before-upload="onBeforeImport"
-              @change="handleChange('photocopy')" />
-          </template>
+          <x-upload
+            v-model:file-list="record[column.dataIndex]"
+            :custom-request="customUpload"
+            :accept="accept"
+            :mode="mode === 'view' ? 'preview' : 'upload'"
+            :maxCount="maxCount"
+            :showUploadList="{
+              showPreviewIcon: true,
+              showRemoveIcon: mode !== 'view',
+              showDownloadIcon: true
+            }"
+            :before-upload="onBeforeImport"
+            @change="handleChange('photocopy')" />
         </slot>
       </template>
     </x-table>
@@ -94,16 +95,14 @@ import { defineComponent, inject, nextTick, reactive, toRefs, watch } from 'vue'
 import { message } from 'ant-design-vue'
 import XTable from '@packages/components/Table/index.vue'
 import XUpload from '@packages/components/Upload/index.vue'
-import XImage from '@packages/components/Image'
 import { isFunction } from 'lodash-es'
-import { download, execRequest } from '@src/utils'
+import { dateToDayjs, download, execRequest } from '@src/utils'
 
 export default defineComponent({
   name: 'Master',
   components: {
     'x-table': XTable,
-    'x-upload': XUpload,
-    'x-image': XImage
+    'x-upload': XUpload
   },
   props: {
     mode: { type: String, required: true },
@@ -233,6 +232,7 @@ export default defineComponent({
         const now = Date.now().toString()
         materialOptions.dataSource = (list || []).map((val, i) => ({
           ...val,
+          ...(val?.purchaseTime ? { purchaseTime: dateToDayjs(val?.purchaseTime) } : {}),
           ...(props.mode === 'view' && props.materialHighlight
             ? {
                 ...(val?.materialOriginPlace
@@ -361,13 +361,13 @@ export default defineComponent({
 
     :deep(.x-upload) {
       .ant-upload-list-picture-card {
-        min-height: 64px;
+        min-height: 80px;
       }
 
       .ant-upload.ant-upload-select-picture-card,
       .ant-upload-list-picture-card-container {
-        width: 64px;
-        height: 64px;
+        width: 80px;
+        height: 80px;
       }
 
       .ant-upload-list-picture-card .ant-upload-list-item-info::before {

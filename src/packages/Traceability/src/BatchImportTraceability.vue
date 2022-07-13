@@ -105,9 +105,9 @@
   </x-drawer>
 </template>
 <script>
-import { computed, defineComponent, provide, reactive, toRefs } from 'vue'
-import { UploadOutlined } from '@ant-design/icons-vue'
-import { message } from 'ant-design-vue'
+import { computed, createVNode, defineComponent, provide, reactive, toRefs } from 'vue'
+import { ExclamationCircleOutlined, UploadOutlined } from '@ant-design/icons-vue'
+import { message, Modal } from 'ant-design-vue'
 import XDrawer from '@packages/components/Drawer'
 import XTraceability from './index.vue'
 import { isFunction } from 'lodash-es'
@@ -208,15 +208,16 @@ export default defineComponent({
       await execRequest(customImportMaterial(file), {
         success: ({ data }) => {
           // 根据【'坯纱采购合同号'】，如果有重复，则更新，如果没有则新增
-          const materialData = state.traceabilityList?.map(val => val?.materialData || [])
-          const blankYarnPurchaseNos = materialData.map(val => val?.blankYarnPurchaseNo)
+          const blankYarnPurchaseNos = state.traceabilityList?.flatMap(val =>
+            (val?.materialData || []).map(val => val?.blankYarnPurchaseNo)
+          )
           const oldList = (data || []).filter(val => blankYarnPurchaseNos.includes(val?.blankYarnPurchaseNo))
           const newList = (data || []).filter(val => !blankYarnPurchaseNos.includes(val?.blankYarnPurchaseNo))
           // 更新数据
           if (oldList.length) {
             state.traceabilityList.forEach(item => {
               item.materialData = item.materialData.map(item => {
-                const tempObj = oldList.find(val => val?.uid === item?.uid) || {}
+                const tempObj = oldList.find(val => val?.blankYarnPurchaseNo === item?.blankYarnPurchaseNo) || {}
                 return {
                   ...item,
                   ...tempObj
@@ -276,8 +277,20 @@ export default defineComponent({
     }
 
     const handleCancel = () => {
-      state.traceabilityList = []
-      modalVisible.value = false
+      Modal.confirm({
+        title: '当前页面信息未保存，是否离开？',
+        icon: createVNode(ExclamationCircleOutlined),
+        okText: '离开',
+        cancelText: '取消',
+        okButtonProps: {
+          type: 'primary',
+          danger: true
+        },
+        onOk() {
+          state.traceabilityList = []
+          modalVisible.value = false
+        }
+      })
     }
 
     provide('mode', { master: 'action', weaving: 'action', dyeing: 'action' })

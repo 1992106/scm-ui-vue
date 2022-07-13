@@ -325,23 +325,10 @@ export const dayjsToDate = (value, valueFormat = 'YYYY-MM-DD') => {
 export const dateToDayjs = (value, valueFormat = 'YYYY-MM-DD') => {
   if (Array.isArray(value)) {
     return value.map(
-      val =>
-        isEmpty(val)
-          ? null
-          : dayjs.isDayjs(val)
-          ? val
-          : typeof val === 'string'
-          ? dayjs(val, valueFormat)
-          : dayjs(dayjs(val).format(valueFormat), valueFormat) // dayjs不支持new Date + format
+      val => (isEmpty(val) ? null : dayjs.isDayjs(val) ? val : dayjs(dayjs(val).format(valueFormat), valueFormat)) // dayjs：1不支持new Date + format  2.不支持（支持07） 2022/7/12
     )
   } else {
-    return isEmpty(value)
-      ? null
-      : dayjs.isDayjs(value)
-      ? value
-      : typeof val === 'string'
-      ? dayjs(value, valueFormat)
-      : dayjs(dayjs(value).format(valueFormat), valueFormat) // dayjs不支持new Date + format
+    return isEmpty(value) ? null : dayjs.isDayjs(value) ? value : dayjs(dayjs(value).format(valueFormat), valueFormat) // dayjs：1不支持new Date + format  2.不支持（支持07） 2022/7/12
   }
 }
 

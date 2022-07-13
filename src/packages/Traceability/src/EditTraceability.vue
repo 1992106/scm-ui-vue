@@ -8,6 +8,7 @@
     :height="height"
     :spinProps="spinning"
     destroyOnClose
+    okText="保存"
     @ok="handleOk"
     @cancel="handleCancel">
     <XTraceability
