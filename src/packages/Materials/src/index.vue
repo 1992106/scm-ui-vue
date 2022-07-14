@@ -20,13 +20,14 @@
         <div class="title">全部</div>
         <MaterialList
           v-model:pagination="pages"
-          v-model:selectedValue="selectedList"
+          v-model:selectedValue="selectedValue"
           :rowKey="rowKey"
           :selectedType="selectedType"
           :materialColumns="materialColumns"
           :materialList="materialList"
           :total="total"
           :emptyText="emptyText"
+          @select="handleSelect"
           @search="handleSearch">
           <template #bodyCell="scope">
             <slot name="materialRender" v-bind="scope"></slot>
@@ -78,7 +79,7 @@ export default defineComponent({
     materialColumns: { type: Array },
     selectedColumns: { type: Array },
     customRequest: { type: Function, require: true },
-    selectedType: { type: String, default: 'checkbox' }, // 选择模式：checkbox 多选和 radio 单选
+    selectedType: { type: String, default: 'radio' }, // 选择模式：checkbox 多选和 radio 单选
     emptyText: { type: String, default: '暂无数据' }
   },
   emits: ['update:visible', 'done', 'search', 'reset'],
@@ -99,6 +100,7 @@ export default defineComponent({
       pages: { page: 1, pageSize: 20 },
       total: 0,
       materialList: [],
+      selectedValue: [],
       selectedList: []
     })
 
@@ -107,6 +109,7 @@ export default defineComponent({
       if (!isFunction(customRequest)) return
       // 分页搜索时参数为空
       if (params) {
+        state.pages = { page: 1, pageSize: 20 }
         state.searchParams = params
       }
       state.spinning = true
@@ -117,21 +120,17 @@ export default defineComponent({
         }),
         {
           success: ({ data }) => {
-            const list = data?.data ?? data?.list ?? []
+            state.materialList = data?.data ?? data?.list ?? []
+            state.total = data?.total || 0
             if (state.selectedList.length) {
-              state.materialList = (list || []).map(item => {
-                const newItem = state.selectedList.find(val => {
+              state.selectedValue = state.materialList.filter(item => {
+                return state.selectedList.find(val => {
                   return getValueByRowKey(props.rowKey, item) === getValueByRowKey(props.rowKey, val)
                 })
-                return {
-                  ...item,
-                  ...(!isEmpty(newItem) ? newItem : {})
-                }
               })
             } else {
-              state.materialList = list
+              state.selectedValue = []
             }
-            state.total = data?.total || 0
             emit('search', state.materialList)
           },
           fail: () => {
@@ -141,6 +140,38 @@ export default defineComponent({
         }
       )
       state.spinning = false
+    }
+
+    const handleSelect = (record, selected) => {
+      if (props.selectedType === 'checkbox') {
+        handleCheckbox(record, selected)
+      } else {
+        handleRadio(record)
+      }
+    }
+
+    const handleCheckbox = (record, selected) => {
+      // 选中
+      if (selected) {
+        const newItem = state.selectedList.find(val => {
+          return getValueByRowKey(props.rowKey, record) === getValueByRowKey(props.rowKey, val)
+        })
+        if (!newItem) {
+          state.selectedList.unshift(record)
+        }
+      } else {
+        // 删除
+        const index = state.selectedList.findIndex(val => {
+          return getValueByRowKey(props.rowKey, record) === getValueByRowKey(props.rowKey, val)
+        })
+        if (index !== -1) {
+          state.selectedList.splice(index, 1)
+        }
+      }
+    }
+
+    const handleRadio = record => {
+      state.selectedList = [record]
     }
 
     watch(
@@ -162,19 +193,16 @@ export default defineComponent({
     }
 
     const handleDel = row => {
-      state.materialList = state.materialList.map(item => {
-        const newItem = state.selectedList.find(val => {
-          return getValueByRowKey(props.rowKey, item) === getValueByRowKey(props.rowKey, val)
-        })
-        return {
-          ...item,
-          ...(!isEmpty(newItem) ? newItem : {})
-        }
-      })
-      const index = state.selectedList.findIndex(val => {
+      const index1 = state.selectedValue.findIndex(val => {
         return getValueByRowKey(props.rowKey, row) === getValueByRowKey(props.rowKey, val)
       })
-      state.selectedList.splice(index, 1)
+      if (index1 !== -1) {
+        state.selectedValue.splice(index1, 1)
+      }
+      const index2 = state.selectedList.findIndex(val => {
+        return getValueByRowKey(props.rowKey, row) === getValueByRowKey(props.rowKey, val)
+      })
+      state.selectedList.splice(index2, 1)
     }
 
     const handleOk = () => {
@@ -187,6 +215,7 @@ export default defineComponent({
       handleReset()
       state.total = 0
       state.materialList = []
+      state.selectedValue = []
       state.selectedList = []
     }
 
@@ -194,6 +223,7 @@ export default defineComponent({
       xSearch,
       ...toRefs(state),
       modalVisible,
+      handleSelect,
       handleSearch,
       handleReset,
       handleDel,

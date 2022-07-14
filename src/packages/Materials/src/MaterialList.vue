@@ -1,5 +1,5 @@
 <template>
-  <x-table v-bind="tableProps" v-model:pagination="pages" v-model:selectedValue="selectedList">
+  <x-table v-bind="tableProps" v-model:pagination="pages" v-model:selectedValue="selectedList" @select="handleSelect">
     <template #bodyCell="{ text, record, index, column }">
       <slot name="bodyCell" v-bind="{ text, record, index, column }">
         <template v-if="column?.dataIndex === 'thumbnail'">
@@ -38,7 +38,7 @@ export default defineComponent({
     pagination: Object,
     emptyText: String
   },
-  emits: ['update:pagination', 'update:selectedValue', 'search'],
+  emits: ['update:pagination', 'update:selectedValue', 'search', 'select'],
   setup(props, { emit }) {
     const defaultColumns = [
       {
@@ -160,10 +160,15 @@ export default defineComponent({
       { deep: true, immediate: true }
     )
 
+    const handleSelect = (record, selected, selectedRows, nativeEvent) => {
+      emit('select', record, selected, selectedRows, nativeEvent)
+    }
+
     return {
       pages,
       selectedList,
-      tableProps
+      tableProps,
+      handleSelect
     }
   }
 })
