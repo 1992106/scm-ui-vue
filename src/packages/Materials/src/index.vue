@@ -79,7 +79,7 @@ export default defineComponent({
     materialColumns: { type: Array },
     selectedColumns: { type: Array },
     customRequest: { type: Function, require: true },
-    selectedType: { type: String, default: 'radio' }, // 选择模式：checkbox 多选和 radio 单选
+    selectedType: { type: String, default: 'checkbox' }, // 选择模式：checkbox 多选和 radio 单选
     emptyText: { type: String, default: '暂无数据' }
   },
   emits: ['update:visible', 'done', 'search', 'reset'],
