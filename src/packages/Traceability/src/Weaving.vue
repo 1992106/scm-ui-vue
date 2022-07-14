@@ -124,7 +124,7 @@ export default defineComponent({
         dataIndex: 'cottonComponentsRate',
         type: 'AInputNumber',
         props: {
-          precision: 2,
+          precision: 0,
           min: 1,
           max: 100
         }
@@ -182,7 +182,6 @@ export default defineComponent({
         const now = Date.now().toString()
         tableOptions.dataSource = (list || []).map((val, i) => ({ ...val, uid: val?.uid || now + i }))
         state.showTable = props.mode === 'view' ? true : list && list?.length > 0
-        tableOptions.total = tableOptions.total + (list || []).length
       },
       { immediate: true }
     )

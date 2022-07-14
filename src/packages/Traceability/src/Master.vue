@@ -232,7 +232,7 @@ export default defineComponent({
         const now = Date.now().toString()
         materialOptions.dataSource = (list || []).map((val, i) => ({
           ...val,
-          ...(val?.purchaseTime ? { purchaseTime: dateToDayjs(val?.purchaseTime) } : {}),
+          ...(props.mode !== 'view' && val?.purchaseTime ? { purchaseTime: dateToDayjs(val?.purchaseTime) } : {}),
           ...(props.mode === 'view' && props.materialHighlight
             ? {
                 ...(val?.materialOriginPlace

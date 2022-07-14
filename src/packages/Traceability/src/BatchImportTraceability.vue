@@ -7,6 +7,7 @@
     :width="width"
     :height="height"
     :spinProps="spinning"
+    manual
     destroyOnClose
     @cancel="handleCancel">
     <a-form>
