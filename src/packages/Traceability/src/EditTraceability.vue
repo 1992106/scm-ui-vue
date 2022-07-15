@@ -7,6 +7,7 @@
     :width="width"
     :height="height"
     :spinProps="spinning"
+    :confirmLoading="confirmLoading"
     destroyOnClose
     okText="保存"
     @ok="handleOk"
@@ -90,6 +91,7 @@ export default defineComponent({
     manual: { type: Boolean, default: false },
     customRequest: { type: Function, require: true },
     emptyText: { type: String, default: '暂无数据' },
+    confirmLoading: { type: Boolean, default: false },
     // 主表
     materialColumns: { type: Array },
     beforeUpload: { type: Function },

@@ -7,6 +7,7 @@
     :width="width"
     :height="height"
     :spinProps="spinning"
+    :confirmLoading="confirmLoading"
     destroyOnClose
     @ok="handleOk"
     @cancel="handleCancel">
@@ -85,6 +86,7 @@ export default defineComponent({
     manual: { type: Boolean, default: false },
     customRequest: { type: Function, require: true },
     emptyText: { type: String, default: '暂无数据' },
+    confirmLoading: { type: Boolean, default: false },
     // 主表
     materialColumns: { type: Array },
     materialHighlight: { type: String },

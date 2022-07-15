@@ -95,15 +95,13 @@ function useDefaultValue(columns) {
 }
 
 export function useAppHeight(isResize) {
-  // 动态设置id="#app"的高度
-  const { proxy } = getCurrentInstance()
-  const appRef = proxy.$root?.$el?.parentNode
+  let appRef = ref()
   const setHeight = debounce(
     () => {
-      if (appRef) {
-        const { top } = appRef.getBoundingClientRect?.() || {}
+      if (appRef.value) {
+        const { top } = appRef.value.getBoundingClientRect?.() || {}
         const height = window.innerHeight - (top || 0)
-        appRef.style.cssText += `;height: ${height}px; z-index: 999; position: relative;`
+        appRef.value.style.cssText += `;height: ${height}px; z-index: 999; position: relative;`
       }
     },
     200,
@@ -112,6 +110,9 @@ export function useAppHeight(isResize) {
 
   onMounted(() => {
     if (isResize) {
+      // 动态设置id="#app"的高度
+      const { proxy } = getCurrentInstance()
+      appRef.value = proxy.$root?.$el?.parentNode
       setHeight()
       window.addEventListener('resize', setHeight)
     }

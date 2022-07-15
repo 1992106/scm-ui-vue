@@ -58,8 +58,8 @@
     <template #footer>
       <a-space>
         <a-button @click="handleCancel">取消</a-button>
-        <a-button type="primary" danger @click="handleOk(0)">不通过</a-button>
-        <a-button type="primary" @click="handleOk(1)">通过</a-button>
+        <a-button type="primary" :loading="failLoading" danger @click="handleOk(0)">不通过</a-button>
+        <a-button type="primary" :loading="passLoading" @click="handleOk(1)">通过</a-button>
       </a-space>
     </template>
   </x-drawer>
@@ -85,6 +85,8 @@ export default defineComponent({
     manual: { type: Boolean, default: false },
     customRequest: { type: Function, require: true },
     emptyText: { type: String, default: '暂无数据' },
+    failLoading: { type: Boolean, default: false },
+    passLoading: { type: Boolean, default: false },
     // 主表
     materialColumns: { type: Array },
     materialHighlight: { type: String },

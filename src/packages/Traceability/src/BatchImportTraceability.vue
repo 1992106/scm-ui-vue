@@ -99,8 +99,8 @@
     <template #footer>
       <a-space>
         <a-button @click="handleCancel">取消</a-button>
-        <a-button type="primary" danger @click="handleOk(1)">保存</a-button>
-        <a-button type="primary" @click="handleOk(2)">保存并提交</a-button>
+        <a-button type="primary" danger :loading="saveLoading" @click="handleOk(1)">保存</a-button>
+        <a-button type="primary" :loading="submitLoading" @click="handleOk(2)">保存并提交</a-button>
       </a-space>
     </template>
   </x-drawer>
@@ -128,6 +128,8 @@ export default defineComponent({
     height: { type: [String, Number] },
     manual: { type: Boolean, default: false },
     emptyText: { type: String, default: '暂无数据' },
+    saveLoading: { type: Boolean, default: false },
+    submitLoading: { type: Boolean, default: false },
     // 主表
     beforeImportMaterial: { type: Function },
     limitMaterial: { type: Number, default: 20 },
