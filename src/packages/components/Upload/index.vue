@@ -107,10 +107,10 @@ export default defineComponent({
         state.files = (fileList || []).map(val => {
           return {
             ...val,
-            ...(val?.id
+            ...(val?.id || val?.key
               ? {
-                  uid: val?.id,
-                  name: val?.fileName,
+                  uid: val?.id || val?.key,
+                  name: val?.fileName || val?.name,
                   status: 'done',
                   thumbUrl: val?.url || val?.thumbUrl,
                   url: val?.url
@@ -135,8 +135,8 @@ export default defineComponent({
           // 没有触发option.onSuccess()，手动设置状态为 'done'
           const uploadFile = {
             ...data,
-            uid: data?.id,
-            name: data?.fileName,
+            uid: data?.id || data?.key,
+            name: data?.fileName || data?.name,
             status: 'done',
             thumbUrl: data?.url || data?.thumbUrl,
             url: data?.url
@@ -165,8 +165,8 @@ export default defineComponent({
       //   // 没有触发option.onSuccess()，手动设置状态为 'done'
       //   const uploadFile = {
       //     ...data,
-      //     uid: data?.id,
-      //     name: data?.fileName,
+      //     uid: data?.id || data?.key,
+      //     name: data?.fileName || data?.name,
       //     status: 'done',
       //     thumbUrl: data?.url || data?.thumbUrl,
       //     url: data?.url
