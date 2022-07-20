@@ -8,7 +8,7 @@
 </template>
 <script lang="ts">
 import { defineComponent, onActivated, onMounted, onUnmounted, reactive } from 'vue'
-import Preview from '@components/Preview/src/index.vue'
+import Preview from '@components/Preview'
 export default defineComponent({
   name: 'Dashboard',
   components: { Preview },

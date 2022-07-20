@@ -4565,7 +4565,7 @@ vxe-table-plugin-antd@^3.0.5:
   resolved "https://registry.npmjs.org/vxe-table-plugin-antd/-/vxe-table-plugin-antd-3.0.5.tgz#717d6472abd7a8fe94157616aa16d115b8b15b98"
   integrity sha512-qZXIxNKSqdvfVncvVopId7byy9FYUW+ygX4vwUhPceHwsUq0eyX5SVX/LLafqfsnkq4l8+EZ4zQ5/xQ6AfZ31Q==
 
-vxe-table@^4.2.3:
+vxe-table@4.2.3:
   version "4.2.3"
   resolved "https://registry.npmjs.org/vxe-table/-/vxe-table-4.2.3.tgz#48e8cc26e5492f35522e218f064760e1a02d60a0"
   integrity sha512-sbW9yZ763/ArOpJXRyBJwPKShU0za4lq5WJYdzF+O73yqdhmSUJ/cFuf3E/JJ/DxD/rk3BdV7/jDaFR6YBDyIQ==

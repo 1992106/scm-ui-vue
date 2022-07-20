@@ -9,10 +9,10 @@ const install = function installComponents(app) {
 
 export default install
 
-// 组件
+// 基础组件
 export * from '@components/index'
 
-// 函数调用
+// 函数组件
 export * from '@components/create'
 
 // export { VXETablePluginSCM } from './plugins/VXETablePluginSCM'

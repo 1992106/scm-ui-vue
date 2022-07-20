@@ -1,5 +1,5 @@
 import VXETable from 'vxe-table'
-import Image from '@components/Image/src'
+import Image from '@components/Image'
 import { get } from 'lodash-es'
 import { formatDate, formatTime } from '@src/utils'
 
