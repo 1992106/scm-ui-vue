@@ -1,7 +1,7 @@
-import * as packages from '@packages/index'
+import * as components from '@components/index'
 
 const install = function installComponents(app) {
-  const list = [...Object.entries(packages)]
+  const list = [...Object.entries(components)]
   list.forEach(([componentName, component]) => {
     app.component(componentName, component)
   })
@@ -10,9 +10,9 @@ const install = function installComponents(app) {
 export default install
 
 // 组件
-export * from '@packages/index'
+export * from '@components/index'
 
 // 函数调用
-export * from '@packages/create'
+export * from '@components/create'
 
 // export { VXETablePluginSCM } from './plugins/VXETablePluginSCM'

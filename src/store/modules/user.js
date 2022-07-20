@@ -6,19 +6,14 @@ const localUserInfo = getAccessStorage(setting.user_name)
 
 const user = {
   state: {
-    userInfo: localUserInfo ? JSON.parse(localUserInfo) : {},
-    visible: false
+    userInfo: localUserInfo ? JSON.parse(localUserInfo) : {}
   },
   getters: {
-    userInfo: state => state.userInfo,
-    visible: state => state.visible
+    userInfo: state => state.userInfo
   },
   mutations: {
     setUserInfo(state, userInfo) {
       state.userInfo = userInfo
-    },
-    setVisible(state, visible) {
-      state.visible = visible
     }
   },
   actions: {

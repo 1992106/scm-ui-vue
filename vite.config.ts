@@ -35,7 +35,6 @@ const config: UserConfigExport = {
     alias: [
       { find: /^@src/, replacement: pathResolve('src') },
       { find: /^@components/, replacement: pathResolve('src/components') },
-      { find: /^@packages/, replacement: pathResolve('src/packages') },
       { find: /^@views/, replacement: pathResolve('src/views') },
       { find: /^@hooks/, replacement: pathResolve('src/hooks') },
       { find: /^@utils/, replacement: pathResolve('src/utils') }
@@ -97,13 +96,7 @@ export default ({ mode }) => {
           'vxe-table': 'vxe-table',
           'vue-draggable-next': 'vue-draggable-next',
           dayjs: 'dayjs',
-          'lodash-es': 'lodash-es',
-          '@vueup/vue-quill': '@vueup/vue-quill',
-          echarts: 'echarts',
-          html2canvas: 'html2canvas',
-          jsbarcode: 'jsbarcode',
-          jspdf: 'jspdf',
-          'qrcodejs2-fix': 'qrcodejs2-fix'
+          'lodash-es': 'lodash-es'
         }
       },
       // 确保外部化处理那些你不想打包进库的依赖
@@ -123,7 +116,7 @@ export default ({ mode }) => {
 
   if (mode === 'development') {
     config.server = {
-      port: 9999,
+      port: 8888,
       force: true
     }
     config.plugins = [...plugins]

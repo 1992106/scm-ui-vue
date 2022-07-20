@@ -2,20 +2,17 @@
   <div>
     <a-space>
       <a-button @click="handlePreview">预览图片</a-button>
-      <a-button @click="handleDownloads">下载中心</a-button>
     </a-space>
     <Preview v-model:visible="previewState.visible" :current="previewState.current" :urls="previewState.urls"></Preview>
   </div>
 </template>
 <script lang="ts">
 import { defineComponent, onActivated, onMounted, onUnmounted, reactive } from 'vue'
-import { useStore } from 'vuex'
-import Preview from '@packages/components/Preview/index.vue'
+import Preview from '@components/Preview/src/index.vue'
 export default defineComponent({
   name: 'Dashboard',
   components: { Preview },
   setup() {
-    const store = useStore()
     // 预览图片
     const previewState = reactive({
       visible: false,
@@ -29,10 +26,6 @@ export default defineComponent({
     const handlePreview = () => {
       previewState.visible = !previewState.visible
     }
-    // 下载中心
-    const handleDownloads = () => {
-      store.commit('user/setVisible', true)
-    }
 
     onMounted(() => {
       console.log('onMounted', 'Dashboard组件')
@@ -45,8 +38,7 @@ export default defineComponent({
     })
     return {
       previewState,
-      handlePreview,
-      handleDownloads
+      handlePreview
     }
   }
 })

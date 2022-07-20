@@ -20,8 +20,6 @@ app.use(ScmUI)
 
 ### Components
 
-#### 基础组件
-
 | 名称 | 描述 |
 | --- | --- |
 | XImage | 图片，默认支持单图&相册模式，XPreview预览功能 |
@@ -39,19 +37,3 @@ app.use(ScmUI)
 | XProTable | Pro表格，默认支持XSearch搜索、XPagination分页、XTable表格功能 |
 | XGrid | 网格，默认支持可配置项展示，字段显示&隐藏、拖拽列宽、全屏功能 |
 | XProGrid | Pro网格，默认支持XSearch搜索、XPagination分页、XGrid表格功能 |
-
-#### 业务组件
-
-| 名称 | 描述 |
-| --- | --- |
-| XBarcode | 条形码 |
-| XQrcode | 二维码 |
-| XPrint | 打印 |
-| XImport | 导入 |
-| XExport | 导出 |
-| XLog | 日志 |
-| XRemark | 备注 |
-| XEcharts | 图表 |
-| XEditor | 富文本 |
-| XMaterials | 物料档案 |
-| XVersions | 版型库 |
