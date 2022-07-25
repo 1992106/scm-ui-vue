@@ -1,27 +1,49 @@
 <template>
-  <a-tabs v-bind="$attrs" v-model:activeKey="activeKey" class="x-tabs" :size="size" @change="handleChange">
-    <a-tab-pane v-for="tab in tabs" :key="tab?.value" :tab="tab?.label">
+  <a-tabs
+    v-bind="$attrs"
+    v-model:activeKey="activeKey"
+    class="x-tabs"
+    :type="type"
+    :size="size"
+    @change="handleChange"
+    @edit="handleEdit">
+    <a-tab-pane v-for="tab in tabs" :key="tab?.value" :disabled="tab?.disabled" :closable="tab?.closable">
+      <template #tab>
+        <slot name="tab">
+          {{ tab?.label }}
+          <span v-if="tab?.count" class="count">({{ tab?.count }})</span>
+        </slot>
+      </template>
       <template v-if="tab?.value === activeKey">
         <slot></slot>
       </template>
     </a-tab-pane>
+    <template #leftExtra>
+      <slot name="leftExtra"></slot>
+    </template>
+    <template #rightExtra>
+      <slot name="rightExtra"></slot>
+    </template>
+    <template #renderTabBar="{ DefaultTabBar, ...props }">
+      <slot name="renderTabBar" v-bind="{ DefaultTabBar, ...props }">
+        <component :is="DefaultTabBar" v-bind="props" />
+      </slot>
+    </template>
   </a-tabs>
 </template>
 <script>
 import { defineComponent, reactive, toRefs, watch } from 'vue'
-import { useRoute } from 'vue-router'
 export default defineComponent({
   name: 'XTabs',
   inheritAttrs: false,
   props: {
     value: [String, Number],
-    list: { type: Array, default: () => [] }, // { label: '', value: '' }
+    list: { type: Array, default: () => [] }, // { label: '', value: '', count: '' }
+    type: { type: String, default: 'line' },
     size: { type: String, default: 'small' }
   },
-  emits: ['update:value', 'click'],
+  emits: ['update:value', 'change', 'edit'],
   setup(props, { emit }) {
-    const route = useRoute()
-
     const state = reactive({
       tabs: [],
       activeKey: ''
@@ -29,14 +51,17 @@ export default defineComponent({
 
     const onInit = () => {
       state.tabs = props.list
-      state.activeKey = props.value || route.query?.key || state.tabs[0]?.value
+      state.activeKey = props.value || state.tabs[0]?.value
       emit('update:value', state.activeKey)
     }
 
     const handleChange = $event => {
       emit('update:value', $event)
-      emit('click', $event)
-      // await router.replace({ query: { key: $event } })
+      emit('change', $event)
+    }
+
+    const handleEdit = (targetKey, action) => {
+      emit('edit', targetKey, action)
     }
 
     watch(
@@ -50,7 +75,8 @@ export default defineComponent({
 
     return {
       ...toRefs(state),
-      handleChange
+      handleChange,
+      handleEdit
     }
   }
 })
@@ -65,6 +91,10 @@ export default defineComponent({
       padding: 5px 20px 10px;
       margin-bottom: 10px;
       background-color: $bg-color;
+    }
+
+    .count {
+      margin-left: 5px;
     }
 
     :deep(.ant-tabs-content-holder) {

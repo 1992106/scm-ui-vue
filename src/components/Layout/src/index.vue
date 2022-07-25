@@ -9,8 +9,8 @@
       :width="160"
       theme="light">
       <a-spin v-bind="spinProps">
-        <a-menu v-bind="menuProps" v-model:selectedKeys="selectedKeys" @click="handleClick">
-          <a-menu-item v-for="menu in menus" :key="menu?.value">
+        <a-menu v-bind="menuProps" v-model:selectedKeys="selectedKeys" mode="vertical" @click="handleClick">
+          <a-menu-item v-for="menu in menus" :key="menu?.value" :disabled="menu?.disabled">
             {{ menu?.label }}
             <span v-if="menu?.count" class="count">{{ menu?.count }}</span>
           </a-menu-item>

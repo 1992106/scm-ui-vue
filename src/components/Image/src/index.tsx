@@ -108,12 +108,8 @@ const XImage = defineComponent({
       // 图片为空时，显示暂无图片
       if (thumbUrls.value.length === 0) {
         return (
-          <div class='x-image__empty'>
-            <Empty
-              style={{ width: width, height: height }}
-              image={Empty.PRESENTED_IMAGE_SIMPLE}
-              description='暂无图片'
-            />
+          <div class='x-image__empty' style={{ width: width, height: height }}>
+            <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description='暂无图片' />
           </div>
         )
       }
@@ -140,7 +136,8 @@ const XImage = defineComponent({
       if (thumbUrls.value.length > 1) {
         // 相册模式
         renderImage = (
-          <Space wrap={true}>
+          // antdv 暂不支持wrap={true}属性
+          <Space style={{ flexWrap: 'wrap', gap: '8px' }}>
             {compressUrls.value.map((src, index) => (
               <Image
                 {...ctx.attrs}

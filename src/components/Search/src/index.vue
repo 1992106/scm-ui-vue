@@ -366,12 +366,11 @@ export default defineComponent({
 </script>
 <style lang="scss" scoped>
 .x-search {
-  padding-top: 10px;
   background-color: #fff;
   border-radius: 2px;
 
   .search-top {
-    padding: 0 10px 10px 10px;
+    //padding: 0 10px;
   }
 
   .search-bottom {
@@ -380,6 +379,7 @@ export default defineComponent({
   }
 
   .ant-form {
+    padding-top: 10px;
     margin-right: 20px;
 
     :deep(.ant-form-item) {

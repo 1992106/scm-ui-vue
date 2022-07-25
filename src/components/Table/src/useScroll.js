@@ -4,7 +4,7 @@ import { debounce } from 'lodash-es'
 
 export const useScroll = ({ xTable, autoResize, extraHeight, scroll }) => {
   const onResize = debounce(() => {
-    scroll.value = getTableScroll({ extraHeight })
+    scroll.value = getTableScroll({ xTable, extraHeight })
   }, 200)
 
   const initResize = () => {
@@ -31,39 +31,39 @@ export const useScroll = ({ xTable, autoResize, extraHeight, scroll }) => {
   })
 }
 
-export const getTableScroll = ({ id, extraHeight } = {}) => {
-  let tHeader
-  let summary
-  let pagination
-  if (id) {
-    tHeader = document.getElementById(id)
-      ? document.getElementById(id).querySelector('.x-table .ant-table .ant-table-header')
-      : null
-    summary = document.getElementById(id)
-      ? document.getElementById(id).querySelector('.x-table .ant-table .ant-table-summary')
-      : null
-    pagination = document.getElementById(id)
-      ? document.getElementById(id).querySelector('.x-table .ant-table-pagination')
-      : null
+export const getTableScroll = ({ xTable, extraHeight } = {}) => {
+  let tHeaderEl
+  let summaryEl
+  let paginationEl
+  // let bodyEl
+  // let emptyEl
+  if (unref(xTable)?.$el) {
+    tHeaderEl = unref(xTable)?.$el.querySelector('.ant-table-header')
+    summaryEl = unref(xTable)?.$el.querySelector('.ant-table-summary')
+    paginationEl = unref(xTable)?.$el.querySelector('.ant-table-pagination')
+    // bodyEl = unref(xTable)?.$el.querySelector('.ant-table .ant-table-body')
+    // emptyEl = unref(xTable)?.$el.querySelector('.ant-table-empty .ant-table-body .ant-table-placeholder')
   } else {
-    tHeader = document.querySelector('.x-table .ant-table .ant-table-header')
-    summary = document.querySelector('.x-table .ant-table .ant-table-summary')
-    pagination = document.querySelector('.x-table .ant-table-pagination')
+    tHeaderEl = document.querySelector('.x-table .ant-table .ant-table-header')
+    summaryEl = document.querySelector('.x-table .ant-table .ant-table-summary')
+    paginationEl = document.querySelector('.x-table .ant-table-pagination')
+    // bodyEl = document.querySelector('.x-table .ant-table .ant-table-body')
+    // emptyEl = document.querySelector('.x-table .ant-table-empty .ant-table-body .ant-table-placeholder')
   }
   // 表格内容距离顶部的距离
   let tHeaderBottom = 0
-  if (tHeader) {
-    tHeaderBottom = tHeader.getBoundingClientRect().bottom
+  if (tHeaderEl) {
+    tHeaderBottom = tHeaderEl.getBoundingClientRect().bottom
   }
   // 总结栏
   let summaryHeight = 0
-  if (summary) {
-    summaryHeight = summary.getBoundingClientRect().height
+  if (summaryEl) {
+    summaryHeight = summaryEl.getBoundingClientRect().height
   }
   // 分页器的高度
   let paginationHeight = 0
-  if (pagination) {
-    paginationHeight = pagination.getBoundingClientRect().height
+  if (paginationEl) {
+    paginationHeight = paginationEl.getBoundingClientRect().height
   }
   // 其它高度：页面内边距或外边距
   if (typeof extraHeight === 'undefined') {
@@ -73,12 +73,10 @@ export const getTableScroll = ({ id, extraHeight } = {}) => {
   const height = `calc(100vh - ${tHeaderBottom + summaryHeight + paginationHeight + extraHeight}px)`
 
   // TODO: 设置表格高度不生效
-  // const bodyEl = document.querySelector('.x-table .ant-table .ant-table-body')
   // if (bodyEl) {
   //   bodyEl.style.cssText += `height: ${y}px`
   // }
   // 空数据时，设置高度
-  // const emptyEl = document.querySelector('.x-table .ant-table-empty  .ant-table-body .ant-table-placeholder')
   // if (emptyEl) {
   //   const scrollBarWidth = getScrollBarSize()
   //   emptyEl.style.height = `calc(100vh - ${tHeaderBottom + paginationHeight + extraHeight + scrollBarWidth}px)`

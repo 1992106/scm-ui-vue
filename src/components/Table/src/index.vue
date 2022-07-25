@@ -173,7 +173,7 @@ export default defineComponent({
      * 默认值
      */
     const defaultState = {
-      // 当 scroll="{x: '100%'}" 和 tableLayout="fixed" 组合使用时：如果列宽总和大于表格宽，则会出现横向滚轴，而不会破坏表格布局
+      // 当 scroll="{x: '100%'}" 和 tableLayout="fixed" 组合使用时：如果列宽总和大于表格宽，会出现横向滚轴并且不会破坏表格布局
       scroll: { x: '100%', scrollToFirstRowOnChange: true },
       defaultColumn: { align: 'center', visible: true },
       defaultPaginationConfig: {
@@ -434,6 +434,7 @@ export default defineComponent({
       display: flex;
       flex-wrap: wrap;
       flex: 1;
+      margin: 10px 0;
     }
 
     .custom {
