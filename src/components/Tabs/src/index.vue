@@ -32,7 +32,8 @@
   </a-tabs>
 </template>
 <script>
-import { defineComponent, reactive, toRefs, watch } from 'vue'
+import { computed, defineComponent, reactive, toRefs, watch } from 'vue'
+import { isEmpty } from '@src/utils'
 export default defineComponent({
   name: 'XTabs',
   inheritAttrs: false,
@@ -49,12 +50,6 @@ export default defineComponent({
       activeKey: ''
     })
 
-    const onInit = () => {
-      state.tabs = props.list
-      state.activeKey = props.value || state.tabs[0]?.value
-      emit('update:value', state.activeKey)
-    }
-
     const handleChange = $event => {
       emit('update:value', $event)
       emit('change', $event)
@@ -64,14 +59,33 @@ export default defineComponent({
       emit('edit', targetKey, action)
     }
 
+    const defaultKey = computed(() => {
+      // props.value有值，并且在state.tabs中可以找到
+      if (!isEmpty(props.value) && state.tabs?.find(val => val?.value === props.value)) {
+        return props.value
+      }
+      return state.tabs?.[0]?.value
+    })
     watch(
-      () => props.value,
+      () => defaultKey.value,
       val => {
         state.activeKey = val
+        emit('update:value', val)
+      },
+      {
+        immediate: true
       }
     )
 
-    onInit()
+    watch(
+      () => props.list,
+      list => {
+        state.tabs = list
+      },
+      {
+        immediate: true
+      }
+    )
 
     return {
       ...toRefs(state),

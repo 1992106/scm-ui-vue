@@ -14,7 +14,7 @@
 ### Emits
 
 ```vue
-emits: ['update:value', 'click']
+emits: ['update:value', 'change', 'edit']
 ```
 
 ### Slots

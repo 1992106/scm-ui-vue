@@ -24,6 +24,7 @@
 </template>
 <script>
 import { computed, defineComponent, reactive, toRefs, watch } from 'vue'
+import { isEmpty } from '@src/utils'
 export default defineComponent({
   name: 'XLayout',
   inheritAttrs: false,
@@ -46,26 +47,38 @@ export default defineComponent({
       selectedKeys: []
     })
 
-    const onInit = () => {
-      state.menus = props.list
-      const defaultKey = props.value || state.menus[0]?.value
-      state.selectedKeys = defaultKey ? [defaultKey] : []
-      emit('update:value', defaultKey)
-    }
-
     const handleClick = $event => {
       emit('update:value', $event?.key)
       emit('click', $event)
     }
 
+    const defaultKey = computed(() => {
+      // props.value有值，并且在state.menus中可以找到
+      if (!isEmpty(props.value) && state.menus?.find(val => val?.value === props.value)) {
+        return props.value
+      }
+      return state.menus?.[0]?.value
+    })
     watch(
-      () => props.value,
+      () => defaultKey.value,
       val => {
-        state.selectedKeys = [val]
+        state.selectedKeys = val ? [val] : []
+        emit('update:value', defaultKey)
+      },
+      {
+        immediate: true
       }
     )
 
-    onInit()
+    watch(
+      () => props.list,
+      list => {
+        state.menus = list
+      },
+      {
+        immediate: true
+      }
+    )
 
     return {
       ...toRefs(state),
