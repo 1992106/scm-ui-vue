@@ -63,7 +63,7 @@ export default defineComponent({
       () => defaultKey.value,
       val => {
         state.selectedKeys = val ? [val] : []
-        emit('update:value', defaultKey)
+        emit('update:value', val)
       },
       {
         immediate: true
