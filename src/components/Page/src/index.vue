@@ -1,5 +1,5 @@
 <template>
-  <div class="x-page">
+  <div ref="xPage" class="x-page">
     <a-spin v-bind="spinProps">
       <x-search ref="xSearch" v-bind="searchProps" @search="handleSearch" @reset="handleReset" @clear="handleClear">
         <template #formItemRender="scope">
@@ -48,7 +48,7 @@ import XSearch from '@components/Search'
 import XPagination from '@components/Pagination'
 import { getValueByRowKey } from '@components/Table/src/utils'
 import { useAppHeight } from '@components/hooks/useSearch'
-import { isEmpty } from '@src/utils'
+import { isEmpty, scrollTop } from '@src/utils'
 export default defineComponent({
   name: 'XPage',
   components: {
@@ -77,6 +77,7 @@ export default defineComponent({
   },
   emits: ['update:value', 'update:pagination', 'search', 'reset', 'clear'],
   setup(props, { emit, slots }) {
+    const xPage = ref(null)
     const xSearch = ref(null)
 
     const state = reactive({
@@ -106,12 +107,23 @@ export default defineComponent({
       }
     )
 
+    // 当分页变化后滚动到顶部
+    const handleScrollTop = () => {
+      if (unref(xPage)?.$el) {
+        const el = unref(xPage)?.$el.querySelector('.x-page__container')
+        if (el) {
+          scrollTop(el)
+        }
+      }
+    }
+
     // 分页器-搜索
     const handleQuery = () => {
       emit('update:pagination', state.pages)
       // 分页搜索
       emit('update:value', { ...state.searchParams, ...state.pages })
       emit('search', { ...state.searchParams, ...state.pages })
+      // handleScrollTop()
     }
 
     // 搜索栏-搜索【重置页码】
@@ -168,6 +180,7 @@ export default defineComponent({
     })
 
     return {
+      xPage,
       xSearch,
       simpleImage: Empty.PRESENTED_IMAGE_SIMPLE,
       ...toRefs(state),

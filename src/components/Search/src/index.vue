@@ -249,8 +249,10 @@ export default defineComponent({
     const handleReset = bool => {
       resetFields()
       emit('reset', emitData())
-      if (bool === false) return // 手动重置时，是否搜索；默认不搜索
-      if (props.resetSearch) {
+      // 是否触发搜索
+      // 1、通过ref调用重置方法时，默认不搜索
+      // 2、点击重置按钮时，默认会触发搜索
+      if (bool !== false && props.resetSearch) {
         emitSearch()
       }
     }
@@ -324,6 +326,7 @@ export default defineComponent({
 
     // 重置方法
     const onReset = (bool = false) => {
+      // 默认不触发搜索方法
       handleReset(bool)
     }
 
