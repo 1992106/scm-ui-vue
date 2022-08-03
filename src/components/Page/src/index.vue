@@ -42,7 +42,7 @@
 </template>
 
 <script>
-import { computed, defineComponent, onMounted, reactive, ref, toRefs, unref, watch, watchEffect } from 'vue'
+import { computed, defineComponent, nextTick, onMounted, reactive, ref, toRefs, unref, watch, watchEffect } from 'vue'
 import { Empty, Spin } from 'ant-design-vue'
 import XSearch from '@components/Search'
 import XPagination from '@components/Pagination'
@@ -109,10 +109,10 @@ export default defineComponent({
 
     // 当分页变化后滚动到顶部
     const handleScrollTop = () => {
-      if (unref(xPage)?.$el) {
-        const el = unref(xPage)?.$el.querySelector('.x-page__container')
+      if (unref(xPage)) {
+        const el = unref(xPage).querySelector('.x-page__container .x-page__render .scroll')
         if (el) {
-          scrollTop(el)
+          scrollTop(el, el.scrollTop, 0)
         }
       }
     }
@@ -123,7 +123,7 @@ export default defineComponent({
       // 分页搜索
       emit('update:value', { ...state.searchParams, ...state.pages })
       emit('search', { ...state.searchParams, ...state.pages })
-      // handleScrollTop()
+      nextTick(handleScrollTop)
     }
 
     // 搜索栏-搜索【重置页码】

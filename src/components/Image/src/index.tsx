@@ -137,7 +137,7 @@ const XImage = defineComponent({
         // 相册模式
         renderImage = (
           // antdv 暂不支持wrap={true}属性
-          <Space style={{ flexWrap: 'wrap', gap: '8px' }}>
+          <Space style={{ flexWrap: 'wrap' }}>
             {compressUrls.value.map((src, index) => (
               <Image
                 {...ctx.attrs}

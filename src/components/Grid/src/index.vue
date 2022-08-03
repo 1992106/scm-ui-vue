@@ -113,6 +113,8 @@ export default defineComponent({
   },
   inheritAttrs: false,
   props: {
+    // 自定义行数据唯一主键的字段名
+    keyField: String,
     // 自定义列
     columns: { type: Array, required: true, default: () => [] },
     // 表格数据
@@ -285,7 +287,9 @@ export default defineComponent({
             .filter(Boolean)
         )
     })
-    const getRowConfig = computed(() => mergeProps(defaultState.defaultRowConfig, props.rowConfig))
+    const getRowConfig = computed(() =>
+      mergeProps(defaultState.defaultRowConfig, props.rowConfig, props.keyField ? { keyField: props.keyField } : {})
+    )
     const getColumnConfig = computed(() => mergeProps(defaultState.defaultColumnConfig, props.columnConfig))
     const getRadioConfig = computed(() => mergeProps(defaultState.defaultRadioConfig, props.radioConfig))
     const getCheckboxConfig = computed(() => mergeProps(defaultState.defaultCheckboxConfig, props.checkboxConfig))
