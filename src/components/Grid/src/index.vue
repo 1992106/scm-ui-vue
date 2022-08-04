@@ -215,7 +215,7 @@ export default defineComponent({
       defaultFilterConfig: { remote: true },
       defaultEditConfig: { trigger: 'click', mode: 'cell', showStatus: true },
       defaultScrollX: { enabled: false },
-      defaultScrollY: { enabled: true, gt: 20 }
+      defaultScrollY: { enabled: true, gt: 40, oSize: 10, scrollToTopOnChange: true } // 当数据源被更改时，自动将纵向滚动条滚动到顶部
     }
     /**
      * data

@@ -24,8 +24,8 @@
 | radioConfig | 单选框配置项 | Object | `{ highlight: true }` |
 | checkboxConfig | 复选框配置项 | Object | `{ highlight: true }` |
 | v-model:selectedValue | 勾选的行数据 | Array | `[]` |
-| mergeCells | 自定义缩放 | Array | `-` |
-| footerMethod | 自定义缩放 | Function | `-` |
+| mergeCells | 合并指定的单元格 (不能用于展开行，不建议用于固定列、树形结构) | Array | `-` |
+| footerMethod | 表尾的数据获取方法，返回一个二维数组 | Function | `-` |
 | customZoom | 自定义缩放 | Boolean | `false` |
 | customSetting | 自定义设置 | Boolean | `false` |
 | storageName | 本地`Storage`名称，拖拽列和自定义表头时本地储存 | String | `-` |
