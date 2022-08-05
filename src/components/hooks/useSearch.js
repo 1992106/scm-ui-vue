@@ -8,7 +8,7 @@ export function useSearch(fn, isResize = true, searchProps, gridProps) {
   const isDefaultSearch = ref(false)
   const searchParams = ref({})
   // 搜索栏
-  const handleSearch = $event => {
+  const onSearch = $event => {
     if (!unref(isDefaultSearch)) {
       isDefaultSearch.value = true
       return init()
@@ -76,7 +76,7 @@ export function useSearch(fn, isResize = true, searchProps, gridProps) {
 
   return {
     paramsRef,
-    handleSearch,
+    onSearch,
     handleQuery,
     onReset,
     onClear

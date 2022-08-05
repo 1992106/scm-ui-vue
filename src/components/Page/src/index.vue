@@ -120,14 +120,22 @@ export default defineComponent({
       }
     )
 
-    // 当分页变化后滚动到顶部
-    const handleScrollTop = () => {
+    // 滚动到顶部
+    const onScrollTop = (to = 0) => {
       const el = unref(xPage)?.querySelector('.x-page__container .x-page__render .scroll')
       if (el) {
         // 动画效果实现滚动
-        scrollTop(el, el.scrollTop, 0)
+        scrollTop(el, el.scrollTop, to)
       }
     }
+
+    // 监听数据源，变化时滚动置顶
+    watch(
+      () => props.dataSource,
+      () => {
+        nextTick(onScrollTop)
+      }
+    )
 
     // 分页器-搜索
     const handleQuery = () => {
@@ -135,7 +143,6 @@ export default defineComponent({
       // 分页搜索
       emit('update:value', { ...state.searchParams, ...state.pages })
       emit('search', { ...state.searchParams, ...state.pages })
-      nextTick(handleScrollTop)
     }
 
     // 搜索栏-搜索【重置页码】
@@ -217,6 +224,7 @@ export default defineComponent({
       handleReset,
       handleClear,
       handleScroll,
+      onScrollTop,
       getValueByRowKey
     }
   }

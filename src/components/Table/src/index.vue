@@ -91,7 +91,7 @@ import ColumnSetting from './ColumnSetting.vue'
 import CellRender from './CellRender'
 import { useScroll } from '@components/Table/src/useScroll'
 import { cloneDeep } from 'lodash-es'
-import { isEmpty, triggerResize } from '@src/utils'
+import { isEmpty, scrollTop, triggerResize } from '@src/utils'
 import {
   columnsToStorage,
   getSortDirection,
@@ -408,6 +408,15 @@ export default defineComponent({
     const hasSearchBar = computed(() => !!slots['searchBar'])
     const hasToolBar = computed(() => !!slots['toolBar'] || props.customSetting || props.customZoom)
 
+    // 滚动到顶部
+    const onScrollTop = (to = 0) => {
+      const el = unref(xTable)?.$el.querySelector('.ant-table-body')
+      if (el) {
+        // 动画效果实现滚动
+        scrollTop(el, el.scrollTop, to)
+      }
+    }
+
     onMounted(() => {
       // 必须延迟绑定scroll事件
       setTimeout(() => {
@@ -451,7 +460,8 @@ export default defineComponent({
       handleExpandedRowsChange,
       toggleFullscreen,
       handleResizeColumn,
-      handleSettingColumn
+      handleSettingColumn,
+      onScrollTop
     }
   }
 })

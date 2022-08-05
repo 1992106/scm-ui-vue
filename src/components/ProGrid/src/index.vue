@@ -104,9 +104,20 @@ export default defineComponent({
       page => {
         if (page && page === 1) {
           state.pagination.page = 1
+          // 滚动置顶
+          unref(xProGrid)?.xGrid?.scrollTo?.(0, 0)
         }
       }
     )
+
+    /**
+     * 搜索栏-搜索按钮
+     */
+    const handleSearch = params => {
+      onSearch(params)
+      // 滚动置顶
+      unref(xProGrid)?.xGrid?.scrollTo?.(0, 0)
+    }
 
     /**
      * 搜索栏-重置按钮
@@ -152,7 +163,7 @@ export default defineComponent({
         (props.gridProps?.autoResize == null || props.gridProps?.autoResize === true)
     )
 
-    const { paramsRef, handleQuery, handleSearch, onReset, onClear } = useSearch(
+    const { paramsRef, handleQuery, onSearch, onReset, onClear } = useSearch(
       emitSearch,
       unref(isResize),
       toRef(props, 'searchProps'),
@@ -167,7 +178,7 @@ export default defineComponent({
 
     // 初始化调用一下，获取搜索参数
     const onInit = () => {
-      handleSearch()
+      onSearch()
       handleQuery()
       emit('update:value', {
         ...unref(paramsRef),
