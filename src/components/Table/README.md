@@ -24,6 +24,9 @@
 | rowSelection | 列表项是否可选择 | Object | `{ type: 'checkbox', fixed: true, columnWidth: 50 }` |
 | v-model:selectedValue | 勾选的行数据 | Array | `[]` |
 | locale | 默认文案设置，目前包括排序、过滤、空数据文案 | Object | `{ filterConfirm: '筛选', filterReset: '重置', emptyText: '暂无数据' }` |
+| customZoom | 自定义缩放 | Boolean | `false` |
+| customSetting | 自定义设置 | Boolean | `false` |
+| storageName | 本地`Storage`名称，拖拽列和自定义表头时本地储存 | String | `-` |
 
 ### Emits
 

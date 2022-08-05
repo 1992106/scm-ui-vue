@@ -42,7 +42,20 @@
 </template>
 
 <script>
-import { computed, defineComponent, nextTick, onMounted, reactive, ref, toRefs, unref, watch, watchEffect } from 'vue'
+import {
+  computed,
+  defineComponent,
+  nextTick,
+  onActivated,
+  onDeactivated,
+  onMounted,
+  reactive,
+  ref,
+  toRefs,
+  unref,
+  watch,
+  watchEffect
+} from 'vue'
 import { Empty, Spin } from 'ant-design-vue'
 import XSearch from '@components/Search'
 import XPagination from '@components/Pagination'
@@ -82,7 +95,8 @@ export default defineComponent({
 
     const state = reactive({
       searchParams: {},
-      pages: { page: 1, pageSize: 20 }
+      pages: { page: 1, pageSize: 20 },
+      scrollTop: 0
     })
 
     // 页码赋值
@@ -109,11 +123,10 @@ export default defineComponent({
 
     // 当分页变化后滚动到顶部
     const handleScrollTop = () => {
-      if (unref(xPage)) {
-        const el = unref(xPage).querySelector('.x-page__container .x-page__render .scroll')
-        if (el) {
-          scrollTop(el, el.scrollTop, 0)
-        }
+      const el = unref(xPage)?.querySelector('.x-page__container .x-page__render .scroll')
+      if (el) {
+        // 动画效果实现滚动
+        scrollTop(el, el.scrollTop, 0)
       }
     }
 
@@ -177,6 +190,19 @@ export default defineComponent({
 
     onMounted(() => {
       onInit()
+    })
+
+    onActivated(() => {
+      const el = unref(xPage)?.querySelector('.x-page__container .x-page__render .scroll')
+      if (el && state.scrollTop) {
+        el.scrollTop = state.scrollTop
+      }
+    })
+    onDeactivated(() => {
+      const el = unref(xPage)?.querySelector('.x-page__container .x-page__render .scroll')
+      if (el) {
+        state.scrollTop = el.scrollTop
+      }
     })
 
     return {

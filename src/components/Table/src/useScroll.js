@@ -74,7 +74,7 @@ export const getTableScroll = ({ xTable, extraHeight } = {}) => {
 
   // TODO: 设置表格高度不生效
   // if (bodyEl) {
-  //   bodyEl.style.cssText += `height: ${y}px`
+  //   bodyEl.style.cssText += `height: ${height}px`
   // }
   // 空数据时，设置高度
   // if (emptyEl) {

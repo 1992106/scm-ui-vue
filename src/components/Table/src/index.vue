@@ -72,7 +72,19 @@
   </div>
 </template>
 <script>
-import { defineComponent, computed, mergeProps, ref, reactive, toRef, toRefs, unref, nextTick } from 'vue'
+import {
+  defineComponent,
+  computed,
+  mergeProps,
+  ref,
+  reactive,
+  toRef,
+  toRefs,
+  unref,
+  nextTick,
+  onActivated,
+  onMounted
+} from 'vue'
 import { FullscreenExitOutlined, FullscreenOutlined } from '@ant-design/icons-vue'
 import { Button, Space, Spin, Table } from 'ant-design-vue'
 import ColumnSetting from './ColumnSetting.vue'
@@ -87,6 +99,7 @@ import {
   mergeStorageAndColumns,
   storageToColumns
 } from '@components/Table/src/utils'
+import { useEventListener } from '@hooks/useEventListener'
 
 export default defineComponent({
   name: 'XTable',
@@ -230,6 +243,7 @@ export default defineComponent({
     }
     const state = reactive({
       scroll: {},
+      scrollTop: 0,
       canFullscreen: false,
       emptyBlockHeight: '',
       customColumns: getCustomColumns(),
@@ -393,6 +407,31 @@ export default defineComponent({
     // 是否显示插槽
     const hasSearchBar = computed(() => !!slots['searchBar'])
     const hasToolBar = computed(() => !!slots['toolBar'] || props.customSetting || props.customZoom)
+
+    onMounted(() => {
+      // 必须延迟绑定scroll事件
+      setTimeout(() => {
+        const el = unref(xTable)?.$el.querySelector('.ant-table-body')
+        if (el) {
+          useEventListener(el, 'scroll', e => {
+            state.scrollTop = e.target.scrollTop
+          })
+        }
+      }, 1000)
+    })
+    onActivated(() => {
+      const el = unref(xTable)?.$el.querySelector('.ant-table-body')
+      if (el && state.scrollTop) {
+        el.scrollTop = state.scrollTop
+      }
+    })
+    // TODO: 获取表格的scrollTop一直为0，故使用监听scroll事件实现
+    // onDeactivated(() => {
+    //   const el = unref(xTable)?.$el.querySelector('.ant-table-body')
+    //   if (el) {
+    //     state.scrollTop = el.scrollTop
+    //   }
+    // })
 
     return {
       xTable,
