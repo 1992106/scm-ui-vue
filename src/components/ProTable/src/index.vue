@@ -1,12 +1,12 @@
 <template>
   <x-table
     ref="xProTable"
-    v-bind="tableProps"
-    v-model:pagination="pagination"
     custom-zoom
     custom-setting
     auto-resize
     :extra-height="12"
+    v-bind="tableProps"
+    v-model:pagination="pagination"
     @search="handleQuery">
     <!--搜索栏-->
     <template v-if="hasSearchBar" #searchBar>
