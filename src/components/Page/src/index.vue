@@ -20,7 +20,7 @@
       <div class="x-page__container">
         <slot>
           <div v-if="dataSource.length" class="x-page__render">
-            <div class="scroll">
+            <div class="scroll" @scroll="handleScroll">
               <template v-for="(item, index) in dataSource" :key="getValueByRowKey(rowKey, item, index)">
                 <slot name="itemRender" :record="item" :index="index"></slot>
               </template>
@@ -47,7 +47,6 @@ import {
   defineComponent,
   nextTick,
   onActivated,
-  onDeactivated,
   onMounted,
   reactive,
   ref,
@@ -192,16 +191,14 @@ export default defineComponent({
       onInit()
     })
 
+    // 获取scrollTop的高度
+    const handleScroll = e => {
+      state.scrollTop = e.target.scrollTop
+    }
     onActivated(() => {
       const el = unref(xPage)?.querySelector('.x-page__container .x-page__render .scroll')
       if (el && state.scrollTop) {
         el.scrollTop = state.scrollTop
-      }
-    })
-    onDeactivated(() => {
-      const el = unref(xPage)?.querySelector('.x-page__container .x-page__render .scroll')
-      if (el) {
-        state.scrollTop = el.scrollTop
       }
     })
 
@@ -219,6 +216,7 @@ export default defineComponent({
       handleSearch,
       handleReset,
       handleClear,
+      handleScroll,
       getValueByRowKey
     }
   }
