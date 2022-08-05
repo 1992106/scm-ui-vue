@@ -104,8 +104,6 @@ export default defineComponent({
       page => {
         if (page && page === 1) {
           state.pagination.page = 1
-          // 滚动置顶
-          unref(xProGrid)?.xGrid?.scrollTo?.(0, 0)
         }
       }
     )
@@ -115,8 +113,6 @@ export default defineComponent({
      */
     const handleSearch = params => {
       onSearch(params)
-      // 滚动置顶
-      unref(xProGrid)?.xGrid?.scrollTo?.(0, 0)
     }
 
     /**
