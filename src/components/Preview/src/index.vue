@@ -27,7 +27,7 @@ export default defineComponent({
     urls: { type: Array as PropType<string[]>, required: true }
   },
   emits: ['update:visible'],
-  setup(props, { emit }) {
+  setup(props, { emit, expose }) {
     const isPreview = computed({
       get: () => props.visible,
       set: val => {
@@ -43,6 +43,8 @@ export default defineComponent({
     const handleVisibleChange = bool => {
       isPreview.value = bool
     }
+
+    expose({})
 
     return {
       isPreview,

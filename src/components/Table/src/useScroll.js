@@ -3,13 +3,13 @@ import { debounce } from 'lodash-es'
 // import { getScrollBarSize } from '@src/utils'
 
 export const useScroll = ({ xTable, autoResize, extraHeight, scroll }) => {
-  const onResize = debounce(() => {
+  const resizeFn = debounce(() => {
     scroll.value = getTableScroll({ xTable, extraHeight })
   }, 200)
 
   const initResize = () => {
     if (unref(xTable) && window.MutationObserver) {
-      const observer = new MutationObserver(onResize)
+      const observer = new MutationObserver(resizeFn)
       observer.observe(unref(xTable)?.$el, { attributes: true, childList: true, subtree: true })
       setTimeout(() => {
         observer && observer.disconnect()
@@ -19,15 +19,15 @@ export const useScroll = ({ xTable, autoResize, extraHeight, scroll }) => {
 
   onMounted(() => {
     if (autoResize) {
-      // 由于Table是动态异步生成，初始化直接调用onResize()无效，所以使用MutationObserver来实现
+      // 由于Table是动态异步生成，初始化直接调用resizeFn()无效，所以使用MutationObserver来实现
       initResize()
-      // onResize()
-      window.addEventListener('resize', onResize)
+      // resizeFn()
+      window.addEventListener('resize', resizeFn)
     }
   })
 
   onBeforeUnmount(() => {
-    window.removeEventListener('resize', onResize)
+    window.removeEventListener('resize', resizeFn)
   })
 }
 

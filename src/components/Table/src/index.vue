@@ -181,7 +181,7 @@ export default defineComponent({
     'expandedRowsChange',
     'resizeColumn'
   ],
-  setup(props, { emit, slots }) {
+  setup(props, { emit, slots, expose }) {
     /**
      * 默认值
      */
@@ -442,6 +442,11 @@ export default defineComponent({
     //   }
     // })
 
+    expose({
+      xTable,
+      onScrollTop
+    })
+
     return {
       xTable,
       ...toRefs(state),
@@ -460,8 +465,7 @@ export default defineComponent({
       handleExpandedRowsChange,
       toggleFullscreen,
       handleResizeColumn,
-      handleSettingColumn,
-      onScrollTop
+      handleSettingColumn
     }
   }
 })

@@ -44,7 +44,7 @@ export default defineComponent({
     size: { type: String, default: 'small' }
   },
   emits: ['update:value', 'change', 'edit'],
-  setup(props, { emit }) {
+  setup(props, { emit, expose }) {
     const state = reactive({
       tabs: [],
       activeKey: ''
@@ -86,6 +86,8 @@ export default defineComponent({
         immediate: true
       }
     )
+
+    expose({})
 
     return {
       ...toRefs(state),

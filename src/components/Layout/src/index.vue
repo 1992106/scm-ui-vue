@@ -35,7 +35,7 @@ export default defineComponent({
     spinProps: { type: [Boolean, Object], default: false }
   },
   emits: ['update:value', 'click'],
-  setup(props, { emit }) {
+  setup(props, { emit, expose }) {
     // 加载
     const spinProps = computed(() => {
       return typeof props.spinProps === 'object' ? props.spinProps : { spinning: props.spinProps }
@@ -79,6 +79,8 @@ export default defineComponent({
         immediate: true
       }
     )
+
+    expose({})
 
     return {
       ...toRefs(state),

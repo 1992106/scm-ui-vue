@@ -1,12 +1,12 @@
 <template>
   <x-table
     ref="xProTable"
+    v-bind="tableProps"
+    v-model:pagination="pagination"
     custom-zoom
     custom-setting
     auto-resize
     :extra-height="12"
-    v-bind="tableProps"
-    v-model:pagination="pagination"
     @search="handleQuery">
     <!--搜索栏-->
     <template v-if="hasSearchBar" #searchBar>
@@ -51,7 +51,7 @@ export default defineComponent({
     tableProps: { type: Object, default: () => ({}) }
   },
   emits: ['update:value', 'search', 'reset', 'clear'],
-  setup(props, { emit, slots }) {
+  setup(props, { emit, slots, expose }) {
     const xProTable = ref(null)
     const xSearch = ref(null)
 
@@ -99,8 +99,6 @@ export default defineComponent({
       page => {
         if (page && page === 1) {
           state.pagination.page = 1
-          // 滚动置顶
-          unref(xProTable)?.onScrollTop?.()
         }
       }
     )
@@ -177,6 +175,11 @@ export default defineComponent({
 
     onMounted(() => {
       onInit()
+    })
+
+    expose({
+      xProTable,
+      xSearch
     })
 
     return {

@@ -21,7 +21,7 @@ const XImage = defineComponent({
     preview: { type: Boolean as PropType<boolean>, default: true },
     quality: { type: Number as PropType<number>, default: 1 }
   },
-  setup(props, ctx) {
+  setup(props, { attrs, expose }) {
     const visible = ref(false)
     const current = ref(0)
 
@@ -104,6 +104,8 @@ const XImage = defineComponent({
 
     const { width, height } = getStyleSize({ width: props.width, height: props.height }) as any
 
+    expose({})
+
     return () => {
       // 图片为空时，显示暂无图片
       if (thumbUrls.value.length === 0) {
@@ -120,7 +122,7 @@ const XImage = defineComponent({
         // 单图模式
         renderImage = (
           <Image
-            {...ctx.attrs}
+            {...attrs}
             style={{ cursor: 'pointer' }}
             width={width}
             height={height}
@@ -140,7 +142,7 @@ const XImage = defineComponent({
           <Space style={{ flexWrap: 'wrap' }}>
             {compressUrls.value.map((src, index) => (
               <Image
-                {...ctx.attrs}
+                {...attrs}
                 key={index}
                 style={{ cursor: 'pointer' }}
                 width={width}

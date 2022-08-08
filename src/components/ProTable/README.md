@@ -77,3 +77,11 @@ emits: ['update:value', 'search', 'reset', 'clear']
 <slot name="footer"></slot>
 <slot name="emptyText"></slot>
 ```
+
+### Expose
+
+```vue
+// ref
+xProTable
+xSearch
+```

@@ -29,9 +29,12 @@ emits: ['submit', 'reset']
 <slot name="actionRender"></slot>
 ```
 
-### Methods
+### Expose
 
 ```vue
+// ref
+xForm
+
 // 提交表单
 onSubmit()
 
@@ -41,6 +44,6 @@ onReset()
 // 获取表单值
 onGetFormValues()
 
-// 设置表单字段和值
+// 设置表单字段值
 onSetFieldValue({ field: value })
 ```

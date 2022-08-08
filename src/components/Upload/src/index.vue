@@ -7,7 +7,7 @@
     :show-upload-list="showUploadList"
     :accept="accept"
     :max-count="maxCount"
-    :before-upload="onBeforeUpload"
+    :before-upload="beforeUploadFn"
     :custom-request="handleCustomRequest"
     @change="handleChange"
     @preview="handlePreview"
@@ -56,7 +56,7 @@ export default defineComponent({
     maxCount: { type: Number }
   },
   emits: ['update:file-list', 'change', 'preview', 'download'],
-  setup(props, { emit, slots }) {
+  setup(props, { emit, slots, expose }) {
     const state = reactive({
       files: [],
       // 预览图片
@@ -66,7 +66,7 @@ export default defineComponent({
     })
 
     // 上传前校验
-    const onBeforeUpload = file => {
+    const beforeUploadFn = file => {
       if (props.beforeUpload && isFunction(props.beforeUpload)) {
         return props.beforeUpload(file)
       }
@@ -199,7 +199,7 @@ export default defineComponent({
         // 自定义表单组件需要手动调用onFieldChange触发校验
         formItemContext.onFieldChange()
       } else if (file.status === undefined) {
-        // onBeforeUpload限制上传的图片status为undefined；故需要过滤限制上传的图片
+        // beforeUploadFn限制上传的图片status为undefined；故需要过滤限制上传的图片
         // multiple为true时，多文件上传，需要异步延迟处理
         setTimeout(() => {
           state.files = fileList.filter(val => val?.status !== undefined)
@@ -229,13 +229,15 @@ export default defineComponent({
       emit('download', file)
     }
 
-    //
+    // 是否显示插槽
     const hasItemRender = computed(() => !!slots['itemRender'])
+
+    expose({})
 
     return {
       ...toRefs(state),
       hasItemRender,
-      onBeforeUpload,
+      beforeUploadFn,
       handleCustomRequest,
       handleChange,
       handlePreview,

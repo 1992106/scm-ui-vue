@@ -31,7 +31,7 @@ export default defineComponent({
     paginationConfig: Object
   },
   emits: ['update:pagination', 'change', 'showSizeChange'],
-  setup(props, { emit, attrs, slots }) {
+  setup(props, { emit, slots, attrs, expose }) {
     const defaultState = {
       defaultPaginationConfig: {
         defaultPageSize: 20,
@@ -79,7 +79,10 @@ export default defineComponent({
       emit('showSizeChange', current, pageSize)
     }
 
+    // 是否显示插槽
     const hasItemRender = computed(() => !isEmpty(slots['itemRender']))
+
+    expose({})
 
     return {
       pages,

@@ -88,7 +88,7 @@ export default defineComponent({
     paginationConfig: Object
   },
   emits: ['update:value', 'update:pagination', 'search', 'reset', 'clear'],
-  setup(props, { emit, slots }) {
+  setup(props, { emit, slots, expose }) {
     const xPage = ref(null)
     const xSearch = ref(null)
 
@@ -209,6 +209,12 @@ export default defineComponent({
       }
     })
 
+    expose({
+      xPage,
+      xSearch,
+      onScrollTop
+    })
+
     return {
       xPage,
       xSearch,
@@ -224,7 +230,6 @@ export default defineComponent({
       handleReset,
       handleClear,
       handleScroll,
-      onScrollTop,
       getValueByRowKey
     }
   }

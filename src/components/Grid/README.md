@@ -71,3 +71,10 @@ emits: [
 <slot name="content"></slot>
 <slot name="emptyText"></slot>
 ```
+
+### Expose
+
+```vue
+// ref
+xGrid
+```

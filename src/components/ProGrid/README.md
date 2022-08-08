@@ -82,3 +82,11 @@ emits: ['update:value', 'search', 'reset', 'clear']
 <slot name="content"></slot>
 <slot name="emptyText"></slot>
 ```
+
+### Expose
+
+```vue
+// ref
+xProGrid
+xSearch
+```

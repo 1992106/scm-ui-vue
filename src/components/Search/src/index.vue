@@ -3,7 +3,7 @@
     <div v-if="hasTop" class="search-top">
       <slot name="top"></slot>
     </div>
-    <a-form ref="elForm" v-bind="$attrs" :layout="layout" :label-col="labelCol" :wrapper-col="wrapperCol">
+    <a-form ref="xForm" v-bind="$attrs" :layout="layout" :label-col="labelCol" :wrapper-col="wrapperCol">
       <a-row v-bind="rowProps">
         <template v-for="(column, index) in getColumns" :key="column?.field">
           <a-col v-show="canExpand || index < getIndex" v-bind="colProps">
@@ -102,8 +102,8 @@ export default defineComponent({
     defaultExpand: { type: Boolean, default: false }
   },
   emits: ['search', 'reset', 'clear'],
-  setup(props, { emit, slots }) {
-    const elForm = ref(null)
+  setup(props, { emit, slots, expose }) {
+    const xForm = ref(null)
 
     // 默认值
     const defaultState = {
@@ -344,8 +344,16 @@ export default defineComponent({
       }
     }
 
+    expose({
+      xForm,
+      onSearch,
+      onReset,
+      onSetFieldValue,
+      onGetFormValues
+    })
+
     return {
-      elForm,
+      xForm,
       hasTop,
       hasBottom,
       getColumns,
@@ -358,11 +366,7 @@ export default defineComponent({
       getIndex,
       getPush,
       canExpand,
-      handleExpand,
-      onSearch,
-      onReset,
-      onSetFieldValue,
-      onGetFormValues
+      handleExpand
     }
   }
 })

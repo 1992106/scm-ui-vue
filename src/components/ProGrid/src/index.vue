@@ -1,12 +1,12 @@
 <template>
   <x-grid
     ref="xProGrid"
+    v-bind="gridProps"
+    v-model:pagination="pagination"
     custom-zoom
     custom-setting
     auto-resize
     height="auto"
-    v-bind="gridProps"
-    v-model:pagination="pagination"
     @search="handleQuery">
     <!--搜索栏-->
     <template v-if="hasSearchBar" #searchBar>
@@ -55,7 +55,7 @@ export default defineComponent({
     gridProps: { type: Object, default: () => ({}) }
   },
   emits: ['update:value', 'search', 'reset', 'clear'],
-  setup(props, { emit, slots }) {
+  setup(props, { emit, slots, expose }) {
     const xProGrid = ref(null)
     const xSearch = ref(null)
 
@@ -184,6 +184,11 @@ export default defineComponent({
 
     onMounted(() => {
       onInit()
+    })
+
+    expose({
+      xProGrid,
+      xSearch
     })
 
     return {

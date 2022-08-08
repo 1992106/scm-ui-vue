@@ -1,5 +1,5 @@
 <template>
-  <a-form ref="elForm" v-bind="$attrs" class="x-form" :layout="layout" :label-col="labelCol" :wrapper-col="wrapperCol">
+  <a-form ref="xForm" v-bind="$attrs" class="x-form" :layout="layout" :label-col="labelCol" :wrapper-col="wrapperCol">
     <!--栅格化布局-->
     <template v-if="gird">
       <a-row v-bind="rowProps">
@@ -89,8 +89,8 @@ export default defineComponent({
     colProps: { type: Object, default: () => ({}) }
   },
   emits: ['submit', 'reset'],
-  setup(props, { emit, slots }) {
-    const elForm = ref(null)
+  setup(props, { emit, slots, expose }) {
+    const xForm = ref(null)
 
     // 获取格式化后的columns
     const getColumns = computed(() => {
@@ -145,18 +145,22 @@ export default defineComponent({
     // 是否显示插槽
     const hasActions = computed(() => !!slots['actionRender'])
 
+    expose({
+      xForm,
+      onSubmit,
+      onReset,
+      onGetFormValues,
+      onSetFieldValue
+    })
+
     return {
-      elForm,
+      xForm,
       hasActions,
       getColumns,
       modelRef,
       validate,
       resetFields,
-      validateInfos,
-      onSubmit,
-      onReset,
-      onGetFormValues,
-      onSetFieldValue
+      validateInfos
     }
   }
 })

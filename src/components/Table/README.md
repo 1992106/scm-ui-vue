@@ -65,7 +65,17 @@ emits: [
 <slot name="emptyText"></slot>
 ```
 
-### cellRender
+### Expose
+
+```vue
+// ref
+xTable
+
+// 滚动顶部
+onScrollTop
+```
+
+### CellRender自定义render（默认内置图片、日期）
 ```vue
 缩略图
 cellRender: { name: 'thumbnail', props: { previewField: '', preview: true } }

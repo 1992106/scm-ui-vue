@@ -24,7 +24,7 @@ const XDrawer = defineComponent({
     cancelButtonProps: Object
   },
   emits: ['update:visible', 'cancel', 'ok'],
-  setup(props, ctx) {
+  setup(props, { emit, slots, attrs, expose }) {
     // 加载
     const spinProps = computed(() => {
       return typeof props.spinProps === 'object' ? props.spinProps : { spinning: props.spinProps }
@@ -32,17 +32,17 @@ const XDrawer = defineComponent({
 
     const handleCancel = () => {
       if (!props.manual) {
-        ctx.emit('update:visible', false)
+        emit('update:visible', false)
       }
-      ctx.emit('cancel')
+      emit('cancel')
     }
 
     const handleOk = () => {
-      ctx.emit('ok')
+      emit('ok')
     }
 
     const renderFooter = () => {
-      const footer = ctx.slots?.footer?.() || ctx.attrs?.footer
+      const footer = slots?.footer?.() || attrs?.footer
       return footer ? (
         footer
       ) : footer !== null ? (
@@ -57,18 +57,20 @@ const XDrawer = defineComponent({
       ) : null
     }
 
+    expose({})
+
     return () => (
       <Drawer
         {...props}
-        {...ctx.attrs}
+        {...attrs}
         visible={props.visible}
         class={['x-drawer', props.class]}
         width={props.width}
         height={props.height}
-        title={ctx.slots?.title?.() || ctx.attrs?.title}
+        title={slots?.title?.() || attrs?.title}
         footer={renderFooter()}
         onClose={handleCancel}>
-        <Spin {...unref(spinProps)}>{ctx.slots?.default && ctx.slots?.default()}</Spin>
+        <Spin {...unref(spinProps)}>{slots?.default?.()}</Spin>
       </Drawer>
     )
   }

@@ -56,3 +56,14 @@ emits: ['update:value', 'search', 'reset', 'clear']
 <slot></slot>
 <slot name="itemRender"></slot>
 ```
+
+### Expose
+
+```vue
+// ref
+xPage
+xSearch
+
+// 滚动顶部
+onScrollTop
+```

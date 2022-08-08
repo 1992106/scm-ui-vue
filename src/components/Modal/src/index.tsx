@@ -33,7 +33,7 @@ const XModal = defineComponent({
     spinProps: { type: [Boolean, Object] as PropType<boolean | SpinProps>, default: false }
   },
   emits: ['update:visible', 'cancel', 'ok', 'fullScreen'],
-  setup(props, ctx) {
+  setup(props, { emit, slots, attrs, expose }) {
     // 加载
     const spinProps = computed(() => {
       return typeof props.spinProps === 'object' ? props.spinProps : { spinning: props.spinProps }
@@ -57,7 +57,7 @@ const XModal = defineComponent({
       e?.stopPropagation()
       e?.preventDefault()
       canFullscreen.value = !unref(canFullscreen)
-      ctx.emit('fullScreen', canFullscreen.value)
+      emit('fullScreen', canFullscreen.value)
     }
 
     const renderIcon = () => {
@@ -81,27 +81,29 @@ const XModal = defineComponent({
 
     const handleCancel = () => {
       if (!props.manual) {
-        ctx.emit('update:visible', false)
+        emit('update:visible', false)
       }
-      ctx.emit('cancel')
+      emit('cancel')
     }
 
     const handleOk = () => {
-      ctx.emit('ok')
+      emit('ok')
     }
+
+    expose({})
 
     return () => (
       <Modal
         {...props}
-        {...ctx.attrs}
+        {...attrs}
         wrapClassName={unref(wrapClassName)}
         class={['x-modal', `${props.showFullscreen ? 'is-fullscreen' : ''}`, props?.class]}
         closeIcon={renderIcon()}
-        title={ctx.slots?.title?.() || ctx.attrs?.title}
-        footer={ctx.slots?.footer?.() || ctx.attrs?.footer}
+        title={slots?.title?.() || attrs?.title}
+        footer={slots?.footer?.() || attrs?.footer}
         onCancel={handleCancel}
         onOk={handleOk}>
-        <Spin {...unref(spinProps)}>{ctx.slots?.default && ctx.slots?.default()}</Spin>
+        <Spin {...unref(spinProps)}>{slots?.default?.()}</Spin>
       </Modal>
     )
   }

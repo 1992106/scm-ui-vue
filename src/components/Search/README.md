@@ -37,9 +37,12 @@ emits: ['search', 'reset', 'clear']
 <slot name="formItemRender"></slot>
 ```
 
-### Methods
+### Expose
 
 ```vue
+// ref
+xForm
+
 // 搜索
 onSearch()
 
@@ -49,6 +52,6 @@ onReset()
 // 获取搜索参数
 onGetFormValues()
 
-// 设置搜索字段和值
+// 设置搜索字段值
 onSetFieldValue({ field: value })
 ```

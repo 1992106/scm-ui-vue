@@ -202,7 +202,7 @@ export default defineComponent({
     'toggle-row-expand',
     'toggle-tree-expand'
   ],
-  setup(props, { emit, slots }) {
+  setup(props, { emit, slots, expose }) {
     /**
      * 默认值
      */
@@ -526,6 +526,10 @@ export default defineComponent({
     // 是否显示插槽
     const hasSearchBar = computed(() => !!slots['searchBar'])
     const hasToolBar = computed(() => !!slots['toolBar'])
+
+    expose({
+      xGrid
+    })
 
     return {
       xGrid,
