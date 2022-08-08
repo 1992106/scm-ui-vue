@@ -60,7 +60,7 @@ import XSearch from '@components/Search'
 import XPagination from '@components/Pagination'
 import { getValueByRowKey } from '@components/Table/src/utils'
 import { useAppHeight } from '@components/hooks/useSearch'
-import { isEmpty, scrollTop } from '@src/utils'
+import { isEmpty } from '@src/utils'
 export default defineComponent({
   name: 'XPage',
   components: {
@@ -124,8 +124,9 @@ export default defineComponent({
     const onScrollTop = (to = 0) => {
       const el = unref(xPage)?.querySelector('.x-page__container .x-page__render .scroll')
       if (el) {
+        el.scrollTop = to
         // 动画效果实现滚动
-        scrollTop(el, el.scrollTop, to)
+        // scrollTop(el, el.scrollTop, to)
       }
     }
 

@@ -63,7 +63,8 @@ export default defineComponent({
       pagination: {
         page: 1,
         pageSize: 20
-      }
+      },
+      action: ''
     })
 
     // grid插槽
@@ -140,17 +141,19 @@ export default defineComponent({
     }
 
     // 【XSearch-搜索】和【XGrid-分页、筛选、排序】都会触发该方法
-    const emitSearch = (params = {}) => {
+    // action：【XSearch：search】 和 【XTable：paginate/sort/filter】
+    const emitSearch = (params = {}, action) => {
       // 当【搜索、筛选、排序】时，page不为空；当【分页】时，page为空
       // 【搜索、筛选、排序】需要重置页码为1
       if (unref(showPagination) && params.page) {
         state.pagination.page = params.page || 1
       }
+      state.action = action
       emit('update:value', {
         ...params,
         ...(unref(showPagination) ? state.pagination : {})
       })
-      emit('search', { ...params, ...(unref(showPagination) ? state.pagination : {}) })
+      emit('search', { ...params, ...(unref(showPagination) ? state.pagination : {}) }, action)
     }
 
     const isResize = computed(

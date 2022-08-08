@@ -17,7 +17,7 @@ export function useSearch(fn, isResize = true, searchProps, gridProps) {
       searchParams.value = $event
     }
     if (isFunction(fn)) {
-      fn({ ...unref(paramsRef), page: 1 })
+      fn({ ...unref(paramsRef), page: 1 }, 'search')
     }
   }
 
@@ -25,7 +25,8 @@ export function useSearch(fn, isResize = true, searchProps, gridProps) {
   const isDefaultQuery = ref(false)
   const sortParams = ref({})
   const filterParams = ref({})
-  // 分页、排序、筛选（分页时，$event和key都为空）
+  // 分页、排序、筛选（当分页时，$event为空）
+  // key: paginate/sort/filter
   const handleQuery = ($event, key) => {
     if (!unref(isDefaultQuery)) {
       isDefaultQuery.value = true
@@ -33,6 +34,7 @@ export function useSearch(fn, isResize = true, searchProps, gridProps) {
     }
     const pagination = {}
     if ($event) {
+      // 当【排序、筛选】时：需要重置页码
       pagination.page = 1
       if (key === 'sort') {
         sortParams.value = $event
@@ -42,8 +44,8 @@ export function useSearch(fn, isResize = true, searchProps, gridProps) {
       }
     }
     if (isFunction(fn)) {
-      // 分页：因为event为空，所以pagination也是空对象
-      fn({ ...unref(paramsRef), ...pagination })
+      // 当分页时：pagination为空对象
+      fn({ ...unref(paramsRef), ...pagination }, key)
     }
   }
 

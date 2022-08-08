@@ -59,7 +59,8 @@ export default defineComponent({
       pagination: {
         page: 1,
         pageSize: 20
-      }
+      },
+      action: ''
     })
 
     // table插槽
@@ -103,6 +104,18 @@ export default defineComponent({
       }
     )
 
+    // 监听数据源，变化时滚动置顶（xTable默认只支持分页、排序、筛选变化滚动置顶，不支持快捷搜索滚动置顶）
+    watch(
+      () => props.tableProps?.dataSource,
+      () => {
+        // 滚动置顶
+        if (!state.action) {
+          unref(xProTable)?.onScrollTop?.()
+        }
+        state.action = ''
+      }
+    )
+
     /**
      * 搜索栏-搜索按钮
      */
@@ -135,17 +148,19 @@ export default defineComponent({
     }
 
     // 【XSearch-搜索】和【XTable-分页、筛选、排序】都会触发该方法
-    const emitSearch = (params = {}) => {
+    // action：【XSearch：search】 和 【XTable：paginate/sort/filter】
+    const emitSearch = (params = {}, action) => {
       // 当【搜索、筛选、排序】时，page不为空；当【分页】时，page为空
       // 【搜索、筛选、排序】需要重置页码为1
       if (unref(showPagination) && params.page) {
         state.pagination.page = params.page || 1
       }
+      state.action = action
       emit('update:value', {
         ...params,
         ...(unref(showPagination) ? state.pagination : {})
       })
-      emit('search', { ...params, ...(unref(showPagination) ? state.pagination : {}) })
+      emit('search', { ...params, ...(unref(showPagination) ? state.pagination : {}) }, action)
     }
 
     const isResize = computed(() => props.tableProps?.autoResize == null || props.tableProps?.autoResize === true)

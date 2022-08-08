@@ -91,7 +91,7 @@ import ColumnSetting from './ColumnSetting.vue'
 import CellRender from './CellRender'
 import { useScroll } from '@components/Table/src/useScroll'
 import { cloneDeep } from 'lodash-es'
-import { isEmpty, scrollTop, triggerResize } from '@src/utils'
+import { isEmpty, triggerResize } from '@src/utils'
 import {
   columnsToStorage,
   getSortDirection,
@@ -351,7 +351,7 @@ export default defineComponent({
           page: current,
           pageSize
         })
-        emit('search')
+        emit('search', null, 'paginate')
       }
       emit('change', filters, sorter, extra)
     }
@@ -412,8 +412,9 @@ export default defineComponent({
     const onScrollTop = (to = 0) => {
       const el = unref(xTable)?.$el.querySelector('.ant-table-body')
       if (el) {
+        el.scrollTop = to
         // 动画效果实现滚动
-        scrollTop(el, el.scrollTop, to)
+        // scrollTop(el, el.scrollTop, to)
       }
     }
 

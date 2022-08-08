@@ -265,7 +265,7 @@ export default defineComponent({
       },
       set: val => {
         emit('update:pagination', val)
-        emit('search')
+        emit('search', null, 'paginate')
         // xGrid.value.loadData()
       }
     })
