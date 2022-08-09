@@ -1013,10 +1013,10 @@ ansi-styles@^6.0.0:
   resolved "https://registry.npmjs.org/ansi-styles/-/ansi-styles-6.1.0.tgz#87313c102b8118abd57371afab34618bf7350ed3"
   integrity sha512-VbqNsoz55SYGczauuup0MFUyXNQviSpFTj1RQtFzmQLk18qbVSpTFFGMT293rmDaQuKCT6InmbuEyUne4mTuxQ==
 
-ant-design-vue@^3.2.10:
-  version "3.2.10"
-  resolved "https://registry.npmjs.org/ant-design-vue/-/ant-design-vue-3.2.10.tgz#938260177126cf7ab0dc476dd9e3e9d06ab17bae"
-  integrity sha512-aqa0kjJzVQ74MfVw5w7rTOdJQL2JN9V/O6Ro+VQQMq/tY7q91JiomhI9TRKAK3tFdBDXJpUoBCVOsosbbxMzRw==
+ant-design-vue@^3.2.11:
+  version "3.2.11"
+  resolved "https://registry.npmjs.org/ant-design-vue/-/ant-design-vue-3.2.11.tgz#034b2a2adef82a34440c10b90a5e02bcd25b376b"
+  integrity sha512-QKCAcOY5EJF0PepiVGA4X5PzUetYUvG5qALmA+2TON40pc2+brOEiVTwr3kjF9N+f7q4MpyiLPu4pIErwoajOQ==
   dependencies:
     "@ant-design/colors" "^6.0.0"
     "@ant-design/icons-vue" "^6.1.0"
@@ -4491,10 +4491,10 @@ vite-plugin-html@^2.1.2:
     fs-extra "^10.0.0"
     html-minifier-terser "^6.1.0"
 
-vite@^3.0.2:
-  version "3.0.2"
-  resolved "https://registry.npmjs.org/vite/-/vite-3.0.2.tgz#2a7b4642c53ae066cf724e7e581d6c1fd24e2c32"
-  integrity sha512-TAqydxW/w0U5AoL5AsD9DApTvGb2iNbGs3sN4u2VdT1GFkQVUfgUldt+t08TZgi23uIauh1TUOQJALduo9GXqw==
+vite@^3.0.4:
+  version "3.0.4"
+  resolved "https://registry.npmjs.org/vite/-/vite-3.0.4.tgz#c61688d6b97573e96cf5ac25f2d68597b5ce68e8"
+  integrity sha512-NU304nqnBeOx2MkQnskBQxVsa0pRAH5FphokTGmyy8M3oxbvw7qAXts2GORxs+h/2vKsD+osMhZ7An6yK6F1dA==
   dependencies:
     esbuild "^0.14.47"
     postcss "^8.4.14"
