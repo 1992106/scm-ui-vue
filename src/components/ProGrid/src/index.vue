@@ -1,12 +1,12 @@
 <template>
   <x-grid
     ref="xProGrid"
-    v-bind="gridProps"
-    v-model:pagination="pagination"
     custom-zoom
     custom-setting
     auto-resize
     height="auto"
+    v-bind="gridProps"
+    v-model:pagination="pagination"
     @search="handleQuery">
     <!--搜索栏-->
     <template v-if="hasSearchBar" #searchBar>
