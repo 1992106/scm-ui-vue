@@ -617,7 +617,7 @@ export default defineComponent({
     }
   }
 
-  :deep(.vxe-grid .vxe-grid--bottom-wrapper) {
+  :deep(.vxe-grid--bottom-wrapper) {
     border: 1px solid #f0f0f0;
     border-top: 0;
     background-color: #f8f8f9;
