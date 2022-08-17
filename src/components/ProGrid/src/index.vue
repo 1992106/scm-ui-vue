@@ -26,6 +26,14 @@
     <template v-if="hasToolBar" #toolBar>
       <slot name="toolBar"></slot>
     </template>
+    <!--表格头部-->
+    <template v-if="hasHeaderBar" #headerBar>
+      <slot name="headerBar"></slot>
+    </template>
+    <!--表格尾部-->
+    <template v-if="hasFooterBar" #footerBar>
+      <slot name="footerBar"></slot>
+    </template>
     <!--空数据-->
     <template #emptyText>
       <slot name="emptyText"></slot>
@@ -174,6 +182,8 @@ export default defineComponent({
     const hasTop = computed(() => !!slots['top'])
     const hasBottom = computed(() => !!slots['bottom'])
     const hasToolBar = computed(() => !!slots['toolBar'])
+    const hasHeaderBar = computed(() => !!slots['headerBar'])
+    const hasFooterBar = computed(() => !!slots['footerBar'])
 
     // 初始化调用一下，获取搜索参数
     const onInit = () => {
@@ -202,6 +212,8 @@ export default defineComponent({
       hasTop,
       hasBottom,
       hasToolBar,
+      hasHeaderBar,
+      hasFooterBar,
       getGridSlots,
       handleQuery,
       handleSearch,

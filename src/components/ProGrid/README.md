@@ -66,11 +66,15 @@ emits: ['update:value', 'search', 'reset', 'clear']
 ### Slots
 
 ```vue
+// XSearch
 <slot name="top"></slot>
 <slot name="bottom"></slot>
-<slot name="toolBar"></slot>
 
-// XGrid插槽
+<slot name="toolBar"></slot>
+<slot name="headerBar"></slot>
+<slot name="footerBar"></slot>
+
+// XGrid
 <slot name="default"></slot>
 <slot name="header"></slot>
 <slot name="footer"></slot>

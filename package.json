@@ -1,6 +1,6 @@
 {
   "name": "scm-ui-vue",
-  "version": "0.0.16",
+  "version": "0.0.18",
   "main": "dist/scm-ui-vue.js",
   "module": "dist/scm-ui-vue.mjs",
   "unpkg": "dist/scm-ui-vue.umd.js",

@@ -61,11 +61,13 @@ emits: ['update:value', 'search', 'reset', 'clear']
 ### Slots
 
 ```vue
+// XSearch
 <slot name="top"></slot>
 <slot name="bottom"></slot>
+
 <slot name="toolBar"></slot>
 
-// XTable插槽
+// XTable
 <slot name="headerCell"></slot>
 <slot name="bodyCell"></slot>
 <slot name="customFilterDropdown"></slot>

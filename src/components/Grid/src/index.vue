@@ -78,11 +78,19 @@
     </template>
     <!--空数据-->
     <template #empty>
-      <a-empty :image="simpleImage" :description="emptyText" />
+      <slot name="emptyText">
+        <a-empty :image="simpleImage" :description="emptyText" />
+      </slot>
     </template>
     <!--slot-->
     <template v-for="slot of getGridSlots" :key="slot" #[slot]="scope">
       <slot :name="slot" v-bind="scope"></slot>
+    </template>
+    <template v-if="hasHeaderBar" #top>
+      <slot name="headerBar"></slot>
+    </template>
+    <template v-if="hasFooterBar" #bottom>
+      <slot name="footerBar"></slot>
     </template>
     <!--分页-->
     <template v-if="canPagination" #pager>
@@ -526,6 +534,8 @@ export default defineComponent({
     // 是否显示插槽
     const hasSearchBar = computed(() => !!slots['searchBar'])
     const hasToolBar = computed(() => !!slots['toolBar'])
+    const hasHeaderBar = computed(() => !!slots['headerBar'])
+    const hasFooterBar = computed(() => !!slots['footerBar'])
 
     expose({
       xGrid
@@ -538,6 +548,8 @@ export default defineComponent({
       pages,
       hasSearchBar,
       hasToolBar,
+      hasHeaderBar,
+      hasFooterBar,
       getGridSlots,
       getRowConfig,
       getColumnConfig,
@@ -603,6 +615,12 @@ export default defineComponent({
         margin: 10px 0 10px 10px;
       }
     }
+  }
+
+  :deep(.vxe-grid .vxe-grid--bottom-wrapper) {
+    border: 1px solid #f0f0f0;
+    border-top: 0;
+    background-color: #f8f8f9;
   }
 
   // 处理表头排序和筛选图标向右对齐

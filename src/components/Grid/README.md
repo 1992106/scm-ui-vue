@@ -58,6 +58,8 @@ emits: [
 ```vue
 <slot name="searchBar"></slot>
 <slot name="toolBar"></slot>
+<slot name="headerBar"></slot>
+<slot name="footerBar"></slot>
 
 // XGrid插槽
 <slot name="default"></slot>
