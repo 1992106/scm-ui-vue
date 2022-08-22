@@ -40,6 +40,11 @@ export default defineComponent({
       current.value = props.current
     })
 
+    const urls = ref(props.urls)
+    watchEffect(() => {
+      urls.value = props.urls
+    })
+
     const handleVisibleChange = bool => {
       isPreview.value = bool
     }
@@ -49,6 +54,7 @@ export default defineComponent({
     return {
       isPreview,
       current,
+      urls,
       handleVisibleChange
     }
   }
