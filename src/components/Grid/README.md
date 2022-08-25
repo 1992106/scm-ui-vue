@@ -8,6 +8,7 @@
 
 | 参数 | 说明 | 类型 | 默认值 |
 | --- | --- | --- | --- |
+| keyField | 表格数据行唯一主键的字段名 | String | `-` |
 | columns | 表格列配置 | Array | `[]` |
 | data | 表格数据 | Array | `[]` |
 | loading | 表格 `loading` | Boolean | `false` |

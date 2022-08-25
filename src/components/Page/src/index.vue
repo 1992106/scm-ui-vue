@@ -1,17 +1,20 @@
 <template>
   <div ref="xPage" class="x-page">
     <a-spin v-bind="spinProps">
-      <x-search ref="xSearch" v-bind="searchProps" @search="handleSearch" @reset="handleReset" @clear="handleClear">
-        <template #formItemRender="scope">
-          <slot name="formItemRender" v-bind="scope"></slot>
-        </template>
-        <template v-if="hasTop" #top>
-          <slot name="top"></slot>
-        </template>
-        <template v-if="hasBottom" #bottom>
-          <slot name="bottom"></slot>
-        </template>
-      </x-search>
+      <!--搜索栏-->
+      <template v-if="hasSearchBar">
+        <x-search ref="xSearch" v-bind="searchProps" @search="handleSearch" @reset="handleReset" @clear="handleClear">
+          <template #formItemRender="scope">
+            <slot name="formItemRender" v-bind="scope"></slot>
+          </template>
+          <template v-if="hasTop" #top>
+            <slot name="top"></slot>
+          </template>
+          <template v-if="hasBottom" #bottom>
+            <slot name="bottom"></slot>
+          </template>
+        </x-search>
+      </template>
       <!--工具栏-->
       <div v-if="hasToolBar" class="toolbar">
         <slot name="toolBar"></slot>
@@ -21,9 +24,13 @@
         <slot>
           <div v-if="dataSource.length" class="x-page__render">
             <div class="scroll" @scroll="handleScroll">
-              <template v-for="(item, index) in dataSource" :key="getValueByRowKey(rowKey, item, index)">
-                <slot name="itemRender" :record="item" :index="index"></slot>
-              </template>
+              <a-row v-bind="rowProps">
+                <template v-for="(item, index) in dataSource" :key="getValueByRowKey(rowKey, item, index)">
+                  <a-col v-bind="colProps">
+                    <slot name="itemRender" :record="item" :index="index"></slot>
+                  </a-col>
+                </template>
+              </a-row>
             </div>
             <x-pagination
               v-model:pagination="pages"
@@ -85,7 +92,9 @@ export default defineComponent({
     showPagination: { type: Boolean, default: true },
     total: { type: Number, default: 0 },
     pagination: { type: Object, default: () => ({}) },
-    paginationConfig: Object
+    paginationConfig: Object,
+    rowProps: Object,
+    colProps: Object
   },
   emits: ['update:value', 'update:pagination', 'search', 'reset', 'clear'],
   setup(props, { emit, slots, expose }) {
@@ -188,7 +197,7 @@ export default defineComponent({
 
     // 初始化调用一下，获取搜索参数
     const onInit = () => {
-      const params = unref(xSearch).onGetFormValues()
+      const params = unref(xSearch)?.onGetFormValues?.()
       emit('update:value', { ...params, ...(props.showPagination ? state.pages : {}) })
     }
 
@@ -268,6 +277,7 @@ export default defineComponent({
     flex-direction: column;
     flex: 1;
     overflow-y: auto;
+    overflow-x: hidden;
     background-color: #fff;
 
     .x-page__render {
@@ -278,6 +288,7 @@ export default defineComponent({
       .scroll {
         flex: 1;
         overflow-y: auto;
+        overflow-x: hidden;
       }
 
       .ant-pagination {

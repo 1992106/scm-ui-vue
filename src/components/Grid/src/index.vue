@@ -121,7 +121,7 @@ export default defineComponent({
   },
   inheritAttrs: false,
   props: {
-    // 自定义行数据唯一主键的字段名
+    // 表格数据行唯一主键的字段名
     keyField: String,
     // 自定义列
     columns: { type: Array, required: true, default: () => [] },
