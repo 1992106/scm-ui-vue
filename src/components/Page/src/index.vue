@@ -86,15 +86,16 @@ export default defineComponent({
     dataSource: { type: Array, default: () => [] },
     loading: { type: [Boolean, Object], default: false },
     emptyText: { type: String, default: '暂无数据' },
+    // 布局
+    rowProps: Object,
+    colProps: Object,
     // 自动计算表格
     autoResize: { type: Boolean, default: true },
     // 页码
     showPagination: { type: Boolean, default: true },
     total: { type: Number, default: 0 },
     pagination: { type: Object, default: () => ({}) },
-    paginationConfig: Object,
-    rowProps: Object,
-    colProps: Object
+    paginationConfig: Object
   },
   emits: ['update:value', 'update:pagination', 'search', 'reset', 'clear'],
   setup(props, { emit, slots, expose }) {

@@ -14,13 +14,13 @@
 | dataSource | 表格数据 | Array | `[]` |
 | loading | `ASpin` 加载中 `props` | [Boolean, Object] | `false` |
 | emptyText | 空数据显示的内容 | String | `暂无数据` |
+| rowProps | `ARow props` | Object | `-` |
+| colProps | `ACol props` | Object | `-` |
 | autoResize | 自动计算高度 | Boolean | `true` |
 | showPagination | 是否显示分页 | Boolean | `true` |
 | total | 数据总数 | Number | `0` |
 | v-model:pagination | 当前页数和每页条数 | Object | `{ page: 1, pageSize: 20 }` |
 | paginationConfig | 分页配置项 | Object | `-` |
-| rowProps | `ARow props` | Object | `-` |
-| colProps | `ACol props` | Object | `-` |
 
 #### searchProps
 
