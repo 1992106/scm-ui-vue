@@ -104,7 +104,7 @@ export default defineComponent({
 
   &.ant-tabs {
     :deep(.ant-tabs-nav) {
-      padding: 5px 20px 10px;
+      padding: 5px 16px 10px;
       margin-bottom: 10px;
       background-color: $bg-color;
     }
