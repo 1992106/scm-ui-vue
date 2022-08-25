@@ -197,7 +197,7 @@ export default defineComponent({
 
     // 初始化调用一下，获取搜索参数
     const onInit = () => {
-      const params = unref(xSearch)?.onGetFormValues?.()
+      const params = unref(xSearch)?.onGetFormValues() || {}
       emit('update:value', { ...params, ...(props.showPagination ? state.pages : {}) })
     }
 
