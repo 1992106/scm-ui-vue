@@ -21,6 +21,7 @@
 | total | 数据总数 | Number | `0` |
 | v-model:pagination | 当前页数和每页条数 | Object | `{ page: 1, pageSize: 20 }` |
 | paginationConfig | 分页配置项 | Object | `-` |
+| customZoom | 自定义缩放 | Boolean | `false` |
 
 #### searchProps
 
