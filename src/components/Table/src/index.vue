@@ -90,8 +90,6 @@ import { Button, Space, Spin, Table } from 'ant-design-vue'
 import ColumnSetting from './ColumnSetting.vue'
 import CellRender from './CellRender'
 import { useScroll } from '@components/Table/src/useScroll'
-import { cloneDeep } from 'lodash-es'
-import { isEmpty, triggerResize } from '@src/utils'
 import {
   columnsToStorage,
   getSortDirection,
@@ -99,7 +97,10 @@ import {
   mergeStorageAndColumns,
   storageToColumns
 } from '@components/Table/src/utils'
+import { useEsc } from '@components/hooks/useEsc'
 import { useEventListener } from '@hooks/useEventListener'
+import { cloneDeep } from 'lodash-es'
+import { isEmpty, triggerResize } from '@src/utils'
 
 export default defineComponent({
   name: 'XTable',
@@ -374,6 +375,7 @@ export default defineComponent({
         triggerResize()
       })
     }
+    useEsc(toggleFullscreen)
 
     // 拖拽列
     const handleResizeColumn = (width, column) => {

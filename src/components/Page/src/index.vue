@@ -1,5 +1,5 @@
 <template>
-  <div ref="xPage" class="x-page">
+  <div ref="xPage" :class="['x-page', canFullscreen ? 'x-page__fullscreen' : '']">
     <a-spin v-bind="spinProps">
       <!--搜索栏-->
       <template v-if="hasSearchBar">
@@ -16,8 +16,18 @@
         </x-search>
       </template>
       <!--工具栏-->
-      <div v-if="hasToolBar" class="toolbar">
-        <slot name="toolBar"></slot>
+      <div v-if="hasToolBar" class="x-page__toolbar">
+        <div class="toolbar">
+          <slot name="toolBar"></slot>
+        </div>
+        <div v-if="customZoom" class="custom">
+          <a-button shape="circle" size="middle" @click="toggleFullscreen">
+            <template #icon>
+              <FullscreenOutlined v-if="!canFullscreen" />
+              <FullscreenExitOutlined v-else />
+            </template>
+          </a-button>
+        </div>
       </div>
       <!--内容-->
       <div class="x-page__container">
@@ -63,14 +73,18 @@ import {
   watchEffect
 } from 'vue'
 import { Empty, Spin } from 'ant-design-vue'
+import { FullscreenExitOutlined, FullscreenOutlined } from '@ant-design/icons-vue'
 import XSearch from '@components/Search'
 import XPagination from '@components/Pagination'
 import { getValueByRowKey } from '@components/Table/src/utils'
 import { useAppHeight } from '@components/hooks/useSearch'
+import { useEsc } from '@components/hooks/useEsc'
 import { isEmpty } from '@src/utils'
 export default defineComponent({
   name: 'XPage',
   components: {
+    FullscreenOutlined,
+    FullscreenExitOutlined,
     'x-search': XSearch,
     'x-pagination': XPagination,
     'a-spin': Spin,
@@ -95,7 +109,9 @@ export default defineComponent({
     showPagination: { type: Boolean, default: true },
     total: { type: Number, default: 0 },
     pagination: { type: Object, default: () => ({}) },
-    paginationConfig: Object
+    paginationConfig: Object,
+    // 自定义缩放
+    customZoom: { type: Boolean, default: false }
   },
   emits: ['update:value', 'update:pagination', 'search', 'reset', 'clear'],
   setup(props, { emit, slots, expose }) {
@@ -105,6 +121,7 @@ export default defineComponent({
     const state = reactive({
       searchParams: {},
       pages: { page: 1, pageSize: 20 },
+      canFullscreen: false,
       scrollTop: 0
     })
 
@@ -196,6 +213,12 @@ export default defineComponent({
     const hasBottom = computed(() => !!slots['bottom'])
     const hasToolBar = computed(() => !!slots['toolBar'])
 
+    // 全屏
+    const toggleFullscreen = () => {
+      state.canFullscreen = !state.canFullscreen
+    }
+    useEsc(toggleFullscreen)
+
     // 初始化调用一下，获取搜索参数
     const onInit = () => {
       const params = unref(xSearch)?.onGetFormValues() || {}
@@ -241,6 +264,7 @@ export default defineComponent({
       handleReset,
       handleClear,
       handleScroll,
+      toggleFullscreen,
       getValueByRowKey
     }
   }
@@ -265,12 +289,24 @@ export default defineComponent({
     margin-bottom: 10px;
   }
 
-  .toolbar {
+  &__toolbar {
     display: flex;
-    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 10px;
     background-color: #fff;
-    padding: 10px;
     margin-bottom: 10px;
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      flex: 1;
+      margin: 10px 0;
+    }
+
+    .custom {
+      padding: 10px 0 10px 10px;
+    }
   }
 
   &__container {
@@ -303,6 +339,17 @@ export default defineComponent({
       align-items: center;
       justify-content: center;
     }
+  }
+
+  // 全屏
+  &__fullscreen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    padding: 10px;
+    z-index: 10001;
   }
 }
 </style>

@@ -193,7 +193,7 @@ export default defineComponent({
       },
       // 实现enter搜索功能
       pressEnter: () => {
-        // Input/InputNumber组件
+        // Input/InputNumber/Textarea组件
         emitSearch()
       }
     }
