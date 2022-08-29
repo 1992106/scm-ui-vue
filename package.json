@@ -79,7 +79,7 @@
   },
   "peerDependencies": {
     "@ant-design/icons-vue": "^6.1.0",
-    "ant-design-vue": "^3.2.10",
+    "ant-design-vue": "^3.2.11",
     "dayjs": "^1.11.3",
     "lodash-es": "^4.17.21",
     "vue": "^3.2.37",
