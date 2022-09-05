@@ -215,6 +215,7 @@ export default defineComponent({
 
     // 全屏
     const toggleFullscreen = () => {
+      if (!props.customZoom) return
       state.canFullscreen = !state.canFullscreen
     }
     useEsc(toggleFullscreen)

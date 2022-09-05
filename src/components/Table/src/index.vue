@@ -369,6 +369,7 @@ export default defineComponent({
 
     // 全屏
     const toggleFullscreen = () => {
+      if (!props.customZoom) return
       state.canFullscreen = !state.canFullscreen
       // 触发表格计算
       nextTick(() => {
