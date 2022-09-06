@@ -368,9 +368,14 @@ export default defineComponent({
     }
 
     // 全屏
-    const toggleFullscreen = () => {
+    const toggleFullscreen = event => {
       if (!props.customZoom) return
-      state.canFullscreen = !state.canFullscreen
+      // 通过ESC关闭全屏功能
+      if (event?.keyCode === 27 && state.canFullscreen) {
+        state.canFullscreen = false
+      } else {
+        state.canFullscreen = !state.canFullscreen
+      }
       // 触发表格计算
       nextTick(() => {
         triggerResize()
