@@ -187,9 +187,7 @@ export default defineComponent({
       },
       clear: () => {
         // Select
-        nextTick(() => {
-          handleClear()
-        })
+        nextTick(handleClear)
       },
       // 实现enter搜索功能
       pressEnter: () => {
@@ -307,9 +305,7 @@ export default defineComponent({
     const handleExpand = () => {
       canExpand.value = !canExpand.value
       // 触发表格计算
-      nextTick(() => {
-        triggerResize()
-      })
+      nextTick(triggerResize)
     }
 
     // 是否显示插槽
@@ -319,9 +315,7 @@ export default defineComponent({
     // 搜索方法
     const onSearch = () => {
       // TODO: 调用onSetFieldValue时，需要延迟调用handleSearch
-      nextTick(() => {
-        handleSearch()
-      })
+      return nextTick().then(handleSearch)
     }
 
     // 重置方法

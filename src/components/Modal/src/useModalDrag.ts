@@ -100,8 +100,6 @@ export function useModalDragMove(context: UseModalDragMoveContext) {
     if (!unref(context.visible) || !unref(context.draggable)) {
       return
     }
-    nextTick(() => {
-      handleDrag()
-    })
+    nextTick(handleDrag)
   })
 }

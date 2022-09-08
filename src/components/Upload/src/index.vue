@@ -74,17 +74,20 @@ export default defineComponent({
       let isAccept = true
       if (!isEmpty(props.accept)) {
         const accepts = props.accept.split(',')
-        if (props.accept.includes('image/')) {
-          isAccept = accepts.some(val => file.type.endsWith(val)) || file.type.startsWith('image/')
+        if (file.type.startsWith('image/')) {
+          isAccept = accepts.some(val => file.type.endsWith(val)) || props.accept.includes('image/')
         }
-        if (props.accept.includes('application/')) {
-          isAccept = accepts.some(val => file.type.endsWith(val)) || file.type.startsWith('application/')
+        if (file.type.startsWith('application/')) {
+          isAccept = accepts.some(val => file.type.endsWith(val)) || props.accept.includes('application/')
         }
-        if (props.accept.includes('audio/')) {
-          isAccept = accepts.some(val => file.type.endsWith(val)) || file.type.startsWith('audio/')
+        if (file.type.startsWith('audio/')) {
+          isAccept = accepts.some(val => file.type.endsWith(val)) || props.accept.includes('audio/')
         }
-        if (props.accept.includes('video/')) {
-          isAccept = accepts.some(val => file.type.endsWith(val)) || file.type.startsWith('video/')
+        if (file.type.startsWith('video/')) {
+          isAccept = accepts.some(val => file.type.endsWith(val)) || props.accept.includes('video/')
+        }
+        if (file.type.startsWith('text/')) {
+          isAccept = accepts.some(val => file.type.endsWith(val)) || props.accept.includes('text/')
         }
       }
       if (!isAccept) {

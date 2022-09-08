@@ -377,9 +377,7 @@ export default defineComponent({
         state.canFullscreen = !state.canFullscreen
       }
       // 触发表格计算
-      nextTick(() => {
-        triggerResize()
-      })
+      nextTick(triggerResize)
     }
     useEsc(toggleFullscreen)
 
