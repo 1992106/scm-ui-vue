@@ -53,6 +53,15 @@
         @expand="handleExpand"
         @expandedRowsChange="handleExpandedRowsChange"
         @resizeColumn="handleResizeColumn">
+        <template #headerCell="scope">
+          <slot name="headerCell" v-bind="scope">
+            <!--自定义：必填标识-->
+            <template v-if="scope?.column?.required">
+              <span style="color: red">*</span>
+              {{ scope?.column?.title }}
+            </template>
+          </slot>
+        </template>
         <template #bodyCell="scope">
           <slot name="bodyCell" v-bind="scope">
             <!--自定义：缩略图/日期/时间-->

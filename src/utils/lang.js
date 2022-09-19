@@ -105,6 +105,25 @@ export const trim = str => {
 }
 
 /**
+ * 获取所有叶子节点
+ * @param tree
+ * @returns {*[]}
+ */
+export const getAllLeafNodes = tree => {
+  let list = [...tree]
+  const allLeafNodes = []
+  let node
+  while ((node = list.shift())) {
+    if (node.children) {
+      list.push(...node.children)
+    } else {
+      allLeafNodes.push(node)
+    }
+  }
+  return allLeafNodes
+}
+
+/**
  * 获取滚抽条大小
  * @returns {number}
  */

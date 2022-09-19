@@ -307,7 +307,7 @@ export default defineComponent({
     const getScrollX = computed(() => mergeProps(defaultState.defaultScrollX, props.scrollX))
     const getScrollY = computed(() => mergeProps(defaultState.defaultScrollY, props.scrollY))
     const getTreeConfig = computed(() => (props.stripe ? null : props.treeConfig))
-    const selectedType = computed(() => props.columns.find(column => column?.type))
+    const selectedType = computed(() => props.columns.find(column => column?.type)?.type)
     const canPagination = computed(
       () => props.data?.length > 0 && state.customColumns?.filter(val => val?.visible !== false).length > 0
     )
@@ -321,9 +321,9 @@ export default defineComponent({
     }
     // 勾选
     const handleCheckboxChange = ({
-      records,
-      reserves,
-      indeterminates,
+      records, // type=checkbox
+      reserves, // checkbox-config.reserve
+      indeterminates, // tree-config+type=checkbox
       checked,
       row,
       rowIndex,
@@ -333,7 +333,13 @@ export default defineComponent({
       $columnIndex,
       $event
     }) => {
-      emit('update:selected-value', records)
+      let selectedValue
+      if (props.checkboxConfig?.reserve) {
+        selectedValue = reserves
+      } else {
+        selectedValue = records
+      }
+      emit('update:selected-value', selectedValue)
       emit('checkbox-change', {
         records,
         reserves,
