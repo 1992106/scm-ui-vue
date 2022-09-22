@@ -6,6 +6,7 @@
     :list-type="listType"
     :show-upload-list="showUploadList"
     :accept="accept"
+    :multiple="multiple"
     :max-count="maxCount"
     :before-upload="beforeUploadFn"
     :custom-request="handleCustomRequest"
@@ -14,7 +15,15 @@
     @download="handleDownload">
     <div v-if="mode === 'upload' && (!maxCount || files.length < maxCount)">
       <slot>
-        <PlusOutlined />
+        <template v-if="listType === 'picture-card'">
+          <PlusOutlined />
+        </template>
+        <template v-else>
+          <a-button>
+            <UploadOutlined />
+            上传
+          </a-button>
+        </template>
       </slot>
       <span v-show="maxCount" class="max-count">({{ files.length }}/{{ maxCount }})</span>
     </div>
@@ -27,7 +36,7 @@
 <script>
 import { computed, defineComponent, reactive, toRefs, watch } from 'vue'
 import { Form, message, Upload } from 'ant-design-vue'
-import { PlusOutlined } from '@ant-design/icons-vue'
+import { PlusOutlined, UploadOutlined } from '@ant-design/icons-vue'
 import XPreview from '@components/Preview'
 import { isFunction } from 'lodash-es'
 import { isEmpty, downloadByUrl, execRequest } from '@src/utils'
@@ -35,8 +44,9 @@ export default defineComponent({
   name: 'XUpload',
   components: {
     PlusOutlined,
-    'x-preview': XPreview,
-    'a-upload': Upload
+    UploadOutlined,
+    'a-upload': Upload,
+    'x-preview': XPreview
   },
   inheritAttrs: false,
   props: {
@@ -51,7 +61,8 @@ export default defineComponent({
       },
       default: 'upload'
     },
-    accept: { type: String }, // 'image/*'、'application/*'、'audio/*'、'video/*'
+    accept: { type: String }, // 'image/*'、'application/*'、'audio/*'、'video/*'、'text/'
+    multiple: { type: Boolean },
     size: { type: Number },
     maxCount: { type: Number }
   },
@@ -103,27 +114,6 @@ export default defineComponent({
       }
       return isLtM && isAccept
     }
-
-    watch(
-      () => props.fileList,
-      fileList => {
-        state.files = (fileList || []).map(val => {
-          return {
-            ...val,
-            ...(val?.id || val?.key
-              ? {
-                  uid: val?.id || val?.key,
-                  name: val?.fileName || val?.name,
-                  status: 'done',
-                  thumbUrl: val?.url || val?.thumbUrl,
-                  url: val?.url
-                }
-              : {})
-          }
-        })
-      },
-      { immediate: true, deep: true }
-    )
 
     // 自定义校验
     const formItemContext = Form.useInjectFormItemContext()
@@ -190,6 +180,27 @@ export default defineComponent({
       // }
     }
 
+    watch(
+      () => props.fileList,
+      fileList => {
+        state.files = (fileList || []).map(val => {
+          return {
+            ...val,
+            ...(val?.id || val?.key
+              ? {
+                  uid: val?.id || val?.key,
+                  name: val?.fileName || val?.name,
+                  status: 'done',
+                  thumbUrl: val?.url || val?.thumbUrl,
+                  url: val?.url
+                }
+              : {})
+          }
+        })
+      },
+      { immediate: true, deep: true }
+    )
+
     // 上传文件改变时的状态（'uploading' 'done' 'error' 'removed'）
     // 因为自定义customRequest方法没有调用onSuccess和onError方法，所以不会触发状态为 'done' 和 'error' 的 change事件
     const handleChange = data => {
@@ -202,7 +213,7 @@ export default defineComponent({
         // 自定义表单组件需要手动调用onFieldChange触发校验
         formItemContext.onFieldChange()
       } else if (file.status === undefined) {
-        // beforeUploadFn限制上传的图片status为undefined；故需要过滤限制上传的图片
+        // beforeUpload限制上传的图片status为undefined；故需要过滤限制上传的图片（beforeUpload 里 return false 是阻止默认的 Ajax 上传动作，需要触发 onChange 以便添加到文件列表中交由用户后续手动上传。因此不会阻止文件添加，不会从列表中清空。）
         // multiple为true时，多文件上传，需要异步延迟处理
         setTimeout(() => {
           state.files = fileList.filter(val => val?.status !== undefined)
@@ -267,6 +278,10 @@ export default defineComponent({
 
   :deep(.ant-upload-list-picture-card) {
     min-height: 112px;
+    // 表格里上传图片鼠标经过的遮罩阴影居中
+    .ant-upload-list-item-info::before {
+      left: 0;
+    }
   }
 
   :deep(.ant-upload-select-text) .ant-upload {

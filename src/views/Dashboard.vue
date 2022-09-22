@@ -2,16 +2,25 @@
   <div>
     <a-space>
       <a-button @click="handlePreview">预览图片</a-button>
+      <a-button @click="handleUploadDialog">上传弹窗</a-button>
+      <a-button @click="handlePreviewDialog">预览弹窗</a-button>
     </a-space>
-    <Preview v-model:visible="previewState.visible" :current="previewState.current" :urls="previewState.urls"></Preview>
+    <XPreview
+      v-model:visible="previewState.visible"
+      :current="previewState.current"
+      :urls="previewState.urls"></XPreview>
+    <XUploadDialog v-model:visible="uploadDialogState.visible" :fileList="uploadDialogState.fileList"></XUploadDialog>
+    <XPreviewDialog v-model:visible="previewDialogState.visible" :urls="previewDialogState.urls"></XPreviewDialog>
   </div>
 </template>
 <script lang="ts">
 import { defineComponent, onActivated, onMounted, onUnmounted, reactive } from 'vue'
-import Preview from '@components/Preview'
+import XPreview from '@components/Preview'
+import XUploadDialog from '@components/UploadDialog'
+import XPreviewDialog from '@components/PreviewDialog'
 export default defineComponent({
   name: 'Dashboard',
-  components: { Preview },
+  components: { XPreview, XUploadDialog, XPreviewDialog },
   setup() {
     // 预览图片
     const previewState = reactive({
@@ -27,6 +36,31 @@ export default defineComponent({
       previewState.visible = !previewState.visible
     }
 
+    const baseUrl = 'https://raw.githubusercontent.com/vueComponent/ant-design-vue/main/components/carousel/demo/'
+    // 上传弹窗
+    const uploadDialogState = reactive({
+      visible: false,
+      fileList: [1, 2, 3, 4].map(i => {
+        return {
+          id: i,
+          url: `${baseUrl}abstract0${i}.jpg`,
+          name: `${i}.jpg`
+        }
+      })
+    })
+    const handleUploadDialog = () => {
+      uploadDialogState.visible = true
+    }
+
+    // 预览弹窗
+    const previewDialogState = reactive({
+      visible: false,
+      urls: [1, 2, 3, 4].map(i => `${baseUrl}abstract0${i}.jpg`)
+    })
+    const handlePreviewDialog = () => {
+      previewDialogState.visible = true
+    }
+
     onMounted(() => {
       console.log('onMounted', 'Dashboard组件')
     })
@@ -38,7 +72,11 @@ export default defineComponent({
     })
     return {
       previewState,
-      handlePreview
+      handlePreview,
+      uploadDialogState,
+      handleUploadDialog,
+      previewDialogState,
+      handlePreviewDialog
     }
   }
 })
