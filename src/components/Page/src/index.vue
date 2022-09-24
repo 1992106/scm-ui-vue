@@ -33,6 +33,9 @@
       <div class="x-page__container">
         <slot>
           <div v-if="dataSource.length" class="x-page__render">
+            <div v-if="hasHeader" class="x-page__header">
+              <slot name="header"></slot>
+            </div>
             <div class="scroll" @scroll="handleScroll">
               <a-row v-bind="rowProps">
                 <template v-for="(item, index) in dataSource" :key="getValueByRowKey(rowKey, item, index)">
@@ -41,6 +44,9 @@
                   </a-col>
                 </template>
               </a-row>
+            </div>
+            <div v-if="hasFooter" class="x-page__footer">
+              <slot name="footer"></slot>
             </div>
             <x-pagination
               v-model:pagination="pages"
@@ -212,6 +218,8 @@ export default defineComponent({
     const hasTop = computed(() => !!slots['top'])
     const hasBottom = computed(() => !!slots['bottom'])
     const hasToolBar = computed(() => !!slots['toolBar'])
+    const hasHeader = computed(() => !!slots['header'])
+    const hasFooter = computed(() => !!slots['footer'])
 
     // 全屏
     const toggleFullscreen = event => {
@@ -264,6 +272,8 @@ export default defineComponent({
       hasTop,
       hasBottom,
       hasToolBar,
+      hasHeader,
+      hasFooter,
       spinProps,
       handleQuery,
       handleSearch,

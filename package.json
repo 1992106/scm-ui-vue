@@ -1,6 +1,6 @@
 {
   "name": "scm-ui-vue",
-  "version": "0.0.20-1",
+  "version": "0.0.21",
   "main": "dist/scm-ui-vue.js",
   "module": "dist/scm-ui-vue.mjs",
   "unpkg": "dist/scm-ui-vue.umd.js",
@@ -35,8 +35,8 @@
     "lodash-es": "^4.17.21",
     "nprogress": "^0.2.0",
     "vue": "^3.2.37",
-    "vue-draggable-next": "^2.1.1",
     "vue-router": "^4.1.2",
+    "vuedraggable": "^4.1.0",
     "vuex": "^4.0.2",
     "vxe-table": "4.2.6"
   },
@@ -83,7 +83,7 @@
     "dayjs": "^1.11.3",
     "lodash-es": "^4.17.21",
     "vue": "^3.2.37",
-    "vue-draggable-next": "^2.1.1",
+    "vuedraggable": "^4.1.0",
     "vxe-table": "4.2.6"
   },
   "repository": {

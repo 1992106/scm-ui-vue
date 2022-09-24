@@ -14,62 +14,68 @@
         <div class="setting-body">
           <div v-if="leftFixed.length" class="box">
             <div class="title">固定在左侧</div>
-            <draggable :list="leftFixed">
-              <div v-for="item in leftFixed" :key="item.field" class="group">
-                <a-checkbox v-model:checked="item.visible">{{ item.title }}</a-checkbox>
-                <a-space :size="2">
-                  <Iconfont
-                    type="icon-to-bottom"
-                    size="18"
-                    title="固定在列尾"
-                    @click="handleClickRight('left', item)"></Iconfont>
-                  <Iconfont
-                    type="icon-to-middle"
-                    size="18"
-                    title="不固定"
-                    @click="handleClickMiddle('left', item)"></Iconfont>
-                </a-space>
-              </div>
+            <draggable :list="leftFixed" item-key="field">
+              <template #item="{ element: item }">
+                <div class="group">
+                  <a-checkbox v-model:checked="item.visible">{{ item.title }}</a-checkbox>
+                  <a-space :size="2">
+                    <Iconfont
+                      type="icon-to-bottom"
+                      size="18"
+                      title="固定在列尾"
+                      @click="handleClickRight('left', item)"></Iconfont>
+                    <Iconfont
+                      type="icon-to-middle"
+                      size="18"
+                      title="不固定"
+                      @click="handleClickMiddle('left', item)"></Iconfont>
+                  </a-space>
+                </div>
+              </template>
             </draggable>
           </div>
           <div v-if="middleList.length" class="box">
             <div class="title">不固定</div>
-            <draggable :list="middleList">
-              <div v-for="item in middleList" :key="item.field" class="group">
-                <a-checkbox v-model:checked="item.visible">{{ item.title }}</a-checkbox>
-                <a-space :size="2">
-                  <Iconfont
-                    type="icon-to-top"
-                    size="18"
-                    title="固定在列头"
-                    @click="handleClickLeft('middle', item)"></Iconfont>
-                  <Iconfont
-                    type="icon-to-bottom"
-                    size="18"
-                    title="固定在列尾"
-                    @click="handleClickRight('middle', item)"></Iconfont>
-                </a-space>
-              </div>
+            <draggable :list="middleList" item-key="field">
+              <template #item="{ element: item }">
+                <div class="group">
+                  <a-checkbox v-model:checked="item.visible">{{ item.title }}</a-checkbox>
+                  <a-space :size="2">
+                    <Iconfont
+                      type="icon-to-top"
+                      size="18"
+                      title="固定在列头"
+                      @click="handleClickLeft('middle', item)"></Iconfont>
+                    <Iconfont
+                      type="icon-to-bottom"
+                      size="18"
+                      title="固定在列尾"
+                      @click="handleClickRight('middle', item)"></Iconfont>
+                  </a-space>
+                </div>
+              </template>
             </draggable>
           </div>
           <div v-if="rightFixed.length" class="box">
             <div class="title">固定在右侧</div>
-            <draggable :list="rightFixed">
-              <div v-for="item in rightFixed" :key="item.field" class="group">
-                <a-checkbox v-model:checked="item.visible">{{ item.title }}</a-checkbox>
-                <a-space :size="2">
-                  <Iconfont
-                    type="icon-to-top"
-                    size="18"
-                    title="固定在列头"
-                    @click="handleClickLeft('right', item)"></Iconfont>
-                  <Iconfont
-                    type="icon-to-middle"
-                    size="18"
-                    title="不固定"
-                    @click="handleClickMiddle('right', item)"></Iconfont>
-                </a-space>
-              </div>
+            <draggable :list="rightFixed" item-key="field">
+              <template #item="{ element: item }">
+                <div class="group">
+                  <a-checkbox v-model:checked="item.visible">{{ item.title }}</a-checkbox>
+                  <a-space :size="2">
+                    <Iconfont
+                      type="icon-to-top"
+                      size="18"
+                      title="固定在列头"
+                      @click="handleClickLeft('right', item)"></Iconfont>
+                    <Iconfont
+                      type="icon-to-middle"
+                      size="18"
+                      title="不固定"
+                      @click="handleClickMiddle('right', item)"></Iconfont>
+                  </a-space>
+                </div>
+              </template>
             </draggable>
           </div>
         </div>
@@ -86,7 +92,7 @@
 <script>
 import { defineComponent, reactive, toRefs, watch } from 'vue'
 import Iconfont from '@components/IconFont'
-import { VueDraggableNext } from 'vue-draggable-next'
+import draggable from 'vuedraggable'
 import { cloneDeep, omit } from 'lodash-es'
 import { columnsToStorage, storageToColumns } from './utils'
 
@@ -94,7 +100,7 @@ export default defineComponent({
   name: 'ColumnSetting',
   components: {
     Iconfont,
-    draggable: VueDraggableNext
+    draggable
   },
   props: {
     // 自定义列

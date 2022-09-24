@@ -94,7 +94,7 @@ export default ({ mode }) => {
           'ant-design-vue': 'ant-design-vue',
           '@ant-design/icons-vue': '@ant-design/icons-vue',
           'vxe-table': 'vxe-table',
-          'vue-draggable-next': 'vue-draggable-next',
+          vuedraggable: 'vuedraggable',
           dayjs: 'dayjs',
           'lodash-es': 'lodash-es'
         }
@@ -107,7 +107,7 @@ export default ({ mode }) => {
         'ant-design-vue',
         '@ant-design/icons-vue',
         'vxe-table',
-        'vue-draggable-next',
+        'vuedraggable',
         'dayjs',
         'lodash-es'
       ]

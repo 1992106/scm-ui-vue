@@ -71,8 +71,6 @@ emits: ['update:value', 'search', 'reset', 'clear']
 <slot name="bottom"></slot>
 
 <slot name="toolBar"></slot>
-<slot name="headerBar"></slot>
-<slot name="footerBar"></slot>
 
 // XGrid
 <slot name="default"></slot>
@@ -85,6 +83,8 @@ emits: ['update:value', 'search', 'reset', 'clear']
 <slot name="radio"></slot>
 <slot name="content"></slot>
 <slot name="emptyText"></slot>
+<slot name="headerBar"></slot>
+<slot name="footerBar"></slot>
 ```
 
 ### Expose

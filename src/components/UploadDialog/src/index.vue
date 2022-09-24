@@ -27,7 +27,7 @@
         <p class="ant-upload-text">拖拽图片、文件到这里，或直接点击上传</p>
       </slot>
       <div>
-        <p v-if="maxCount || size" class="ant-upload-hint">每次最多上传{{ maxCount }}个文件，单个文件最大{{ size }}M</p>
+        <p class="ant-upload-hint">每次最多上传{{ maxCount }}个文件，单个文件最大{{ size }}M</p>
         <p v-if="accept" class="ant-upload-hint">支持后缀为：{{ accept }}</p>
       </div>
     </a-upload-dragger>
@@ -37,22 +37,27 @@
           <span class="title">
             图片
             <span v-show="maxCount" class="max-count">({{ imageList.length }}/{{ maxCount }})</span>
+            <span class="subtitle">可手动拖拽调整顺序，默认设置第一张为缩略图</span>
           </span>
           <a>下载所有图片</a>
         </div>
         <div class="x-upload__list">
-          <div v-for="(file, index) in imageList" :key="file?.id || file?.key || index" class="x-upload__list-item">
-            <div class="image">
-              <img :src="file.url" :alt="file.name" />
-              <div class="mark"></div>
-              <div class="operate">
-                <a-button type="text" size="small" @click="handlePreview(file)"><eye-outlined /></a-button>
-                <a-button type="text" size="small" @click="handleDownload(file)"><download-outlined /></a-button>
-                <a-button type="text" size="small" @click="handleRemove(file)"><delete-outlined /></a-button>
+          <draggable :list="imageList" item-key="uid">
+            <template #item="{ element: file }">
+              <div class="x-upload__list-item">
+                <div class="image">
+                  <img :src="file.url" :alt="file.name" />
+                  <div class="mark"></div>
+                  <div class="operate">
+                    <a-button type="text" size="small" @click="handlePreview(file)"><eye-outlined /></a-button>
+                    <a-button type="text" size="small" @click="handleDownload(file)"><download-outlined /></a-button>
+                    <a-button type="text" size="small" @click="handleRemove(file)"><delete-outlined /></a-button>
+                  </div>
+                </div>
+                <!--<div class="name">{{ file.name }}</div>-->
               </div>
-            </div>
-            <!--<div class="name">{{ file.name }}</div>-->
-          </div>
+            </template>
+          </draggable>
         </div>
       </div>
       <a-divider />
@@ -65,10 +70,7 @@
           <a>下载所有附件</a>
         </div>
         <div class="x-upload__list">
-          <div
-            v-for="(file, index) in attachmentList"
-            :key="file?.id || file?.key || index"
-            class="x-upload__list-item">
+          <div v-for="(file, index) in attachmentList" :key="file?.uid || index" class="x-upload__list-item">
             <div class="image">
               <img :src="file.url" :alt="file.name" />
               <div class="mark"></div>
@@ -86,10 +88,11 @@
   </x-modal>
 </template>
 <script>
-import { computed, defineComponent, reactive, toRefs, watch } from 'vue'
+import { defineComponent, reactive, toRefs, watch } from 'vue'
 import { message, UploadDragger } from 'ant-design-vue'
 import { InboxOutlined, DownloadOutlined, DeleteOutlined, EyeOutlined } from '@ant-design/icons-vue'
 import XModal from '@src/components/Modal'
+import draggable from 'vuedraggable'
 import { isFunction } from 'lodash-es'
 import { isEmpty, execRequest, downloadByUrl } from '@src/utils'
 import { hasImage } from './utils'
@@ -101,7 +104,8 @@ export default defineComponent({
     DeleteOutlined,
     EyeOutlined,
     'a-upload-dragger': UploadDragger,
-    'x-modal': XModal
+    'x-modal': XModal,
+    draggable
   },
   inheritAttrs: false,
   props: {
@@ -123,8 +127,12 @@ export default defineComponent({
     const state = reactive({
       modalVisible: props.visible,
       spinning: false,
-      // 图片列表
+      // v-model
       files: [],
+      // 图片列表
+      imageList: [],
+      // 其它附件
+      attachmentList: [],
       // 预览图片
       previewVisible: false,
       previewUrls: [],
@@ -262,14 +270,14 @@ export default defineComponent({
       { immediate: true, deep: true }
     )
 
-    // 图片
-    const imageList = computed(() => {
-      return state.files.filter(file => hasImage(file))
-    })
-    // 其它附件
-    const attachmentList = computed(() => {
-      return state.files.filter(file => !hasImage(file))
-    })
+    watch(
+      () => state.files,
+      files => {
+        state.imageList = files.filter(file => hasImage(file))
+        state.attachmentList = files.filter(file => !hasImage(file))
+      },
+      { immediate: true, deep: true }
+    )
 
     // 上传文件改变时的状态（'uploading' 'done' 'error' 'removed'）
     // 因为自定义customRequest方法没有调用onSuccess和onError方法，所以不会触发状态为 'done' 和 'error' 的 change事件
@@ -284,6 +292,7 @@ export default defineComponent({
         }, 20)
       }
     }
+
     // 当文件被拖入上传区域时执行的回调
     const handleDrop = $event => {
       emit('drop', $event)
@@ -314,8 +323,9 @@ export default defineComponent({
     }
 
     const handleOk = () => {
-      emit('done', state.files)
-      state.modalVisible = false
+      // emit('done', state.files)
+      emit('done', [...state.imageList, ...state.attachmentList])
+      handleCancel()
     }
 
     const handleCancel = () => {
@@ -328,8 +338,6 @@ export default defineComponent({
       ...toRefs(state),
       beforeUploadFn,
       handleCustomUpload,
-      imageList,
-      attachmentList,
       handleChange,
       handleDrop,
       handlePreview,
@@ -349,6 +357,10 @@ export default defineComponent({
       display: flex;
       justify-content: space-between;
       margin-bottom: 12px;
+      .subtitle {
+        color: #999;
+        margin-left: 10px;
+      }
     }
     .x-upload__list {
       overflow-x: auto;
