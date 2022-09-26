@@ -120,9 +120,11 @@ export default defineComponent({
     directory: { type: Boolean },
     multiple: { type: Boolean },
     size: { type: Number, default: 500 },
+    maxWidth: { type: Number },
+    maxHeight: { type: Number },
     maxCount: { type: Number, default: 20 }
   },
-  emits: ['change', 'drop', 'preview', 'download', 'remove', 'update:visible', 'done'],
+  emits: ['update:visible', 'done', 'change', 'drop', 'preview', 'download', 'remove'],
   setup(props, { emit, expose }) {
     const state = reactive({
       modalVisible: props.visible,
@@ -207,12 +209,28 @@ export default defineComponent({
       // 大小
       let isLtM = true
       if (!isEmpty(props.size)) {
-        isLtM = file.size / 1024 / 1024 < props.size
+        isLtM = file.size / 1024 / 1024 <= props.size
       }
       if (!isLtM) {
         message.error(`不能大于${props.size}M`)
       }
-      return isLtM && isAccept
+      // 宽度
+      let isWidth = true
+      if (!isEmpty(props.maxWidth)) {
+        isWidth = file.width <= props.maxWidth
+      }
+      if (!isWidth) {
+        message.error(`宽度不能大于${props.maxWidth}`)
+      }
+      // 高度
+      let isHeight = true
+      if (!isEmpty(props.maxHeight)) {
+        isHeight = file.height <= props.maxHeight
+      }
+      if (!isHeight) {
+        message.error(`高度不能大于${props.maxHeight}`)
+      }
+      return isAccept && isLtM && isWidth && isHeight
     }
 
     // 上传图片
