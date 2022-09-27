@@ -3,7 +3,13 @@
     <div v-if="hasTop" class="search-top">
       <slot name="top"></slot>
     </div>
-    <a-form ref="xForm" v-bind="$attrs" :layout="layout" :label-col="labelCol" :wrapper-col="wrapperCol">
+    <a-form
+      v-if="getColumns.length"
+      ref="xForm"
+      v-bind="$attrs"
+      :layout="layout"
+      :label-col="labelCol"
+      :wrapper-col="wrapperCol">
       <a-row v-bind="rowProps">
         <template v-for="(column, index) in getColumns" :key="column?.field">
           <a-col v-show="canExpand || index < getIndex" v-bind="colProps">
