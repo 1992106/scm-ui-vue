@@ -12,19 +12,22 @@
 | title | 标题 | String | `预览图片` |
 | width | 宽度 | [String, Number] | `1200` |
 | current | 图片索引 | Number | `0` |
-| urls | 图片`src`集合 | Array | `[]` |
+| fileList | 预览文件列表 | Array | `[]` |
+| imgZipFile | 图片压缩文件 | Object | `-` |
+| attachmentZipFile | 附件压缩文件 | Object | `-` |
+| customRequest | 自定义请求 | Function | `-` |
 
 ### Emits
 
 ```vue
-emits: ['update:visible']
+emits: ['update:visible', 'download', 'downloadImgZipFile', 'downloadAttachmentZipFile']
 ```
 
 ### Example
 
 ```vue
-<x-preview-dialog v-model:visible="previewVisible" :current="previewCurrent" :urls="previewUrls"></x-preview-dialog>
+<x-preview-dialog v-model:visible="previewVisible" :current="previewCurrent" :fileList="previewList"></x-preview-dialog>
 
 // 使用函数方法
-<!--createXPreview({ current: previewCurrent, urls: previewUrls })-->
+<!--createXPreview({ current: previewCurrent, fileList: previewList })-->
 ```

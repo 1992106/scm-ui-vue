@@ -20,3 +20,21 @@ export const hasImage = file => {
     return hasImageByUrl(file.url)
   }
 }
+
+export const formatFiles = files => {
+  return (files || []).map(val => {
+    return {
+      ...val,
+      ...(val?.id || val?.key
+        ? {
+            uid: val?.id || val?.key,
+            name: val?.fileName || val?.name,
+            type: val?.mimeType || val?.type,
+            status: 'done',
+            thumbUrl: val?.url || val?.thumbUrl,
+            url: val?.url
+          }
+        : {})
+    }
+  })
+}

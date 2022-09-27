@@ -39,7 +39,7 @@ import { Form, message, Upload } from 'ant-design-vue'
 import { PlusOutlined, UploadOutlined } from '@ant-design/icons-vue'
 import XPreview from '@components/Preview'
 import { isFunction } from 'lodash-es'
-import { isEmpty, downloadByUrl, execRequest } from '@src/utils'
+import { isEmpty, downloadByUrl, execRequest, getImageSize } from '@src/utils'
 export default defineComponent({
   name: 'XUpload',
   components: {
@@ -79,7 +79,7 @@ export default defineComponent({
     })
 
     // 上传前校验
-    const beforeUploadFn = file => {
+    const beforeUploadFn = async file => {
       if (props.beforeUpload && isFunction(props.beforeUpload)) {
         return props.beforeUpload(file)
       }
@@ -114,21 +114,28 @@ export default defineComponent({
       if (!isLtM) {
         message.error(`不能大于${props.size}M`)
       }
-      // 宽度
+      // 获取图片宽高
+      let width, height
       let isWidth = true
-      if (!isEmpty(props.maxWidth)) {
-        isWidth = file.width <= props.maxWidth
-      }
-      if (!isWidth) {
-        message.error(`宽度不能大于${props.maxWidth}`)
-      }
-      // 高度
       let isHeight = true
-      if (!isEmpty(props.maxHeight)) {
-        isHeight = file.height <= props.maxHeight
-      }
-      if (!isHeight) {
-        message.error(`高度不能大于${props.maxHeight}`)
+      if (!isEmpty(props.maxWidth) || !isEmpty(props.maxHeight)) {
+        const imgSize = await getImageSize(file)
+        width = imgSize.width
+        height = imgSize.height
+        // 宽度
+        if (!isEmpty(props.maxWidth)) {
+          isWidth = width <= props.maxWidth
+        }
+        if (!isWidth) {
+          message.error(`宽度不能大于${props.maxWidth}`)
+        }
+        // 高度
+        if (!isEmpty(props.maxHeight)) {
+          isHeight = height <= props.maxHeight
+        }
+        if (!isHeight) {
+          message.error(`高度不能大于${props.maxHeight}`)
+        }
       }
       return isAccept && isLtM && isWidth && isHeight
     }
@@ -148,6 +155,7 @@ export default defineComponent({
             ...data,
             uid: data?.id || data?.key,
             name: data?.fileName || data?.name,
+            type: data?.mimeType || data?.type,
             status: 'done',
             thumbUrl: data?.url || data?.thumbUrl,
             url: data?.url
@@ -239,11 +247,23 @@ export default defineComponent({
       }
     }
 
+    // 是否展示 uploadList
+    const showUploadList = computed(() => {
+      // 预览模式：只显示预览和下载图标
+      if (props.mode === 'preview') {
+        return {
+          showPreviewIcon: true,
+          showDownloadIcon: true
+        }
+      }
+      return props.showUploadList
+    })
+
     // 预览图片
     const handlePreview = file => {
       if (
         props.listType === 'text' &&
-        (props.showUploadList === false || props.showUploadList?.showPreviewIcon === false)
+        (showUploadList.value === false || showUploadList.value?.showPreviewIcon === false)
       ) {
         return false
       }
@@ -272,6 +292,7 @@ export default defineComponent({
       beforeUploadFn,
       handleCustomRequest,
       handleChange,
+      showUploadList,
       handlePreview,
       handleDownload
     }

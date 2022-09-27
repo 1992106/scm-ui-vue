@@ -78,13 +78,13 @@ const exportFile = async (url, params = {}, method = 'get') => {
  * @param quality
  * @returns {Promise<unknown>}
  */
-const compressImage = async (src, width, height, quality = 1) => {
+const compressImage = (src, width, height, quality = 1) => {
   return new Promise((resolve, reject) => {
     const image = new Image()
     width = getPixelSize(width)
     height = getPixelSize(height)
     image.setAttribute('crossOrigin', 'Anonymous')
-    image.onload = async () => {
+    image.onload = () => {
       // 有宽度无高度时，等比例计算高度
       if (!isEmpty(width) && isEmpty(height)) {
         height = (width / image.width) * image.height
@@ -104,11 +104,37 @@ const compressImage = async (src, width, height, quality = 1) => {
       const canvasURL = canvas.toDataURL('image/jpeg', quality)
       resolve(canvasURL)
     }
-    image.onerror = () => {
-      reject()
+    image.onerror = err => {
+      reject(err)
     }
     image.src = src
   })
 }
 
-export { download, downloadByBlob, downloadByUrl, exportFile, compressImage }
+/**
+ * 获取图片宽/高
+ * @param file
+ * @returns {Promise<unknown>}
+ */
+const getImageSize = file => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onload = function (event) {
+      const base64 = event.target.result
+      const img = document.createElement('img')
+      img.src = base64
+      img.onload = function () {
+        resolve({
+          width: img.width,
+          height: img.height
+        })
+      }
+    }
+    reader.onerror = function (err) {
+      reject(err)
+    }
+    reader.readAsDataURL(file)
+  })
+}
+
+export { download, downloadByBlob, downloadByUrl, exportFile, compressImage, getImageSize }

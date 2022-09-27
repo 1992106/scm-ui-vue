@@ -6,43 +6,48 @@
     :title="title"
     :width="width"
     :spin-props="spinning"
+    :confirm-loading="confirmLoading"
     destroy-on-close
     @ok="handleOk"
     @cancel="handleCancel">
-    <a-upload-dragger
-      v-model:fileList="files"
-      :show-upload-list="false"
-      :accept="accept"
-      :directory="directory"
-      :multiple="multiple"
-      :max-count="maxCount"
-      :before-upload="beforeUploadFn"
-      :custom-request="handleCustomUpload"
-      @change="handleChange"
-      @drop="handleDrop">
-      <slot>
-        <p class="ant-upload-drag-icon">
-          <inbox-outlined />
-        </p>
-        <p class="ant-upload-text">拖拽图片、文件到这里，或直接点击上传</p>
-      </slot>
-      <div>
-        <p class="ant-upload-hint">每次最多上传{{ maxCount }}个文件，单个文件最大{{ size }}M</p>
-        <p v-if="accept" class="ant-upload-hint">支持后缀为：{{ accept }}</p>
-      </div>
-    </a-upload-dragger>
+    <template v-if="mode === 'upload'">
+      <a-upload-dragger
+        v-model:file-list="files"
+        :show-upload-list="false"
+        :accept="accept"
+        :directory="directory"
+        :multiple="multiple"
+        :max-count="maxCount"
+        :before-upload="beforeUploadFn"
+        :custom-request="handleCustomUpload"
+        @change="handleChange"
+        @drop="handleDrop">
+        <slot>
+          <p class="ant-upload-drag-icon">
+            <inbox-outlined />
+          </p>
+          <p class="ant-upload-text">拖拽图片、文件到这里，或直接点击上传</p>
+        </slot>
+        <div>
+          <p class="ant-upload-hint">每次最多上传{{ maxCount }}个文件，单个文件最大{{ size }}M</p>
+          <p v-if="accept" class="ant-upload-hint">支持后缀为：{{ accept }}</p>
+        </div>
+      </a-upload-dragger>
+    </template>
     <div class="x-upload__container">
       <div class="x-upload__dragger">
         <div class="x-upload__head">
           <span class="title">
             图片
-            <span v-show="maxCount" class="max-count">({{ imageList.length }}/{{ maxCount }})</span>
+            <span v-show="maxCount" class="max-count">({{ imgList.length }}/{{ maxCount }})</span>
             <span class="subtitle">可手动拖拽调整顺序，默认设置第一张为缩略图</span>
           </span>
-          <a>下载所有图片</a>
+          <a-button type="link" size="small" :disabled="downloadImgZipFileDisabled" @click="handleDownloadImgZipFile">
+            下载所有图片
+          </a-button>
         </div>
         <div class="x-upload__list">
-          <draggable :list="imageList" item-key="uid">
+          <draggable :list="imgList" item-key="uid">
             <template #item="{ element: file }">
               <div class="x-upload__list-item">
                 <div class="image">
@@ -51,7 +56,9 @@
                   <div class="operate">
                     <a-button type="text" size="small" @click="handlePreview(file)"><eye-outlined /></a-button>
                     <a-button type="text" size="small" @click="handleDownload(file)"><download-outlined /></a-button>
-                    <a-button type="text" size="small" @click="handleRemove(file)"><delete-outlined /></a-button>
+                    <a-button v-if="mode === 'upload'" type="text" size="small" @click="handleRemove(file)">
+                      <delete-outlined />
+                    </a-button>
                   </div>
                 </div>
                 <!--<div class="name">{{ file.name }}</div>-->
@@ -67,35 +74,55 @@
             其他附件
             <span v-show="maxCount" class="max-count">({{ attachmentList.length }}/{{ maxCount }})</span>
           </span>
-          <a>下载所有附件</a>
+          <a-button
+            type="link"
+            size="small"
+            :disabled="downloadAttachmentZipFileDisabled"
+            @click="handleDownloadAttachmentZipFile">
+            下载所有附件
+          </a-button>
         </div>
         <div class="x-upload__list">
-          <div v-for="(file, index) in attachmentList" :key="file?.uid || index" class="x-upload__list-item">
-            <div class="image">
-              <img :src="file.url" :alt="file.name" />
-              <div class="mark"></div>
-              <div class="operate">
-                <a-button type="text" size="small" @click="handlePreview(file)"><eye-outlined /></a-button>
-                <a-button type="text" size="small" @click="handleDownload(file)"><download-outlined /></a-button>
-                <a-button type="text" size="small" @click="handleRemove(file)"><delete-outlined /></a-button>
+          <draggable :list="attachmentList" item-key="uid">
+            <template #item="{ element: file }">
+              <div class="x-upload__list-item">
+                <div class="image">
+                  <template v-if="file?.previewFile">
+                    <img :src="file.previewFile.thumbUrl" :alt="file.previewFile.name" />
+                  </template>
+                  <div v-else class="expanded-name">{{ getExpandedName(file) }}</div>
+                  <div class="mark"></div>
+                  <div class="operate">
+                    <a-button type="text" size="small" @click="handlePreview(file)"><eye-outlined /></a-button>
+                    <a-button type="text" size="small" @click="handleDownload(file)"><download-outlined /></a-button>
+                    <a-button v-if="mode === 'upload'" type="text" size="small" @click="handleRemove(file)">
+                      <delete-outlined />
+                    </a-button>
+                  </div>
+                </div>
+                <div class="name">{{ file.name }}</div>
               </div>
-            </div>
-            <div class="name">{{ file.name }}</div>
-          </div>
+            </template>
+          </draggable>
         </div>
       </div>
     </div>
   </x-modal>
+  <x-preview-dialog
+    v-model:visible="previewVisible"
+    :current="previewCurrent"
+    :file-list="previewList"></x-preview-dialog>
 </template>
 <script>
-import { defineComponent, reactive, toRefs, watch } from 'vue'
+import { computed, defineComponent, reactive, toRefs, watch } from 'vue'
 import { message, UploadDragger } from 'ant-design-vue'
 import { InboxOutlined, DownloadOutlined, DeleteOutlined, EyeOutlined } from '@ant-design/icons-vue'
-import XModal from '@src/components/Modal'
+import XModal from '@components/Modal'
+import XPreviewDialog from '@components/PreviewDialog'
 import draggable from 'vuedraggable'
 import { isFunction } from 'lodash-es'
-import { isEmpty, execRequest, downloadByUrl } from '@src/utils'
-import { hasImage } from './utils'
+import { isEmpty, execRequest, downloadByUrl, download, getImageSize } from '@src/utils'
+import { formatFiles, hasImage } from './utils'
 export default defineComponent({
   name: 'XUploadDialog',
   components: {
@@ -103,19 +130,29 @@ export default defineComponent({
     DownloadOutlined,
     DeleteOutlined,
     EyeOutlined,
-    'a-upload-dragger': UploadDragger,
     'x-modal': XModal,
+    'a-upload-dragger': UploadDragger,
+    'x-preview-dialog': XPreviewDialog,
     draggable
   },
   inheritAttrs: false,
   props: {
     title: { type: String, default: '上传文件' },
-    width: { type: [String, Number], default: 720 },
+    width: { type: [String, Number], default: 960 },
     visible: { type: Boolean, default: false },
-    fileList: { type: Array, default: () => [], required: true },
-    customRequest: { type: Function, require: true },
+    fileList: { type: Array, default: () => [] },
+    imgZipFile: { type: Object }, // 图片压缩文件
+    attachmentZipFile: { type: Object }, // 附件压缩文件
+    customRequest: { type: Function },
+    customSubmit: { type: Function },
     customUpload: { type: Function },
     beforeUpload: { type: Function },
+    mode: {
+      validator(value) {
+        return ['upload', 'preview'].includes(value)
+      },
+      default: 'upload'
+    },
     accept: { type: String }, // 'image/*'、'application/*'、'audio/*'、'video/*'、'text/'
     directory: { type: Boolean },
     multiple: { type: Boolean },
@@ -124,20 +161,33 @@ export default defineComponent({
     maxHeight: { type: Number },
     maxCount: { type: Number, default: 20 }
   },
-  emits: ['update:visible', 'done', 'change', 'drop', 'preview', 'download', 'remove'],
+  emits: [
+    'update:visible',
+    'change',
+    'drop',
+    'preview',
+    'download',
+    'remove',
+    'done',
+    'downloadImgZipFile',
+    'downloadAttachmentZipFile'
+  ],
   setup(props, { emit, expose }) {
     const state = reactive({
       modalVisible: props.visible,
       spinning: false,
+      confirmLoading: false,
       // v-model
       files: [],
       // 图片列表
-      imageList: [],
-      // 其它附件
+      imgList: [],
+      imgZipFile: null,
+      // 其他附件
       attachmentList: [],
+      attachmentZipFile: null,
       // 预览图片
       previewVisible: false,
-      previewUrls: [],
+      previewList: [],
       previewCurrent: 0
     })
 
@@ -147,20 +197,9 @@ export default defineComponent({
       state.spinning = true
       await execRequest(customRequest({}), {
         success: ({ data }) => {
-          state.files = (data || []).map(val => {
-            return {
-              ...val,
-              ...(val?.id || val?.key
-                ? {
-                    uid: val?.id || val?.key,
-                    name: val?.fileName || val?.name,
-                    status: 'done',
-                    thumbUrl: val?.url || val?.thumbUrl,
-                    url: val?.url
-                  }
-                : {})
-            }
-          })
+          state.files = formatFiles(data?.files || [])
+          state.imgZipFile = data?.imgZipFile
+          state.attachmentZipFile = data?.attachmentZipFile
         },
         fail: () => {}
       })
@@ -179,7 +218,7 @@ export default defineComponent({
     )
 
     // 上传前校验
-    const beforeUploadFn = file => {
+    const beforeUploadFn = async file => {
       if (props.beforeUpload && isFunction(props.beforeUpload)) {
         return props.beforeUpload(file)
       }
@@ -214,21 +253,28 @@ export default defineComponent({
       if (!isLtM) {
         message.error(`不能大于${props.size}M`)
       }
-      // 宽度
+      // 获取图片宽高
+      let width, height
       let isWidth = true
-      if (!isEmpty(props.maxWidth)) {
-        isWidth = file.width <= props.maxWidth
-      }
-      if (!isWidth) {
-        message.error(`宽度不能大于${props.maxWidth}`)
-      }
-      // 高度
       let isHeight = true
-      if (!isEmpty(props.maxHeight)) {
-        isHeight = file.height <= props.maxHeight
-      }
-      if (!isHeight) {
-        message.error(`高度不能大于${props.maxHeight}`)
+      if (!isEmpty(props.maxWidth) || !isEmpty(props.maxHeight)) {
+        const imgSize = await getImageSize(file)
+        width = imgSize.width
+        height = imgSize.height
+        // 宽度
+        if (!isEmpty(props.maxWidth)) {
+          isWidth = width <= props.maxWidth
+        }
+        if (!isWidth) {
+          message.error(`宽度不能大于${props.maxWidth}`)
+        }
+        // 高度
+        if (!isEmpty(props.maxHeight)) {
+          isHeight = height <= props.maxHeight
+        }
+        if (!isHeight) {
+          message.error(`高度不能大于${props.maxHeight}`)
+        }
       }
       return isAccept && isLtM && isWidth && isHeight
     }
@@ -270,20 +316,7 @@ export default defineComponent({
     watch(
       () => props.fileList,
       fileList => {
-        state.files = (fileList || []).map(val => {
-          return {
-            ...val,
-            ...(val?.id || val?.key
-              ? {
-                  uid: val?.id || val?.key,
-                  name: val?.fileName || val?.name,
-                  status: 'done',
-                  thumbUrl: val?.url || val?.thumbUrl,
-                  url: val?.url
-                }
-              : {})
-          }
-        })
+        state.files = formatFiles(fileList || [])
       },
       { immediate: true, deep: true }
     )
@@ -291,7 +324,7 @@ export default defineComponent({
     watch(
       () => state.files,
       files => {
-        state.imageList = files.filter(file => hasImage(file))
+        state.imgList = files.filter(file => hasImage(file))
         state.attachmentList = files.filter(file => !hasImage(file))
       },
       { immediate: true, deep: true }
@@ -316,19 +349,25 @@ export default defineComponent({
       emit('drop', $event)
     }
 
+    const getExpandedName = file => {
+      return file.type?.split('/')?.[1]?.toUpperCase?.() || file.name
+    }
+
     // 预览图片
     const handlePreview = file => {
       const list = state.files.filter(val => val.status === 'done')
-      state.previewUrls = list.map(val => val?.url)
+      state.previewList = list
       state.previewCurrent = list.findIndex(v => v.uid === file.uid)
       state.previewVisible = true
       emit('preview', file)
     }
 
     // 下载
-    const handleDownload = file => {
+    const handleDownload = async file => {
       message.info('正在下载中...')
-      downloadByUrl(file.url, file.name)
+      if (file.url) {
+        await downloadByUrl(file.url, file.name)
+      }
       emit('download', file)
     }
 
@@ -340,10 +379,43 @@ export default defineComponent({
       emit('remove', file)
     }
 
-    const handleOk = () => {
-      // emit('done', state.files)
-      emit('done', [...state.imageList, ...state.attachmentList])
-      handleCancel()
+    // 下载所有图片
+    const downloadImgZipFileDisabled = computed(() => isEmpty(state.imgZipFile) || isEmpty(props.imgZipFile))
+    const handleDownloadImgZipFile = () => {
+      if (state.imgZipFile?.url) {
+        download(state.imgZipFile.url)
+      }
+      emit('downloadImgZipFile', state.imgZipFile)
+    }
+
+    // 下载所有附件
+    const downloadAttachmentZipFileDisabled = computed(
+      () => isEmpty(state.attachmentZipFile) || isEmpty(props.attachmentZipFile)
+    )
+    const handleDownloadAttachmentZipFile = () => {
+      if (state.attachmentZipFile?.url) {
+        download(state.attachmentZipFile.url)
+      }
+      emit('downloadAttachmentZipFile', state.attachmentZipFile)
+    }
+
+    const handleOk = async () => {
+      const { customSubmit } = props
+      if (!isFunction(customSubmit)) return
+      state.confirmLoading = true
+      const files = [...state.imgList, ...state.attachmentList]
+      await execRequest(
+        customSubmit({
+          ...(!isEmpty(files) ? { ids: files.map(val => val?.id) } : {})
+        }),
+        {
+          success: ({ data }) => {
+            emit('done', data)
+            handleCancel()
+          }
+        }
+      )
+      state.confirmLoading = false
     }
 
     const handleCancel = () => {
@@ -358,9 +430,14 @@ export default defineComponent({
       handleCustomUpload,
       handleChange,
       handleDrop,
+      getExpandedName,
       handlePreview,
       handleRemove,
       handleDownload,
+      downloadImgZipFileDisabled,
+      handleDownloadImgZipFile,
+      downloadAttachmentZipFileDisabled,
+      handleDownloadAttachmentZipFile,
       handleOk,
       handleCancel
     }
@@ -368,13 +445,16 @@ export default defineComponent({
 })
 </script>
 <style lang="scss" scoped>
+:deep(.ant-upload.ant-upload-drag) {
+  margin-bottom: 16px;
+}
 .x-upload__dialog {
   .x-upload__dragger {
-    margin-top: 16px;
     .x-upload__head {
       display: flex;
+      align-items: center;
       justify-content: space-between;
-      margin-bottom: 12px;
+      margin-bottom: 10px;
       .subtitle {
         color: #999;
         margin-left: 10px;
@@ -399,6 +479,11 @@ export default defineComponent({
             width: 100%;
             height: 100%;
             object-fit: contain;
+          }
+          .expanded-name {
+            height: 100%;
+            text-align: center;
+            line-height: 84px;
           }
           .mark {
             position: relative;
@@ -444,7 +529,7 @@ export default defineComponent({
     }
   }
   .ant-divider {
-    margin: 8px 0 16px 0;
+    margin: 12px 0;
   }
 }
 </style>

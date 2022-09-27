@@ -5,14 +5,16 @@
     class="x-preview__dialog"
     :title="title"
     :width="width"
+    :spinning="spinning"
     :footer="null"
+    fullscreen
     destroy-on-close
     @cancel="modalVisible = false">
     <div class="x-preview__container">
       <div class="x-preview__carousel">
         <a-carousel ref="elCarousel" :infinite="false" :initialSlide="current" :dots="false" :adaptiveHeight="true">
-          <div v-for="(src, i) in urls" :key="i">
-            <img :src="src" alt="" />
+          <div v-for="(file, i) in files" :key="file?.uid || i">
+            <img :src="file?.previewFile?.url || file?.url" :alt="file?.name" />
           </div>
         </a-carousel>
         <div class="x-preview__dots">
@@ -20,13 +22,19 @@
             <div class="head">
               <span class="title">
                 图片
-                <span>({{ imageUrls.length }})</span>
+                <span>({{ imgList.length }})</span>
               </span>
-              <a>下载所有图片</a>
+              <a-button
+                type="link"
+                size="small"
+                :disabled="downloadImgZipFileDisabled"
+                @click="handleDownloadImgZipFile">
+                下载所有图片
+              </a-button>
             </div>
             <div class="list">
-              <div v-for="(src, i) in imageUrls" :key="i" class="item" @click="handleGoTo(src)">
-                <img :src="src" alt="" />
+              <div v-for="(img, i) in imgList" :key="img?.uid || i" class="item" @click="handleGoTo(img)">
+                <img :src="img?.thumbUrl || img?.url" :alt="img?.fileName" />
               </div>
             </div>
           </div>
@@ -35,13 +43,28 @@
             <div class="head">
               <span class="title">
                 其它附件
-                <span>({{ attachmentUrls.length }})</span>
+                <span>({{ attachmentList.length }})</span>
               </span>
-              <a>下载所有附件</a>
+              <a-button
+                type="link"
+                size="small"
+                :disabled="downloadAttachmentZipFileDisabled"
+                @click="handleDownloadAttachmentZipFile">
+                下载所有附件
+              </a-button>
             </div>
             <div class="list">
-              <div v-for="(src, i) in attachmentUrls" :key="i" class="item" @click="handleGoTo(src)">
-                <img :src="src" alt="" />
+              <div
+                v-for="(attachment, i) in attachmentList"
+                :key="attachment.uid || i"
+                class="item"
+                @click="handleGoTo(attachment)">
+                <template v-if="attachment?.previewFile">
+                  <img
+                    :src="attachment.previewFile?.thumbUrl || attachment.previewFile?.url"
+                    :alt="attachment.previewFile?.name" />
+                </template>
+                <div v-else class="expanded-name">{{ getExpandedName(attachment) }}</div>
               </div>
             </div>
           </div>
@@ -60,7 +83,7 @@
   </x-modal>
 </template>
 <script>
-import { computed, defineComponent, ref, watchEffect } from 'vue'
+import { computed, defineComponent, reactive, ref, toRefs, watch, watchEffect } from 'vue'
 import { Carousel, message } from 'ant-design-vue'
 import {
   LeftCircleOutlined,
@@ -72,8 +95,9 @@ import {
   DownloadOutlined
 } from '@ant-design/icons-vue'
 import XModal from '@src/components/Modal'
-import { hasImage } from '@components/UploadDialog/src/utils'
-import { downloadByUrl } from '@src/utils'
+import { isFunction } from 'lodash-es'
+import { formatFiles, hasImage } from '@components/UploadDialog/src/utils'
+import { download, downloadByUrl, execRequest, isEmpty } from '@src/utils'
 export default defineComponent({
   name: 'XPreviewDialog',
   components: {
@@ -93,15 +117,29 @@ export default defineComponent({
     width: { type: [String, Number], default: 1200 },
     visible: { type: Boolean, default: false },
     current: { type: Number, default: 0 },
-    urls: { type: Array, default: () => [], required: true }
+    fileList: { type: Array, default: () => [] },
+    imgZipFile: { type: Object },
+    attachmentZipFile: { type: Object },
+    customRequest: { type: Function }
   },
-  emits: ['update:visible'],
+  emits: ['update:visible', 'download', 'downloadImgZipFile', 'downloadAttachmentZipFile'],
   setup(props, { emit, expose }) {
     const elCarousel = ref(null)
+    const state = reactive({
+      spinning: false,
+      files: [],
+      // 图片压缩文件
+      imgZipFile: null,
+      // 附件压缩文件
+      attachmentZipFile: null
+    })
 
     const modalVisible = computed({
       get: () => props.visible,
       set: val => {
+        if (val) {
+          handleRequest()
+        }
         emit('update:visible', val)
       }
     })
@@ -111,24 +149,44 @@ export default defineComponent({
       current.value = props.current
     })
 
-    const urls = ref(props.urls)
-    watchEffect(() => {
-      urls.value = props.urls
-    })
+    const handleRequest = async () => {
+      const { customRequest } = props
+      if (!isFunction(customRequest)) return
+      state.spinning = true
+      await execRequest(customRequest({}), {
+        success: ({ data }) => {
+          state.files = formatFiles(data?.files || [])
+          state.imgZipFile = data?.imgZipFile
+          state.attachmentZipFile = data?.attachmentZipFile
+        },
+        fail: () => {}
+      })
+      state.spinning = false
+    }
+
+    watch(
+      () => props.fileList,
+      fileList => {
+        state.files = formatFiles(fileList || [])
+      },
+      { immediate: true, deep: true }
+    )
 
     // 图片
-    const imageUrls = computed(() => {
-      return props.urls.filter(url => hasImage({ url }))
+    const imgList = computed(() => {
+      return state.files.filter(file => hasImage(file))
     })
     // 其它附件
-    const attachmentUrls = computed(() => {
-      return props.urls.filter(url => !hasImage({ url }))
+    const attachmentList = computed(() => {
+      return state.files.filter(file => !hasImage(file))
     })
+    const getExpandedName = file => {
+      return file.type?.split('/')?.[1]?.toUpperCase?.() || file.name
+    }
 
-    const handleGoTo = url => {
+    const handleGoTo = file => {
       // console.log(elCarousel.value.innerSlider.currentSlide)
-      const index = props.urls.findIndex(v => v === url)
-      console.log(index, url, props.urls)
+      const index = state.files.findIndex(val => val?.uid === file?.uid)
       elCarousel.value.goTo(index)
     }
 
@@ -141,24 +199,52 @@ export default defineComponent({
     }
 
     // 下载
-    const handleDownload = file => {
+    const handleDownload = async file => {
       message.info('正在下载中...')
-      downloadByUrl(file.url, file.name)
+      if (file.url) {
+        await downloadByUrl(file.url, file.name)
+      }
+      emit('download', file)
+    }
+
+    // 下载所有图片
+    const downloadImgZipFileDisabled = computed(() => isEmpty(state.imgZipFile) || isEmpty(props.imgZipFile))
+    const handleDownloadImgZipFile = () => {
+      if (state.imgZipFile?.url) {
+        download(state.imgZipFile.url)
+      }
+      emit('downloadImgZipFile', state.imgZipFile)
+    }
+
+    // 下载所有附件
+    const downloadAttachmentZipFileDisabled = computed(
+      () => isEmpty(state.attachmentZipFile) || isEmpty(props.attachmentZipFile)
+    )
+    const handleDownloadAttachmentZipFile = () => {
+      if (state.attachmentZipFile?.url) {
+        download(state.attachmentZipFile.url)
+      }
+      emit('downloadAttachmentZipFile', state.attachmentZipFile)
     }
 
     expose({})
 
     return {
       elCarousel,
+      ...toRefs(state),
       current,
-      urls,
       modalVisible,
-      imageUrls,
-      attachmentUrls,
+      imgList,
+      attachmentList,
+      getExpandedName,
       handleGoTo,
       handlePrev,
       handleNext,
-      handleDownload
+      handleDownload,
+      downloadImgZipFileDisabled,
+      handleDownloadImgZipFile,
+      downloadAttachmentZipFileDisabled,
+      handleDownloadAttachmentZipFile
     }
   }
 })
@@ -168,6 +254,7 @@ export default defineComponent({
   .x-preview__container {
     display: flex;
     flex-direction: column;
+    height: 100%;
     // 修改ant-carousel样式
     .ant-carousel {
       :deep(.slick-slider) {
@@ -191,11 +278,11 @@ export default defineComponent({
       top: 0;
       right: 0;
       bottom: 0;
-      width: 160px;
+      width: 180px;
       .head {
         display: flex;
         justify-content: space-between;
-        margin-bottom: 12px;
+        align-items: center;
       }
       .images {
         height: 60%;
@@ -213,13 +300,19 @@ export default defineComponent({
         overflow-y: auto;
         .item {
           width: 120px;
-          height: 80px;
+          height: 86px;
           margin: 10px 0;
           cursor: pointer;
           img {
             display: block;
             width: 100%;
             height: 100%;
+            //object-fit: contain;
+          }
+          .expanded-name {
+            height: 100%;
+            text-align: center;
+            line-height: 80px;
           }
         }
       }

@@ -18,6 +18,10 @@
       .ant-modal-body {
         flex: 1;
         overflow-y: auto;
+        .ant-spin-nested-loading,
+        .ant-spin-container {
+          height: 100%;
+        }
       }
     }
   }
