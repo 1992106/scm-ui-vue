@@ -135,11 +135,13 @@ export default defineComponent({
     })
 
     const modalVisible = computed({
-      get: () => props.visible,
-      set: val => {
-        if (val) {
+      get: () => {
+        if (props.visible) {
           handleRequest()
         }
+        return props.visible
+      },
+      set: val => {
         emit('update:visible', val)
       }
     })
@@ -312,7 +314,8 @@ export default defineComponent({
           .expanded-name {
             height: 100%;
             text-align: center;
-            line-height: 80px;
+            line-height: 82px;
+            @include ellipsis;
           }
         }
       }

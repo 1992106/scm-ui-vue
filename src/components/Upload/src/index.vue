@@ -84,8 +84,8 @@ export default defineComponent({
         return props.beforeUpload(file)
       }
       // 格式
-      let isAccept = true
       if (!isEmpty(props.accept)) {
+        let isAccept = true
         const accepts = props.accept.split(',')
         if (file.type.startsWith('image/')) {
           isAccept = accepts.some(val => file.type.endsWith(val)) || props.accept.includes('image/')
@@ -102,42 +102,41 @@ export default defineComponent({
         if (file.type.startsWith('text/')) {
           isAccept = accepts.some(val => file.type.endsWith(val)) || props.accept.includes('text/')
         }
-      }
-      if (!isAccept) {
-        message.error(`只能上传${props.accept}格式`)
+        if (!isAccept) {
+          message.error(`只能上传${props.accept}格式`)
+          return false
+        }
       }
       // 大小
-      let isLtM = true
       if (!isEmpty(props.size)) {
-        isLtM = file.size / 1024 / 1024 <= props.size
+        let isLtM = file.size / 1024 / 1024 <= props.size
+        if (!isLtM) {
+          message.error(`不能大于${props.size}M`)
+          return false
+        }
       }
-      if (!isLtM) {
-        message.error(`不能大于${props.size}M`)
-      }
-      // 获取图片宽高
-      let width, height
-      let isWidth = true
-      let isHeight = true
+      // 图片宽高
       if (!isEmpty(props.maxWidth) || !isEmpty(props.maxHeight)) {
-        const imgSize = await getImageSize(file)
-        width = imgSize.width
-        height = imgSize.height
+        const { width, height } = await getImageSize(file)
         // 宽度
         if (!isEmpty(props.maxWidth)) {
-          isWidth = width <= props.maxWidth
+          const isWidth = width <= props.maxWidth
+          if (!isWidth) {
+            message.error(`宽度不能大于${props.maxWidth}`)
+            return false
+          }
         }
-        if (!isWidth) {
-          message.error(`宽度不能大于${props.maxWidth}`)
-        }
+
         // 高度
         if (!isEmpty(props.maxHeight)) {
-          isHeight = height <= props.maxHeight
-        }
-        if (!isHeight) {
-          message.error(`高度不能大于${props.maxHeight}`)
+          const isHeight = height <= props.maxHeight
+          if (!isHeight) {
+            message.error(`高度不能大于${props.maxHeight}`)
+            return false
+          }
         }
       }
-      return isAccept && isLtM && isWidth && isHeight
+      return true
     }
 
     // 自定义校验
