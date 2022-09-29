@@ -9,7 +9,12 @@
 | 参数 | 说明 | 类型 | 默认值 |
 | --- | --- | --- | --- |
 | thumbnail | 缩略图`src` | String | `''` |
-| urls | 图片`src`集合 | Array | `[]` |
+| mode | 上传/预览模式`("simple"、"complex")` | String | `simple` |
+| urls | 预览图片`src`集合 | Array | `[]` |
+| previewList | 预览图片列表 | Array | `[]` |
+| imgZipFile | 图片压缩文件 | Object | `-` |
+| attachmentZipFile | 附件压缩文件 | Object | `-` |
+| customRequest | 自定义请求 | Function | `-` |
 | width | 宽度 | Number | `-` |
 | height | 高度 | Number | `-` |
 | preview | 是否支持预览 | Boolean | `true` |

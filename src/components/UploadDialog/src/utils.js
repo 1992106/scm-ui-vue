@@ -21,6 +21,10 @@ export const hasImage = file => {
   }
 }
 
+export const getFileExpanded = file => {
+  return (file.type?.split('/') || file.name?.split('.'))?.[1]?.toUpperCase?.()
+}
+
 export const formatFiles = files => {
   return (files || []).map(val => {
     return {

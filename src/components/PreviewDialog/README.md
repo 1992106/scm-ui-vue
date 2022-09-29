@@ -12,7 +12,7 @@
 | title | 标题 | String | `预览图片` |
 | width | 宽度 | [String, Number] | `1200` |
 | current | 图片索引 | Number | `0` |
-| fileList | 预览文件列表 | Array | `[]` |
+| previewList | 预览图片列表 | Array | `[]` |
 | imgZipFile | 图片压缩文件 | Object | `-` |
 | attachmentZipFile | 附件压缩文件 | Object | `-` |
 | customRequest | 自定义请求 | Function | `-` |

@@ -12,7 +12,7 @@
     <XUploadDialog v-model:visible="uploadDialogState.visible" :fileList="uploadDialogState.fileList"></XUploadDialog>
     <XPreviewDialog
       v-model:visible="previewDialogState.visible"
-      :fileList="previewDialogState.fileList"></XPreviewDialog>
+      :previewList="previewDialogState.previewList"></XPreviewDialog>
   </div>
 </template>
 <script lang="ts">
@@ -57,7 +57,7 @@ export default defineComponent({
     // 预览弹窗
     const previewDialogState = reactive({
       visible: false,
-      fileList: [1, 2, 3, 4].map(i => {
+      previewList: [1, 2, 3, 4].map(i => {
         return {
           id: i,
           url: `${baseUrl}abstract0${i}.jpg`,

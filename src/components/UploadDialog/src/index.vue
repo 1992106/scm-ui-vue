@@ -90,7 +90,7 @@
                   <template v-if="file?.previewFile">
                     <img :src="file.previewFile.thumbUrl" :alt="file.previewFile.name" />
                   </template>
-                  <div v-else class="expanded-name">{{ getExpandedName(file) }}</div>
+                  <div v-else class="expanded-name">{{ getFileExpanded(file) }}</div>
                   <div class="mark"></div>
                   <div class="operate">
                     <a-button type="text" size="small" @click="handlePreview(file)"><eye-outlined /></a-button>
@@ -111,7 +111,7 @@
   <x-preview-dialog
     v-model:visible="previewVisible"
     :current="previewCurrent"
-    :file-list="previewList"></x-preview-dialog>
+    :preview-list="previewList"></x-preview-dialog>
 </template>
 <script>
 import { computed, defineComponent, reactive, toRefs, watch } from 'vue'
@@ -122,7 +122,7 @@ import XPreviewDialog from '@components/PreviewDialog'
 import draggable from 'vuedraggable'
 import { isFunction } from 'lodash-es'
 import { isEmpty, execRequest, downloadByUrl, download, getImageSize } from '@src/utils'
-import { formatFiles, hasImage } from './utils'
+import { formatFiles, getFileExpanded, hasImage } from './utils'
 export default defineComponent({
   name: 'XUploadDialog',
   components: {
@@ -348,10 +348,6 @@ export default defineComponent({
       emit('drop', $event)
     }
 
-    const getExpandedName = file => {
-      return file.type?.split('/')?.[1]?.toUpperCase?.() || file.name
-    }
-
     // 预览图片
     const handlePreview = file => {
       const list = state.files.filter(val => val.status === 'done')
@@ -429,7 +425,7 @@ export default defineComponent({
       handleCustomUpload,
       handleChange,
       handleDrop,
-      getExpandedName,
+      getFileExpanded,
       handlePreview,
       handleRemove,
       handleDownload,

@@ -26,6 +26,39 @@ const CellRender = defineComponent({
       return <XImage width={width} height={height} thumbnail={value} urls={urls} {...restProps} />
     }
 
+    // 相册
+    const renderPhoto = () => {
+      const {
+        previewField,
+        imgZipFile,
+        attachmentZipFile,
+        customRequest,
+        width = 50,
+        height = 50,
+        ...restProps
+      } = options || {}
+      let previewList = []
+      if (previewField) {
+        previewList = get(record, previewField) || []
+      }
+
+      const handleCustomRequest = customRequest ? async () => await customRequest(record) : null
+
+      return (
+        <XImage
+          mode='complex'
+          width={width}
+          height={height}
+          thumbnail={value}
+          previewList={previewList}
+          imgZipFile={imgZipFile}
+          attachmentZipFile={attachmentZipFile}
+          customRequest={handleCustomRequest}
+          {...restProps}
+        />
+      )
+    }
+
     // 日期
     const renderDate = () => {
       const date = formatDate(value)
@@ -52,6 +85,8 @@ const CellRender = defineComponent({
         ? renderEmpty()
         : name === 'thumbnail'
         ? renderThumbnail()
+        : name === 'thumbnail'
+        ? renderPhoto()
         : name === 'date'
         ? renderDate()
         : name === 'time'

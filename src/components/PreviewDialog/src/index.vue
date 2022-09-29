@@ -18,7 +18,7 @@
           </div>
         </a-carousel>
         <div class="x-preview__dots">
-          <div class="images">
+          <div class="images" :style="{ height: `${attachmentList.length ? 60 : 100}%` }">
             <div class="head">
               <span class="title">
                 图片
@@ -38,36 +38,38 @@
               </div>
             </div>
           </div>
-          <a-divider />
-          <div class="attachments">
-            <div class="head">
-              <span class="title">
-                其它附件
-                <span>({{ attachmentList.length }})</span>
-              </span>
-              <a-button
-                type="link"
-                size="small"
-                :disabled="downloadAttachmentZipFileDisabled"
-                @click="handleDownloadAttachmentZipFile">
-                下载所有附件
-              </a-button>
-            </div>
-            <div class="list">
-              <div
-                v-for="(attachment, i) in attachmentList"
-                :key="attachment.uid || i"
-                class="item"
-                @click="handleGoTo(attachment)">
-                <template v-if="attachment?.previewFile">
-                  <img
-                    :src="attachment.previewFile?.thumbUrl || attachment.previewFile?.url"
-                    :alt="attachment.previewFile?.name" />
-                </template>
-                <div v-else class="expanded-name">{{ getExpandedName(attachment) }}</div>
+          <template v-if="attachmentList.length">
+            <a-divider />
+            <div class="attachments">
+              <div class="head">
+                <span class="title">
+                  其它附件
+                  <span>({{ attachmentList.length }})</span>
+                </span>
+                <a-button
+                  type="link"
+                  size="small"
+                  :disabled="downloadAttachmentZipFileDisabled"
+                  @click="handleDownloadAttachmentZipFile">
+                  下载所有附件
+                </a-button>
+              </div>
+              <div class="list">
+                <div
+                  v-for="(attachment, i) in attachmentList"
+                  :key="attachment.uid || i"
+                  class="item"
+                  @click="handleGoTo(attachment)">
+                  <template v-if="attachment?.previewFile">
+                    <img
+                      :src="attachment.previewFile?.thumbUrl || attachment.previewFile?.url"
+                      :alt="attachment.previewFile?.name" />
+                  </template>
+                  <div v-else class="expanded-name">{{ getFileExpanded(attachment) }}</div>
+                </div>
               </div>
             </div>
-          </div>
+          </template>
         </div>
       </div>
       <div class="x-preview__tools">
@@ -96,7 +98,7 @@ import {
 } from '@ant-design/icons-vue'
 import XModal from '@src/components/Modal'
 import { isFunction } from 'lodash-es'
-import { formatFiles, hasImage } from '@components/UploadDialog/src/utils'
+import { formatFiles, getFileExpanded, hasImage } from '@components/UploadDialog/src/utils'
 import { download, downloadByUrl, execRequest, isEmpty } from '@src/utils'
 export default defineComponent({
   name: 'XPreviewDialog',
@@ -117,7 +119,7 @@ export default defineComponent({
     width: { type: [String, Number], default: 1200 },
     visible: { type: Boolean, default: false },
     current: { type: Number, default: 0 },
-    fileList: { type: Array, default: () => [] },
+    previewList: { type: Array, default: () => [] },
     imgZipFile: { type: Object },
     attachmentZipFile: { type: Object },
     customRequest: { type: Function }
@@ -155,7 +157,7 @@ export default defineComponent({
       const { customRequest } = props
       if (!isFunction(customRequest)) return
       state.spinning = true
-      await execRequest(customRequest({}), {
+      await execRequest(customRequest(), {
         success: ({ data }) => {
           state.files = formatFiles(data?.files || [])
           state.imgZipFile = data?.imgZipFile
@@ -167,9 +169,9 @@ export default defineComponent({
     }
 
     watch(
-      () => props.fileList,
-      fileList => {
-        state.files = formatFiles(fileList || [])
+      () => props.previewList,
+      previewList => {
+        state.files = formatFiles(previewList || [])
       },
       { immediate: true, deep: true }
     )
@@ -182,9 +184,6 @@ export default defineComponent({
     const attachmentList = computed(() => {
       return state.files.filter(file => !hasImage(file))
     })
-    const getExpandedName = file => {
-      return file.type?.split('/')?.[1]?.toUpperCase?.() || file.name
-    }
 
     const handleGoTo = file => {
       // console.log(elCarousel.value.innerSlider.currentSlide)
@@ -236,9 +235,9 @@ export default defineComponent({
       ...toRefs(state),
       current,
       modalVisible,
+      getFileExpanded,
       imgList,
       attachmentList,
-      getExpandedName,
       handleGoTo,
       handlePrev,
       handleNext,
@@ -287,7 +286,7 @@ export default defineComponent({
         align-items: center;
       }
       .images {
-        height: 60%;
+        //height: 60%;
         display: flex;
         flex-direction: column;
       }
