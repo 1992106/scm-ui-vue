@@ -30,6 +30,7 @@ const XImage = defineComponent({
     previewList: { type: Array as PropType<FileField[]>, default: () => [] }, // complex
     imgZipFile: { type: Object as PropType<FileField> }, // complex
     attachmentZipFile: { type: Object as PropType<FileField> }, // complex
+    customRequest: { type: Function as PropType<any> }, // complex
     width: { type: [String, Number] as PropType<number | string> },
     height: { type: [String, Number] as PropType<number | string> },
     preview: { type: Boolean as PropType<boolean>, default: true },
@@ -59,6 +60,10 @@ const XImage = defineComponent({
       }
 
       if (props.mode === 'complex') {
+        // 优先使用customRequest获取预览列表
+        if (props.customRequest) {
+          return []
+        }
         return props.previewList.map(item => item?.thumbUrl ?? item?.src ?? item?.url ?? '').filter(Boolean)
       }
 
@@ -74,6 +79,10 @@ const XImage = defineComponent({
       }
 
       if (props.mode === 'complex') {
+        // 优先使用customRequest获取预览列表
+        if (props.customRequest) {
+          return []
+        }
         let list = props.previewList.map(item => item?.src ?? item?.url ?? item?.thumbUrl ?? '').filter(Boolean)
         // 如果预览列表为空，则把缩略图当成预览图
         if (!list.length && props.thumbnail) {
@@ -134,7 +143,10 @@ const XImage = defineComponent({
 
     const isPreview = computed(() => {
       // 图片为空时，不支持预览功能
-      return props.preview && (props.mode === 'simple' ? previewUrls.value.length > 0 : props.previewList.length > 0)
+      return (
+        props.preview &&
+        (props.mode === 'simple' ? previewUrls.value.length > 0 : props.customRequest || props.previewList.length > 0)
+      )
     })
 
     const handlePreview = (index: number) => {
@@ -211,6 +223,7 @@ const XImage = defineComponent({
                 previewList={props.previewList}
                 imgZipFile={props.imgZipFile}
                 attachmentZipFile={props.attachmentZipFile}
+                customRequest={props.customRequest}
               />
             ))}
         </>

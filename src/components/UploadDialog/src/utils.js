@@ -4,11 +4,11 @@ const hasImageByType = type => {
 
 const hasImageByName = name => {
   const suffix = /\.([0-9a-zA-Z]+)$/i.exec(name)?.[1]
-  return ['png', 'jpg', 'jpeg', 'gif', 'bmp'].includes(suffix)
+  return ['png', 'jpg', 'jpeg', 'gif', 'bmp', 'webp'].includes(suffix)
 }
 
 const hasImageByUrl = url => {
-  return /^.+(\.png|\.jpg|\.jpeg|\.gif|\.bmp)$/.test(url)
+  return /^.+(\.png|\.jpg|\.jpeg|\.gif|\.bmp|\.webp)$/.test(url)
 }
 
 export const hasImage = file => {

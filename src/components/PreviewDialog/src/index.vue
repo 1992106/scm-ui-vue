@@ -12,7 +12,13 @@
     @cancel="modalVisible = false">
     <div class="x-preview__container">
       <div class="x-preview__carousel">
-        <a-carousel ref="elCarousel" :infinite="false" :initialSlide="current" :dots="false" :adaptiveHeight="true">
+        <a-carousel
+          ref="elCarousel"
+          :infinite="false"
+          :initialSlide="current"
+          :dots="false"
+          :draggable="true"
+          :adaptiveHeight="true">
           <div v-for="(file, i) in files" :key="file?.uid || i">
             <img :src="file?.previewFile?.url || file?.url" :alt="file?.name" />
           </div>
@@ -159,7 +165,7 @@ export default defineComponent({
       state.spinning = true
       await execRequest(customRequest(), {
         success: ({ data }) => {
-          state.files = formatFiles(data?.files || [])
+          state.files = formatFiles(data?.previewList || [])
           state.imgZipFile = data?.imgZipFile
           state.attachmentZipFile = data?.attachmentZipFile
         },

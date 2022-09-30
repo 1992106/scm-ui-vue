@@ -195,7 +195,7 @@ export default defineComponent({
       const { customRequest } = props
       if (!isFunction(customRequest)) return
       state.spinning = true
-      await execRequest(customRequest({}), {
+      await execRequest(customRequest(), {
         success: ({ data }) => {
           state.files = formatFiles(data?.files || [])
           state.imgZipFile = data?.imgZipFile

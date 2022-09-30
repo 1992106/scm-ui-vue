@@ -146,8 +146,7 @@ export default defineComponent({
         props: {
           allowClear: true,
           showSearch: true,
-          treeCheckable: true,
-          maxTagCount: 1
+          treeCheckable: true
         },
         events: ['change']
       },
