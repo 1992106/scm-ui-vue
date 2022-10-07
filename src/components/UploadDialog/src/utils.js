@@ -11,9 +11,9 @@ const hasImageByUrl = url => {
   return /^.+(\.png|\.jpg|\.jpeg|\.gif|\.bmp|\.webp)$/.test(url)
 }
 
-const getType = file => file?.mimeType || file?.type
+const getType = file => file?.type || file?.mimeType
 
-const getName = file => file?.fileName || file?.name
+const getName = file => file?.name || file?.fileName
 
 export const hasImage = file => {
   const type = getType(file)
@@ -30,12 +30,11 @@ export const hasImage = file => {
 export const getFileExpanded = file => {
   const type = getType(file)
   if (type) {
-    return type?.split('/')?.[1]?.toUpperCase?.()
+    return type?.split('/')?.pop()?.toUpperCase?.()
   }
   const name = getName(file)
   if (name) {
-    const list = name?.split('.')
-    return list?.[list.length - 1]?.toUpperCase?.()
+    return name?.split('.')?.pop()?.toUpperCase?.()
   }
 }
 
@@ -46,8 +45,8 @@ export const formatFiles = files => {
       ...(val?.id || val?.key
         ? {
             uid: val?.id || val?.key,
-            name: val?.fileName || val?.name,
-            type: val?.mimeType || val?.type,
+            name: val?.name || val?.fileName,
+            type: val?.type || val?.mimeType,
             status: 'done',
             thumbUrl: val?.url || val?.thumbUrl,
             url: val?.url

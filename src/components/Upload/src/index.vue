@@ -87,20 +87,24 @@ export default defineComponent({
       if (!isEmpty(props.accept)) {
         let isAccept = true
         const accepts = props.accept.split(',')
+        const type = file.type?.split('/').pop()
+        const name = file.name?.split('.').pop()
         if (file.type.startsWith('image/')) {
-          isAccept = accepts.some(val => file.type.endsWith(val)) || props.accept.includes('image/')
+          isAccept = accepts.some(accept => accept.includes(name) || accept.includes(type) || accept.includes('image/'))
         }
         if (file.type.startsWith('application/')) {
-          isAccept = accepts.some(val => file.type.endsWith(val)) || props.accept.includes('application/')
+          isAccept = accepts.some(
+            accept => accept.includes(name) || accept.includes(type) || accept.includes('application/')
+          )
         }
         if (file.type.startsWith('audio/')) {
-          isAccept = accepts.some(val => file.type.endsWith(val)) || props.accept.includes('audio/')
+          isAccept = accepts.some(accept => accept.includes(name) || accept.includes(type) || accept.includes('audio/'))
         }
         if (file.type.startsWith('video/')) {
-          isAccept = accepts.some(val => file.type.endsWith(val)) || props.accept.includes('video/')
+          isAccept = accepts.some(accept => accept.includes(name) || accept.includes(type) || accept.includes('video/'))
         }
         if (file.type.startsWith('text/')) {
-          isAccept = accepts.some(val => file.type.endsWith(val)) || props.accept.includes('text/')
+          isAccept = accepts.some(accept => accept.includes(name) || accept.includes(type) || accept.includes('text/'))
         }
         if (!isAccept) {
           message.error(`只能上传${props.accept}格式`)
@@ -153,8 +157,8 @@ export default defineComponent({
           const uploadFile = {
             ...data,
             uid: data?.id || data?.key,
-            name: data?.fileName || data?.name,
-            type: data?.mimeType || data?.type,
+            name: data?.name || data?.fileName,
+            type: data?.type || data?.mimeType,
             status: 'done',
             thumbUrl: data?.url || data?.thumbUrl,
             url: data?.url
@@ -184,7 +188,8 @@ export default defineComponent({
       //   const uploadFile = {
       //     ...data,
       //     uid: data?.id || data?.key,
-      //     name: data?.fileName || data?.name,
+      //     name: data?.name || data?.fileName,
+      //     type: data?.type || data?.mimeType,
       //     status: 'done',
       //     thumbUrl: data?.url || data?.thumbUrl,
       //     url: data?.url
@@ -214,7 +219,8 @@ export default defineComponent({
             ...(val?.id || val?.key
               ? {
                   uid: val?.id || val?.key,
-                  name: val?.fileName || val?.name,
+                  name: val?.name || val?.fileName,
+                  type: val?.type || val?.mimeType,
                   status: 'done',
                   thumbUrl: val?.url || val?.thumbUrl,
                   url: val?.url
