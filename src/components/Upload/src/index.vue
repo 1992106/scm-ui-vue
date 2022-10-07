@@ -64,7 +64,9 @@ export default defineComponent({
     accept: { type: String }, // 'image/*'、'application/*'、'audio/*'、'video/*'、'text/'
     multiple: { type: Boolean },
     size: { type: Number },
+    minWidth: { type: Number },
     maxWidth: { type: Number },
+    minHeight: { type: Number },
     maxHeight: { type: Number },
     maxCount: { type: Number }
   },
@@ -120,21 +122,39 @@ export default defineComponent({
         }
       }
       // 图片宽高
-      if (!isEmpty(props.maxWidth) || !isEmpty(props.maxHeight)) {
+      if (
+        file.type.startsWith('image/') &&
+        (!isEmpty(props.minWidth) || !isEmpty(props.maxWidth) || !isEmpty(props.minHeight) || !isEmpty(props.maxHeight))
+      ) {
         const { width, height } = await getImageSize(file)
-        // 宽度
+        // 最小宽度
+        if (!isEmpty(props.minWidth)) {
+          const isMinWidth = width >= props.minWidth
+          if (!isMinWidth) {
+            message.error(`宽度不能小于${props.minWidth}`)
+            return false
+          }
+        }
+        // 最大宽度
         if (!isEmpty(props.maxWidth)) {
-          const isWidth = width <= props.maxWidth
-          if (!isWidth) {
+          const isMaxWidth = width <= props.maxWidth
+          if (!isMaxWidth) {
             message.error(`宽度不能大于${props.maxWidth}`)
             return false
           }
         }
-
-        // 高度
+        // 最小高度
+        if (!isEmpty(props.minHeight)) {
+          const isMinHeight = width >= props.minHeight
+          if (!isMinHeight) {
+            message.error(`高度不能小于${props.minHeight}`)
+            return false
+          }
+        }
+        // 最大高度
         if (!isEmpty(props.maxHeight)) {
-          const isHeight = height <= props.maxHeight
-          if (!isHeight) {
+          const isMaxHeight = height <= props.maxHeight
+          if (!isMaxHeight) {
             message.error(`高度不能大于${props.maxHeight}`)
             return false
           }

@@ -52,7 +52,10 @@
             <template #item="{ element: file }">
               <div class="x-upload__list-item">
                 <div class="image">
-                  <img :src="file.url" :alt="file.name" />
+                  <template v-if="file?.status === 'done'">
+                    <img :src="file.url" :alt="file.name" />
+                  </template>
+                  <div v-else class="status">上传中...</div>
                   <div class="mark"></div>
                   <div class="operate">
                     <a-button type="text" size="small" @click="handlePreview(file)"><eye-outlined /></a-button>
@@ -90,9 +93,9 @@
               <div class="x-upload__list-item">
                 <div class="image">
                   <template v-if="file?.previewFile">
-                    <img :src="file.previewFile.thumbUrl" :alt="file.previewFile.name" />
+                    <img :src="file.previewFile?.thumbUrl || file.previewFile?.url" :alt="file.previewFile?.name" />
                   </template>
-                  <div v-else class="expanded-name">
+                  <div v-else class="status">
                     {{ file?.status === 'done' ? getFileExpanded(file) : '上传中...' }}
                   </div>
                   <div class="mark"></div>
@@ -161,7 +164,9 @@ export default defineComponent({
     directory: { type: Boolean },
     multiple: { type: Boolean },
     size: { type: Number, default: 500 },
+    minWidth: { type: Number },
     maxWidth: { type: Number },
+    minHeight: { type: Number },
     maxHeight: { type: Number },
     maxCount: { type: Number, default: 20 }
   },
@@ -216,7 +221,11 @@ export default defineComponent({
           state.imgZipFile = data?.imgZipFile
           state.attachmentZipFile = data?.attachmentZipFile
         },
-        fail: () => {}
+        fail: () => {
+          state.files = []
+          state.imgZipFile = null
+          state.attachmentZipFile = null
+        }
       })
       state.spinning = false
     }
@@ -282,21 +291,39 @@ export default defineComponent({
         }
       }
       // 图片宽高
-      if (!isEmpty(props.maxWidth) || !isEmpty(props.maxHeight)) {
+      if (
+        file.type.startsWith('image/') &&
+        (!isEmpty(props.minWidth) || !isEmpty(props.maxWidth) || !isEmpty(props.minHeight) || !isEmpty(props.maxHeight))
+      ) {
         const { width, height } = await getImageSize(file)
-        // 宽度
+        // 最小宽度
+        if (!isEmpty(props.minWidth)) {
+          const isMinWidth = width >= props.minWidth
+          if (!isMinWidth) {
+            message.error(`宽度不能小于${props.minWidth}`)
+            return false
+          }
+        }
+        // 最大宽度
         if (!isEmpty(props.maxWidth)) {
-          const isWidth = width <= props.maxWidth
-          if (!isWidth) {
+          const isMaxWidth = width <= props.maxWidth
+          if (!isMaxWidth) {
             message.error(`宽度不能大于${props.maxWidth}`)
             return false
           }
         }
-
-        // 高度
+        // 最小高度
+        if (!isEmpty(props.minHeight)) {
+          const isMinHeight = width >= props.minHeight
+          if (!isMinHeight) {
+            message.error(`高度不能小于${props.minHeight}`)
+            return false
+          }
+        }
+        // 最大高度
         if (!isEmpty(props.maxHeight)) {
-          const isHeight = height <= props.maxHeight
-          if (!isHeight) {
+          const isMaxHeight = height <= props.maxHeight
+          if (!isMaxHeight) {
             message.error(`高度不能大于${props.maxHeight}`)
             return false
           }
@@ -487,7 +514,7 @@ export default defineComponent({
             height: 100%;
             object-fit: contain;
           }
-          .expanded-name {
+          .status {
             height: 100%;
             text-align: center;
             line-height: 86px;

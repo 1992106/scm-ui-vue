@@ -71,7 +71,7 @@
                       :src="attachment.previewFile?.thumbUrl || attachment.previewFile?.url"
                       :alt="attachment.previewFile?.name" />
                   </template>
-                  <div v-else class="expanded-name">{{ getFileExpanded(attachment) }}</div>
+                  <div v-else class="expanded">{{ getFileExpanded(attachment) }}</div>
                 </div>
               </div>
             </div>
@@ -93,7 +93,7 @@
   </x-modal>
 </template>
 <script>
-import { computed, defineComponent, reactive, ref, toRefs, watch } from 'vue'
+import { computed, defineComponent, reactive, ref, toRefs, watchEffect } from 'vue'
 import { Carousel, message } from 'ant-design-vue'
 import {
   LeftCircleOutlined,
@@ -137,6 +137,7 @@ export default defineComponent({
     const elCarousel = ref(null)
     const state = reactive({
       spinning: false,
+      current: 0,
       files: [],
       // 图片压缩文件
       imgZipFile: null,
@@ -166,20 +167,24 @@ export default defineComponent({
           state.imgZipFile = data?.imgZipFile
           state.attachmentZipFile = data?.attachmentZipFile
         },
-        fail: () => {}
+        fail: () => {
+          state.files = []
+          state.imgZipFile = null
+          state.attachmentZipFile = null
+        }
       })
       state.spinning = false
     }
 
-    watch(
-      () => props.previewList,
-      previewList => {
-        if (isEmpty(props.customRequest)) {
-          state.files = formatFiles(previewList || [])
-        }
-      },
-      { immediate: true, deep: true }
-    )
+    watchEffect(() => {
+      if (isEmpty(props.customRequest)) {
+        state.files = formatFiles(props.previewList || [])
+      }
+    })
+
+    watchEffect(() => {
+      state.current = props.current
+    })
 
     // 图片
     const imgList = computed(() => {
@@ -320,7 +325,7 @@ export default defineComponent({
         height: calc(40% - 32px);
         display: flex;
         flex-direction: column;
-        .expanded-name {
+        .expanded {
           height: 100%;
           text-align: center;
           line-height: 104px;

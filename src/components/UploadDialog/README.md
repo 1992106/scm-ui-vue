@@ -18,13 +18,15 @@
 | customSubmit | 自定义提交 | Function | `-` |
 | customUpload | 自定义上传 | Function | `-` |
 | beforeUpload | 上传文件之前的钩子，参数为上传的文件，若返回 false 则停止上传 | Function | `-` |
-| accept | 上传文件格式`("image/*"、"application/*"、"audio/*"、"video/*")` | String | `-` |
+| accept | 上传文件格式`("image/*"、"application/*"、"audio/*"、"video/*"、"text/*")` | String | `-` |
 | mode | 上传/预览模式`("upload"、"preview")` | String | `upload` |
 | directory | 支持上传文件夹 | Boolean | `-` |
 | multiple | 是否支持多选文件。开启后按住 ctrl 可选择多个文件。 | Boolean | `-` |
 | size | 上传文件大小，单位`M` | Number | `500` |
-| maxWidth | 上传文件宽度，单位`px` | Number | `-` |
-| maxHeight | 上传文件高度，单位`px` | Number | `-` |
+| minWidth | 上传文件最小宽度，单位`px` | Number | `-` |
+| maxWidth | 上传文件最大宽度，单位`px` | Number | `-` |
+| minHeight | 上传文件最小高度，单位`px` | Number | `-` |
+| maxHeight | 上传文件最大高度，单位`px` | Number | `-` |
 | maxCount | 上传文件数量 | Number | `20` |
 
 ### Emits
