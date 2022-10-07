@@ -46,6 +46,7 @@
             下载所有图片
           </a-button>
         </div>
+        <!--图片列表-->
         <div class="x-upload__list">
           <draggable :list="imgList" item-key="uid">
             <template #item="{ element: file }">
@@ -82,6 +83,7 @@
             下载所有附件
           </a-button>
         </div>
+        <!--附件列表-->
         <div class="x-upload__list">
           <draggable :list="attachmentList" item-key="uid">
             <template #item="{ element: file }">
@@ -90,7 +92,9 @@
                   <template v-if="file?.previewFile">
                     <img :src="file.previewFile.thumbUrl" :alt="file.previewFile.name" />
                   </template>
-                  <div v-else class="expanded-name">{{ getFileExpanded(file) }}</div>
+                  <div v-else class="expanded-name">
+                    {{ file?.status === 'done' ? getFileExpanded(file) : '上传中...' }}
+                  </div>
                   <div class="mark"></div>
                   <div class="operate">
                     <a-button type="text" size="small" @click="handlePreview(file)"><eye-outlined /></a-button>
@@ -191,6 +195,17 @@ export default defineComponent({
       previewCurrent: 0
     })
 
+    watch(
+      () => props.visible,
+      bool => {
+        state.modalVisible = bool
+        if (bool) {
+          handleRequest()
+        }
+      },
+      { immediate: true }
+    )
+
     const handleRequest = async () => {
       const { customRequest } = props
       if (!isFunction(customRequest)) return
@@ -207,14 +222,22 @@ export default defineComponent({
     }
 
     watch(
-      () => props.visible,
-      bool => {
-        state.modalVisible = bool
-        if (bool) {
-          handleRequest()
+      () => props.fileList,
+      fileList => {
+        if (isEmpty(props.customRequest)) {
+          state.files = formatFiles(fileList || [])
         }
       },
-      { immediate: true }
+      { immediate: true, deep: true }
+    )
+
+    watch(
+      () => state.files,
+      files => {
+        state.imgList = files.filter(file => hasImage(file))
+        state.attachmentList = files.filter(file => !hasImage(file))
+      },
+      { immediate: true, deep: true }
     )
 
     // 上传前校验
@@ -312,23 +335,6 @@ export default defineComponent({
       })
     }
 
-    watch(
-      () => props.fileList,
-      fileList => {
-        state.files = formatFiles(fileList || [])
-      },
-      { immediate: true, deep: true }
-    )
-
-    watch(
-      () => state.files,
-      files => {
-        state.imgList = files.filter(file => hasImage(file))
-        state.attachmentList = files.filter(file => !hasImage(file))
-      },
-      { immediate: true, deep: true }
-    )
-
     // 上传文件改变时的状态（'uploading' 'done' 'error' 'removed'）
     // 因为自定义customRequest方法没有调用onSuccess和onError方法，所以不会触发状态为 'done' 和 'error' 的 change事件
     // 因为没有使用内部remove方法，所以不会触发状态为 'removed' 的 change事件
@@ -377,10 +383,11 @@ export default defineComponent({
     // 下载所有图片
     const downloadImgZipFileDisabled = computed(() => isEmpty(state.imgZipFile) || isEmpty(props.imgZipFile))
     const handleDownloadImgZipFile = () => {
-      if (state.imgZipFile?.url) {
-        download(state.imgZipFile.url)
+      const imgZipFile = state.imgZipFile || props.imgZipFile
+      if (imgZipFile?.url) {
+        download(imgZipFile.url)
       }
-      emit('downloadImgZipFile', state.imgZipFile)
+      emit('downloadImgZipFile', imgZipFile)
     }
 
     // 下载所有附件
@@ -388,20 +395,21 @@ export default defineComponent({
       () => isEmpty(state.attachmentZipFile) || isEmpty(props.attachmentZipFile)
     )
     const handleDownloadAttachmentZipFile = () => {
-      if (state.attachmentZipFile?.url) {
-        download(state.attachmentZipFile.url)
+      const attachmentZipFile = state.attachmentZipFile || props.attachmentZipFile
+      if (attachmentZipFile?.url) {
+        download(attachmentZipFile.url)
       }
-      emit('downloadAttachmentZipFile', state.attachmentZipFile)
+      emit('downloadAttachmentZipFile', attachmentZipFile)
     }
 
     const handleOk = async () => {
       const { customSubmit } = props
       if (!isFunction(customSubmit)) return
       state.confirmLoading = true
-      const files = [...state.imgList, ...state.attachmentList]
+      const files = [...state.imgList, ...state.attachmentList].filter(val => val.status === 'done')
       await execRequest(
         customSubmit({
-          ...(!isEmpty(files) ? { ids: files.map(val => val?.id) } : {})
+          ...(!isEmpty(files) ? { ids: files.map(val => val?.uid) } : {})
         }),
         {
           success: ({ data }) => {
@@ -478,7 +486,7 @@ export default defineComponent({
           .expanded-name {
             height: 100%;
             text-align: center;
-            line-height: 82px;
+            line-height: 86px;
             @include ellipsis;
           }
           .mark {
@@ -520,6 +528,10 @@ export default defineComponent({
               opacity: 1;
             }
           }
+        }
+        .name {
+          width: 104px;
+          @include ellipsis;
         }
       }
     }

@@ -13,12 +13,12 @@
     <div class="x-preview__container">
       <div class="x-preview__carousel">
         <a-carousel
+          v-if="files.length"
           ref="elCarousel"
-          :infinite="false"
           :initialSlide="current"
+          :infinite="false"
           :dots="false"
-          :draggable="true"
-          :adaptiveHeight="true">
+          :draggable="true">
           <div v-for="(file, i) in files" :key="file?.uid || i">
             <img :src="file?.previewFile?.url || file?.url" :alt="file?.name" />
           </div>
@@ -38,8 +38,8 @@
                 下载所有图片
               </a-button>
             </div>
-            <div class="list">
-              <div v-for="(img, i) in imgList" :key="img?.uid || i" class="item" @click="handleGoTo(img)">
+            <div class="dots__list">
+              <div v-for="(img, i) in imgList" :key="img?.uid || i" class="dots__list-item" @click="handleGoTo(img)">
                 <img :src="img?.thumbUrl || img?.url" :alt="img?.fileName" />
               </div>
             </div>
@@ -49,7 +49,7 @@
             <div class="attachments">
               <div class="head">
                 <span class="title">
-                  其它附件
+                  其他附件
                   <span>({{ attachmentList.length }})</span>
                 </span>
                 <a-button
@@ -60,11 +60,11 @@
                   下载所有附件
                 </a-button>
               </div>
-              <div class="list">
+              <div class="dots__list">
                 <div
                   v-for="(attachment, i) in attachmentList"
                   :key="attachment.uid || i"
-                  class="item"
+                  class="dots__list-item"
                   @click="handleGoTo(attachment)">
                   <template v-if="attachment?.previewFile">
                     <img
@@ -79,19 +79,21 @@
         </div>
       </div>
       <div class="x-preview__tools">
-        <LeftCircleOutlined @click="handlePrev" />
-        <RightCircleOutlined @click="handleNext" />
-        <RotateLeftOutlined />
-        <RotateRightOutlined />
-        <ZoomInOutlined />
-        <ZoomOutOutlined />
-        <DownloadOutlined @click="handleDownload" />
+        <LeftCircleOutlined :class="{ disabled: files.length === 0 || currentSlide === 0 }" @click="handlePrev" />
+        <RightCircleOutlined
+          :class="{ disabled: files.length === 0 || currentSlide === files.length - 1 }"
+          @click="handleNext" />
+        <RotateLeftOutlined :class="{ disabled: files.length === 0 }" @click="handleRotateLeft" />
+        <RotateRightOutlined :class="{ disabled: files.length === 0 }" @click="handleRotateRight" />
+        <ZoomInOutlined :class="{ disabled: files.length === 0 }" @click="handleZoomIn" />
+        <ZoomOutOutlined :class="{ disabled: files.length === 0 }" @click="handleZoomOut" />
+        <DownloadOutlined :class="{ disabled: files.length === 0 }" @click="handleDownload" />
       </div>
     </div>
   </x-modal>
 </template>
 <script>
-import { computed, defineComponent, reactive, ref, toRefs, watch, watchEffect } from 'vue'
+import { computed, defineComponent, reactive, ref, toRefs, watch } from 'vue'
 import { Carousel, message } from 'ant-design-vue'
 import {
   LeftCircleOutlined,
@@ -154,11 +156,6 @@ export default defineComponent({
       }
     })
 
-    const current = ref(props.current)
-    watchEffect(() => {
-      current.value = props.current
-    })
-
     const handleRequest = async () => {
       const { customRequest } = props
       if (!isFunction(customRequest)) return
@@ -177,7 +174,9 @@ export default defineComponent({
     watch(
       () => props.previewList,
       previewList => {
-        state.files = formatFiles(previewList || [])
+        if (isEmpty(props.customRequest)) {
+          state.files = formatFiles(previewList || [])
+        }
       },
       { immediate: true, deep: true }
     )
@@ -186,13 +185,16 @@ export default defineComponent({
     const imgList = computed(() => {
       return state.files.filter(file => hasImage(file))
     })
-    // 其它附件
+    // 其他附件
     const attachmentList = computed(() => {
       return state.files.filter(file => !hasImage(file))
     })
 
+    // 当前图片index
+    const currentSlide = computed(() => elCarousel.value?.innerSlider?.currentSlide)
+
     const handleGoTo = file => {
-      // console.log(elCarousel.value.innerSlider.currentSlide)
+      // console.log(elCarousel.value.innerSlider)
       const index = state.files.findIndex(val => val?.uid === file?.uid)
       elCarousel.value.goTo(index)
     }
@@ -204,6 +206,14 @@ export default defineComponent({
     const handleNext = () => {
       elCarousel.value.next()
     }
+
+    const handleRotateLeft = () => {}
+
+    const handleRotateRight = () => {}
+
+    const handleZoomIn = () => {}
+
+    const handleZoomOut = () => {}
 
     // 下载
     const handleDownload = async file => {
@@ -217,10 +227,11 @@ export default defineComponent({
     // 下载所有图片
     const downloadImgZipFileDisabled = computed(() => isEmpty(state.imgZipFile) || isEmpty(props.imgZipFile))
     const handleDownloadImgZipFile = () => {
-      if (state.imgZipFile?.url) {
-        download(state.imgZipFile.url)
+      const imgZipFile = state.imgZipFile || props.imgZipFile
+      if (imgZipFile?.url) {
+        download(imgZipFile.url)
       }
-      emit('downloadImgZipFile', state.imgZipFile)
+      emit('downloadImgZipFile', imgZipFile)
     }
 
     // 下载所有附件
@@ -228,10 +239,11 @@ export default defineComponent({
       () => isEmpty(state.attachmentZipFile) || isEmpty(props.attachmentZipFile)
     )
     const handleDownloadAttachmentZipFile = () => {
-      if (state.attachmentZipFile?.url) {
-        download(state.attachmentZipFile.url)
+      const attachmentZipFile = state.attachmentZipFile || props.attachmentZipFile
+      if (attachmentZipFile?.url) {
+        download(attachmentZipFile.url)
       }
-      emit('downloadAttachmentZipFile', state.attachmentZipFile)
+      emit('downloadAttachmentZipFile', attachmentZipFile)
     }
 
     expose({})
@@ -239,14 +251,18 @@ export default defineComponent({
     return {
       elCarousel,
       ...toRefs(state),
-      current,
       modalVisible,
       getFileExpanded,
       imgList,
       attachmentList,
+      currentSlide,
       handleGoTo,
       handlePrev,
       handleNext,
+      handleRotateLeft,
+      handleRotateRight,
+      handleZoomIn,
+      handleZoomOut,
       handleDownload,
       downloadImgZipFileDisabled,
       handleDownloadImgZipFile,
@@ -264,15 +280,20 @@ export default defineComponent({
     height: 100%;
     // 修改ant-carousel样式
     .ant-carousel {
+      height: 100%;
       :deep(.slick-slider) {
         display: flex;
         align-items: center;
-        min-height: 60vh;
+        height: 100%;
+        .slick-list {
+          width: 100%;
+        }
       }
       :deep(.slick-slide img) {
         display: block;
         margin: auto;
-        max-width: 80%;
+        width: auto;
+        height: 100%;
       }
     }
   }
@@ -292,7 +313,6 @@ export default defineComponent({
         align-items: center;
       }
       .images {
-        //height: 60%;
         display: flex;
         flex-direction: column;
       }
@@ -300,27 +320,33 @@ export default defineComponent({
         height: calc(40% - 32px);
         display: flex;
         flex-direction: column;
+        .expanded-name {
+          height: 100%;
+          text-align: center;
+          line-height: 104px;
+          @include ellipsis;
+        }
       }
-      .list {
+      .dots__list {
         flex: 1;
         overflow-x: hidden;
         overflow-y: auto;
-        .item {
+        &-item {
           width: 120px;
-          height: 86px;
+          height: 120px;
           margin: 10px 0;
+          position: relative;
           cursor: pointer;
           img {
             display: block;
             width: 100%;
             height: 100%;
-            //object-fit: contain;
+            object-fit: contain;
           }
-          .expanded-name {
-            height: 100%;
-            text-align: center;
-            line-height: 82px;
-            @include ellipsis;
+          & > :is(div) {
+            padding: 8px;
+            border-radius: 2px;
+            border: 1px solid #d9d9d9;
           }
         }
       }
@@ -337,6 +363,10 @@ export default defineComponent({
     color: #aaa;
     .anticon {
       margin: 0 20px;
+      &.disabled {
+        cursor: not-allowed;
+        color: #ccc;
+      }
     }
   }
   .ant-divider {
