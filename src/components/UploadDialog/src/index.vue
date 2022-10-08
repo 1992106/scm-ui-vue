@@ -8,7 +8,7 @@
     :spin-props="spinning"
     :confirm-loading="confirmLoading"
     destroy-on-close
-    :footer="mode === 'upload' ? undefined : null"
+    :footer="mode === 'preview' ? null : undefined"
     @ok="handleOk"
     @cancel="handleCancel">
     <template v-if="mode === 'upload'">
