@@ -9,13 +9,13 @@
     :footer="null"
     fullscreen
     destroy-on-close
-    @cancel="modalVisible = false">
+    @cancel="handleCancel">
     <div class="x-preview__container">
       <div class="x-preview__carousel">
         <a-carousel
           v-if="files.length"
           ref="elCarousel"
-          :initialSlide="current"
+          :initialSlide="previewCurrent"
           :infinite="false"
           :dots="false"
           :draggable="true">
@@ -123,7 +123,7 @@ export default defineComponent({
   },
   inheritAttrs: false,
   props: {
-    title: { type: String, default: '预览图片' },
+    title: { type: String, default: '图片预览' },
     width: { type: [String, Number], default: 1200 },
     visible: { type: Boolean, default: false },
     current: { type: Number, default: 0 },
@@ -137,7 +137,7 @@ export default defineComponent({
     const elCarousel = ref(null)
     const state = reactive({
       spinning: false,
-      current: 0,
+      previewCurrent: 0,
       files: [],
       // 图片压缩文件
       imgZipFile: null,
@@ -183,7 +183,7 @@ export default defineComponent({
     })
 
     watchEffect(() => {
-      state.current = props.current
+      state.previewCurrent = props.current
     })
 
     // 图片
@@ -251,6 +251,13 @@ export default defineComponent({
       emit('downloadAttachmentZipFile', attachmentZipFile)
     }
 
+    const handleCancel = () => {
+      state.previewCurrent = 0
+      state.files = []
+      state.imgZipFile = null
+      state.attachmentZipFile = null
+    }
+
     expose({})
 
     return {
@@ -272,7 +279,8 @@ export default defineComponent({
       downloadImgZipFileDisabled,
       handleDownloadImgZipFile,
       downloadAttachmentZipFileDisabled,
-      handleDownloadAttachmentZipFile
+      handleDownloadAttachmentZipFile,
+      handleCancel
     }
   }
 })

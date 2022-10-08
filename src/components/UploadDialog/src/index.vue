@@ -8,6 +8,7 @@
     :spin-props="spinning"
     :confirm-loading="confirmLoading"
     destroy-on-close
+    :footer="mode === 'upload' ? undefined : null"
     @ok="handleOk"
     @cancel="handleCancel">
     <template v-if="mode === 'upload'">
@@ -40,7 +41,7 @@
           <span class="title">
             图片
             <span v-show="maxCount" class="max-count">({{ imgList.length }}/{{ maxCount }})</span>
-            <span class="subtitle">可手动拖拽调整顺序，默认设置第一张为缩略图</span>
+            <span v-if="mode === 'upload'" class="subtitle">可手动拖拽调整顺序，默认设置第一张为缩略图</span>
           </span>
           <a-button type="link" size="small" :disabled="downloadImgZipFileDisabled" @click="handleDownloadImgZipFile">
             下载所有图片
@@ -55,17 +56,21 @@
                   <template v-if="file?.status === 'done'">
                     <img :src="file.url" :alt="file.name" />
                   </template>
-                  <div v-else class="status">上传中...</div>
+                  <div v-else class="expanded">上传中...</div>
                   <div class="mark"></div>
                   <div class="operate">
-                    <a-button type="text" size="small" @click="handlePreview(file)"><eye-outlined /></a-button>
-                    <a-button type="text" size="small" @click="handleDownload(file)"><download-outlined /></a-button>
-                    <a-button v-if="mode === 'upload'" type="text" size="small" @click="handleRemove(file)">
-                      <delete-outlined />
+                    <a-button v-if="showPreviewIcon" type="text" size="small" @click="handlePreview(file)">
+                      <template #icon><eye-outlined /></template>
+                    </a-button>
+                    <a-button v-if="showDownloadIcon" type="text" size="small" @click="handleDownload(file)">
+                      <template #icon><download-outlined /></template>
+                    </a-button>
+                    <a-button v-if="showRemoveIcon" type="text" size="small" @click="handleRemove(file)">
+                      <template #icon><delete-outlined /></template>
                     </a-button>
                   </div>
                 </div>
-                <!--<div class="name">{{ file.name }}</div>-->
+                <!--<div class="ellipsis">{{ file.name }}</div>-->
               </div>
             </template>
           </draggable>
@@ -95,19 +100,23 @@
                   <template v-if="file?.previewFile">
                     <img :src="file.previewFile?.thumbUrl || file.previewFile?.url" :alt="file.previewFile?.name" />
                   </template>
-                  <div v-else class="status">
+                  <div v-else class="expanded">
                     {{ file?.status === 'done' ? getFileExpanded(file) : '上传中...' }}
                   </div>
                   <div class="mark"></div>
                   <div class="operate">
-                    <a-button type="text" size="small" @click="handlePreview(file)"><eye-outlined /></a-button>
-                    <a-button type="text" size="small" @click="handleDownload(file)"><download-outlined /></a-button>
-                    <a-button v-if="mode === 'upload'" type="text" size="small" @click="handleRemove(file)">
-                      <delete-outlined />
+                    <a-button v-if="showPreviewIcon" type="text" size="small" @click="handlePreview(file)">
+                      <template #icon><eye-outlined /></template>
+                    </a-button>
+                    <a-button v-if="showDownloadIcon" type="text" size="small" @click="handleDownload(file)">
+                      <template #icon><download-outlined /></template>
+                    </a-button>
+                    <a-button v-if="showRemoveIcon" type="text" size="small" @click="handleRemove(file)">
+                      <template #icon><delete-outlined /></template>
                     </a-button>
                   </div>
                 </div>
-                <div class="name">{{ file.name }}</div>
+                <div class="ellipsis">{{ file.name }}</div>
               </div>
             </template>
           </draggable>
@@ -118,7 +127,9 @@
   <x-preview-dialog
     v-model:visible="previewVisible"
     :current="previewCurrent"
-    :preview-list="previewList"></x-preview-dialog>
+    :preview-list="previewList"
+    :imgZipFile="imgZipFile"
+    :attachmentZipFile="attachmentZipFile"></x-preview-dialog>
 </template>
 <script>
 import { computed, defineComponent, reactive, toRefs, watch } from 'vue'
@@ -144,7 +155,7 @@ export default defineComponent({
   },
   inheritAttrs: false,
   props: {
-    title: { type: String, default: '上传文件' },
+    title: { type: String, default: '文件上传' },
     width: { type: [String, Number], default: 960 },
     visible: { type: Boolean, default: false },
     fileList: { type: Array, default: () => [] },
@@ -153,6 +164,7 @@ export default defineComponent({
     customRequest: { type: Function },
     customSubmit: { type: Function },
     customUpload: { type: Function },
+    showUploadList: { type: [Boolean, Object], default: true },
     beforeUpload: { type: Function },
     mode: {
       validator(value) {
@@ -196,8 +208,8 @@ export default defineComponent({
       attachmentZipFile: null,
       // 预览图片
       previewVisible: false,
-      previewList: [],
-      previewCurrent: 0
+      previewCurrent: 0,
+      previewList: []
     })
 
     watch(
@@ -385,6 +397,32 @@ export default defineComponent({
       emit('drop', $event)
     }
 
+    const showPreviewIcon = computed(() => {
+      // 预览模式：显示预览图标
+      if (props.mode === 'preview') {
+        return true
+      }
+      return props.showUploadList || props.showUploadList?.showPreviewIcon
+    })
+    const showDownloadIcon = computed(() => {
+      // 预览模式：显示下载图标
+      if (props.mode === 'preview') {
+        return true
+      }
+      // 默认不显示下载图标
+      if (props.showUploadList === true) {
+        return false
+      }
+      return props.showUploadList?.showDownloadIcon
+    })
+    const showRemoveIcon = computed(() => {
+      // 预览模式：不显示移除图标
+      if (props.mode === 'preview') {
+        return false
+      }
+      return props.showUploadList || props.showUploadList?.showRemoveIcon
+    })
+
     // 预览图片
     const handlePreview = file => {
       const list = state.files.filter(val => val.status === 'done')
@@ -453,6 +491,11 @@ export default defineComponent({
     }
 
     const handleCancel = () => {
+      state.files = []
+      state.imgZipFile = null
+      state.attachmentZipFile = null
+      state.previewList = []
+      state.previewCurrent = 0
       emit('update:visible', false)
     }
 
@@ -465,6 +508,9 @@ export default defineComponent({
       handleChange,
       handleDrop,
       getFileExpanded,
+      showPreviewIcon,
+      showRemoveIcon,
+      showDownloadIcon,
       handlePreview,
       handleRemove,
       handleDownload,
@@ -514,7 +560,7 @@ export default defineComponent({
             height: 100%;
             object-fit: contain;
           }
-          .status {
+          .expanded {
             height: 100%;
             text-align: center;
             line-height: 86px;
@@ -560,7 +606,7 @@ export default defineComponent({
             }
           }
         }
-        .name {
+        .ellipsis {
           width: 104px;
           @include ellipsis;
         }

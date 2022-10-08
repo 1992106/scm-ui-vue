@@ -18,12 +18,10 @@
         <template v-if="listType === 'picture-card'">
           <PlusOutlined />
         </template>
-        <template v-else>
-          <a-button>
-            <UploadOutlined />
-            上传
-          </a-button>
-        </template>
+        <a-button v-else>
+          <template #icon><UploadOutlined /></template>
+          上传
+        </a-button>
       </slot>
       <span v-show="maxCount" class="max-count">({{ files.length }}/{{ maxCount }})</span>
     </div>
@@ -76,8 +74,8 @@ export default defineComponent({
       files: [],
       // 预览图片
       previewVisible: false,
-      previewUrls: [],
-      previewCurrent: 0
+      previewCurrent: 0,
+      previewUrls: []
     })
 
     // 上传前校验
@@ -274,11 +272,12 @@ export default defineComponent({
 
     // 是否展示 uploadList
     const showUploadList = computed(() => {
-      // 预览模式：只显示预览和下载图标
+      // 预览模式：只显示预览和下载图标，不显示移除图标
       if (props.mode === 'preview') {
         return {
           showPreviewIcon: true,
-          showDownloadIcon: true
+          showDownloadIcon: true,
+          showRemoveIcon: false
         }
       }
       return props.showUploadList
