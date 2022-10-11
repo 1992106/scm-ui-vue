@@ -22,13 +22,13 @@ export const hasImage = file => {
 }
 
 export const getFileExpanded = file => {
-  const type = getType(file)
-  if (type) {
-    return type?.split('/')?.pop()?.toUpperCase()
-  }
   const name = getName(file)
   if (name) {
     return name?.split('.')?.pop()?.toUpperCase()
+  }
+  const type = getType(file)
+  if (type) {
+    return type?.split('/')?.pop()?.toUpperCase()
   }
 }
 
