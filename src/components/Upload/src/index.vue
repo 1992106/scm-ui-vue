@@ -291,9 +291,9 @@ export default defineComponent({
       ) {
         return false
       }
-      const list = state.files.filter(val => val.status === 'done')
-      state.previewUrls = list.map(val => val?.url)
-      state.previewCurrent = list.findIndex(v => v.uid === file.uid)
+      const previewList = state.files.filter(val => val.status === 'done')
+      state.previewUrls = previewList.map(val => val?.url)
+      state.previewCurrent = previewList.findIndex(v => v.uid === file.uid)
       state.previewVisible = true
       emit('preview', file)
     }

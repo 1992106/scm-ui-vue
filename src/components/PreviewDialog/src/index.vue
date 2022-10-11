@@ -163,7 +163,7 @@ export default defineComponent({
       state.spinning = true
       await execRequest(customRequest(), {
         success: ({ data }) => {
-          state.files = formatFiles(data?.previewList || [])
+          state.files = formatFiles(data?.files || data?.fileList || data?.previewList || [])
           state.imgZipFile = data?.imgZipFile
           state.attachmentZipFile = data?.attachmentZipFile
         },

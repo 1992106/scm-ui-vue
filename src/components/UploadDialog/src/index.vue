@@ -13,7 +13,6 @@
     @cancel="handleCancel">
     <template v-if="mode === 'upload'">
       <a-upload-dragger
-        v-model:file-list="files"
         :show-upload-list="false"
         :accept="accept"
         :directory="directory"
@@ -21,7 +20,6 @@
         :max-count="maxCount"
         :before-upload="beforeUploadFn"
         :custom-request="handleCustomUpload"
-        @change="handleChange"
         @drop="handleDrop">
         <slot>
           <p class="ant-upload-drag-icon">
@@ -62,10 +60,10 @@
                     <a-button v-if="showPreviewIcon" type="text" size="small" @click="handlePreview(file)">
                       <template #icon><eye-outlined /></template>
                     </a-button>
-                    <a-button v-if="showDownloadIcon" type="text" size="small" @click="handleDownload(file)">
+                    <a-button v-if="showDownloadIcon" type="text" size="small" @click="handleDownload(file, 'img')">
                       <template #icon><download-outlined /></template>
                     </a-button>
-                    <a-button v-if="showRemoveIcon" type="text" size="small" @click="handleRemove(file)">
+                    <a-button v-if="showRemoveIcon" type="text" size="small" @click="handleRemove(file, 'img')">
                       <template #icon><delete-outlined /></template>
                     </a-button>
                   </div>
@@ -108,10 +106,14 @@
                     <a-button v-if="showPreviewIcon" type="text" size="small" @click="handlePreview(file)">
                       <template #icon><eye-outlined /></template>
                     </a-button>
-                    <a-button v-if="showDownloadIcon" type="text" size="small" @click="handleDownload(file)">
+                    <a-button
+                      v-if="showDownloadIcon"
+                      type="text"
+                      size="small"
+                      @click="handleDownload(file, 'attachment')">
                       <template #icon><download-outlined /></template>
                     </a-button>
-                    <a-button v-if="showRemoveIcon" type="text" size="small" @click="handleRemove(file)">
+                    <a-button v-if="showRemoveIcon" type="text" size="small" @click="handleRemove(file, 'attachment')">
                       <template #icon><delete-outlined /></template>
                     </a-button>
                   </div>
@@ -198,8 +200,6 @@ export default defineComponent({
       modalVisible: props.visible,
       spinning: false,
       confirmLoading: false,
-      // v-model
-      files: [],
       // 图片列表
       imgList: [],
       imgZipFile: null,
@@ -229,12 +229,15 @@ export default defineComponent({
       state.spinning = true
       await execRequest(customRequest(), {
         success: ({ data }) => {
-          state.files = formatFiles(data?.files || [])
+          const files = formatFiles(data?.files || data?.fileList || [])
+          state.imgList = files.filter(file => hasImage(file))
+          state.attachmentList = files.filter(file => !hasImage(file))
           state.imgZipFile = data?.imgZipFile
           state.attachmentZipFile = data?.attachmentZipFile
         },
         fail: () => {
-          state.files = []
+          state.imgList = []
+          state.attachmentList = []
           state.imgZipFile = null
           state.attachmentZipFile = null
         }
@@ -246,17 +249,10 @@ export default defineComponent({
       () => props.fileList,
       fileList => {
         if (isEmpty(props.customRequest)) {
-          state.files = formatFiles(fileList || [])
+          const files = formatFiles(fileList || [])
+          state.imgList = files.filter(file => hasImage(file))
+          state.attachmentList = files.filter(file => !hasImage(file))
         }
-      },
-      { immediate: true, deep: true }
-    )
-
-    watch(
-      () => state.files,
-      files => {
-        state.imgList = files.filter(file => hasImage(file))
-        state.attachmentList = files.filter(file => !hasImage(file))
       },
       { immediate: true, deep: true }
     )
@@ -349,47 +345,41 @@ export default defineComponent({
       const { customUpload } = props
       if (!isFunction(customUpload)) return
       const { file } = option
+      const bool = hasImage(file)
+      if (bool) {
+        state.imgList.push(file)
+      } else {
+        state.attachmentList.push(file)
+      }
       await execRequest(customUpload(file), {
         success: ({ data }) => {
-          // 上传成功（status: 'done'）
-          // 没有触发option.onSuccess()，手动设置状态为 'done'
+          // 上传成功（status: 'done'），手动设置状态为 'done'
           const uploadFile = {
             ...data,
             uid: data?.id || data?.key,
-            name: data?.fileName || data?.name,
+            name: data?.name || data?.fileName,
+            type: data?.type || data?.mimeType,
             status: 'done',
             thumbUrl: data?.url || data?.thumbUrl,
             url: data?.url
           }
-          const index = state.files.findIndex(val => val?.uid === file?.uid)
-          state.files.splice(index, 1, uploadFile)
-          emit('change', { file: uploadFile, fileList: state.files })
+          if (bool) {
+            const index = state.imgList.findIndex(val => val?.uid === file?.uid)
+            state.imgList.splice(index, 1, uploadFile)
+          } else {
+            const index = state.attachmentList.findIndex(val => val?.uid === file?.uid)
+            state.attachmentList.splice(index, 1, uploadFile)
+          }
+          emit('change', { file: uploadFile, fileList: [...state.imgList, ...state.attachmentList] })
         },
         fail: () => {
-          // 上传失败（status: 'error'）
-          // 没有触发option.onError()，手动设置状态为 'error'
-          const uploadFile = state.files.find(val => val?.uid === file?.uid)
-          uploadFile.status = 'error'
-          // 手动删除上传失败的图片
-          setTimeout(() => {
-            state.files = state.files.filter(val => val?.status === 'done')
-          }, 200)
+          if (bool) {
+            state.imgList = state.imgList.filter(val => val?.status === 'done')
+          } else {
+            state.attachmentList = state.attachmentList.filter(val => val?.status === 'done')
+          }
         }
       })
-    }
-
-    // 上传文件改变时的状态（'uploading' 'done' 'error' 'removed'）
-    // 因为自定义customRequest方法没有调用onSuccess和onError方法，所以不会触发状态为 'done' 和 'error' 的 change事件
-    // 因为没有使用内部remove方法，所以不会触发状态为 'removed' 的 change事件
-    const handleChange = data => {
-      const { file, fileList } = data
-      if (file.status === undefined) {
-        // beforeUpload限制上传的图片status为undefined；故需要过滤限制上传的图片（beforeUpload 里 return false 是阻止默认的 Ajax 上传动作，需要触发 onChange 以便添加到文件列表中交由用户后续手动上传。因此不会阻止文件添加，不会从列表中清空。）
-        // multiple为true时，多文件上传，需要异步延迟处理
-        setTimeout(() => {
-          state.files = fileList.filter(val => val?.status !== undefined)
-        }, 20)
-      }
     }
 
     // 当文件被拖入上传区域时执行的回调
@@ -425,27 +415,37 @@ export default defineComponent({
 
     // 预览图片
     const handlePreview = file => {
-      const list = state.files.filter(val => val.status === 'done')
-      state.previewList = list
-      state.previewCurrent = list.findIndex(v => v.uid === file.uid)
+      const files = [...state.imgList, ...state.attachmentList].filter(val => val.status === 'done')
+      state.previewList = files
+      state.previewCurrent = files.findIndex(v => v.uid === file.uid)
       state.previewVisible = true
       emit('preview', file)
     }
 
     // 下载
-    const handleDownload = async file => {
+    const handleDownload = async (file, type) => {
       message.info('正在下载中...')
       if (file.url) {
-        await downloadByUrl(file.url, file.name)
+        if (type === 'img') {
+          await downloadByUrl(file.url, file.name)
+        } else {
+          download(file.url, file.name)
+        }
       }
       emit('download', file)
     }
 
     // 移除
-    const handleRemove = file => {
-      const list = state.files.filter(val => val.status === 'done')
-      const index = list.findIndex(v => v.uid === file.uid)
-      state.files.splice(index, 1)
+    const handleRemove = (file, type) => {
+      if (type === 'img') {
+        const imgList = state.imgList.filter(val => val.status === 'done')
+        const index = imgList.findIndex(v => v.uid === file.uid)
+        state.imgList.splice(index, 1)
+      } else {
+        const attachmentList = state.attachmentList.filter(val => val.status === 'done')
+        const index = attachmentList.findIndex(v => v.uid === file.uid)
+        state.attachmentList.splice(index, 1)
+      }
       emit('remove', file)
     }
 
@@ -491,7 +491,6 @@ export default defineComponent({
     }
 
     const handleCancel = () => {
-      state.files = []
       state.imgZipFile = null
       state.attachmentZipFile = null
       state.previewList = []
@@ -505,7 +504,6 @@ export default defineComponent({
       ...toRefs(state),
       beforeUploadFn,
       handleCustomUpload,
-      handleChange,
       handleDrop,
       getFileExpanded,
       showPreviewIcon,

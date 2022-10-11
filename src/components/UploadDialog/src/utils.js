@@ -18,13 +18,7 @@ const getName = file => file?.name || file?.fileName
 export const hasImage = file => {
   const type = getType(file)
   const name = getName(file)
-  if (type) {
-    return hasImageByType(type)
-  } else if (name) {
-    return hasImageByName(name)
-  } else {
-    return hasImageByUrl(file.url)
-  }
+  return hasImageByType(type) || hasImageByName(name) || hasImageByUrl(file.url)
 }
 
 export const getFileExpanded = file => {
