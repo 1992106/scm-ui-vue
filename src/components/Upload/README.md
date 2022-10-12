@@ -25,7 +25,7 @@
 ### Emits
 
 ```vue
-emits: ['update:file-list', 'change', 'preview', 'download']
+emits: ['update:file-list', 'change', 'preview', 'download', 'remove']
 ```
 
 ### Slots

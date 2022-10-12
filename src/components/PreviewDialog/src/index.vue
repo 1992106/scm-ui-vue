@@ -19,8 +19,13 @@
           :infinite="false"
           :dots="false"
           :draggable="true">
-          <div v-for="(file, i) in files" :key="file?.uid || i">
-            <img :src="file?.previewFile?.url || file?.url" :alt="file?.name" />
+          <div v-for="(file, index) in [...imgList, ...attachmentList]" :key="file?.uid || index">
+            <img
+              :src="file?.previewFile?.url || file?.url"
+              :alt="file?.name"
+              :style="{
+                ...(index === currentSlide ? { transform: `scale3d(${scale}, ${scale}, 1) rotate(${rotate}deg)` } : {})
+              }" />
           </div>
         </a-carousel>
         <div class="x-preview__dots">
@@ -81,12 +86,12 @@
       <div class="x-preview__tools">
         <LeftCircleOutlined :class="{ disabled: files.length === 0 || currentSlide === 0 }" @click="handlePrev" />
         <RightCircleOutlined
-          :class="{ disabled: files.length === 0 || currentSlide === files.length - 1 }"
+          :class="{ disabled: files.length === 0 || currentSlide + 1 === files.length }"
           @click="handleNext" />
         <RotateLeftOutlined :class="{ disabled: files.length === 0 }" @click="handleRotateLeft" />
         <RotateRightOutlined :class="{ disabled: files.length === 0 }" @click="handleRotateRight" />
+        <ZoomOutOutlined :class="{ disabled: files.length === 0 || scale === 1 }" @click="handleZoomOut" />
         <ZoomInOutlined :class="{ disabled: files.length === 0 }" @click="handleZoomIn" />
-        <ZoomOutOutlined :class="{ disabled: files.length === 0 }" @click="handleZoomOut" />
         <DownloadOutlined :class="{ disabled: files.length === 0 }" @click="handleDownload" />
       </div>
     </div>
@@ -100,8 +105,8 @@ import {
   RightCircleOutlined,
   RotateLeftOutlined,
   RotateRightOutlined,
-  ZoomInOutlined,
   ZoomOutOutlined,
+  ZoomInOutlined,
   DownloadOutlined
 } from '@ant-design/icons-vue'
 import XModal from '@src/components/Modal'
@@ -115,8 +120,8 @@ export default defineComponent({
     RightCircleOutlined,
     RotateLeftOutlined,
     RotateRightOutlined,
-    ZoomInOutlined,
     ZoomOutOutlined,
+    ZoomInOutlined,
     DownloadOutlined,
     'a-carousel': Carousel,
     'x-modal': XModal
@@ -142,7 +147,11 @@ export default defineComponent({
       // 图片压缩文件
       imgZipFile: null,
       // 附件压缩文件
-      attachmentZipFile: null
+      attachmentZipFile: null,
+      // 缩放比例
+      scale: 1,
+      // 旋转度数
+      rotate: 0
     })
 
     const modalVisible = computed({
@@ -199,8 +208,12 @@ export default defineComponent({
     const currentSlide = computed(() => elCarousel.value?.innerSlider?.currentSlide)
 
     const handleGoTo = file => {
-      // console.log(elCarousel.value.innerSlider)
-      const index = state.files.findIndex(val => val?.uid === file?.uid)
+      let index
+      if (hasImage(file)) {
+        index = imgList.value.findIndex(val => val?.uid === file?.uid)
+      } else {
+        index = attachmentList.value.findIndex(val => val?.uid === file?.uid) + imgList.value.length
+      }
       elCarousel.value.goTo(index)
     }
 
@@ -212,19 +225,37 @@ export default defineComponent({
       elCarousel.value.next()
     }
 
-    const handleRotateLeft = () => {}
+    // 向左旋转
+    const handleRotateLeft = () => {
+      state.rotate = state.rotate - 90
+    }
 
-    const handleRotateRight = () => {}
+    // 向右旋转
+    const handleRotateRight = () => {
+      state.rotate = state.rotate + 90
+    }
 
-    const handleZoomIn = () => {}
+    // 缩小
+    const handleZoomOut = () => {
+      if (state.scale > 1) {
+        state.scale = state.scale - 1
+      }
+    }
 
-    const handleZoomOut = () => {}
+    // 放大
+    const handleZoomIn = () => {
+      state.scale = state.scale + 1
+    }
 
     // 下载
     const handleDownload = async file => {
       message.info('正在下载中...')
       if (file.url) {
-        await downloadByUrl(file.url, file.name)
+        if (hasImage(file)) {
+          await downloadByUrl(file.url, file.name)
+        } else {
+          download(file.url, file.name)
+        }
       }
       emit('download', file)
     }
@@ -256,6 +287,8 @@ export default defineComponent({
       state.files = []
       state.imgZipFile = null
       state.attachmentZipFile = null
+      state.scale = 1
+      state.rotate = 0
     }
 
     expose({})
@@ -273,8 +306,8 @@ export default defineComponent({
       handleNext,
       handleRotateLeft,
       handleRotateRight,
-      handleZoomIn,
       handleZoomOut,
+      handleZoomIn,
       handleDownload,
       downloadImgZipFileDisabled,
       handleDownloadImgZipFile,

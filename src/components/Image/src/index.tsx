@@ -59,11 +59,8 @@ const XImage = defineComponent({
           : []
       }
 
-      if (props.mode === 'complex') {
-        // 优先使用customRequest获取预览列表
-        if (props.customRequest) {
-          return []
-        }
+      // 如果使用customRequest获取预览列表，thumbnail必传，否则会不显示图片
+      if (props.mode === 'complex' && !props.customRequest) {
         return props.previewList.map(item => item?.thumbUrl ?? item?.src ?? item?.url ?? '').filter(Boolean)
       }
 
@@ -78,11 +75,8 @@ const XImage = defineComponent({
         return previewUrls.value
       }
 
-      if (props.mode === 'complex') {
-        // 优先使用customRequest获取预览列表
-        if (props.customRequest) {
-          return []
-        }
+      // 如果使用customRequest获取预览列表，thumbnail必传，否则会不显示图片
+      if (props.mode === 'complex' && !props.customRequest) {
         let list = props.previewList.map(item => item?.src ?? item?.url ?? item?.thumbUrl ?? '').filter(Boolean)
         // 如果预览列表为空，则把缩略图当成预览图
         if (!list.length && props.thumbnail) {

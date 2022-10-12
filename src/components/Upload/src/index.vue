@@ -6,13 +6,13 @@
     :list-type="listType"
     :show-upload-list="showUploadList"
     :accept="accept"
-    :multiple="multiple"
     :max-count="maxCount"
     :before-upload="beforeUploadFn"
     :custom-request="handleCustomRequest"
     @change="handleChange"
     @preview="handlePreview"
-    @download="handleDownload">
+    @download="handleDownload"
+    @remove="handleRemove">
     <div v-if="mode === 'upload' && (!maxCount || files.length < maxCount)">
       <slot>
         <template v-if="listType === 'picture-card'">
@@ -60,7 +60,6 @@ export default defineComponent({
       default: 'upload'
     },
     accept: { type: String }, // 'image/*'、'application/*'、'audio/*'、'video/*'、'text/'
-    multiple: { type: Boolean },
     size: { type: Number },
     minWidth: { type: Number },
     maxWidth: { type: Number },
@@ -68,7 +67,7 @@ export default defineComponent({
     maxHeight: { type: Number },
     maxCount: { type: Number }
   },
-  emits: ['update:file-list', 'change', 'preview', 'download'],
+  emits: ['update:file-list', 'change', 'preview', 'download', 'remove'],
   setup(props, { emit, slots, expose }) {
     const state = reactive({
       files: [],
@@ -182,11 +181,13 @@ export default defineComponent({
             url: data?.url
           }
           const index = state.files.findIndex(val => val?.uid === file?.uid)
-          state.files.splice(index, 1, uploadFile)
-          emit('update:file-list', state.files)
-          emit('change', { file: uploadFile, fileList: state.files })
-          // 自定义表单组件需要手动调用onFieldChange触发校验
-          formItemContext.onFieldChange()
+          if (index !== -1) {
+            state.files.splice(index, 1, uploadFile)
+            emit('update:file-list', state.files)
+            emit('change', { file: uploadFile, fileList: state.files })
+            // 自定义表单组件需要手动调用onFieldChange触发校验
+            formItemContext.onFieldChange()
+          }
         },
         fail: () => {
           // 上传失败（status: 'error'）
@@ -305,6 +306,11 @@ export default defineComponent({
       emit('download', file)
     }
 
+    // 移除
+    const handleRemove = file => {
+      emit('remove', file)
+    }
+
     // 是否显示插槽
     const hasItemRender = computed(() => !!slots['itemRender'])
 
@@ -318,7 +324,8 @@ export default defineComponent({
       handleChange,
       showUploadList,
       handlePreview,
-      handleDownload
+      handleDownload,
+      handleRemove
     }
   }
 })

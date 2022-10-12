@@ -17,7 +17,6 @@
         :accept="accept"
         :directory="directory"
         :multiple="multiple"
-        :max-count="maxCount"
         :before-upload="beforeUploadFn"
         :custom-request="handleCustomUpload"
         @drop="handleDrop">
@@ -28,7 +27,7 @@
           <p class="ant-upload-text">拖拽图片、文件到这里，或直接点击上传</p>
         </slot>
         <div>
-          <p class="ant-upload-hint">每次最多上传{{ maxCount }}个文件，单个文件最大{{ size }}M</p>
+          <p class="ant-upload-hint">单个文件最大{{ size }}M，最多可上传{{ maxCount }}个文件</p>
           <p v-if="accept" class="ant-upload-hint">支持后缀为：{{ accept }}</p>
         </div>
       </a-upload-dragger>
@@ -38,7 +37,7 @@
         <div class="x-upload__head">
           <span class="title">
             图片
-            <span v-show="maxCount" class="max-count">({{ imgList.length }}/{{ maxCount }})</span>
+            <span class="max-count">({{ imgList.length }})</span>
             <span v-if="mode === 'upload'" class="subtitle">可手动拖拽调整顺序，默认设置第一张为缩略图</span>
           </span>
           <a-button type="link" size="small" :disabled="downloadImgZipFileDisabled" @click="handleDownloadImgZipFile">
@@ -79,7 +78,7 @@
         <div class="x-upload__head">
           <span class="title">
             其他附件
-            <span v-show="maxCount" class="max-count">({{ attachmentList.length }}/{{ maxCount }})</span>
+            <span class="max-count">({{ attachmentList.length }})</span>
           </span>
           <a-button
             type="link"
@@ -182,7 +181,7 @@ export default defineComponent({
     maxWidth: { type: Number },
     minHeight: { type: Number },
     maxHeight: { type: Number },
-    maxCount: { type: Number, default: 20 }
+    maxCount: { type: Number, default: 40 }
   },
   emits: [
     'update:visible',
@@ -342,14 +341,28 @@ export default defineComponent({
 
     // 上传图片
     const handleCustomUpload = async option => {
-      const { customUpload } = props
+      const { customUpload, maxCount } = props
       if (!isFunction(customUpload)) return
       const { file } = option
+      // 限制上传数量
+      if (!isEmpty(maxCount) && state.imgList.length >= maxCount && maxCount !== 1) {
+        return
+      }
       const bool = hasImage(file)
       if (bool) {
-        state.imgList.push(file)
+        // 当maxCount=1时，始终用最新上传的代替当前
+        if (maxCount === 1) {
+          state.imgList.splice(0, 1, file)
+        } else {
+          state.imgList.push(file)
+        }
       } else {
-        state.attachmentList.push(file)
+        // 当maxCount=1时，始终用最新上传的代替当前
+        if (maxCount === 1) {
+          state.attachmentList.splice(0, 1, file)
+        } else {
+          state.attachmentList.push(file)
+        }
       }
       await execRequest(customUpload(file), {
         success: ({ data }) => {
@@ -365,10 +378,14 @@ export default defineComponent({
           }
           if (bool) {
             const index = state.imgList.findIndex(val => val?.uid === file?.uid)
-            state.imgList.splice(index, 1, uploadFile)
+            if (index !== -1) {
+              state.imgList.splice(index, 1, uploadFile)
+            }
           } else {
             const index = state.attachmentList.findIndex(val => val?.uid === file?.uid)
-            state.attachmentList.splice(index, 1, uploadFile)
+            if (index !== -1) {
+              state.attachmentList.splice(index, 1, uploadFile)
+            }
           }
           emit('change', { file: uploadFile, fileList: [...state.imgList, ...state.attachmentList] })
         },
@@ -438,14 +455,13 @@ export default defineComponent({
     // 移除
     const handleRemove = (file, type) => {
       if (type === 'img') {
-        const imgList = state.imgList.filter(val => val.status === 'done')
-        const index = imgList.findIndex(v => v.uid === file.uid)
+        const index = state.imgList.findIndex(v => v.uid === file.uid)
         state.imgList.splice(index, 1)
       } else {
-        const attachmentList = state.attachmentList.filter(val => val.status === 'done')
-        const index = attachmentList.findIndex(v => v.uid === file.uid)
+        const index = state.attachmentList.findIndex(v => v.uid === file.uid)
         state.attachmentList.splice(index, 1)
       }
+      emit('change', { file, fileList: [...state.imgList, ...state.attachmentList] })
       emit('remove', file)
     }
 
@@ -493,8 +509,8 @@ export default defineComponent({
     const handleCancel = () => {
       state.imgZipFile = null
       state.attachmentZipFile = null
-      state.previewList = []
       state.previewCurrent = 0
+      state.previewList = []
       emit('update:visible', false)
     }
 
