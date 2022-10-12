@@ -261,7 +261,9 @@ export default defineComponent({
     }
 
     // 下载所有图片
-    const downloadImgZipFileDisabled = computed(() => isEmpty(state.imgZipFile) || isEmpty(props.imgZipFile))
+    const downloadImgZipFileDisabled = computed(() => {
+      return props.customRequest ? isEmpty(state.imgZipFile) : isEmpty(props.imgZipFile)
+    })
     const handleDownloadImgZipFile = () => {
       const imgZipFile = state.imgZipFile || props.imgZipFile
       if (imgZipFile?.url) {
@@ -271,9 +273,9 @@ export default defineComponent({
     }
 
     // 下载所有附件
-    const downloadAttachmentZipFileDisabled = computed(
-      () => isEmpty(state.attachmentZipFile) || isEmpty(props.attachmentZipFile)
-    )
+    const downloadAttachmentZipFileDisabled = computed(() => {
+      return props.customRequest ? isEmpty(state.attachmentZipFile) : isEmpty(props.attachmentZipFile)
+    })
     const handleDownloadAttachmentZipFile = () => {
       const attachmentZipFile = state.attachmentZipFile || props.attachmentZipFile
       if (attachmentZipFile?.url) {
