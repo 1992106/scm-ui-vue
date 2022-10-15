@@ -109,7 +109,7 @@ import {
 import { useEsc } from '@components/hooks/useEsc'
 import { useEventListener } from '@hooks/useEventListener'
 import { cloneDeep } from 'lodash-es'
-import { isEmpty, triggerResize } from '@src/utils'
+import { isEmpty, recursive, triggerResize } from '@src/utils'
 
 export default defineComponent({
   name: 'XTable',
@@ -231,11 +231,17 @@ export default defineComponent({
      * data
      */
     const getTransformColumns = columns => {
-      return columns.map(column => {
+      recursive(columns, column => {
         // 拖动调整宽度时，width 必须是 number 类型
         const resizable = !isEmpty(column?.width) && typeof column?.width === 'number'
-        return mergeProps(defaultState.defaultColumn, { resizable }, column)
+        Object.assign(column, defaultState.defaultColumn, { resizable })
       })
+      return columns
+      // return columns.map(column => {
+      //   // 拖动调整宽度时，width 必须是 number 类型
+      //   const resizable = !isEmpty(column?.width) && typeof column?.width === 'number'
+      //   return mergeProps(defaultState.defaultColumn, { resizable }, column)
+      // })
     }
     const getCustomColumns = () => {
       let columns = props.columns

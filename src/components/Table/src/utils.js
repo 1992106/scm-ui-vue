@@ -1,5 +1,5 @@
 import { isFunction, omit } from 'lodash-es'
-import { isEmpty, recursive } from '@src/utils'
+import { isEmpty } from '@src/utils'
 
 // 获取行的value通过rowKey
 export const getValueByRowKey = (rowKey, record, index) => {
@@ -83,12 +83,7 @@ export const storageToColumns = (storageColumns, columns) => {
     const column = (columns || []).find(v => val?.dataIndex === getField(v))
     const omitList = ['fixed', 'width', 'minWidth', 'maxWidth']
     const restColumn = omit(column || {}, omitList)
-    // 递归遍历子设置元素visible
-    if (!isEmpty(column.children)) {
-      recursive(column.children, column => {
-        column.visible = val?.visible
-      })
-    }
+
     return {
       ...(restColumn ? restColumn : {}),
       ...(val?.fixed ? { fixed: val?.fixed } : {}),
