@@ -1,6 +1,6 @@
 import { computed, defineComponent, PropType, ref, toRefs, unref, watchEffect } from 'vue'
 import { Modal, Spin } from 'ant-design-vue'
-import { CloseOutlined, FullscreenExitOutlined, FullscreenOutlined } from '@ant-design/icons-vue'
+import { FullscreenExitOutlined, FullscreenOutlined } from '@ant-design/icons-vue'
 import { useModalDragMove } from './useModalDrag'
 import './index.scss'
 
@@ -60,18 +60,21 @@ const XModal = defineComponent({
       emit('fullScreen', canFullscreen.value)
     }
 
-    const renderIcon = () => {
+    const renderTitle = () => {
+      const title = slots?.title?.() || attrs?.title
       return props.showFullscreen ? (
-        <div class='x-modal__fullscreen-actions'>
-          {props.fullscreen ? (
-            <FullscreenExitOutlined onClick={handleFullscreen} />
-          ) : (
-            <FullscreenOutlined onClick={handleFullscreen} />
-          )}
-          <CloseOutlined />
-        </div>
+        <>
+          {title}
+          <span class='x-modal__fullscreen-action'>
+            {props.fullscreen ? (
+              <FullscreenExitOutlined onClick={handleFullscreen} />
+            ) : (
+              <FullscreenOutlined onClick={handleFullscreen} />
+            )}
+          </span>
+        </>
       ) : (
-        <CloseOutlined />
+        title
       )
     }
 
@@ -98,8 +101,8 @@ const XModal = defineComponent({
         {...attrs}
         wrapClassName={unref(wrapClassName)}
         class={['x-modal', `${props.showFullscreen ? 'is-fullscreen' : ''}`, props?.class]}
-        closeIcon={renderIcon()}
-        title={slots?.title?.() || attrs?.title}
+        title={renderTitle()}
+        closeIcon={slots?.closeIcon?.() || attrs?.closeIcon}
         footer={slots?.footer?.() || attrs?.footer}
         onCancel={handleCancel}
         onOk={handleOk}>

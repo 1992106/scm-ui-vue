@@ -27,25 +27,28 @@
   }
 
   &.is-fullscreen {
-    .ant-modal-close {
-      right: 20px;
-
-      &-x {
-        width: 64px;
-      }
-
-      .x-modal__fullscreen-actions {
-        height: 100%;
-        @include flexRCC;
-
-        & > span {
-          width: 32px;
-        }
-      }
+    .ant-modal-close-x {
+      width: 40px;
+      margin-right: 8px;
     }
 
     .ant-modal-header {
-      padding-right: 80px;
+      padding-right: 86px;
+      position: relative;
+      .x-modal__fullscreen-action {
+        display: block;
+        width: 40px;
+        height: 56px;
+        font-size: 16px;
+        font-style: normal;
+        line-height: 56px;
+        text-align: center;
+        color: rgba(0, 0, 0, 0.45);
+        cursor: pointer;
+        position: absolute;
+        right: 48px;
+        top: 0;
+      }
     }
   }
 }
