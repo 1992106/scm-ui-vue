@@ -80,7 +80,7 @@ export const storageToColumns = (storageColumns, columns) => {
     // 递归遍历子设置元素visible
     if (!isEmpty(column.children)) {
       recursive(column.children, column => {
-        column.visible = val?.visible
+        Object.assign(column, { visible: val?.visible })
       })
     }
     return {
