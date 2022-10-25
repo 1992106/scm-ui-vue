@@ -216,7 +216,7 @@ export default defineComponent({
 </script>
 <style lang="scss" scoped>
 .x-table {
-  &__toolbar {
+  :deep(.x-table__toolbar) {
     padding: 0 10px;
   }
 }

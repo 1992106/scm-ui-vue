@@ -224,10 +224,14 @@ export default defineComponent({
     // 全屏
     const toggleFullscreen = event => {
       if (!props.customZoom) return
-      // 通过ESC关闭全屏功能
-      if (event?.keyCode === 27 && state.canFullscreen) {
-        state.canFullscreen = false
+      // 通过ESC操作
+      if (event?.keyCode === 27) {
+        // ESC关闭全屏功能
+        if (state.canFullscreen) {
+          state.canFullscreen = false
+        }
       } else {
+        // 点击鼠标操作
         state.canFullscreen = !state.canFullscreen
       }
     }
