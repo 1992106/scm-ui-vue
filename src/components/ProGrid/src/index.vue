@@ -223,3 +223,12 @@ export default defineComponent({
   }
 })
 </script>
+<style lang="scss" scoped>
+.x-grid {
+  :deep(.vxe-grid--toolbar-wrapper) {
+    .vxe-toolbar {
+      padding: 0 10px;
+    }
+  }
+}
+</style>

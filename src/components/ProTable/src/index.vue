@@ -214,3 +214,10 @@ export default defineComponent({
   }
 })
 </script>
+<style lang="scss" scoped>
+.x-table {
+  &__toolbar {
+    padding: 0 10px;
+  }
+}
+</style>

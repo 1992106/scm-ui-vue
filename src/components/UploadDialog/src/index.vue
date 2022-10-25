@@ -9,6 +9,7 @@
     :confirm-loading="confirmLoading"
     destroy-on-close
     :footer="mode === 'preview' ? null : undefined"
+    :okButtonProps="{ disabled: hasUploading }"
     @ok="handleOk"
     @cancel="handleCancel">
     <template v-if="mode === 'upload'">
@@ -52,22 +53,22 @@
                 <div class="image">
                   <template v-if="file?.status === 'done'">
                     <img :src="file.url" :alt="file.name" />
+                    <div class="mark"></div>
+                    <div class="operate">
+                      <a-button v-if="showPreviewIcon" type="text" size="small" @click="handlePreview(file)">
+                        <template #icon><eye-outlined /></template>
+                      </a-button>
+                      <a-button v-if="showDownloadIcon" type="text" size="small" @click="handleDownload(file, 'img')">
+                        <template #icon><download-outlined /></template>
+                      </a-button>
+                      <a-button v-if="showRemoveIcon" type="text" size="small" @click="handleRemove(file, 'img')">
+                        <template #icon><delete-outlined /></template>
+                      </a-button>
+                    </div>
                   </template>
-                  <div v-else class="expanded">上传中...</div>
-                  <div class="mark"></div>
-                  <div class="operate">
-                    <a-button v-if="showPreviewIcon" type="text" size="small" @click="handlePreview(file)">
-                      <template #icon><eye-outlined /></template>
-                    </a-button>
-                    <a-button v-if="showDownloadIcon" type="text" size="small" @click="handleDownload(file, 'img')">
-                      <template #icon><download-outlined /></template>
-                    </a-button>
-                    <a-button v-if="showRemoveIcon" type="text" size="small" @click="handleRemove(file, 'img')">
-                      <template #icon><delete-outlined /></template>
-                    </a-button>
-                  </div>
+                  <div v-if="file?.status === 'uploading'" class="status">上传中...</div>
                 </div>
-                <!--<div class="ellipsis">{{ file.name }}</div>-->
+                <!--<div class="name">{{ file.name }}</div>-->
               </div>
             </template>
           </draggable>
@@ -94,30 +95,37 @@
             <template #item="{ element: file }">
               <div class="x-upload__list-item">
                 <div class="image">
-                  <template v-if="file?.previewFile">
-                    <img :src="file.previewFile?.thumbUrl || file.previewFile?.url" :alt="file.previewFile?.name" />
+                  <template v-if="file?.status === 'done'">
+                    <template v-if="file?.previewFile">
+                      <img :src="file.previewFile?.thumbUrl || file.previewFile?.url" :alt="file.previewFile?.name" />
+                    </template>
+                    <div v-else class="expanded">
+                      {{ getFileExpanded(file) }}
+                    </div>
+                    <div class="mark"></div>
+                    <div class="operate">
+                      <a-button v-if="showPreviewIcon" type="text" size="small" @click="handlePreview(file)">
+                        <template #icon><eye-outlined /></template>
+                      </a-button>
+                      <a-button
+                        v-if="showDownloadIcon"
+                        type="text"
+                        size="small"
+                        @click="handleDownload(file, 'attachment')">
+                        <template #icon><download-outlined /></template>
+                      </a-button>
+                      <a-button
+                        v-if="showRemoveIcon"
+                        type="text"
+                        size="small"
+                        @click="handleRemove(file, 'attachment')">
+                        <template #icon><delete-outlined /></template>
+                      </a-button>
+                    </div>
                   </template>
-                  <div v-else class="expanded">
-                    {{ file?.status === 'done' ? getFileExpanded(file) : '上传中...' }}
-                  </div>
-                  <div class="mark"></div>
-                  <div class="operate">
-                    <a-button v-if="showPreviewIcon" type="text" size="small" @click="handlePreview(file)">
-                      <template #icon><eye-outlined /></template>
-                    </a-button>
-                    <a-button
-                      v-if="showDownloadIcon"
-                      type="text"
-                      size="small"
-                      @click="handleDownload(file, 'attachment')">
-                      <template #icon><download-outlined /></template>
-                    </a-button>
-                    <a-button v-if="showRemoveIcon" type="text" size="small" @click="handleRemove(file, 'attachment')">
-                      <template #icon><delete-outlined /></template>
-                    </a-button>
-                  </div>
+                  <div v-if="file?.status === 'uploading'" class="status">上传中...</div>
                 </div>
-                <div class="ellipsis">{{ file.name }}</div>
+                <div class="name" :title="file.name">{{ file.name }}</div>
               </div>
             </template>
           </draggable>
@@ -339,7 +347,7 @@ export default defineComponent({
       return true
     }
 
-    // 上传图片
+    // 上传文件
     const handleCustomUpload = async option => {
       const { customUpload, maxCount } = props
       if (!isFunction(customUpload)) return
@@ -349,6 +357,8 @@ export default defineComponent({
         return
       }
       const bool = hasImage(file)
+      // 上传中：uploading
+      Object.assign(file, { status: 'uploading' })
       if (bool) {
         // 当maxCount=1时，始终用最新上传的代替当前
         if (maxCount === 1) {
@@ -390,6 +400,8 @@ export default defineComponent({
           emit('change', { file: uploadFile, fileList: [...state.imgList, ...state.attachmentList] })
         },
         fail: () => {
+          // 上传失败：error
+          Object.assign(file, { status: 'error' })
           if (bool) {
             state.imgList = state.imgList.filter(val => val?.status === 'done')
           } else {
@@ -398,7 +410,10 @@ export default defineComponent({
         }
       })
     }
-
+    // 是否有上传中的文件
+    const hasUploading = computed(() => {
+      return [...state.imgList, ...state.attachmentList].some(val => val.status === 'uploading')
+    })
     // 当文件被拖入上传区域时执行的回调
     const handleDrop = $event => {
       emit('drop', $event)
@@ -523,6 +538,7 @@ export default defineComponent({
       beforeUploadFn,
       handleCustomUpload,
       handleDrop,
+      hasUploading,
       getFileExpanded,
       showPreviewIcon,
       showRemoveIcon,
@@ -561,10 +577,10 @@ export default defineComponent({
       overflow-y: hidden;
       min-height: 112px;
       &-item {
+        width: 104px;
         float: left;
         margin: 0 8px 8px 0;
         .image {
-          width: 104px;
           height: 104px;
           padding: 8px;
           border: 1px solid #d9d9d9;
@@ -576,6 +592,7 @@ export default defineComponent({
             height: 100%;
             object-fit: contain;
           }
+          .status,
           .expanded {
             height: 100%;
             text-align: center;
@@ -622,8 +639,7 @@ export default defineComponent({
             }
           }
         }
-        .ellipsis {
-          width: 104px;
+        .name {
           @include ellipsis;
         }
       }

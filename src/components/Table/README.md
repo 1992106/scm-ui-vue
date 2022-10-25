@@ -17,6 +17,8 @@
 | total | 数据总数 | Number | `0` |
 | v-model:pagination | 当前页数和每页条数 | Object | `{ page: 1, pageSize: 10 / 20 }` |
 | paginationConfig | 分页配置项 | Object | `{ size: 'default', defaultPageSize: 20, showSizeChanger: true, showQuickJumper: true, showTotal: total => `共 ${total} 条`, pageSizeOptions: ['20', '40', '60', '80', '100'] }` |
+| align | 表格对齐方式 | String | `center` |
+| stripe | 斑马纹 | Boolean | `true` |
 | extraHeight | 额外高度 | Number | `-` |
 | autoResize | 自动计算表格 | Boolean | `false` |
 | tableLayout | 格元素的 `table-layout` 属性，设为 `fixed` 表示内容不会影响列的布局 | String | `fixed` |

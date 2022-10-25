@@ -160,7 +160,7 @@ export default defineComponent({
       return true
     }
 
-    // 自定义校验
+    // 自定义表单校验
     const formItemContext = Form.useInjectFormItemContext()
     // 上传图片
     const handleCustomRequest = async option => {

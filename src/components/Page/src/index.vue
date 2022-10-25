@@ -231,6 +231,7 @@ export default defineComponent({
         state.canFullscreen = !state.canFullscreen
       }
     }
+    // 退出全屏
     useEsc(toggleFullscreen)
 
     // 初始化调用一下，获取搜索参数

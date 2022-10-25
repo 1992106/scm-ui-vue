@@ -2,15 +2,15 @@
   <vxe-grid
     ref="xGrid"
     class="x-grid"
-    align="center"
     border
     show-overflow
     keep-source
     v-bind="$attrs"
-    :stripe="stripe"
     :columns="customColumns"
     :data="data"
     :loading="loading"
+    :align="align"
+    :stripe="stripe"
     :scroll-x="getScrollX"
     :scroll-y="getScrollY"
     :height="height"
@@ -105,7 +105,7 @@
   </vxe-grid>
 </template>
 <script>
-import { defineComponent, reactive, ref, computed, toRefs, unref, mergeProps, watchEffect } from 'vue'
+import { defineComponent, reactive, ref, computed, toRefs, unref, mergeProps, watch } from 'vue'
 import { Empty } from 'ant-design-vue'
 import ColumnSetting from './ColumnSetting.vue'
 import XPagination from '@components/Pagination'
@@ -134,12 +134,14 @@ export default defineComponent({
     total: { type: Number, default: 0 },
     pagination: { type: Object, default: () => ({ page: 1, pageSize: 20 }) },
     paginationConfig: Object,
+    // 表格对齐方式
+    align: { type: String, default: 'center' },
+    // 斑马纹
+    stripe: { type: Boolean, default: true },
     // 高度
     height: [Number, String],
     // 自动计算表格
     autoResize: { type: Boolean, default: false },
-    // 斑马纹
-    stripe: { type: Boolean, default: true },
     // 行配置项
     rowConfig: Object,
     // 列配置项
@@ -367,36 +369,40 @@ export default defineComponent({
       emit('checkbox-all', { checked, $event })
     }
     // 监听selectedValue，实现双向绑定
-    watchEffect(() => {
-      const $xGrid = unref(xGrid)
-      if (isEmpty(props.selectedValue)) {
-        // 多选框
-        if (unref(selectedType) === 'checkbox') {
-          if (props.checkboxConfig?.reserve) {
-            $xGrid?.clearCheckboxReserve()
-          } else {
-            $xGrid?.clearCheckboxRow()
+    watch(
+      () => props.selectedValue,
+      selectedValue => {
+        const $xGrid = unref(xGrid)
+        if (isEmpty(selectedValue)) {
+          // 多选框
+          if (unref(selectedType) === 'checkbox') {
+            if (props.checkboxConfig?.reserve) {
+              $xGrid?.clearCheckboxReserve()
+            } else {
+              $xGrid?.clearCheckboxRow()
+            }
+          }
+          // 单选框
+          if (unref(selectedType) === 'radio') {
+            if (props.radioConfig?.reserve) {
+              $xGrid?.clearRadioReserve()
+            } else {
+              $xGrid?.clearRadioRow()
+            }
+          }
+        } else {
+          // 多选框
+          if (unref(selectedType) === 'checkbox') {
+            $xGrid.setCheckboxRow(selectedValue, true)
+          }
+          // 单选框
+          if (unref(selectedType) === 'radio') {
+            $xGrid.setRadioRow(selectedValue[0])
           }
         }
-        // 单选框
-        if (unref(selectedType) === 'radio') {
-          if (props.radioConfig?.reserve) {
-            $xGrid?.clearRadioReserve()
-          } else {
-            $xGrid?.clearRadioRow()
-          }
-        }
-      } else {
-        // 多选框
-        if (unref(selectedType) === 'checkbox') {
-          $xGrid.setCheckboxRow(props.selectedValue, true)
-        }
-        // 单选框
-        if (unref(selectedType) === 'radio') {
-          $xGrid.setRadioRow(props.selectedValue[0])
-        }
-      }
-    })
+      },
+      { immediate: true, deep: true }
+    )
     // 单元格点击事件
     const handleCellClick = ({
       row,
@@ -601,7 +607,6 @@ export default defineComponent({
   :deep(.vxe-grid--toolbar-wrapper) {
     .vxe-toolbar {
       height: auto;
-      padding: 0 10px;
 
       .toolbar {
         display: flex;

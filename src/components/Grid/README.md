@@ -17,6 +17,8 @@
 | total | 数据总数 | Number | `0` |
 | v-model:pagination | 当前页数和每页条数 | Object | `{ page: 1, pageSize: 20 }` |
 | paginationConfig | 分页配置项 | Object | `-` |
+| align | 表格对齐方式 | String | `center` |
+| stripe | 斑马纹 | Boolean | `true` |
 | height | 表格高度 | [Number, String] | `-` |
 | autoResize | 表格高度 | Boolean | `false` |
 | rowConfig | 行配置项 | Object | `{ isHover: true, isCurrent: true }` |

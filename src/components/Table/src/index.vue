@@ -138,12 +138,16 @@ export default defineComponent({
     total: { type: Number, default: 0 },
     pagination: { type: Object, default: () => ({}) },
     paginationConfig: Object,
+    // 表格对齐方式
+    align: { type: String, default: 'center' },
+    // 斑马纹
+    stripe: { type: Boolean, default: true },
     // 额外高度
     extraHeight: Number,
     // 自动计算表格
     autoResize: { type: Boolean, default: false },
     // 表格元素的 table-layout 属性，设为 fixed 表示内容不会影响列的布局
-    // 1.固定表头/列（固定表头：scroll: { y: 100 } | 固定列：column.fixed）
+    // 1.固定表头/列【固定表头：scroll: { y: '' } / 固定列：column.fixed】
     // 2.使用了 column.ellipsis
     // 满足以上任意一个条件时，默认值为 fixed
     tableLayout: { type: String, default: 'fixed' },
@@ -198,7 +202,7 @@ export default defineComponent({
     const defaultState = {
       // 当 scroll="{x: '100%'}" 和 tableLayout="fixed" 组合使用时：如果列宽总和大于表格宽，会出现横向滚轴并且不会破坏表格布局
       scroll: { x: '100%', scrollToFirstRowOnChange: true },
-      defaultColumn: { align: 'center', visible: true },
+      defaultColumn: { visible: true },
       defaultPaginationConfig: {
         size: 'default',
         defaultPageSize: 20,
@@ -234,7 +238,7 @@ export default defineComponent({
       recursive(columns, column => {
         // 拖动调整宽度时，width 必须是 number 类型
         const resizable = !isEmpty(column?.width) && typeof column?.width === 'number'
-        Object.assign(column, defaultState.defaultColumn, { resizable })
+        Object.assign(column, mergeProps(defaultState.defaultColumn, { resizable, align: props.align }, column))
       })
       return columns
       // return columns.map(column => {
@@ -341,8 +345,9 @@ export default defineComponent({
      */
     // 行的类名（默认设置斑马纹）
     const handleRowClassName = (record, index) => {
-      const result = props.rowClassName ? props.rowClassName(record, index) : null
-      return [index % 2 === 1 ? 'table-striped' : null, result].filter(Boolean)
+      const rowClassName = props.rowClassName ? props.rowClassName(record, index) : null
+      const stripe = props.stripe && index % 2 === 1 ? 'table-striped' : null
+      return [stripe, rowClassName].filter(Boolean)
     }
     // 分页、排序、筛选变化时触发
     const handleChange = (pagination, filters, sorter, extra) => {
@@ -394,6 +399,7 @@ export default defineComponent({
       // 触发表格计算
       nextTick(triggerResize)
     }
+    // 退出全屏
     useEsc(toggleFullscreen)
 
     // 拖拽列
@@ -502,7 +508,6 @@ export default defineComponent({
 
   &__toolbar {
     display: flex;
-    padding: 0 10px;
     background-color: #fff;
 
     .toolbar {
