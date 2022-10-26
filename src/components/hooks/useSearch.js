@@ -3,7 +3,7 @@ import { debounce, isFunction } from 'lodash-es'
 import { dayjsToDate } from '@src/utils'
 import { cleanEmpty, flatColumns, hasDate } from '@components/Form/src/utils'
 
-export function useSearch(fn, isResize = true, searchProps, gridProps) {
+export function useSearch(fn, isResize = true, searchProps, filterProps) {
   // 是否默认首次search
   const isDefaultSearch = ref(false)
   const searchParams = ref({})
@@ -70,7 +70,7 @@ export function useSearch(fn, isResize = true, searchProps, gridProps) {
   const init = () => {
     if (unref(isDefaultSearch) && unref(isDefaultQuery)) {
       searchParams.value = useDefaultValue(unref(searchProps)?.columns)
-      filterParams.value = gridProps ? useDefaultValue(unref(gridProps)?.columns) : {}
+      filterParams.value = filterProps ? useDefaultValue(unref(filterProps)?.columns) : {}
     }
   }
 

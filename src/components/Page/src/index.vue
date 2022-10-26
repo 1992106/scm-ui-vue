@@ -65,25 +65,14 @@
 </template>
 
 <script>
-import {
-  computed,
-  defineComponent,
-  nextTick,
-  onActivated,
-  onMounted,
-  reactive,
-  ref,
-  toRefs,
-  unref,
-  watch,
-  watchEffect
-} from 'vue'
+import { computed, defineComponent, nextTick, onMounted, reactive, ref, toRefs, unref, watch, watchEffect } from 'vue'
 import { Empty, Spin } from 'ant-design-vue'
 import { FullscreenExitOutlined, FullscreenOutlined } from '@ant-design/icons-vue'
 import XSearch from '@components/Search'
 import XPagination from '@components/Pagination'
 import { getValueByRowKey } from '@components/Table/src/utils'
 import { useAppHeight } from '@components/hooks/useSearch'
+import { useScrollTop } from './useScrollTop'
 import { useEsc } from '@components/hooks/useEsc'
 import { isEmpty } from '@src/utils'
 export default defineComponent({
@@ -150,24 +139,6 @@ export default defineComponent({
         if (page && page === 1) {
           state.pages.page = 1
         }
-      }
-    )
-
-    // 滚动到顶部
-    const onScrollTop = (to = 0) => {
-      const el = unref(xPage)?.querySelector('.x-page__container .x-page__render .scroll')
-      if (el) {
-        el.scrollTop = to
-        // 动画效果实现滚动
-        // scrollTop(el, el.scrollTop, to)
-      }
-    }
-
-    // 监听数据源，变化时滚动置顶
-    watch(
-      () => props.dataSource,
-      () => {
-        nextTick(onScrollTop)
       }
     )
 
@@ -251,16 +222,15 @@ export default defineComponent({
       onInit()
     })
 
-    // 获取scrollTop的高度
-    const handleScroll = e => {
-      state.scrollTop = e.target.scrollTop
-    }
-    onActivated(() => {
-      const el = unref(xPage)?.querySelector('.x-page__container .x-page__render .scroll')
-      if (el && state.scrollTop) {
-        el.scrollTop = state.scrollTop
+    // 滚动行为
+    const { handleScroll, onScrollTop } = useScrollTop({ xPage })
+    // 监听数据源，变化时滚动置顶
+    watch(
+      () => props.dataSource,
+      () => {
+        nextTick(onScrollTop)
       }
-    })
+    )
 
     expose({
       xPage,

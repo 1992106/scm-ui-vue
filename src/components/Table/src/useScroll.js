@@ -1,16 +1,20 @@
-import { onBeforeUnmount, onMounted, unref } from 'vue'
+import { onMounted, ref, unref } from 'vue'
 import { debounce } from 'lodash-es'
+import { useEventListener } from '@hooks/useEventListener'
+import { unrefElement } from '@hooks/utils'
 // import { getScrollBarSize } from '@src/utils'
 
-export const useScroll = ({ xTable, autoResize, extraHeight, scroll }) => {
+export const useScroll = ({ xTable, autoResize, extraHeight }) => {
+  const scroll = ref({})
   const resizeFn = debounce(() => {
     scroll.value = getTableScroll({ xTable, extraHeight })
   }, 200)
 
-  const initResize = () => {
-    if (unref(xTable) && window.MutationObserver) {
+  const triggerResize = () => {
+    const el = unrefElement(xTable)
+    if (el && window.MutationObserver) {
       const observer = new MutationObserver(resizeFn)
-      observer.observe(unref(xTable)?.$el, { attributes: true, childList: true, subtree: true })
+      observer.observe(el, { attributes: true, childList: true, subtree: true })
       setTimeout(() => {
         observer && observer.disconnect()
       }, 3000)
@@ -20,15 +24,15 @@ export const useScroll = ({ xTable, autoResize, extraHeight, scroll }) => {
   onMounted(() => {
     if (autoResize) {
       // 由于Table是动态异步生成，初始化直接调用resizeFn()无效，所以使用MutationObserver来实现
-      initResize()
+      triggerResize()
       // resizeFn()
-      window.addEventListener('resize', resizeFn)
+      useEventListener(window, 'resize', resizeFn)
     }
   })
 
-  onBeforeUnmount(() => {
-    window.removeEventListener('resize', resizeFn)
-  })
+  return {
+    scroll
+  }
 }
 
 export const getTableScroll = ({ xTable, extraHeight } = {}) => {

@@ -85,7 +85,7 @@ const CellRender = defineComponent({
         ? renderEmpty()
         : name === 'thumbnail'
         ? renderThumbnail()
-        : name === 'thumbnail'
+        : name === 'photo'
         ? renderPhoto()
         : name === 'date'
         ? renderDate()

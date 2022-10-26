@@ -104,11 +104,11 @@ export default defineComponent({
       }
     )
 
-    // 监听数据源，变化时滚动置顶（xTable默认只支持分页、排序、筛选变化滚动置顶，不支持快捷搜索滚动置顶）
+    // 监听数据源，变化时滚动置顶（xTable默认只支持分页、排序、筛选变化滚动置顶，不支持【搜索按钮/快捷搜索】滚动置顶）
     watch(
       () => props.tableProps?.dataSource,
       () => {
-        // 滚动置顶
+        // 快捷搜索-滚动置顶
         if (!state.action) {
           unref(xProTable)?.onScrollTop?.()
         }
@@ -121,7 +121,7 @@ export default defineComponent({
      */
     const handleSearch = params => {
       onSearch(params)
-      // 滚动置顶
+      // 搜索按钮-滚动置顶
       unref(xProTable)?.onScrollTop?.()
     }
 

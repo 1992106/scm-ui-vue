@@ -81,24 +81,13 @@
   </div>
 </template>
 <script>
-import {
-  defineComponent,
-  computed,
-  mergeProps,
-  ref,
-  reactive,
-  toRef,
-  toRefs,
-  unref,
-  nextTick,
-  onActivated,
-  onMounted
-} from 'vue'
+import { defineComponent, computed, mergeProps, ref, reactive, toRefs, unref, nextTick } from 'vue'
 import { FullscreenExitOutlined, FullscreenOutlined } from '@ant-design/icons-vue'
 import { Button, Space, Spin, Table } from 'ant-design-vue'
 import ColumnSetting from './ColumnSetting.vue'
 import CellRender from './CellRender'
-import { useScroll } from '@components/Table/src/useScroll'
+import { useScroll } from './useScroll'
+import { useScrollTop } from './useScrollTop'
 import {
   columnsToStorage,
   getSortDirection,
@@ -107,7 +96,6 @@ import {
   storageToColumns
 } from '@components/Table/src/utils'
 import { useEsc } from '@components/hooks/useEsc'
-import { useEventListener } from '@hooks/useEventListener'
 import { cloneDeep } from 'lodash-es'
 import { isEmpty, recursive, triggerResize } from '@src/utils'
 
@@ -262,8 +250,6 @@ export default defineComponent({
       return getTransformColumns(columns)
     }
     const state = reactive({
-      scroll: {},
-      scrollTop: 0,
       canFullscreen: false,
       emptyBlockHeight: '',
       customColumns: getCustomColumns(),
@@ -306,8 +292,8 @@ export default defineComponent({
             column?.customRender ? column.customRender({ text, record, column, index }) : isEmpty(text) ? '--' : text
     })
     // 自动计算表格的宽高
-    useScroll({ xTable, autoResize: props.autoResize, extraHeight: props.extraHeight, scroll: toRef(state, 'scroll') })
-    const getScroll = computed(() => mergeProps(defaultState.scroll, state.scroll, props.scroll))
+    const { scroll } = useScroll({ xTable, autoResize: props.autoResize, extraHeight: props.extraHeight })
+    const getScroll = computed(() => mergeProps(defaultState.scroll, unref(scroll), props.scroll))
     // 是否显示较少页面内容
     const showLessItems = computed(() => {
       const _showLessItems = props.paginationConfig?.showLessItems ?? props.pagination?.showLessItems
@@ -439,40 +425,8 @@ export default defineComponent({
     const hasSearchBar = computed(() => !!slots['searchBar'])
     const hasToolBar = computed(() => !!slots['toolBar'] || props.customSetting || props.customZoom)
 
-    // 滚动到顶部
-    const onScrollTop = (to = 0) => {
-      const el = unref(xTable)?.$el.querySelector('.ant-table-body')
-      if (el) {
-        el.scrollTop = to
-        // 动画效果实现滚动
-        // scrollTop(el, el.scrollTop, to)
-      }
-    }
-
-    onMounted(() => {
-      // 必须延迟绑定scroll事件
-      setTimeout(() => {
-        const el = unref(xTable)?.$el.querySelector('.ant-table-body')
-        if (el) {
-          useEventListener(el, 'scroll', e => {
-            state.scrollTop = e.target.scrollTop
-          })
-        }
-      }, 1000)
-    })
-    onActivated(() => {
-      const el = unref(xTable)?.$el.querySelector('.ant-table-body')
-      if (el && state.scrollTop) {
-        el.scrollTop = state.scrollTop
-      }
-    })
-    // TODO: 获取表格的scrollTop一直为0，故使用监听scroll事件实现
-    // onDeactivated(() => {
-    //   const el = unref(xTable)?.$el.querySelector('.ant-table-body')
-    //   if (el) {
-    //     state.scrollTop = el.scrollTop
-    //   }
-    // })
+    // 滚动行为
+    const { onScrollTop } = useScrollTop({ xTable })
 
     expose({
       xTable,
