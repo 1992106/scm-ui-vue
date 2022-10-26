@@ -72,8 +72,8 @@ import XSearch from '@components/Search'
 import XPagination from '@components/Pagination'
 import { getValueByRowKey } from '@components/Table/src/utils'
 import { useAppHeight } from '@components/hooks/useSearch'
+import { useFullscreen } from '@components/hooks/useFullscreen'
 import { useScrollTop } from './useScrollTop'
-import { useEsc } from '@components/hooks/useEsc'
 import { isEmpty } from '@src/utils'
 export default defineComponent({
   name: 'XPage',
@@ -116,7 +116,6 @@ export default defineComponent({
     const state = reactive({
       searchParams: {},
       pages: { page: 1, pageSize: 20 },
-      canFullscreen: false,
       scrollTop: 0
     })
 
@@ -192,38 +191,14 @@ export default defineComponent({
     const hasHeader = computed(() => !!slots['header'])
     const hasFooter = computed(() => !!slots['footer'])
 
-    // 全屏
-    const toggleFullscreen = event => {
-      if (!props.customZoom) return
-      // 通过ESC操作
-      if (event?.keyCode === 27) {
-        // ESC关闭全屏功能
-        if (state.canFullscreen) {
-          state.canFullscreen = false
-        }
-      } else {
-        // 点击鼠标操作
-        state.canFullscreen = !state.canFullscreen
-      }
-    }
-    // 退出全屏
-    useEsc(toggleFullscreen)
-
-    // 初始化调用一下，获取搜索参数
-    const onInit = () => {
-      const params = unref(xSearch)?.onGetFormValues() || {}
-      emit('update:value', { ...params, ...(props.showPagination ? state.pages : {}) })
-    }
-
     // 自动计算高度
     useAppHeight(props.autoResize)
 
-    onMounted(() => {
-      onInit()
-    })
+    // 全屏功能
+    const { canFullscreen, toggleFullscreen } = useFullscreen(xPage, { fullscreen: props.customZoom })
 
     // 滚动行为
-    const { handleScroll, onScrollTop } = useScrollTop({ xPage })
+    const { handleScroll, onScrollTop } = useScrollTop(xPage)
     // 监听数据源，变化时滚动置顶
     watch(
       () => props.dataSource,
@@ -232,9 +207,20 @@ export default defineComponent({
       }
     )
 
+    // 初始化调用一下，获取搜索参数
+    const onInit = () => {
+      const params = unref(xSearch)?.onGetFormValues() || {}
+      emit('update:value', { ...params, ...(props.showPagination ? state.pages : {}) })
+    }
+
+    onMounted(() => {
+      onInit()
+    })
+
     expose({
       xPage,
       xSearch,
+      onToggleFullscreen: toggleFullscreen,
       onScrollTop
     })
 
@@ -255,6 +241,7 @@ export default defineComponent({
       handleReset,
       handleClear,
       handleScroll,
+      canFullscreen,
       toggleFullscreen,
       getValueByRowKey
     }

@@ -1,34 +1,34 @@
-import { onMounted, ref, unref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { debounce } from 'lodash-es'
 import { useEventListener } from '@hooks/useEventListener'
 import { unrefElement } from '@hooks/utils'
 // import { getScrollBarSize } from '@src/utils'
 
-export const useScroll = ({ xTable, autoResize, extraHeight }) => {
+export const useScroll = (xTable, { canResize, extraHeight }) => {
   const scroll = ref({})
+
   const resizeFn = debounce(() => {
     scroll.value = getTableScroll({ xTable, extraHeight })
   }, 200)
 
-  const triggerResize = () => {
-    const el = unrefElement(xTable)
-    if (el && window.MutationObserver) {
-      const observer = new MutationObserver(resizeFn)
-      observer.observe(el, { attributes: true, childList: true, subtree: true })
-      setTimeout(() => {
-        observer && observer.disconnect()
-      }, 3000)
-    }
-  }
-
   onMounted(() => {
-    if (autoResize) {
+    if (canResize) {
       // 由于Table是动态异步生成，初始化直接调用resizeFn()无效，所以使用MutationObserver来实现
-      triggerResize()
       // resizeFn()
-      useEventListener(window, 'resize', resizeFn)
+      const el = unrefElement(xTable)
+      if (el && window.MutationObserver) {
+        const observer = new MutationObserver(resizeFn)
+        observer.observe(el, { attributes: true, childList: true, subtree: true })
+        setTimeout(() => {
+          observer && observer.disconnect()
+        }, 3000)
+      }
     }
   })
+
+  if (canResize) {
+    useEventListener(window, 'resize', resizeFn)
+  }
 
   return {
     scroll
@@ -41,12 +41,13 @@ export const getTableScroll = ({ xTable, extraHeight } = {}) => {
   let paginationEl
   // let bodyEl
   // let emptyEl
-  if (unref(xTable)?.$el) {
-    tHeaderEl = unref(xTable)?.$el.querySelector('.ant-table-header')
-    summaryEl = unref(xTable)?.$el.querySelector('.ant-table-summary')
-    paginationEl = unref(xTable)?.$el.querySelector('.ant-table-pagination')
-    // bodyEl = unref(xTable)?.$el.querySelector('.ant-table .ant-table-body')
-    // emptyEl = unref(xTable)?.$el.querySelector('.ant-table-empty .ant-table-body .ant-table-placeholder')
+  const el = unrefElement(xTable)
+  if (el) {
+    tHeaderEl = el.querySelector('.ant-table-header')
+    summaryEl = el.querySelector('.ant-table-summary')
+    paginationEl = el.querySelector('.ant-table-pagination')
+    // bodyEl = el.querySelector('.ant-table .ant-table-body')
+    // emptyEl = el.querySelector('.ant-table-empty .ant-table-body .ant-table-placeholder')
   } else {
     tHeaderEl = document.querySelector('.x-table .ant-table .ant-table-header')
     summaryEl = document.querySelector('.x-table .ant-table .ant-table-summary')

@@ -1,7 +1,7 @@
 import { onActivated, ref } from 'vue'
 import { unrefElement } from '@hooks/utils'
 
-export const useScrollTop = ({ xPage }) => {
+export const useScrollTop = xPage => {
   const scrollTop = ref(null)
 
   // 获取scrollTop的高度

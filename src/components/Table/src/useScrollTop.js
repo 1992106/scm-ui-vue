@@ -2,7 +2,7 @@ import { onActivated, onMounted, ref } from 'vue'
 import { useEventListener } from '@hooks/useEventListener'
 import { unrefElement } from '@hooks/utils'
 
-export const useScrollTop = ({ xTable }) => {
+export const useScrollTop = xTable => {
   const scrollTop = ref(null)
 
   // 当表格keep-alive缓存时，保持滚动行为

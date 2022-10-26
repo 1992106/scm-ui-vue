@@ -11,25 +11,25 @@ export function onClickOutside(target, handler, options = {}) {
 
   let fallback
 
-  const listener = event => {
+  const listener = e => {
     window.clearTimeout(fallback)
 
     const el = unrefElement(target)
-    const composedPath = event.composedPath()
+    const composedPath = e.composedPath()
 
-    if (!el || el === event.target || composedPath.includes(el) || !shouldListen.value) return
+    if (!el || el === e.target || composedPath.includes(el) || !shouldListen.value) return
 
     if (ignore && ignore.length > 0) {
       if (
         ignore.some(target => {
           const el = unrefElement(target)
-          return el && (event.target === el || composedPath.includes(el))
+          return el && (e.target === el || composedPath.includes(el))
         })
       )
         return
     }
 
-    handler(event)
+    handler(e)
   }
 
   const cleanup = [

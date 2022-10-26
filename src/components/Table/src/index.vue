@@ -88,6 +88,7 @@ import ColumnSetting from './ColumnSetting.vue'
 import CellRender from './CellRender'
 import { useScroll } from './useScroll'
 import { useScrollTop } from './useScrollTop'
+import { useFullscreen } from '@components/hooks/useFullscreen'
 import {
   columnsToStorage,
   getSortDirection,
@@ -95,7 +96,6 @@ import {
   mergeStorageAndColumns,
   storageToColumns
 } from '@components/Table/src/utils'
-import { useEsc } from '@components/hooks/useEsc'
 import { cloneDeep } from 'lodash-es'
 import { isEmpty, recursive, triggerResize } from '@src/utils'
 
@@ -250,7 +250,6 @@ export default defineComponent({
       return getTransformColumns(columns)
     }
     const state = reactive({
-      canFullscreen: false,
       emptyBlockHeight: '',
       customColumns: getCustomColumns(),
       backupColumns: cloneDeep(props.columns)
@@ -292,7 +291,7 @@ export default defineComponent({
             column?.customRender ? column.customRender({ text, record, column, index }) : isEmpty(text) ? '--' : text
     })
     // 自动计算表格的宽高
-    const { scroll } = useScroll({ xTable, autoResize: props.autoResize, extraHeight: props.extraHeight })
+    const { scroll } = useScroll(xTable, { canResize: props.autoResize, extraHeight: props.extraHeight })
     const getScroll = computed(() => mergeProps(defaultState.scroll, unref(scroll), props.scroll))
     // 是否显示较少页面内容
     const showLessItems = computed(() => {
@@ -373,25 +372,6 @@ export default defineComponent({
       emit('expandedRowsChange', expandedRows)
     }
 
-    // 全屏
-    const toggleFullscreen = event => {
-      if (!props.customZoom) return
-      // 通过ESC操作
-      if (event?.keyCode === 27) {
-        // ESC关闭全屏功能
-        if (state.canFullscreen) {
-          state.canFullscreen = false
-        }
-      } else {
-        // 点击鼠标操作
-        state.canFullscreen = !state.canFullscreen
-      }
-      // 触发表格计算
-      nextTick(triggerResize)
-    }
-    // 退出全屏
-    useEsc(toggleFullscreen)
-
     // 拖拽列
     const handleResizeColumn = (width, column) => {
       column.width = width
@@ -425,11 +405,17 @@ export default defineComponent({
     const hasSearchBar = computed(() => !!slots['searchBar'])
     const hasToolBar = computed(() => !!slots['toolBar'] || props.customSetting || props.customZoom)
 
+    // 全屏功能
+    const { canFullscreen, toggleFullscreen } = useFullscreen(xTable, { fullscreen: props.customZoom }, () => {
+      nextTick(triggerResize)
+    })
+
     // 滚动行为
-    const { onScrollTop } = useScrollTop({ xTable })
+    const { onScrollTop } = useScrollTop(xTable)
 
     expose({
       xTable,
+      onToggleFullscreen: toggleFullscreen,
       onScrollTop
     })
 
@@ -449,9 +435,10 @@ export default defineComponent({
       handleChange,
       handleExpand,
       handleExpandedRowsChange,
-      toggleFullscreen,
       handleResizeColumn,
-      handleSettingColumn
+      handleSettingColumn,
+      canFullscreen,
+      toggleFullscreen
     }
   }
 })

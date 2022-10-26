@@ -3,7 +3,7 @@ import { debounce, isFunction } from 'lodash-es'
 import { dayjsToDate } from '@src/utils'
 import { cleanEmpty, flatColumns, hasDate } from '@components/Form/src/utils'
 
-export function useSearch(fn, isResize = true, searchProps, filterProps) {
+export function useSearch(fn, canResize = true, searchProps, filterProps) {
   // 是否默认首次search
   const isDefaultSearch = ref(false)
   const searchParams = ref({})
@@ -74,7 +74,7 @@ export function useSearch(fn, isResize = true, searchProps, filterProps) {
     }
   }
 
-  useAppHeight(isResize)
+  useAppHeight(canResize)
 
   return {
     paramsRef,
@@ -96,7 +96,7 @@ function useDefaultValue(columns) {
   return cleanEmpty(defaultParams)
 }
 
-export function useAppHeight(isResize) {
+export function useAppHeight(canResize) {
   let appRef = ref()
   const setHeight = debounce(
     () => {
@@ -111,12 +111,12 @@ export function useAppHeight(isResize) {
   )
 
   onMounted(() => {
-    if (isResize) {
+    if (canResize) {
       // 动态设置id="#app"的高度
       const { proxy } = getCurrentInstance()
       appRef.value = proxy.$root?.$el?.parentNode
       setHeight()
-      window.addEventListener('resize', setHeight)
+      window.addEventListener('canResize', setHeight)
     }
   })
 

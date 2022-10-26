@@ -67,7 +67,7 @@ export function useFullscreen(target, options = {}) {
     }
   }
 
-  const [REQUEST, EXIT, ELEMENT, EVENT] = map
+  const [REQUEST, EXIT, ELEMENT, , EVENT] = map
 
   async function exit() {
     if (!isSupported) return
@@ -87,6 +87,7 @@ export function useFullscreen(target, options = {}) {
     const target = unrefElement(targetRef)
     if (target) {
       await target[REQUEST]()
+
       isFullscreen.value = true
     }
   }

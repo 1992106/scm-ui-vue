@@ -69,6 +69,8 @@ emits: ['update:value', 'search', 'reset', 'clear']
 xPage
 xSearch
 
+// 切换全屏
+onToggleFullscreen
 // 滚动顶部
 onScrollTop
 ```
