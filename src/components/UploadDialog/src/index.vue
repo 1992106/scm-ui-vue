@@ -141,7 +141,7 @@
     :attachmentZipFile="attachmentZipFile"></x-preview-dialog>
 </template>
 <script>
-import { computed, defineComponent, reactive, toRefs, watch } from 'vue'
+import { computed, defineComponent, reactive, toRefs, unref, watch } from 'vue'
 import { message, UploadDragger } from 'ant-design-vue'
 import { InboxOutlined, DownloadOutlined, DeleteOutlined, EyeOutlined } from '@ant-design/icons-vue'
 import XModal from '@components/Modal'
@@ -263,6 +263,9 @@ export default defineComponent({
       },
       { immediate: true, deep: true }
     )
+
+    // 文件集合
+    const files = computed(() => [...state.imgList, ...state.attachmentList])
 
     // 上传前校验
     const beforeUploadFn = async file => {
@@ -447,9 +450,9 @@ export default defineComponent({
 
     // 预览图片
     const handlePreview = file => {
-      const files = [...state.imgList, ...state.attachmentList].filter(val => val.status === 'done')
-      state.previewList = files
-      state.previewCurrent = files.findIndex(v => v.uid === file.uid)
+      const fileList = unref(files).filter(val => val.status === 'done')
+      state.previewList = fileList
+      state.previewCurrent = fileList.findIndex(v => v.uid === file.uid)
       state.previewVisible = true
       emit('preview', file)
     }
@@ -508,10 +511,10 @@ export default defineComponent({
       const { customSubmit } = props
       if (!isFunction(customSubmit)) return
       state.confirmLoading = true
-      const files = [...state.imgList, ...state.attachmentList].filter(val => val.status === 'done')
+      const fileList = unref(files).filter(val => val.status === 'done')
       await execRequest(
         customSubmit({
-          ...(!isEmpty(files) ? { ids: files.map(val => val?.uid) } : {})
+          ...(!isEmpty(fileList) ? { ids: fileList.map(val => val?.uid) } : {})
         }),
         {
           success: ({ data }) => {

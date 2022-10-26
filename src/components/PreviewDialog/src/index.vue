@@ -98,7 +98,7 @@
   </x-modal>
 </template>
 <script>
-import { computed, defineComponent, reactive, ref, toRefs, watchEffect } from 'vue'
+import { computed, defineComponent, reactive, ref, toRefs, unref, watchEffect } from 'vue'
 import { Carousel, message } from 'ant-design-vue'
 import {
   LeftCircleOutlined,
@@ -210,9 +210,9 @@ export default defineComponent({
     const handleGoTo = file => {
       let index
       if (hasImage(file)) {
-        index = imgList.value.findIndex(val => val?.uid === file?.uid)
+        index = unref(imgList).findIndex(val => val?.uid === file?.uid)
       } else {
-        index = attachmentList.value.findIndex(val => val?.uid === file?.uid) + imgList.value.length
+        index = unref(attachmentList).findIndex(val => val?.uid === file?.uid) + unref(imgList).length
       }
       elCarousel.value.goTo(index)
     }

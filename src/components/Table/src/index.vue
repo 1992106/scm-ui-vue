@@ -384,7 +384,7 @@ export default defineComponent({
       state.customColumns = columns
       setColumnsToStorage()
       // 当columns为空时，计算空块的高度
-      if (getColumns.value.length === 0) {
+      if (unref(getColumns).length === 0) {
         const toolbar = document.querySelector('.x-table .x-table__toolbar')
         const toolbarBottom = toolbar?.getBoundingClientRect()?.bottom ?? 0
         state.emptyBlockHeight = `calc(100vh - ${toolbarBottom + (props.extraHeight ?? 0)}px)`
