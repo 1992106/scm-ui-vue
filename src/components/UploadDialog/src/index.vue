@@ -149,7 +149,7 @@ import XPreviewDialog from '@components/PreviewDialog'
 import draggable from 'vuedraggable'
 import { isFunction } from 'lodash-es'
 import { isEmpty, execRequest, downloadByUrl, download, getImageSize } from '@src/utils'
-import { formatFiles, getFileExpanded, hasImage } from './utils'
+import { formatFile, formatFiles, getFileExpanded, hasImage } from './utils'
 export default defineComponent({
   name: 'XUploadDialog',
   components: {
@@ -380,15 +380,7 @@ export default defineComponent({
       await execRequest(customUpload(file), {
         success: ({ data }) => {
           // 上传成功（status: 'done'），手动设置状态为 'done'
-          const uploadFile = {
-            ...data,
-            uid: data?.id || data?.key,
-            name: data?.name || data?.fileName,
-            type: data?.type || data?.mimeType,
-            status: 'done',
-            thumbUrl: data?.url || data?.thumbUrl,
-            url: data?.url
-          }
+          const uploadFile = formatFile(data)
           if (bool) {
             const index = state.imgList.findIndex(val => val?.uid === file?.uid)
             if (index !== -1) {

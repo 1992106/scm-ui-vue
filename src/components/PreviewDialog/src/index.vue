@@ -5,7 +5,7 @@
     class="x-preview__dialog"
     :title="title"
     :width="width"
-    :spinning="spinning"
+    :spinProps="spinning"
     :footer="null"
     fullscreen
     destroy-on-close
@@ -19,7 +19,7 @@
           :infinite="false"
           :dots="false"
           :draggable="true">
-          <div v-for="(file, index) in [...imgList, ...attachmentList]" :key="file?.uid || index">
+          <div v-for="(file, index) in [...imgList, ...attachmentList]" :key="file?.uid || index" class="img">
             <img
               :src="file?.previewFile?.url || file?.url"
               :alt="file?.name"
@@ -335,12 +335,22 @@ export default defineComponent({
         height: 100%;
         .slick-list {
           width: 100%;
+          height: 100%;
+          .slick-track,
+          .slick-slide {
+            height: 100%;
+            .img,
+            & > div {
+              height: 100%;
+            }
+          }
         }
       }
       :deep(.slick-slide img) {
         display: block;
         margin: auto;
         width: auto;
+        max-width: 100%;
         height: 100%;
       }
     }
@@ -349,6 +359,7 @@ export default defineComponent({
     flex: 1;
     position: relative;
     padding-right: 200px;
+    overflow: hidden;
     .x-preview__dots {
       position: absolute;
       top: 0;
