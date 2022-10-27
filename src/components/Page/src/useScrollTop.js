@@ -1,11 +1,12 @@
-import { onActivated, ref } from 'vue'
+import { nextTick, onActivated, ref, watch } from 'vue'
 import { unrefElement } from '@hooks/utils'
 
-export const useScrollTop = xPage => {
+export const useScrollTop = (xPage, { data }) => {
   const scrollTop = ref(null)
 
-  // 获取scrollTop的高度
+  // 滚动事件
   const handleScroll = e => {
+    // 获取scrollTop的高度
     scrollTop.value = e.target.scrollTop
   }
 
@@ -26,6 +27,11 @@ export const useScrollTop = xPage => {
       // scrollTop(el, el.scrollTop, to)
     }
   }
+
+  // 监听数据源，变化时滚动置顶
+  watch(data, () => {
+    nextTick(onScrollTop)
+  })
 
   return {
     scrollTop,

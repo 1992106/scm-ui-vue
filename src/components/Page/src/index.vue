@@ -65,7 +65,7 @@
 </template>
 
 <script>
-import { computed, defineComponent, nextTick, onMounted, reactive, ref, toRefs, unref, watch, watchEffect } from 'vue'
+import { computed, defineComponent, onMounted, reactive, ref, toRef, toRefs, unref, watch, watchEffect } from 'vue'
 import { Empty, Spin } from 'ant-design-vue'
 import { FullscreenExitOutlined, FullscreenOutlined } from '@ant-design/icons-vue'
 import XSearch from '@components/Search'
@@ -198,14 +198,7 @@ export default defineComponent({
     const { canFullscreen, toggleFullscreen } = useFullscreen(xPage, { fullscreen: props.customZoom })
 
     // 滚动行为
-    const { handleScroll, onScrollTop } = useScrollTop(xPage)
-    // 监听数据源，变化时滚动置顶
-    watch(
-      () => props.dataSource,
-      () => {
-        nextTick(onScrollTop)
-      }
-    )
+    const { handleScroll, onScrollTop } = useScrollTop(xPage, { data: toRef(props, 'dataSource') })
 
     // 初始化调用一下，获取搜索参数
     const onInit = () => {
