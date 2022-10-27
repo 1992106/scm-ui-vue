@@ -519,7 +519,9 @@ export default defineComponent({
     }
 
     const handleCancel = () => {
+      state.imgList = []
       state.imgZipFile = null
+      state.attachmentList = []
       state.attachmentZipFile = null
       state.previewCurrent = 0
       state.previewList = []

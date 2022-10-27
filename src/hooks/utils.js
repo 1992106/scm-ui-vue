@@ -28,7 +28,7 @@ export const rand = (min, max) => {
 
 export function unrefElement(elRef) {
   const plain = unref(elRef)
-  return plain.$el ?? plain
+  return plain?.$el ?? plain
 }
 
 export function tryOnScopeDispose(fn) {

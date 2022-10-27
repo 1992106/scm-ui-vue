@@ -9,7 +9,7 @@ export const useScrollTop = xTable => {
   onMounted(() => {
     // 由于表格是动态生成，必须延迟绑定scroll事件
     setTimeout(() => {
-      const el = unrefElement(xTable).querySelector('.ant-table-body')
+      const el = unrefElement(xTable)?.querySelector('.ant-table-body')
       if (el) {
         useEventListener(el, 'scroll', e => {
           // 获取scrollTop的高度
@@ -21,7 +21,7 @@ export const useScrollTop = xTable => {
 
   // 当表格keep-alive缓存时，保持滚动行为
   onActivated(() => {
-    const el = unrefElement(xTable).querySelector('.ant-table-body')
+    const el = unrefElement(xTable)?.querySelector('.ant-table-body')
     if (el && scrollTop.value) {
       el.scrollTop = scrollTop.value
     }
@@ -29,7 +29,7 @@ export const useScrollTop = xTable => {
 
   // 滚动到顶部
   const onScrollTop = (to = 0) => {
-    const el = unrefElement(xTable).querySelector('.ant-table-body')
+    const el = unrefElement(xTable)?.querySelector('.ant-table-body')
     if (el) {
       el.scrollTop = to
       // 动画效果实现滚动
