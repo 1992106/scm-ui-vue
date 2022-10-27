@@ -32,20 +32,22 @@ export const getFileExpanded = file => {
   }
 }
 
+export const formatFile = file => {
+  return {
+    ...file,
+    ...(file?.id || file?.key
+      ? {
+          uid: file?.id || file?.key,
+          name: file?.name || file?.fileName,
+          type: file?.type || file?.mimeType,
+          status: 'done',
+          thumbUrl: file?.url || file?.thumbUrl,
+          url: file?.url
+        }
+      : {})
+  }
+}
+
 export const formatFiles = files => {
-  return (files || []).map(val => {
-    return {
-      ...val,
-      ...(val?.id || val?.key
-        ? {
-            uid: val?.id || val?.key,
-            name: val?.name || val?.fileName,
-            type: val?.type || val?.mimeType,
-            status: 'done',
-            thumbUrl: val?.url || val?.thumbUrl,
-            url: val?.url
-          }
-        : {})
-    }
-  })
+  return (files || []).map(file => formatFile(file))
 }
