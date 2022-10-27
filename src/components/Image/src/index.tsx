@@ -79,7 +79,7 @@ const XImage = defineComponent({
       if (props.mode === 'complex' && !props.customRequest) {
         let list = props.previewList.map(item => item?.src ?? item?.url ?? item?.thumbUrl ?? '').filter(Boolean)
         // 如果预览列表为空，则把缩略图当成预览图
-        if (!list.length && props.thumbnail) {
+        if (list.length === 0 && props.thumbnail) {
           list = [props.thumbnail]
         }
         return list
@@ -128,7 +128,7 @@ const XImage = defineComponent({
         : []
 
       // 如果预览列表为空，则把缩略图当成预览图
-      if (!srcs.length && props.thumbnail) {
+      if (srcs.length === 0 && props.thumbnail) {
         return [props.thumbnail]
       }
 
