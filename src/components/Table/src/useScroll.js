@@ -38,6 +38,7 @@ export const useScroll = (xTable, { canResize, extraHeight }) => {
 export const getTableScroll = ({ xTable, extraHeight } = {}) => {
   let tHeaderEl
   let summaryEl
+  let footerEl
   let paginationEl
   // let bodyEl
   // let emptyEl
@@ -45,12 +46,14 @@ export const getTableScroll = ({ xTable, extraHeight } = {}) => {
   if (el) {
     tHeaderEl = el.querySelector('.ant-table-header')
     summaryEl = el.querySelector('.ant-table-summary')
+    footerEl = el.querySelector('.ant-table-footer')
     paginationEl = el.querySelector('.ant-table-pagination')
     // bodyEl = el.querySelector('.ant-table .ant-table-body')
     // emptyEl = el.querySelector('.ant-table-empty .ant-table-body .ant-table-placeholder')
   } else {
     tHeaderEl = document.querySelector('.x-table .ant-table .ant-table-header')
     summaryEl = document.querySelector('.x-table .ant-table .ant-table-summary')
+    footerEl = document.querySelector('.x-table .ant-table-footer')
     paginationEl = document.querySelector('.x-table .ant-table-pagination')
     // bodyEl = document.querySelector('.x-table .ant-table .ant-table-body')
     // emptyEl = document.querySelector('.x-table .ant-table-empty .ant-table-body .ant-table-placeholder')
@@ -65,6 +68,11 @@ export const getTableScroll = ({ xTable, extraHeight } = {}) => {
   if (summaryEl) {
     summaryHeight = summaryEl.getBoundingClientRect().height
   }
+  // 表格尾部
+  let footerHeight = 0
+  if (footerEl) {
+    footerHeight = footerEl.getBoundingClientRect().height
+  }
   // 分页器的高度
   let paginationHeight = 0
   if (paginationEl) {
@@ -75,7 +83,7 @@ export const getTableScroll = ({ xTable, extraHeight } = {}) => {
     extraHeight = 0
   }
   // 表格窗体高度-表格内容顶部的高度-表格内容底部的高度
-  const height = `calc(100vh - ${tHeaderBottom + summaryHeight + paginationHeight + extraHeight}px)`
+  const height = `calc(100vh - ${tHeaderBottom + summaryHeight + footerHeight + paginationHeight + extraHeight}px)`
 
   // TODO: 设置表格高度不生效
   // if (bodyEl) {
