@@ -99,7 +99,7 @@
 </template>
 <script>
 import { computed, defineComponent, reactive, ref, toRefs, unref, watchEffect } from 'vue'
-import { Carousel, message } from 'ant-design-vue'
+import { Button, Carousel, message } from 'ant-design-vue'
 import {
   LeftCircleOutlined,
   RightCircleOutlined,
@@ -123,8 +123,9 @@ export default defineComponent({
     ZoomOutOutlined,
     ZoomInOutlined,
     DownloadOutlined,
+    'x-modal': XModal,
     'a-carousel': Carousel,
-    'x-modal': XModal
+    'a-button': Button
   },
   inheritAttrs: false,
   props: {

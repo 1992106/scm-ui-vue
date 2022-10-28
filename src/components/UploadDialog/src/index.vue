@@ -142,7 +142,7 @@
 </template>
 <script>
 import { computed, defineComponent, reactive, toRefs, unref, watch } from 'vue'
-import { message, UploadDragger } from 'ant-design-vue'
+import { Button, message, UploadDragger } from 'ant-design-vue'
 import { InboxOutlined, DownloadOutlined, DeleteOutlined, EyeOutlined } from '@ant-design/icons-vue'
 import XModal from '@components/Modal'
 import XPreviewDialog from '@components/PreviewDialog'
@@ -160,6 +160,7 @@ export default defineComponent({
     'x-modal': XModal,
     'a-upload-dragger': UploadDragger,
     'x-preview-dialog': XPreviewDialog,
+    'a-button': Button,
     draggable
   },
   inheritAttrs: false,

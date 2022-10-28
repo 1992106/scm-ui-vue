@@ -33,7 +33,7 @@
 </template>
 <script>
 import { computed, defineComponent, reactive, toRefs, watch } from 'vue'
-import { Form, message, Upload } from 'ant-design-vue'
+import { Button, Form, message, Upload } from 'ant-design-vue'
 import { PlusOutlined, UploadOutlined } from '@ant-design/icons-vue'
 import XPreview from '@components/Preview'
 import { isFunction } from 'lodash-es'
@@ -44,7 +44,8 @@ export default defineComponent({
     PlusOutlined,
     UploadOutlined,
     'a-upload': Upload,
-    'x-preview': XPreview
+    'x-preview': XPreview,
+    'a-button': Button
   },
   inheritAttrs: false,
   props: {
