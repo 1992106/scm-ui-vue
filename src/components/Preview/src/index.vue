@@ -1,6 +1,7 @@
 <template>
   <div style="display: none">
     <a-image-preview-group
+      v-if="isPreview"
       :preview="{
         rootClassName: 'x-preview__root',
         current,
@@ -47,8 +48,6 @@ export default defineComponent({
 
     // 关闭预览时触发
     const handleVisibleChange = bool => {
-      current.value = 0
-      urls.value = []
       isPreview.value = bool
     }
 
