@@ -55,15 +55,12 @@
         @resizeColumn="handleResizeColumn">
         <template #headerCell="{ title, column }">
           <slot name="headerCell" v-bind="{ title, column }">
-            <!--自定义：必填标识-->
-            <template v-if="column?.required">
-              <span style="color: red">*</span>
+            <template v-if="hasCustomHeaderCell(column)">
+              <!--自定义：必填标识-->
+              <span v-if="column?.required" style="color: red">*</span>
               {{ title }}
-            </template>
-            <!--自定义：一键填充-->
-            <template v-if="column?.fillable">
-              {{ title }}
-              <a-button type="link" @click="handleFill(column)">一键</a-button>
+              <!--自定义：一键填充-->
+              <a-button v-if="column?.fillable" type="link" @click="handleFill(column)">一键</a-button>
             </template>
           </slot>
         </template>
@@ -439,6 +436,7 @@ export default defineComponent({
     // 是否显示插槽
     const hasSearchBar = computed(() => !!slots['searchBar'])
     const hasToolBar = computed(() => !!slots['toolBar'] || props.customSetting || props.customZoom)
+    const hasCustomHeaderCell = computed(() => column => ['required', 'fillable'].some(key => column[key]))
 
     // 全屏功能
     const { canFullscreen, toggleFullscreen } = useFullscreen(xTable, { fullscreen: props.customZoom }, () => {
@@ -459,6 +457,7 @@ export default defineComponent({
       ...toRefs(state),
       hasSearchBar,
       hasToolBar,
+      hasCustomHeaderCell,
       getScroll,
       getColumns,
       getTableSlots,
