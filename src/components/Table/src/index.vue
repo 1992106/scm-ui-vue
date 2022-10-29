@@ -34,10 +34,10 @@
         ref="xTable"
         bordered
         v-bind="$attrs"
+        :loading="false"
         :row-key="rowKey"
         :columns="getColumns"
         :data-source="dataSource"
-        :loading="false"
         :pagination="getPaginationConfig"
         :scroll="getScroll"
         :tableLayout="tableLayout"
@@ -59,6 +59,11 @@
             <template v-if="column?.required">
               <span style="color: red">*</span>
               {{ title }}
+            </template>
+            <!--自定义：一键填充-->
+            <template v-if="column?.fillable">
+              {{ title }}
+              <a-button type="link" @click="handleFill(column)">一键</a-button>
             </template>
           </slot>
         </template>
@@ -277,8 +282,8 @@ export default defineComponent({
     const getTableSlots = computed(() => {
       return Object.keys(slots).filter(val =>
         [
-          // 'headerCell', 在template中实现，内置必填标识
-          // 'bodyCell', 在template中实现，内置cellRender
+          // 'headerCell', 在template中实现【必填标识/一键填充】
+          // 'bodyCell', 在template中实现【cellRender：缩略图/日期/时间】
           'customFilterDropdown',
           'customFilterIcon',
           'expandedRowRender',
@@ -341,6 +346,21 @@ export default defineComponent({
       return [stripe, rowClassName].filter(Boolean)
     }
 
+    // 一键填充
+    const handleFill = column => {
+      const dataIndex = column.dataIndex
+      const dataSource = props.tableProps?.dataSource || []
+      if (dataSource.length > 1) {
+        const value = dataSource[0]?.[dataIndex]
+        // 如果第一行的值为空，则不填充
+        if (!isEmpty(value)) {
+          dataSource.forEach(record => {
+            Object.assign(record, { [dataIndex]: value })
+          })
+        }
+      }
+    }
+
     // 复制
     const handleCopy = text => {
       if (!isEmpty(text)) {
@@ -374,7 +394,7 @@ export default defineComponent({
         })
         emit('search', null, 'paginate')
       }
-      emit('change', filters, sorter, extra)
+      emit('change', pagination, filters, sorter, extra)
     }
 
     // 点击展开图标时触发
@@ -447,6 +467,7 @@ export default defineComponent({
       getRowSelection,
       spinProps,
       handleRowClassName,
+      handleFill,
       handleCopy,
       handleChange,
       handleExpand,
