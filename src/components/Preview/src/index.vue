@@ -1,7 +1,6 @@
 <template>
   <div style="display: none">
     <a-image-preview-group
-      v-if="urls.length"
       :preview="{
         rootClassName: 'x-preview__root',
         current,

@@ -70,7 +70,7 @@
             </template>
             <!--自定义：复制-->
             <template v-if="column?.copyable">
-              {{ title }}
+              {{ text }}
               <CopyOutlined @click="handleCopy(text)" />
             </template>
           </slot>
@@ -88,7 +88,7 @@
 <script>
 import { defineComponent, computed, mergeProps, ref, reactive, toRefs, unref, nextTick } from 'vue'
 import { CopyOutlined, FullscreenExitOutlined, FullscreenOutlined } from '@ant-design/icons-vue'
-import { Button, Space, Spin, Table } from 'ant-design-vue'
+import { Button, message, Space, Spin, Table } from 'ant-design-vue'
 import ColumnSetting from './ColumnSetting.vue'
 import CellRender from './CellRender'
 import { useScroll } from './useScroll'
@@ -343,7 +343,10 @@ export default defineComponent({
 
     // 复制
     const handleCopy = text => {
-      copyToClipboard(text)
+      if (!isEmpty(text)) {
+        copyToClipboard(text)
+        message.success('复制成功')
+      }
     }
 
     // 分页、排序、筛选变化时触发
