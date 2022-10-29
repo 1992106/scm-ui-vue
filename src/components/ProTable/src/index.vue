@@ -81,17 +81,17 @@ export default defineComponent({
       )
     })
 
+    // 是否显示页码，默认显示
+    const showPagination = computed(() => {
+      const _showPagination = props.tableProps?.showPagination
+      return typeof _showPagination === 'undefined' ? true : _showPagination
+    })
+
     // 页码默认赋值
     watchEffect(() => {
       if (!isEmpty(props.tableProps?.pagination)) {
         state.pagination = props.tableProps.pagination
       }
-    })
-
-    // 是否显示页码，默认显示
-    const showPagination = computed(() => {
-      const _showPagination = props.tableProps?.showPagination
-      return typeof _showPagination === 'undefined' ? true : _showPagination
     })
 
     // TODO：监听页码，当页码为1时，重置页码（父组件手动重置页码：如快捷搜索）

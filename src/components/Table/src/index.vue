@@ -53,20 +53,25 @@
         @expand="handleExpand"
         @expandedRowsChange="handleExpandedRowsChange"
         @resizeColumn="handleResizeColumn">
-        <template #headerCell="scope">
-          <slot name="headerCell" v-bind="scope">
+        <template #headerCell="{ title, column }">
+          <slot name="headerCell" v-bind="{ title, column }">
             <!--自定义：必填标识-->
-            <template v-if="scope?.column?.required">
+            <template v-if="column?.required">
               <span style="color: red">*</span>
-              {{ scope?.column?.title }}
+              {{ title }}
             </template>
           </slot>
         </template>
-        <template #bodyCell="scope">
-          <slot name="bodyCell" v-bind="scope">
+        <template #bodyCell="{ text, record, column, index }">
+          <slot name="bodyCell" v-bind="{ text, record, column, index }">
             <!--自定义：缩略图/日期/时间-->
-            <template v-if="scope?.column?.cellRender">
-              <CellRender v-bind="scope" />
+            <template v-if="column?.cellRender">
+              <CellRender v-bind="{ text, record, column, index }" />
+            </template>
+            <!--自定义：复制-->
+            <template v-if="column?.copyable">
+              {{ title }}
+              <CopyOutlined @click="handleCopy(text)" />
             </template>
           </slot>
         </template>
@@ -82,7 +87,7 @@
 </template>
 <script>
 import { defineComponent, computed, mergeProps, ref, reactive, toRefs, unref, nextTick } from 'vue'
-import { FullscreenExitOutlined, FullscreenOutlined } from '@ant-design/icons-vue'
+import { CopyOutlined, FullscreenExitOutlined, FullscreenOutlined } from '@ant-design/icons-vue'
 import { Button, Space, Spin, Table } from 'ant-design-vue'
 import ColumnSetting from './ColumnSetting.vue'
 import CellRender from './CellRender'
@@ -97,13 +102,14 @@ import {
   storageToColumns
 } from '@components/Table/src/utils'
 import { cloneDeep } from 'lodash-es'
-import { isEmpty, recursive, triggerResize } from '@src/utils'
+import { copyToClipboard, isEmpty, recursive, triggerResize } from '@src/utils'
 
 export default defineComponent({
   name: 'XTable',
   components: {
     FullscreenOutlined,
     FullscreenExitOutlined,
+    CopyOutlined,
     'a-table': Table,
     'a-spin': Spin,
     'a-space': Space,
@@ -271,7 +277,7 @@ export default defineComponent({
     const getTableSlots = computed(() => {
       return Object.keys(slots).filter(val =>
         [
-          'headerCell',
+          // 'headerCell', 在template中实现，内置必填标识
           // 'bodyCell', 在template中实现，内置cellRender
           'customFilterDropdown',
           'customFilterIcon',
@@ -334,6 +340,12 @@ export default defineComponent({
       const stripe = props.stripe && index % 2 === 1 ? 'table-striped' : null
       return [stripe, rowClassName].filter(Boolean)
     }
+
+    // 复制
+    const handleCopy = text => {
+      copyToClipboard(text)
+    }
+
     // 分页、排序、筛选变化时触发
     const handleChange = (pagination, filters, sorter, extra) => {
       const action = extra?.action
@@ -432,6 +444,7 @@ export default defineComponent({
       getRowSelection,
       spinProps,
       handleRowClassName,
+      handleCopy,
       handleChange,
       handleExpand,
       handleExpandedRowsChange,
