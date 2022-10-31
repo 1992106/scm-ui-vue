@@ -97,9 +97,10 @@ export default defineComponent({
       return props.columns.map(column => {
         const { props = {}, events = {} } = column
         // column
-        const allColumn = pick(column, ['type', 'title', 'field', 'rules', 'children'])
+        const columnKeys = ['type', 'title', 'field', 'rules', 'children']
+        const allColumn = pick(column, columnKeys)
         // props
-        const otherProps = omit(column, ['type', 'title', 'field', 'rules', 'children', 'props', 'events'])
+        const otherProps = omit(column, [...columnKeys, 'props', 'events'])
         // 格式化时间
         if (hasDate(column)) {
           formatDateToDayjs(props)

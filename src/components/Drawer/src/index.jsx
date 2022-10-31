@@ -41,7 +41,7 @@ const XDrawer = defineComponent({
       emit('ok')
     }
 
-    const renderFooter = () => {
+    const renderFooter = computed(() => {
       const footer = slots?.footer?.() || attrs?.footer
       return footer ? (
         footer
@@ -55,7 +55,7 @@ const XDrawer = defineComponent({
           </Button>
         </Space>
       ) : null
-    }
+    })
 
     expose({})
 
@@ -68,7 +68,7 @@ const XDrawer = defineComponent({
         width={props.width}
         height={props.height}
         title={slots?.title?.() || attrs?.title}
-        footer={renderFooter()}
+        footer={unref(renderFooter)}
         onClose={handleCancel}>
         <Spin {...unref(spinProps)}>{slots?.default?.()}</Spin>
       </Drawer>

@@ -206,10 +206,11 @@ export default defineComponent({
         const { props = {}, events = {} } = cleanDisabled(column) // disabled: true => false
         const defaultAllState = defaultState[column?.type] || {}
         // column
-        const allColumn = pick(column, ['type', 'title', 'field', 'rules', 'children'])
+        const columnKeys = ['type', 'title', 'field', 'rules', 'children']
+        const allColumn = pick(column, columnKeys)
         // props
         const defaultProps = defaultAllState.props || {}
-        const otherProps = omit(column, ['type', 'title', 'field', 'rules', 'children', 'props', 'events'])
+        const otherProps = omit(column, [...columnKeys, 'props', 'events'])
         // 格式化时间
         if (hasDate(column)) {
           formatDateToDayjs(props)

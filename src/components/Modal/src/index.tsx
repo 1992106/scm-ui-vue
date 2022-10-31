@@ -60,24 +60,6 @@ const XModal = defineComponent({
       emit('fullScreen', canFullscreen.value)
     }
 
-    const renderTitle = () => {
-      const title = slots?.title?.() || attrs?.title
-      return props.showFullscreen ? (
-        <>
-          {title}
-          <span class='x-modal__fullscreen-action'>
-            {props.fullscreen ? (
-              <FullscreenExitOutlined onClick={handleFullscreen} />
-            ) : (
-              <FullscreenOutlined onClick={handleFullscreen} />
-            )}
-          </span>
-        </>
-      ) : (
-        title
-      )
-    }
-
     const wrapClassName = computed(() =>
       [props.wrapClassName, `${unref(canFullscreen) ? 'x-modal__fullscreen' : ''}`].filter(Boolean).join(' ')
     )
@@ -93,6 +75,24 @@ const XModal = defineComponent({
       emit('ok')
     }
 
+    const renderTitle = computed(() => {
+      const title = slots?.title?.() || attrs?.title
+      return props.showFullscreen ? (
+        <>
+          {title}
+          <span class='x-modal__fullscreen-action'>
+            {props.fullscreen ? (
+              <FullscreenExitOutlined onClick={handleFullscreen} />
+            ) : (
+              <FullscreenOutlined onClick={handleFullscreen} />
+            )}
+          </span>
+        </>
+      ) : (
+        title
+      )
+    })
+
     expose({})
 
     return () => (
@@ -101,7 +101,7 @@ const XModal = defineComponent({
         {...attrs}
         wrapClassName={unref(wrapClassName)}
         class={['x-modal', `${props.showFullscreen ? 'is-fullscreen' : ''}`, props?.class]}
-        title={renderTitle()}
+        title={unref(renderTitle)}
         closeIcon={slots?.closeIcon?.() || attrs?.closeIcon}
         footer={slots?.footer?.() || attrs?.footer}
         onCancel={handleCancel}

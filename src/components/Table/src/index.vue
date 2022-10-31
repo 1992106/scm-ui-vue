@@ -55,13 +55,11 @@
         @resizeColumn="handleResizeColumn">
         <template #headerCell="{ title, column }">
           <slot name="headerCell" v-bind="{ title, column }">
-            <template v-if="hasCustomHeaderCell(column)">
-              <!--自定义：必填标识-->
-              <span v-if="column?.required" style="color: red">*</span>
-              {{ title }}
-              <!--自定义：一键填充-->
-              <a-button v-if="column?.fillable" type="link" @click="handleFill(column)">一键</a-button>
-            </template>
+            <!--自定义：必填标识-->
+            <span v-if="column?.required" style="color: red">*</span>
+            {{ title }}
+            <!--自定义：一键填充-->
+            <a-button v-if="column?.fillable" type="link" @click="handleFill(column)">一键</a-button>
           </slot>
         </template>
         <template #bodyCell="{ text, record, column, index }">
@@ -73,7 +71,7 @@
             <!--自定义：复制-->
             <template v-if="column?.copyable">
               {{ text }}
-              <CopyOutlined @click="handleCopy(text)" />
+              <CopyOutlined @click="handleCopy(text, record, column)" />
             </template>
           </slot>
         </template>
@@ -346,8 +344,8 @@ export default defineComponent({
     // 一键填充
     const handleFill = column => {
       const dataIndex = column.dataIndex
-      const dataSource = props.tableProps?.dataSource || []
-      if (dataSource.length > 1) {
+      const dataSource = props.dataSource || []
+      if (dataIndex && dataSource.length > 1) {
         const value = dataSource[0]?.[dataIndex]
         // 如果第一行的值为空，则不填充
         if (!isEmpty(value)) {
@@ -359,9 +357,10 @@ export default defineComponent({
     }
 
     // 复制
-    const handleCopy = text => {
-      if (!isEmpty(text)) {
-        copyToClipboard(text)
+    const handleCopy = (text, record, column) => {
+      const value = record[column.dataIndex] || text
+      if (!isEmpty(value)) {
+        copyToClipboard(value)
         message.success('复制成功')
       }
     }
@@ -436,7 +435,6 @@ export default defineComponent({
     // 是否显示插槽
     const hasSearchBar = computed(() => !!slots['searchBar'])
     const hasToolBar = computed(() => !!slots['toolBar'] || props.customSetting || props.customZoom)
-    const hasCustomHeaderCell = computed(() => column => ['required', 'fillable'].some(key => column[key]))
 
     // 全屏功能
     const { canFullscreen, toggleFullscreen } = useFullscreen(xTable, { fullscreen: props.customZoom }, () => {
@@ -457,7 +455,6 @@ export default defineComponent({
       ...toRefs(state),
       hasSearchBar,
       hasToolBar,
-      hasCustomHeaderCell,
       getScroll,
       getColumns,
       getTableSlots,
