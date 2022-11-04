@@ -19,7 +19,7 @@
           :infinite="false"
           :dots="false"
           :draggable="true">
-          <div v-for="(file, index) in [...imgList, ...attachmentList]" :key="file?.uid || index" class="img">
+          <div v-for="(file, index) in files" :key="file?.uid || index" class="img">
             <img
               :src="file?.previewFile?.url || file?.url"
               :alt="file?.name"
@@ -44,7 +44,11 @@
               </a-button>
             </div>
             <div class="dots__list">
-              <div v-for="(img, i) in imgList" :key="img?.uid || i" class="dots__list-item" @click="handleGoTo(img)">
+              <div
+                v-for="(img, i) in imgList"
+                :key="img?.uid || i"
+                class="dots__list-item"
+                @click="handleGoTo(i, 'img')">
                 <img :src="img?.thumbUrl || img?.url" :alt="img?.fileName" />
               </div>
             </div>
@@ -70,7 +74,7 @@
                   v-for="(attachment, i) in attachmentList"
                   :key="attachment.uid || i"
                   class="dots__list-item"
-                  @click="handleGoTo(attachment)">
+                  @click="handleGoTo(i, 'attachment')">
                   <template v-if="attachment?.previewFile">
                     <img
                       :src="attachment.previewFile?.thumbUrl || attachment.previewFile?.url"
@@ -98,7 +102,7 @@
   </x-modal>
 </template>
 <script>
-import { computed, defineComponent, reactive, ref, toRefs, unref, watchEffect } from 'vue'
+import { computed, defineComponent, reactive, ref, toRefs, unref, watch, watchEffect } from 'vue'
 import { Button, Carousel, message } from 'ant-design-vue'
 import {
   LeftCircleOutlined,
@@ -144,10 +148,11 @@ export default defineComponent({
     const state = reactive({
       spinning: false,
       previewCurrent: 0,
-      files: [],
       // 图片压缩文件
+      imgList: [],
       imgZipFile: null,
       // 附件压缩文件
+      attachmentList: [],
       attachmentZipFile: null,
       // 缩放比例
       scale: 1,
@@ -173,12 +178,15 @@ export default defineComponent({
       state.spinning = true
       await execRequest(customRequest(), {
         success: ({ data }) => {
-          state.files = formatFiles(data?.files || data?.fileList || data?.previewList || [])
+          const files = formatFiles(data?.files || data?.fileList || data?.previewList || [])
+          state.imgList = files.filter(file => hasImage(file))
+          state.attachmentList = files.filter(file => !hasImage(file))
           state.imgZipFile = data?.imgZipFile
           state.attachmentZipFile = data?.attachmentZipFile
         },
         fail: () => {
-          state.files = []
+          state.imgList = []
+          state.attachmentList = []
           state.imgZipFile = null
           state.attachmentZipFile = null
         }
@@ -186,42 +194,40 @@ export default defineComponent({
       state.spinning = false
     }
 
-    watchEffect(() => {
-      if (isEmpty(props.customRequest)) {
-        state.files = formatFiles(props.previewList || [])
-      }
-    })
+    watch(
+      () => props.previewList,
+      previewList => {
+        if (isEmpty(props.customRequest)) {
+          const files = formatFiles(previewList || [])
+          state.imgList = files.filter(file => hasImage(file))
+          state.attachmentList = files.filter(file => !hasImage(file))
+        }
+      },
+      { immediate: true, deep: true }
+    )
 
     watchEffect(() => {
       state.previewCurrent = props.current
     })
 
-    // 图片
-    const imgList = computed(() => {
-      return state.files.filter(file => hasImage(file))
-    })
-    // 其他附件
-    const attachmentList = computed(() => {
-      return state.files.filter(file => !hasImage(file))
-    })
-
+    // 文件集合
+    const files = computed(() => [...state.imgList, ...state.attachmentList])
     // 当前图片index
     const currentSlide = computed(() => elCarousel.value?.innerSlider?.currentSlide)
 
-    const handleGoTo = file => {
-      let index
-      if (hasImage(file)) {
-        index = unref(imgList).findIndex(val => val?.uid === file?.uid)
-      } else {
-        index = unref(attachmentList).findIndex(val => val?.uid === file?.uid) + unref(imgList).length
+    const handleGoTo = (index, type) => {
+      if (type === 'attachment') {
+        index = index + state.imgList.length
       }
       elCarousel.value.goTo(index)
     }
 
+    // 上一个
     const handlePrev = () => {
       elCarousel.value.prev()
     }
 
+    // 下一个
     const handleNext = () => {
       elCarousel.value.next()
     }
@@ -249,16 +255,17 @@ export default defineComponent({
     }
 
     // 下载
-    const handleDownload = async file => {
-      message.info('正在下载中...')
-      if (file.url) {
+    const handleDownload = async () => {
+      const file = unref(files)?.[currentSlide.value]
+      if (file?.url) {
+        message.info('正在下载中...')
         if (hasImage(file)) {
           await downloadByUrl(file.url, file.name)
         } else {
           download(file.url, file.name)
         }
+        emit('download', file)
       }
-      emit('download', file)
     }
 
     // 下载所有图片
@@ -268,9 +275,10 @@ export default defineComponent({
     const handleDownloadImgZipFile = () => {
       const imgZipFile = state.imgZipFile || props.imgZipFile
       if (imgZipFile?.url) {
+        message.info('正在下载中...')
         download(imgZipFile.url)
+        emit('downloadImgZipFile', imgZipFile)
       }
-      emit('downloadImgZipFile', imgZipFile)
     }
 
     // 下载所有附件
@@ -280,14 +288,16 @@ export default defineComponent({
     const handleDownloadAttachmentZipFile = () => {
       const attachmentZipFile = state.attachmentZipFile || props.attachmentZipFile
       if (attachmentZipFile?.url) {
+        message.info('正在下载中...')
         download(attachmentZipFile.url)
+        emit('downloadAttachmentZipFile', attachmentZipFile)
       }
-      emit('downloadAttachmentZipFile', attachmentZipFile)
     }
 
     const handleCancel = () => {
       state.previewCurrent = 0
-      state.files = []
+      state.imgList = []
+      state.attachmentList = []
       state.imgZipFile = null
       state.attachmentZipFile = null
       state.scale = 1
@@ -301,8 +311,7 @@ export default defineComponent({
       ...toRefs(state),
       modalVisible,
       getFileExpanded,
-      imgList,
-      attachmentList,
+      files,
       currentSlide,
       handleGoTo,
       handlePrev,

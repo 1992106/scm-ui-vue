@@ -27,6 +27,7 @@
 | maxWidth | 上传文件最大宽度，单位`px` | Number | `-` |
 | minHeight | 上传文件最小高度，单位`px` | Number | `-` |
 | maxHeight | 上传文件最大高度，单位`px` | Number | `-` |
+| required | 是否必填 | Boolean | `-` |
 | maxCount | 上传文件数量 | Number | `20` |
 
 ### Emits

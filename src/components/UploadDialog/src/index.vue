@@ -190,6 +190,7 @@ export default defineComponent({
     maxWidth: { type: Number },
     minHeight: { type: Number },
     maxHeight: { type: Number },
+    required: { type: Boolean },
     maxCount: { type: Number, default: 40 }
   },
   emits: [
@@ -267,11 +268,23 @@ export default defineComponent({
 
     // 文件集合
     const files = computed(() => [...state.imgList, ...state.attachmentList])
+    // 是否有上传中的文件
+    const hasUploading = computed(() => {
+      return unref(files).some(val => val.status === 'uploading')
+    })
 
     // 上传前校验
     const beforeUploadFn = async file => {
       if (props.beforeUpload && isFunction(props.beforeUpload)) {
         return props.beforeUpload(file)
+      }
+      // 限制数量
+      if (!isEmpty(props.maxCount)) {
+        let isCount = unref(files).length < props.maxCount
+        if (!isCount) {
+          message.error(`最多只能上传${props.maxCount}个`)
+          return false
+        }
       }
       // 格式
       if (!isEmpty(props.accept)) {
@@ -348,36 +361,39 @@ export default defineComponent({
           }
         }
       }
+      // 把通过校验的文件添加到文件列表中
+      handleUploading(file)
       return true
     }
 
-    // 上传文件
-    const handleCustomUpload = async option => {
-      const { customUpload, maxCount } = props
-      if (!isFunction(customUpload)) return
-      const { file } = option
-      // 限制上传数量
-      if (!isEmpty(maxCount) && state.imgList.length >= maxCount && maxCount !== 1) {
-        return
-      }
+    // 由于没有使用v-model:file-list，需要手动更新文件列表，且状态为uploading
+    const handleUploading = file => {
       const bool = hasImage(file)
       // 上传中：uploading
       Object.assign(file, { status: 'uploading' })
       if (bool) {
         // 当maxCount=1时，始终用最新上传的代替当前
-        if (maxCount === 1) {
+        if (props.maxCount === 1) {
           state.imgList.splice(0, 1, file)
         } else {
           state.imgList.push(file)
         }
       } else {
         // 当maxCount=1时，始终用最新上传的代替当前
-        if (maxCount === 1) {
+        if (props.maxCount === 1) {
           state.attachmentList.splice(0, 1, file)
         } else {
           state.attachmentList.push(file)
         }
       }
+    }
+
+    // 上传文件
+    const handleCustomUpload = async option => {
+      const { customUpload } = props
+      if (!isFunction(customUpload)) return
+      const { file } = option
+      const bool = hasImage(file)
       await execRequest(customUpload(file), {
         success: ({ data }) => {
           // 上传成功（status: 'done'），手动设置状态为 'done'
@@ -406,10 +422,7 @@ export default defineComponent({
         }
       })
     }
-    // 是否有上传中的文件
-    const hasUploading = computed(() => {
-      return [...state.imgList, ...state.attachmentList].some(val => val.status === 'uploading')
-    })
+
     // 当文件被拖入上传区域时执行的回调
     const handleDrop = $event => {
       emit('drop', $event)
@@ -452,15 +465,15 @@ export default defineComponent({
 
     // 下载
     const handleDownload = async (file, type) => {
-      message.info('正在下载中...')
-      if (file.url) {
+      if (file?.url) {
+        message.info('正在下载中...')
         if (type === 'img') {
           await downloadByUrl(file.url, file.name)
         } else {
           download(file.url, file.name)
         }
+        emit('download', file)
       }
-      emit('download', file)
     }
 
     // 移除
@@ -483,9 +496,10 @@ export default defineComponent({
     const handleDownloadImgZipFile = () => {
       const imgZipFile = state.imgZipFile || props.imgZipFile
       if (imgZipFile?.url) {
+        message.info('正在下载中...')
         download(imgZipFile.url)
+        emit('downloadImgZipFile', imgZipFile)
       }
-      emit('downloadImgZipFile', imgZipFile)
     }
 
     // 下载所有附件
@@ -495,13 +509,17 @@ export default defineComponent({
     const handleDownloadAttachmentZipFile = () => {
       const attachmentZipFile = state.attachmentZipFile || props.attachmentZipFile
       if (attachmentZipFile?.url) {
+        message.info('正在下载中...')
         download(attachmentZipFile.url)
+        emit('downloadAttachmentZipFile', attachmentZipFile)
       }
-      emit('downloadAttachmentZipFile', attachmentZipFile)
     }
 
     const handleOk = async () => {
-      const { customSubmit } = props
+      const { required, customSubmit } = props
+      if (required === true && state.imgList.length === 0) {
+        return message.warn('请上传图片')
+      }
       if (!isFunction(customSubmit)) return
       state.confirmLoading = true
       const fileList = unref(files).filter(val => val.status === 'done')
@@ -533,10 +551,10 @@ export default defineComponent({
 
     return {
       ...toRefs(state),
+      hasUploading,
       beforeUploadFn,
       handleCustomUpload,
       handleDrop,
-      hasUploading,
       getFileExpanded,
       showPreviewIcon,
       showRemoveIcon,
