@@ -48,7 +48,7 @@
                 v-for="(img, i) in imgList"
                 :key="img?.uid || i"
                 class="dots__list-item"
-                @click="handleGoTo(i, 'img')">
+                @click="handleGoTo(img, i, 'img')">
                 <img :src="img?.thumbUrl || img?.url" :alt="img?.fileName" />
               </div>
             </div>
@@ -74,7 +74,7 @@
                   v-for="(attachment, i) in attachmentList"
                   :key="attachment.uid || i"
                   class="dots__list-item"
-                  @click="handleGoTo(i, 'attachment')">
+                  @click="handleGoTo(attachment, i, 'attachment')">
                   <template v-if="attachment?.previewFile">
                     <img
                       :src="attachment.previewFile?.thumbUrl || attachment.previewFile?.url"
@@ -215,7 +215,7 @@ export default defineComponent({
     // 当前图片index
     const currentSlide = computed(() => elCarousel.value?.innerSlider?.currentSlide)
 
-    const handleGoTo = (index, type) => {
+    const handleGoTo = (file, index, type) => {
       if (type === 'attachment') {
         index = index + state.imgList.length
       }
