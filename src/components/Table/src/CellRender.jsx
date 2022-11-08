@@ -11,9 +11,6 @@ const CellRender = defineComponent({
     const { cellRender: { name, props: options } = {} } = column || {}
 
     const value = get(record, column?.dataIndex || column?.key)
-    const renderEmpty = () => {
-      return <>--</>
-    }
 
     // 缩略图
     const renderThumbnail = () => {
@@ -23,7 +20,11 @@ const CellRender = defineComponent({
         urls = get(record, previewField) || []
       }
 
-      return <XImage width={width} height={height} thumbnail={value} urls={urls} {...restProps} />
+      if (isEmpty(value) || isEmpty(urls)) {
+        return <>--</>
+      }
+
+      return <XImage mode='simple' width={width} height={height} thumbnail={value} urls={urls} {...restProps} />
     }
 
     // 相册
@@ -44,6 +45,10 @@ const CellRender = defineComponent({
 
       const handleCustomRequest = customRequest ? async () => await customRequest(record) : null
 
+      if (isEmpty(value) || isEmpty(previewList) || !customRequest) {
+        return <>--</>
+      }
+
       return (
         <XImage
           mode='complex'
@@ -63,6 +68,10 @@ const CellRender = defineComponent({
     const renderDate = () => {
       const date = formatDate(value)
 
+      if (isEmpty(value)) {
+        return <>--</>
+      }
+
       return <>{date}</>
     }
 
@@ -70,6 +79,10 @@ const CellRender = defineComponent({
     const renderTime = () => {
       const date = formatDate(value)
       const time = formatTime(value, 'HH:mm:ss')
+
+      if (isEmpty(value)) {
+        return <>--</>
+      }
 
       return (
         <>
@@ -81,9 +94,7 @@ const CellRender = defineComponent({
     }
 
     return () =>
-      isEmpty(value)
-        ? renderEmpty()
-        : name === 'thumbnail'
+      name === 'thumbnail'
         ? renderThumbnail()
         : name === 'photo'
         ? renderPhoto()
