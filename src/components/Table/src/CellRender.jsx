@@ -10,10 +10,9 @@ const CellRender = defineComponent({
     const { record, column } = attrs
     const { cellRender: { name, props: options } = {} } = column || {}
 
-    const value = get(record, column?.dataIndex || column?.key)
-
     // 缩略图
     const renderThumbnail = () => {
+      const value = get(record, column?.dataIndex || column?.key)
       const { previewField, width = 50, height = 50, ...restProps } = options || {}
       let urls = []
       if (previewField) {
@@ -29,6 +28,7 @@ const CellRender = defineComponent({
 
     // 相册
     const renderPhoto = () => {
+      const value = get(record, column?.dataIndex || column?.key)
       const {
         previewField,
         imgZipFile,
@@ -66,6 +66,7 @@ const CellRender = defineComponent({
 
     // 日期
     const renderDate = () => {
+      const value = get(record, column?.dataIndex || column?.key)
       const date = formatDate(value)
 
       if (isEmpty(value)) {
@@ -77,6 +78,7 @@ const CellRender = defineComponent({
 
     // 时间
     const renderTime = () => {
+      const value = get(record, column?.dataIndex || column?.key)
       const date = formatDate(value)
       const time = formatTime(value, 'HH:mm:ss')
 

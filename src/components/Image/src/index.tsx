@@ -174,7 +174,6 @@ const XImage = defineComponent({
             height={height}
             src={compressUrls.value[0]}
             preview={false}
-            // @ts-ignore
             onClick={() => handlePreview(0)}
             fallback={failUrl}
           />
@@ -195,7 +194,6 @@ const XImage = defineComponent({
                 height={height}
                 src={src}
                 preview={false}
-                // @ts-ignore
                 onClick={() => handlePreview(index)}
                 fallback={failUrl}
               />

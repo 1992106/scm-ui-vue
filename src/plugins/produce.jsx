@@ -17,3 +17,16 @@ export const produce = (Component, defaultProps, options) => {
 
   return instance
 }
+
+// import { createApp, h } from 'vue'
+// export const produce = (Component, defaultProps, options) => {
+//   const root = document.createElement('div')
+//   document.body.append(root)
+//   const instance = createApp({
+//     render() {
+//       return h(Component, { ...defaultProps, ...options })
+//     }
+//   })
+//   instance.mount(root)
+//   return instance
+// }
