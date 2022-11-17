@@ -107,7 +107,7 @@ const compressImage = (src, width, height, quality = 1) => {
     image.onerror = err => {
       reject(err)
     }
-    image.src = src
+    image.src = `${src}?time=${Date.now()}`
   })
 }
 
