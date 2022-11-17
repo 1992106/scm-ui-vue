@@ -29,12 +29,12 @@
   },
   "dependencies": {
     "@ant-design/icons-vue": "^6.1.0",
-    "ant-design-vue": "^3.2.13",
+    "ant-design-vue": "^3.2.15",
     "axios": "^0.27.2",
     "dayjs": "^1.11.6",
     "lodash-es": "^4.17.21",
     "nprogress": "^0.2.0",
-    "vue": "^3.2.41",
+    "vue": "^3.2.45",
     "vue-router": "^4.1.6",
     "vuedraggable": "^4.1.0",
     "vuex": "^4.1.0",
@@ -79,10 +79,10 @@
   },
   "peerDependencies": {
     "@ant-design/icons-vue": "^6.1.0",
-    "ant-design-vue": "^3.2.13",
+    "ant-design-vue": "^3.2.15",
     "dayjs": "^1.11.6",
     "lodash-es": "^4.17.21",
-    "vue": "^3.2.41",
+    "vue": "^3.2.45",
     "vuedraggable": "^4.1.6",
     "vxe-table": "4.2.8"
   },
