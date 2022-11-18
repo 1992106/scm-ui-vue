@@ -1,5 +1,5 @@
 import myFetch from '@utils/fetch'
-import { getPixelSize, hasQueryString, isEmpty } from '@utils/lang'
+import { getPixelSize, isBase64, isEmpty } from '@utils/lang'
 
 const { request } = myFetch
 
@@ -80,6 +80,9 @@ const exportFile = async (url, params = {}, method = 'get') => {
  */
 const compressImage = (src, width, height, quality = 1) => {
   return new Promise((resolve, reject) => {
+    if (isBase64(src)) {
+      return resolve(src)
+    }
     const image = new Image()
     width = getPixelSize(width)
     height = getPixelSize(height)
@@ -108,9 +111,9 @@ const compressImage = (src, width, height, quality = 1) => {
       reject(err)
     }
     // 判断是否有查询字符串，如果有则不拼接时间戳
-    if (!hasQueryString(src)) {
-      src = `${src}?time=${Date.now()}`
-    }
+    // if (src && !hasQueryString(src)) {
+    //   src = `${src}?time=${Date.now()}`
+    // }
     image.src = src
   })
 }
