@@ -29,7 +29,7 @@
           </div>
         </a-carousel>
         <div class="x-preview__dots">
-          <div class="images" :style="{ height: `${attachmentList.length ? 60 : 100}%` }">
+          <div class="images" :style="{ height: `${hasAttachment ? 60 : 100}%` }">
             <div class="head">
               <span class="title">
                 图片
@@ -53,35 +53,39 @@
               </div>
             </div>
           </div>
-          <template v-if="attachmentList.length">
+          <template v-if="hasAttachment">
             <a-divider />
             <div class="attachments">
               <div class="head">
-                <span class="title">
-                  其他附件
-                  <span>({{ attachmentList.length }})</span>
-                </span>
-                <a-button
-                  type="link"
-                  size="small"
-                  :disabled="downloadAttachmentZipFileDisabled"
-                  @click="handleDownloadAttachmentZipFile">
-                  下载所有附件
-                </a-button>
+                <slot name="attachmentTitle">
+                  <span class="title">
+                    其他附件
+                    <span>({{ attachmentList.length }})</span>
+                  </span>
+                  <a-button
+                    type="link"
+                    size="small"
+                    :disabled="downloadAttachmentZipFileDisabled"
+                    @click="handleDownloadAttachmentZipFile">
+                    下载所有附件
+                  </a-button>
+                </slot>
               </div>
               <div class="dots__list">
-                <div
-                  v-for="(attachment, i) in attachmentList"
-                  :key="attachment.uid || i"
-                  class="dots__list-item"
-                  @click="handleGoTo(attachment, i, 'attachment')">
-                  <template v-if="attachment?.previewFile">
-                    <img
-                      :src="attachment.previewFile?.thumbUrl || attachment.previewFile?.url"
-                      :alt="attachment.previewFile?.name" />
-                  </template>
-                  <div v-else class="expanded">{{ getFileExpanded(attachment) }}</div>
-                </div>
+                <slot name="attachmentContent">
+                  <div
+                    v-for="(attachment, i) in attachmentList"
+                    :key="attachment.uid || i"
+                    class="dots__list-item"
+                    @click="handleGoTo(attachment, i, 'attachment')">
+                    <template v-if="attachment?.previewFile">
+                      <img
+                        :src="attachment.previewFile?.thumbUrl || attachment.previewFile?.url"
+                        :alt="attachment.previewFile?.name" />
+                    </template>
+                    <div v-else class="expanded">{{ getFileExpanded(attachment) }}</div>
+                  </div>
+                </slot>
               </div>
             </div>
           </template>
@@ -143,7 +147,7 @@ export default defineComponent({
     customRequest: { type: Function }
   },
   emits: ['update:visible', 'download', 'downloadImgZipFile', 'downloadAttachmentZipFile'],
-  setup(props, { emit, expose }) {
+  setup(props, { emit, slots, expose }) {
     const elCarousel = ref(null)
     const state = reactive({
       spinning: false,
@@ -304,12 +308,18 @@ export default defineComponent({
       state.rotate = 0
     }
 
+    // 是否显示插槽
+    const hasAttachment = computed(
+      () => state.attachmentList.length > 0 || !!slots['attachmentTitle'] || !!slots['attachmentContent']
+    )
+
     expose({})
 
     return {
       elCarousel,
       ...toRefs(state),
       modalVisible,
+      hasAttachment,
       getFileExpanded,
       files,
       currentSlide,
@@ -368,18 +378,19 @@ export default defineComponent({
   .x-preview__carousel {
     flex: 1;
     position: relative;
-    padding-right: 200px;
+    padding-right: 240px;
     overflow: hidden;
     .x-preview__dots {
       position: absolute;
       top: 0;
       right: 0;
       bottom: 0;
-      width: 180px;
+      width: 220px;
       .head {
         display: flex;
         justify-content: space-between;
         align-items: center;
+        font-weight: bold;
       }
       .images {
         display: flex;
@@ -400,10 +411,11 @@ export default defineComponent({
         flex: 1;
         overflow-x: hidden;
         overflow-y: auto;
+        margin-top: 10px;
         &-item {
           width: 120px;
           height: 120px;
-          margin: 10px 0;
+          margin-bottom: 10px;
           position: relative;
           cursor: pointer;
           img {

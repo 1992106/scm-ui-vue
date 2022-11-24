@@ -57,7 +57,7 @@ export const formatFile = file => {
           name: file?.name || file?.fileName,
           type: file?.type || file?.mimeType,
           status: 'done',
-          thumbUrl: file?.url || file?.thumbUrl,
+          thumbUrl: file?.baseUrl || file?.thumbUrl,
           url: file?.url
         }
       : {})

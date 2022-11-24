@@ -7,9 +7,9 @@
     :width="width"
     :spin-props="spinning"
     :confirm-loading="confirmLoading"
-    destroy-on-close
-    :footer="mode === 'preview' ? null : undefined"
     :okButtonProps="{ disabled: hasUploading }"
+    :footer="mode === 'preview' ? null : undefined"
+    destroy-on-close
     @ok="handleOk"
     @cancel="handleCancel">
     <template v-if="mode === 'upload'">
@@ -148,7 +148,7 @@ import XModal from '@components/Modal'
 import XPreviewDialog from '@components/PreviewDialog'
 import draggable from 'vuedraggable'
 import { isFunction } from 'lodash-es'
-import { isEmpty, execRequest, downloadByUrl, download, getImageSize } from '@src/utils'
+import { isEmpty, execRequest, downloadByUrl, download, getImageInfo } from '@src/utils'
 import { formatFile, formatFiles, getFileExpanded, hasImage } from './utils'
 export default defineComponent({
   name: 'XUploadDialog',
@@ -327,7 +327,7 @@ export default defineComponent({
         file.type.startsWith('image/') &&
         (!isEmpty(props.minWidth) || !isEmpty(props.maxWidth) || !isEmpty(props.minHeight) || !isEmpty(props.maxHeight))
       ) {
-        const { width, height } = await getImageSize(file)
+        const { width, height } = await getImageInfo(file)
         // 最小宽度
         if (!isEmpty(props.minWidth)) {
           const isMinWidth = width >= props.minWidth
@@ -394,10 +394,11 @@ export default defineComponent({
       if (!isFunction(customUpload)) return
       const { file } = option
       const bool = hasImage(file)
+      const { src: base64 } = await getImageInfo(file)
       await execRequest(customUpload(file), {
         success: ({ data }) => {
           // 上传成功（status: 'done'），手动设置状态为 'done'
-          const uploadFile = formatFile(data)
+          const uploadFile = formatFile({ ...data, baseUrl: base64 })
           if (bool) {
             const index = state.imgList.findIndex(val => val?.uid === file?.uid)
             if (index !== -1) {
@@ -428,30 +429,36 @@ export default defineComponent({
       emit('drop', $event)
     }
 
-    const showPreviewIcon = computed(() => {
-      // 预览模式：显示预览图标
-      if (props.mode === 'preview') {
-        return true
+    // 是否展示 uploadList
+    const showUploadList = computed(() => {
+      // 预览模式：默认显示预览和下载图标，不显示移除图标
+      if (props.mode === 'preview' && props.showUploadList === true) {
+        return {
+          showPreviewIcon: true,
+          showDownloadIcon: true,
+          showRemoveIcon: false
+        }
       }
-      return props.showUploadList || props.showUploadList?.showPreviewIcon
+      return props.showUploadList
+    })
+
+    const showPreviewIcon = computed(() => {
+      if (typeof unref(showUploadList) === 'boolean') {
+        return unref(showUploadList)
+      }
+      return unref(showUploadList)?.showPreviewIcon
     })
     const showDownloadIcon = computed(() => {
-      // 预览模式：显示下载图标
-      if (props.mode === 'preview') {
-        return true
+      if (typeof unref(showUploadList) === 'boolean') {
+        return unref(showUploadList)
       }
-      // 默认不显示下载图标
-      if (props.showUploadList === true) {
-        return false
-      }
-      return props.showUploadList?.showDownloadIcon
+      return unref(showUploadList)?.showDownloadIcon
     })
     const showRemoveIcon = computed(() => {
-      // 预览模式：不显示移除图标
-      if (props.mode === 'preview') {
-        return false
+      if (typeof unref(showUploadList) === 'boolean') {
+        return unref(showUploadList)
       }
-      return props.showUploadList || props.showUploadList?.showRemoveIcon
+      return unref(showUploadList)?.showRemoveIcon
     })
 
     // 预览图片

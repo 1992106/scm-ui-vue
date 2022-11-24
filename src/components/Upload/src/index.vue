@@ -37,7 +37,7 @@ import { Button, Form, message, Upload } from 'ant-design-vue'
 import { PlusOutlined, UploadOutlined } from '@ant-design/icons-vue'
 import XPreview from '@components/Preview'
 import { isFunction } from 'lodash-es'
-import { isEmpty, downloadByUrl, execRequest, getImageSize } from '@src/utils'
+import { isEmpty, downloadByUrl, execRequest, getImageInfo } from '@src/utils'
 export default defineComponent({
   name: 'XUpload',
   components: {
@@ -124,7 +124,7 @@ export default defineComponent({
         file.type.startsWith('image/') &&
         (!isEmpty(props.minWidth) || !isEmpty(props.maxWidth) || !isEmpty(props.minHeight) || !isEmpty(props.maxHeight))
       ) {
-        const { width, height } = await getImageSize(file)
+        const { width, height } = await getImageInfo(file)
         // 最小宽度
         if (!isEmpty(props.minWidth)) {
           const isMinWidth = width >= props.minWidth
@@ -168,6 +168,7 @@ export default defineComponent({
       const { customRequest } = props
       if (!isFunction(customRequest)) return
       const { file } = option
+      const { src: base64 } = await getImageInfo(file)
       await execRequest(customRequest(file), {
         success: ({ data }) => {
           // 上传成功（status: 'done'）
@@ -178,7 +179,8 @@ export default defineComponent({
             name: data?.name || data?.fileName,
             type: data?.type || data?.mimeType,
             status: 'done',
-            thumbUrl: data?.url || data?.thumbUrl,
+            baseUrl: base64,
+            thumbUrl: data?.thumbUrl,
             url: data?.url
           }
           const index = state.files.findIndex(val => val?.uid === file?.uid)
@@ -202,6 +204,7 @@ export default defineComponent({
         }
       })
       // try {
+      //   const { src: base64 } = await getImageInfo(file)
       //   const { data } = await customRequest(file)
       //   // 上传成功（status: 'done'）
       //   // 没有触发option.onSuccess()，手动设置状态为 'done'
@@ -211,7 +214,7 @@ export default defineComponent({
       //     name: data?.name || data?.fileName,
       //     type: data?.type || data?.mimeType,
       //     status: 'done',
-      //     thumbUrl: data?.url || data?.thumbUrl,
+      //     thumbUrl: base64 || data?.thumbUrl,
       //     url: data?.url
       //   }
       //   const index = state.files.findIndex(val => val?.uid === file?.uid)
@@ -242,7 +245,7 @@ export default defineComponent({
                   name: val?.name || val?.fileName,
                   type: val?.type || val?.mimeType,
                   status: 'done',
-                  thumbUrl: val?.url || val?.thumbUrl,
+                  thumbUrl: val?.baseUrl || val?.thumbUrl,
                   url: val?.url
                 }
               : {})
@@ -274,8 +277,8 @@ export default defineComponent({
 
     // 是否展示 uploadList
     const showUploadList = computed(() => {
-      // 预览模式：只显示预览和下载图标，不显示移除图标
-      if (props.mode === 'preview') {
+      // 预览模式：默认显示预览和下载图标，不显示移除图标
+      if (props.mode === 'preview' && props.showUploadList === true) {
         return {
           showPreviewIcon: true,
           showDownloadIcon: true,

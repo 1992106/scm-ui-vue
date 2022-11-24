@@ -119,11 +119,11 @@ const compressImage = (src, width, height, quality = 1) => {
 }
 
 /**
- * 获取图片宽/高
+ * 获取图片信息
  * @param file
  * @returns {Promise<unknown>}
  */
-const getImageSize = file => {
+const getImageInfo = file => {
   return new Promise((resolve, reject) => {
     const reader = new FileReader()
     reader.onload = function (event) {
@@ -132,6 +132,7 @@ const getImageSize = file => {
       img.src = base64
       img.onload = function () {
         resolve({
+          src: base64,
           width: img.width,
           height: img.height
         })
@@ -144,4 +145,4 @@ const getImageSize = file => {
   })
 }
 
-export { download, downloadByBlob, downloadByUrl, exportFile, compressImage, getImageSize }
+export { download, downloadByBlob, downloadByUrl, exportFile, compressImage, getImageInfo }
