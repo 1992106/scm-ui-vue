@@ -19,7 +19,9 @@ const CellRender = defineComponent({
         urls = get(record, previewField) || []
       }
 
-      if (isEmpty(value) || isEmpty(urls)) {
+      // 如果缩略图和预览图都为空，则展示'--';
+      // 如果缩略图不为空，则是单图模式；如果缩略图为空，则是多图预览模式；
+      if (isEmpty(value) && isEmpty(urls)) {
         return <>--</>
       }
 
@@ -39,14 +41,16 @@ const CellRender = defineComponent({
         height = 50,
         ...restProps
       } = options || {}
-      let previewList = []
+
+      let previewList = [] // 预览图片
+      let onCustomRequest = null // 预览请求方法
       if (previewField) {
         previewList = get(record, previewField) || []
+      } else if (customRequest) {
+        onCustomRequest = async () => await customRequest(record)
       }
 
-      const handleCustomRequest = customRequest ? async () => await customRequest(record) : null
-
-      if (isEmpty(value) || isEmpty(previewList) || !customRequest) {
+      if (isEmpty(value) && (isEmpty(previewList) || !customRequest)) {
         return <>--</>
       }
 
@@ -59,7 +63,7 @@ const CellRender = defineComponent({
           previewList={previewList}
           imgZipFile={imgZipFile}
           attachmentZipFile={attachmentZipFile}
-          customRequest={handleCustomRequest}
+          customRequest={onCustomRequest}
           {...restProps}
         />
       )
