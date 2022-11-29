@@ -101,27 +101,21 @@ export default defineComponent({
         state.selectedKeys = val ? [val] : []
         emit('update:value', val)
       },
-      {
-        immediate: true
-      }
+      { immediate: true }
     )
     watch(
       () => props.openKeys,
       openKeys => {
         state.expandKeys = openKeys
       },
-      {
-        immediate: true
-      }
+      { immediate: true }
     )
     watch(
       () => props.list,
       list => {
         state.menus = list
       },
-      {
-        immediate: true
-      }
+      { immediate: true }
     )
 
     expose({})

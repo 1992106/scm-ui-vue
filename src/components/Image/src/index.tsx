@@ -89,16 +89,16 @@ const XImage = defineComponent({
     })
 
     watch(
-      thumbUrls,
-      () => {
-        if (thumbUrls.value.length) {
+      () => thumbUrls.value,
+      thumbUrls => {
+        if (thumbUrls.length) {
           // 默认显示失败图片（防止空白）
-          compressUrls.value = thumbUrls.value.map(() => failUrl)
+          compressUrls.value = thumbUrls.map(() => failUrl)
           // 压缩图片
           const { width, height, quality } = props
           // 图片质量为0，表示不压缩
           if (quality === 0) return
-          Promise.allSettled(thumbUrls.value.map(url => compressImage(url, width, height, quality)))
+          Promise.allSettled(thumbUrls.map(url => compressImage(url, width, height, quality)))
             .then(res => {
               // @ts-ignore
               compressUrls.value = res.map((v, i) => {

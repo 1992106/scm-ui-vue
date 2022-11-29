@@ -72,9 +72,7 @@ export default defineComponent({
         state.activeKey = val
         emit('update:value', val)
       },
-      {
-        immediate: true
-      }
+      { immediate: true }
     )
 
     watch(
@@ -82,9 +80,7 @@ export default defineComponent({
       list => {
         state.tabs = list
       },
-      {
-        immediate: true
-      }
+      { immediate: true }
     )
 
     expose({})
