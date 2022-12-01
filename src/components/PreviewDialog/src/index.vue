@@ -413,7 +413,7 @@ export default defineComponent({
         overflow-y: auto;
         margin-top: 10px;
         &-item {
-          width: 120px;
+          width: 100%;
           height: 120px;
           margin-bottom: 10px;
           position: relative;
