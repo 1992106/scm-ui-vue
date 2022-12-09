@@ -126,13 +126,13 @@ const compressImage = (src, width, height, quality = 1) => {
 const getImageInfo = file => {
   return new Promise((resolve, reject) => {
     const reader = new FileReader()
+    reader.readAsDataURL(file)
     reader.onload = function (event) {
       const base64 = event.target.result
       const img = document.createElement('img')
       img.src = base64
       img.onload = function () {
         resolve({
-          src: base64,
           width: img.width,
           height: img.height
         })
@@ -141,8 +141,17 @@ const getImageInfo = file => {
     reader.onerror = function (err) {
       reject(err)
     }
-    reader.readAsDataURL(file)
   })
 }
 
-export { download, downloadByBlob, downloadByUrl, exportFile, compressImage, getImageInfo }
+// 获取base64
+const getBase64 = file => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.readAsDataURL(file)
+    reader.onload = () => resolve(reader.result)
+    reader.onerror = error => reject(error)
+  })
+}
+
+export { download, downloadByBlob, downloadByUrl, exportFile, compressImage, getImageInfo, getBase64 }

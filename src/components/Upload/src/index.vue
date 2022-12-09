@@ -37,7 +37,7 @@ import { Button, Form, message, Upload } from 'ant-design-vue'
 import { PlusOutlined, UploadOutlined } from '@ant-design/icons-vue'
 import XPreview from '@components/Preview'
 import { isFunction } from 'lodash-es'
-import { isEmpty, downloadByUrl, execRequest, getImageInfo } from '@src/utils'
+import { isEmpty, downloadByUrl, execRequest, getImageInfo, getBase64 } from '@src/utils'
 export default defineComponent({
   name: 'XUpload',
   components: {
@@ -168,7 +168,7 @@ export default defineComponent({
       const { customRequest } = props
       if (!isFunction(customRequest)) return
       const { file } = option
-      const { src: base64 } = await getImageInfo(file)
+      const base64 = await getBase64(file)
       await execRequest(customRequest(file), {
         success: ({ data }) => {
           // 上传成功（status: 'done'）
@@ -204,7 +204,7 @@ export default defineComponent({
         }
       })
       // try {
-      //   const { src: base64 } = await getImageInfo(file)
+      //   const base64 = await getBase64(file)
       //   const { data } = await customRequest(file)
       //   // 上传成功（status: 'done'）
       //   // 没有触发option.onSuccess()，手动设置状态为 'done'

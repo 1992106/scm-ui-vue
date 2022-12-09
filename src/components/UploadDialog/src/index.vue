@@ -148,7 +148,7 @@ import XModal from '@components/Modal'
 import XPreviewDialog from '@components/PreviewDialog'
 import draggable from 'vuedraggable'
 import { isFunction } from 'lodash-es'
-import { isEmpty, execRequest, downloadByUrl, download, getImageInfo } from '@src/utils'
+import { isEmpty, execRequest, downloadByUrl, download, getImageInfo, getBase64 } from '@src/utils'
 import { formatFile, formatFiles, getFileExpanded, hasImage } from './utils'
 export default defineComponent({
   name: 'XUploadDialog',
@@ -394,7 +394,7 @@ export default defineComponent({
       if (!isFunction(customUpload)) return
       const { file } = option
       const bool = hasImage(file)
-      const { src: base64 } = await getImageInfo(file)
+      const base64 = await getBase64(file)
       await execRequest(customUpload(file), {
         success: ({ data }) => {
           // 上传成功（status: 'done'），手动设置状态为 'done'
