@@ -5,8 +5,11 @@ import setting from '@src/config'
 import { omit } from 'lodash-es'
 import { getAccessStorage } from '@utils/accessStorage'
 import { disposeParams, sleep } from './utils'
-import { cache } from './LRUCache'
-import { queue } from './requestQueue'
+import LRUCache from './LRUCache'
+import CancelBeforeRequest from './cancel/CancelBeforeRequest'
+
+const cache = new LRUCache(100)
+const queue = new CancelBeforeRequest()
 
 // 全局axios默认值
 axios.defaults.baseURL = setting.api_url
@@ -26,7 +29,7 @@ httpService.interceptors.request.use(
     const hasCancel = config?.options['$cancel']
     if (hasCancel) {
       // 在请求开始前，对之前的请求做检查取消操作
-      queue.removeQueue(config)
+      queue.removeQueue(config, 'req')
       // 将当前请求添加到中
       queue.addQueue(config)
     }
@@ -51,7 +54,7 @@ httpService.interceptors.request.use(
 httpService.interceptors.response.use(
   response => {
     // 在请求结束后，移除本次请求
-    queue.removeQueue(response.config)
+    queue.removeQueue(response.config, 'res')
     // 过滤文件流格式
     if (!response.headers['content-type'].includes('application/json')) {
       return response
@@ -86,7 +89,7 @@ httpService.interceptors.response.use(
   error => {
     const { response } = error
     // 在请求结束后，移除本次请求
-    queue.removeQueue(response?.config)
+    queue.removeQueue(response?.config, 'res')
     if (response) {
       const { data, status, config } = response
       const msg = data?.msg || (typeof data === 'string' ? data : '未知错误')

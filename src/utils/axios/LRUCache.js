@@ -13,11 +13,11 @@ class LRUCache {
   get(config) {
     const key = getHashByConfig(config)
     if (this.cache.has(key)) {
-      const tmp = this.cache.get(key)
+      const val = this.cache.get(key)
       // 将当前的缓存移动到最常用的位置
       this.cache.delete(key)
-      this.cache.set(key, tmp)
-      return tmp
+      this.cache.set(key, val)
+      return val
     }
   }
 
@@ -36,4 +36,3 @@ class LRUCache {
 }
 
 export default LRUCache
-export const cache = new LRUCache(100)
