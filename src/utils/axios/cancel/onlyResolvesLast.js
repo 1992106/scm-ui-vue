@@ -14,29 +14,44 @@ export function onlyResolvesLast(fn) {
     // 执行当前请求
     const result = fn.apply(this, args)
 
-    let resolve = null
-    let reject = null
+    // 创建指令式的 promise
+    const createImperativePromise = promiseArg => {
+      let resolve = null
+      let reject = null
 
-    const wrappedPromise = new Promise((_resolve, _reject) => {
-      resolve = _resolve
-      reject = _reject
-    })
+      const wrappedPromise = new Promise((_resolve, _reject) => {
+        resolve = _resolve
+        reject = _reject
+      })
 
-    Promise.resolve(result).then(
-      value => {
-        resolve && resolve(value)
-      },
-      error => {
-        reject && reject(error)
+      promiseArg &&
+        promiseArg.then(
+          value => {
+            resolve && resolve(value)
+          },
+          error => {
+            reject && reject(error)
+          }
+        )
+
+      return {
+        promise: wrappedPromise,
+        resolve: value => {
+          resolve && resolve(value)
+        },
+        reject: error => {
+          reject && reject(error)
+        },
+        cancel: () => {
+          resolve = null
+          reject = null
+        }
       }
-    )
-
-    cancelPrevious = () => {
-      resolve = null
-      reject = null
     }
+    const { promise, cancel } = createImperativePromise(result)
+    cancelPrevious = cancel
 
-    return wrappedPromise
+    return promise
   }
 
   return wrappedFn
