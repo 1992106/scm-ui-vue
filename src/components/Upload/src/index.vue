@@ -37,7 +37,8 @@ import { Button, Form, message, Upload } from 'ant-design-vue'
 import { PlusOutlined, UploadOutlined } from '@ant-design/icons-vue'
 import XPreview from '@components/Preview'
 import { isFunction } from 'lodash-es'
-import { isEmpty, downloadByUrl, execRequest, getImageInfo, getBase64 } from '@src/utils'
+import { isEmpty, downloadByUrl, execRequest, getBase64, download } from '@src/utils'
+import { formatFile, formatFiles, getBeforeUpload, hasImage } from './utils'
 export default defineComponent({
   name: 'XUpload',
   components: {
@@ -80,85 +81,10 @@ export default defineComponent({
 
     // 上传前校验
     const beforeUploadFn = async file => {
-      if (props.beforeUpload && isFunction(props.beforeUpload)) {
-        return props.beforeUpload(file)
+      if (!isEmpty(props.beforeUpload) && isFunction(props.beforeUpload)) {
+        return await props.beforeUpload(file)
       }
-      // 格式
-      if (!isEmpty(props.accept)) {
-        let isAccept = true
-        const accepts = props.accept.split(',')
-        const type = file.type?.split('/').pop()
-        const name = file.name?.split('.').pop()
-        if (file.type.startsWith('image/')) {
-          isAccept = accepts.some(accept => accept.includes(name) || accept.includes(type) || accept.includes('image/'))
-        }
-        if (file.type.startsWith('application/')) {
-          isAccept = accepts.some(
-            accept => accept.includes(name) || accept.includes(type) || accept.includes('application/')
-          )
-        }
-        if (file.type.startsWith('audio/')) {
-          isAccept = accepts.some(accept => accept.includes(name) || accept.includes(type) || accept.includes('audio/'))
-        }
-        if (file.type.startsWith('video/')) {
-          isAccept = accepts.some(accept => accept.includes(name) || accept.includes(type) || accept.includes('video/'))
-        }
-        if (file.type.startsWith('text/')) {
-          isAccept = accepts.some(accept => accept.includes(name) || accept.includes(type) || accept.includes('text/'))
-        }
-        if (!isAccept) {
-          message.error(`只能上传${props.accept}格式`)
-          return false
-        }
-      }
-      // 大小
-      if (!isEmpty(props.size)) {
-        let isLtM = file.size / 1024 / 1024 <= props.size
-        if (!isLtM) {
-          message.error(`不能大于${props.size}M`)
-          return false
-        }
-      }
-      // 图片宽高
-      if (
-        file.type.startsWith('image/') &&
-        (!isEmpty(props.minWidth) || !isEmpty(props.maxWidth) || !isEmpty(props.minHeight) || !isEmpty(props.maxHeight))
-      ) {
-        const { width, height } = await getImageInfo(file)
-        // 最小宽度
-        if (!isEmpty(props.minWidth)) {
-          const isMinWidth = width >= props.minWidth
-          if (!isMinWidth) {
-            message.error(`宽度不能小于${props.minWidth}`)
-            return false
-          }
-        }
-        // 最大宽度
-        if (!isEmpty(props.maxWidth)) {
-          const isMaxWidth = width <= props.maxWidth
-          if (!isMaxWidth) {
-            message.error(`宽度不能大于${props.maxWidth}`)
-            return false
-          }
-        }
-        // 最小高度
-        if (!isEmpty(props.minHeight)) {
-          const isMinHeight = width >= props.minHeight
-          if (!isMinHeight) {
-            message.error(`高度不能小于${props.minHeight}`)
-            return false
-          }
-        }
-        // 最大高度
-        if (!isEmpty(props.maxHeight)) {
-          const isMaxHeight = height <= props.maxHeight
-          if (!isMaxHeight) {
-            message.error(`高度不能大于${props.maxHeight}`)
-            return false
-          }
-        }
-      }
-      return true
+      return await getBeforeUpload(file, props)
     }
 
     // 自定义表单校验
@@ -173,16 +99,7 @@ export default defineComponent({
         success: ({ data }) => {
           // 上传成功（status: 'done'）
           // 没有触发option.onSuccess()，手动设置状态为 'done'
-          const uploadFile = {
-            ...data,
-            uid: data?.id || data?.key,
-            name: data?.name || data?.fileName,
-            type: data?.type || data?.mimeType,
-            status: 'done',
-            baseUrl: base64,
-            thumbUrl: data?.thumbUrl,
-            url: data?.url
-          }
+          const uploadFile = formatFile({ ...data, baseUrl: base64 })
           const index = state.files.findIndex(val => val?.uid === file?.uid)
           if (index !== -1) {
             state.files.splice(index, 1, uploadFile)
@@ -236,21 +153,7 @@ export default defineComponent({
     watch(
       () => props.fileList,
       fileList => {
-        state.files = (fileList || []).map(val => {
-          return {
-            ...val,
-            ...(val?.id || val?.key
-              ? {
-                  uid: val?.id || val?.key,
-                  name: val?.name || val?.fileName,
-                  type: val?.type || val?.mimeType,
-                  status: 'done',
-                  thumbUrl: val?.baseUrl || val?.thumbUrl,
-                  url: val?.url
-                }
-              : {})
-          }
-        })
+        state.files = formatFiles(fileList || [])
       },
       { immediate: true, deep: true }
     )
@@ -304,10 +207,16 @@ export default defineComponent({
     }
 
     // 下载
-    const handleDownload = file => {
-      message.info('正在下载中...')
-      downloadByUrl(file.url, file.name)
-      emit('download', file)
+    const handleDownload = async file => {
+      if (file?.url) {
+        message.info('正在下载中...')
+        if (hasImage(file)) {
+          await downloadByUrl(file.url, file.name)
+        } else {
+          download(file.url, file.name)
+        }
+        emit('download', file)
+      }
     }
 
     // 移除

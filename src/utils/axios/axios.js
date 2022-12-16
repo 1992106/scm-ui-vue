@@ -5,10 +5,8 @@ import setting from '@src/config'
 import { omit } from 'lodash-es'
 import { getAccessStorage } from '@utils/accessStorage'
 import { disposeParams, sleep } from './utils'
-import LRUCache from './LRUCache'
 import CancelBeforeRequest from './cancel/CancelBeforeRequest'
 
-const cache = new LRUCache(100)
 const queue = new CancelBeforeRequest()
 
 // 全局axios默认值
@@ -37,8 +35,8 @@ httpService.interceptors.request.use(
     const token = getAccessStorage(setting.token_name)
     if (apiUrl) config.baseURL = apiUrl
     if (token) config.headers[setting.authorization_name] = `${setting.token_prefix} ${token}`
-    // 排除自定义关配置，合并其它配置
-    const options = omit(config?.options, ['$msg', '$errorMsg', '$cache', '$retry', '$retryDelay'])
+    // 排除自定义配置，合并其它配置
+    const options = omit(config?.options, ['$msg', '$errorMsg', '$cache', '$cacheDelay', '$retry', '$retryDelay'])
     Object.assign(config, options)
     // 处理请求参数
     disposeParams(config)
@@ -62,12 +60,6 @@ httpService.interceptors.response.use(
     const { data, config } = response
     const code = data?.code || data?.status
     if (code === 200) {
-      // 是否支持缓存
-      const hasCache = config?.options['$cache']
-      // 设置缓存
-      if (hasCache) {
-        cache.set(config, response)
-      }
       // 是否有自定义$msg
       const hasMsg = config?.options['$msg'] !== 'none'
       const msg = config?.options['$msg'] || data?.message || data?.msg
@@ -102,15 +94,15 @@ httpService.interceptors.response.use(
         message.warning('登录失效，请重新登录！')
       } else {
         // 是否支持重试
-        const hasRetry = config?.options['$retry'] || config['$retryDelay']
+        const hasRetry = config?.options['$retry'] || config.options['$retryDelay']
         if (hasRetry) {
-          const { $retry: retry = 3, $retryDelay: retryDelay = 1000 } = config?.options || {}
+          const { $retry: retry = 3, $retryDelay: delay = 1000 } = config?.options || {}
           config.__retryCount = config.__retryCount || 0
           if (config.__retryCount >= retry) {
             return Promise.reject()
           }
           config.__retryCount += 1
-          return sleep(retryDelay).then(() => {
+          return sleep(delay).then(() => {
             return httpService(config)
           })
         }

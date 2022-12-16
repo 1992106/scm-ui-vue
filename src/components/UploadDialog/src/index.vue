@@ -148,8 +148,8 @@ import XModal from '@components/Modal'
 import XPreviewDialog from '@components/PreviewDialog'
 import draggable from 'vuedraggable'
 import { isFunction } from 'lodash-es'
-import { isEmpty, execRequest, downloadByUrl, download, getImageInfo, getBase64 } from '@src/utils'
-import { formatFile, formatFiles, getFileExpanded, hasImage } from './utils'
+import { isEmpty, execRequest, downloadByUrl, download, getBase64 } from '@src/utils'
+import { formatFile, formatFiles, getBeforeUpload, getFileExpanded, hasImage } from '@components/Upload/src/utils'
 export default defineComponent({
   name: 'XUploadDialog',
   components: {
@@ -275,95 +275,15 @@ export default defineComponent({
 
     // 上传前校验
     const beforeUploadFn = async file => {
-      if (props.beforeUpload && isFunction(props.beforeUpload)) {
-        return props.beforeUpload(file)
+      if (!isEmpty(props.beforeUpload) && isFunction(props.beforeUpload)) {
+        return await props.beforeUpload(file)
       }
-      // 限制数量
-      if (!isEmpty(props.maxCount)) {
-        let isCount = unref(files).length < props.maxCount
-        if (!isCount) {
-          message.error(`最多只能上传${props.maxCount}个`)
-          return false
-        }
+      const bool = await getBeforeUpload(file, props)
+      if (bool) {
+        // 把通过校验的文件手动添加到文件列表中
+        handleUploading(file)
       }
-      // 格式
-      if (!isEmpty(props.accept)) {
-        let isAccept = true
-        const accepts = props.accept.split(',')
-        const type = file.type?.split('/').pop()
-        const name = file.name?.split('.').pop()
-        if (file.type.startsWith('image/')) {
-          isAccept = accepts.some(accept => accept.includes(name) || accept.includes(type) || accept.includes('image/'))
-        }
-        if (file.type.startsWith('application/')) {
-          isAccept = accepts.some(
-            accept => accept.includes(name) || accept.includes(type) || accept.includes('application/')
-          )
-        }
-        if (file.type.startsWith('audio/')) {
-          isAccept = accepts.some(accept => accept.includes(name) || accept.includes(type) || accept.includes('audio/'))
-        }
-        if (file.type.startsWith('video/')) {
-          isAccept = accepts.some(accept => accept.includes(name) || accept.includes(type) || accept.includes('video/'))
-        }
-        if (file.type.startsWith('text/')) {
-          isAccept = accepts.some(accept => accept.includes(name) || accept.includes(type) || accept.includes('text/'))
-        }
-        if (!isAccept) {
-          message.error(`只能上传${props.accept}格式`)
-          return false
-        }
-      }
-      // 大小
-      if (!isEmpty(props.size)) {
-        let isLtM = file.size / 1024 / 1024 <= props.size
-        if (!isLtM) {
-          message.error(`不能大于${props.size}M`)
-          return false
-        }
-      }
-      // 图片宽高
-      if (
-        file.type.startsWith('image/') &&
-        (!isEmpty(props.minWidth) || !isEmpty(props.maxWidth) || !isEmpty(props.minHeight) || !isEmpty(props.maxHeight))
-      ) {
-        const { width, height } = await getImageInfo(file)
-        // 最小宽度
-        if (!isEmpty(props.minWidth)) {
-          const isMinWidth = width >= props.minWidth
-          if (!isMinWidth) {
-            message.error(`宽度不能小于${props.minWidth}`)
-            return false
-          }
-        }
-        // 最大宽度
-        if (!isEmpty(props.maxWidth)) {
-          const isMaxWidth = width <= props.maxWidth
-          if (!isMaxWidth) {
-            message.error(`宽度不能大于${props.maxWidth}`)
-            return false
-          }
-        }
-        // 最小高度
-        if (!isEmpty(props.minHeight)) {
-          const isMinHeight = width >= props.minHeight
-          if (!isMinHeight) {
-            message.error(`高度不能小于${props.minHeight}`)
-            return false
-          }
-        }
-        // 最大高度
-        if (!isEmpty(props.maxHeight)) {
-          const isMaxHeight = height <= props.maxHeight
-          if (!isMaxHeight) {
-            message.error(`高度不能大于${props.maxHeight}`)
-            return false
-          }
-        }
-      }
-      // 把通过校验的文件添加到文件列表中
-      handleUploading(file)
-      return true
+      return bool
     }
 
     // 由于没有使用v-model:file-list，需要手动更新文件列表，且状态为uploading

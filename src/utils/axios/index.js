@@ -1,6 +1,7 @@
 import httpService from './axios'
-import { cache } from '@utils/axios/LRUCache'
+import LRUCache from '@utils/axios/LRUCache'
 
+const cache = new LRUCache(100)
 /**
  * request请求
  * @param url
@@ -18,11 +19,11 @@ export function request(url, params = {}, method = 'post', options = {}) {
     options
   }
   // 获取缓存
-  const result = cache.get(config)
-  if (result) {
-    return Promise.reject(result)
+  let instance = cache.get(config)
+  if (instance) {
+    return instance
   }
-  return new Promise((resolve, reject) => {
+  instance = new Promise((resolve, reject) => {
     httpService(config)
       .then((res = {}) => {
         resolve(res)
@@ -31,6 +32,13 @@ export function request(url, params = {}, method = 'post', options = {}) {
         reject(err)
       })
   })
+  // 是否支持缓存
+  const { $cache: hasCache, $cacheDelay: delay = 200 } = config?.options || {}
+  if (hasCache) {
+    // 设置缓存
+    cache.set(config, instance, delay)
+  }
+  return instance
 }
 
 /**

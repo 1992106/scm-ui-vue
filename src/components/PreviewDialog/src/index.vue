@@ -119,7 +119,7 @@ import {
 } from '@ant-design/icons-vue'
 import XModal from '@src/components/Modal'
 import { isFunction } from 'lodash-es'
-import { formatFiles, getFileExpanded, hasImage } from '@components/UploadDialog/src/utils'
+import { formatFiles, getFileExpanded, hasImage } from '@components/Upload/src/utils'
 import { download, downloadByUrl, execRequest, isEmpty } from '@src/utils'
 export default defineComponent({
   name: 'XPreviewDialog',
