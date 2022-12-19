@@ -38,6 +38,11 @@ class LRUCache {
       }, delay)
     }
   }
+
+  // 删除缓存
+  delete(key) {
+    this.cache.delete(key)
+  }
 }
 
 export default LRUCache

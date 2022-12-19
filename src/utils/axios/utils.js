@@ -28,7 +28,7 @@ const sortParams = params => {
 }
 
 // 根据method,url,data/params生成唯一key
-export const getHashByConfig = config => {
+export const generateKey = config => {
   const target = {
     method: config.method,
     url: config.url,
@@ -36,6 +36,16 @@ export const getHashByConfig = config => {
     ...(config.method === 'post' ? { data: sortParams(config.data) } : {})
   }
   return md5(qs.stringify(target))
+}
+
+export const generateKey2 = config => {
+  const target = {
+    method: config.method,
+    url: config.url,
+    ...(config.method === 'get' ? { params: sortParams(config.params) } : {}),
+    ...(config.method === 'post' ? { data: sortParams(config.data) } : {})
+  }
+  return JSON.stringify(target)
 }
 
 export const sleep = delay => new Promise(resolve => setTimeout(resolve, delay))

@@ -58,7 +58,7 @@ export function onlyResolvesLast(fn) {
 }
 
 // 使用唯一 id 标识每次请求
-export function onlyResolvesLast(fn) {
+export function onlyResolvesLastById(fn) {
   // 利用闭包保存最新的请求 id
   let id = 0
 

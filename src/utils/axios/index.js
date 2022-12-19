@@ -1,6 +1,6 @@
 import httpService from './axios'
 import LRUCache from '@utils/axios/LRUCache'
-import { getHashByConfig } from '@utils/axios/utils'
+import { generateKey } from '@utils/axios/utils'
 
 const cache = new LRUCache(100)
 /**
@@ -19,7 +19,7 @@ export function request(url, params = {}, method = 'post', options = {}) {
     ...(method === 'get' ? { params: params } : {}),
     options
   }
-  const key = getHashByConfig(config)
+  const key = generateKey(config)
   // 获取缓存
   let instance = cache.get(key)
   if (instance) {
@@ -31,6 +31,8 @@ export function request(url, params = {}, method = 'post', options = {}) {
         resolve(res)
       })
       .catch(err => {
+        // 接口请求失败，删除缓存
+        cache.delete(key)
         reject(err)
       })
   })
