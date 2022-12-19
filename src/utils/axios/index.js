@@ -1,5 +1,6 @@
 import httpService from './axios'
 import LRUCache from '@utils/axios/LRUCache'
+import { getHashByConfig } from '@utils/axios/utils'
 
 const cache = new LRUCache(100)
 /**
@@ -18,8 +19,9 @@ export function request(url, params = {}, method = 'post', options = {}) {
     ...(method === 'get' ? { params: params } : {}),
     options
   }
+  const key = getHashByConfig(config)
   // 获取缓存
-  let instance = cache.get(config)
+  let instance = cache.get(key)
   if (instance) {
     return instance
   }
@@ -36,7 +38,7 @@ export function request(url, params = {}, method = 'post', options = {}) {
   const { $cache: hasCache, $cacheDelay: delay = 200 } = config?.options || {}
   if (hasCache) {
     // 设置缓存
-    cache.set(config, instance, delay)
+    cache.set(key, instance, delay)
   }
   return instance
 }

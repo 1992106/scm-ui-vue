@@ -29,7 +29,7 @@ class AfterRequestCancel {
     if (this.queue.has(uniqueKey)) {
       c ? c(uniqueKey) : this.queue.delete(uniqueKey)
     } else {
-      c && this.queue.set(uniqueKey)
+      c && this.queue.add(uniqueKey)
     }
   }
 }
