@@ -315,7 +315,7 @@ export const deepTrim = object => {
  * @return {Object} 返回赋值后的target
  */
 export function polyfill(target, source) {
-  const obj = {}
+  const obj = Array.isArray(target) ? [] : {}
   Object.keys(target).forEach(key => {
     if (getType(target[key]) === 'object') {
       obj[key] = isEmpty(source[key]) ? target[key] : polyfill(target[key], source[key])
