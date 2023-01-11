@@ -53,7 +53,7 @@
               :showPagination="showPagination"
               :total="total"
               :paginationConfig="paginationConfig"
-              @change="handleQuery" />
+              @change="handlePagination" />
           </div>
           <div v-else class="empty">
             <a-empty :image="simpleImage" :description="emptyText" />
@@ -73,7 +73,7 @@ import XPagination from '@components/Pagination'
 import { getValueByRowKey } from '@components/Table/src/utils'
 import { useAppHeight } from '@components/hooks/useSearch'
 import { useFullscreen } from '@components/hooks/useFullscreen'
-import { useScrollTop } from './useScrollTop'
+import { useScrollBehavior } from './useScrollBehavior'
 import { isEmpty } from '@src/utils'
 export default defineComponent({
   name: 'XPage',
@@ -119,16 +119,16 @@ export default defineComponent({
       scrollTop: 0
     })
 
+    // 加载
+    const spinProps = computed(() => {
+      return typeof props.loading === 'object' ? props.loading : { spinning: props.loading }
+    })
+
     // 页码赋值
     watchEffect(() => {
       if (!isEmpty(props.pagination)) {
         state.pages = props.pagination
       }
-    })
-
-    // 加载
-    const spinProps = computed(() => {
-      return typeof props.loading === 'object' ? props.loading : { spinning: props.loading }
     })
 
     // TODO：监听页码，当页码为1时，重置页码（父组件手动重置页码：如快捷搜索）
@@ -140,14 +140,6 @@ export default defineComponent({
         }
       }
     )
-
-    // 分页器-搜索
-    const handleQuery = () => {
-      emit('update:pagination', state.pages)
-      // 分页搜索
-      emit('update:value', { ...state.searchParams, ...state.pages })
-      emit('search', { ...state.searchParams, ...state.pages })
-    }
 
     // 搜索栏-搜索【重置页码】
     const handleSearch = params => {
@@ -183,6 +175,14 @@ export default defineComponent({
       emit('clear', { ...params, ...(props.showPagination ? state.pages : {}) })
     }
 
+    // 分页器-搜索
+    const handlePagination = () => {
+      emit('update:pagination', state.pages)
+      // 分页搜索
+      emit('update:value', { ...state.searchParams, ...state.pages })
+      emit('search', { ...state.searchParams, ...state.pages })
+    }
+
     // 是否显示插槽
     const hasSearchBar = computed(() => !isEmpty(props['searchProps']))
     const hasTop = computed(() => !!slots['top'])
@@ -198,7 +198,7 @@ export default defineComponent({
     const { canFullscreen, toggleFullscreen } = useFullscreen(xPage, { fullscreen: props.customZoom })
 
     // 滚动行为
-    const { handleScroll, onScrollTop } = useScrollTop(xPage, { data: toRef(props, 'dataSource') })
+    const { handleScroll, onScrollTop } = useScrollBehavior(xPage, { data: toRef(props, 'dataSource') })
 
     // 初始化调用一下，获取搜索参数
     const onInit = () => {
@@ -229,10 +229,10 @@ export default defineComponent({
       hasHeader,
       hasFooter,
       spinProps,
-      handleQuery,
       handleSearch,
       handleReset,
       handleClear,
+      handlePagination,
       handleScroll,
       canFullscreen,
       toggleFullscreen,
@@ -299,7 +299,7 @@ export default defineComponent({
         overflow-x: hidden;
       }
 
-      .ant-pagination {
+      .x-pagination {
         padding: 10px;
       }
     }

@@ -1,7 +1,7 @@
 import { nextTick, onActivated, ref, watch } from 'vue'
 import { unrefElement } from '@hooks/utils'
 
-export const useScrollTop = (xPage, { data }) => {
+export const useScrollBehavior = (xPage, { data }) => {
   const scrollTop = ref(null)
 
   // 滚动事件

@@ -91,9 +91,9 @@ import { CopyOutlined, FullscreenExitOutlined, FullscreenOutlined } from '@ant-d
 import { Button, message, Space, Spin, Table } from 'ant-design-vue'
 import ColumnSetting from './ColumnSetting.vue'
 import CellRender from './CellRender'
-import { useScroll } from './useScroll'
-import { useScrollTop } from './useScrollTop'
 import { useFullscreen } from '@components/hooks/useFullscreen'
+import { useScroll } from './useScroll'
+import { useScrollBehavior } from './useScrollBehavior'
 import {
   columnsToStorage,
   getSortDirection,
@@ -157,10 +157,10 @@ export default defineComponent({
     childrenColumnName: { type: Array, default: () => ['children'] },
     // 展示树形数据时，每层缩进的宽度，以 px 为单位
     indentSize: { type: Number, default: 15 },
-    // 表格大小 default | middle | small
+    // 表格大小 large | middle | small
     size: {
       validator(value) {
-        return ['default', 'middle', 'small'].includes(value)
+        return ['large', 'middle', 'small'].includes(value)
       },
       default: 'middle'
     },
@@ -442,7 +442,7 @@ export default defineComponent({
     })
 
     // 滚动行为
-    const { onScrollTop } = useScrollTop(xTable)
+    const { onScrollTop } = useScrollBehavior(xTable)
 
     expose({
       xTable,

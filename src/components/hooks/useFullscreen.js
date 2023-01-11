@@ -1,7 +1,7 @@
 import { ref } from 'vue'
 import { useEventListener } from '@hooks/useEventListener'
 
-export function useFullscreen(target, { fullscreen }, callback) {
+export function useFullscreen(target, { fullscreen }, callback = () => {}) {
   const canFullscreen = ref(false)
 
   // 全屏切换

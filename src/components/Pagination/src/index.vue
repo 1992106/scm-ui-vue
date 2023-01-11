@@ -2,6 +2,7 @@
   <a-pagination
     v-if="showPagination"
     v-bind="getPaginationConfig"
+    class="x-pagination"
     :current="pages.page"
     :page-size="pages.pageSize"
     :total="total"

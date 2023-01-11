@@ -41,7 +41,13 @@ export default defineComponent({
     value: [String, Number],
     list: { type: Array, default: () => [] }, // { label: '', value: '', count: '' }
     type: { type: String, default: 'line' },
-    size: { type: String, default: 'small' }
+    // 标签页大小 large | middle | small
+    size: {
+      validator(value) {
+        return ['large', 'middle', 'small'].includes(value)
+      },
+      default: 'small'
+    }
   },
   emits: ['update:value', 'change', 'edit'],
   setup(props, { emit, expose }) {

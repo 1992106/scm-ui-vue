@@ -2,7 +2,7 @@ import { onActivated, onMounted, ref } from 'vue'
 import { useEventListener } from '@hooks/useEventListener'
 import { unrefElement } from '@hooks/utils'
 
-export const useScrollTop = xTable => {
+export const useScrollBehavior = xTable => {
   const scrollTop = ref(null)
 
   // 监听滚动事件
