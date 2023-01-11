@@ -1,8 +1,9 @@
-# XPage 页面
+# XList 页面
 
 ## API
 
 > [Form](https://www.antdv.com/components/form-cn)
+> [List](https://www.antdv.com/components/list-cn)
 
 ### Props
 
@@ -14,9 +15,7 @@
 | dataSource | 表格数据 | Array | `[]` |
 | loading | `ASpin` 加载中 `props` | [Boolean, Object] | `false` |
 | emptyText | 空数据显示的内容 | String | `暂无数据` |
-| rowProps | `ARow props` | Object | `-` |
-| colProps | `ACol props` | Object | `-` |
-| autoResize | 自动计算高度 | Boolean | `true` |
+| grid | `列表栅格配置` | Object | `-` |
 | showPagination | 是否显示分页 | Boolean | `true` |
 | total | 数据总数 | Number | `0` |
 | v-model:pagination | 当前页数和每页条数 | Object | `{ page: 1, pageSize: 20 }` |
@@ -59,6 +58,12 @@ emits: ['update:value', 'update:pagination', 'search', 'reset', 'clear']
 <slot></slot>
 <slot name="header"></slot>
 <slot name="footer"></slot>
+<slot name="loadMore"></slot>
+<slot name="avatar"></slot>
+<slot name="title"></slot>
+<slot name="description"></slot>
+<slot name="actions"></slot>
+<slot name="extra"></slot>
 <slot name="itemRender"></slot>
 ```
 
