@@ -94,7 +94,7 @@ export default defineComponent({
       const { customRequest } = props
       if (!isFunction(customRequest)) return
       const { file } = option
-      const base64 = await getBase64(file)
+      const base64 = await getBase64(file).catch(err => console.error(err))
       await execRequest(customRequest(file), {
         success: ({ data }) => {
           // 上传成功（status: 'done'）

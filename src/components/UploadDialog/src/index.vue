@@ -314,7 +314,7 @@ export default defineComponent({
       if (!isFunction(customUpload)) return
       const { file } = option
       const bool = hasImage(file)
-      const base64 = await getBase64(file)
+      const base64 = await getBase64(file).catch(err => console.error(err))
       await execRequest(customUpload(file), {
         success: ({ data }) => {
           // 上传成功（status: 'done'），手动设置状态为 'done'
