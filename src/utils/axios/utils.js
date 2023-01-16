@@ -16,7 +16,7 @@ export const disposeParams = config => {
 // 将请求参数排序，防止相同参数生成的hash不同
 const sortParams = params => {
   if (typeof params === 'string') {
-    params = JSON.parse(params)
+    params = params ? JSON.parse(params) : {}
   }
   const result = {}
   Object.keys(params)
@@ -39,6 +39,11 @@ export const generateKey = config => {
 }
 
 export const generateKey2 = config => {
+  const { method, url, params, data } = config
+  return [method, url, qs.stringify(sortParams(params)), qs.stringify(sortParams(data))].join('&')
+}
+
+export const generateKey3 = config => {
   const target = {
     method: config.method,
     url: config.url,

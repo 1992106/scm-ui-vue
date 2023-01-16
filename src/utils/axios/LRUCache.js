@@ -20,16 +20,19 @@ class LRUCache {
   }
 
   // 设置缓存
-  set(key, value, delay = 200) {
+  set(key, value, delay = 0) {
+    // 如果缓存存在，则更新缓存位置
     if (this.cache.has(key)) {
-      // 如果缓存存在，则更新缓存位置
       this.cache.delete(key)
-    } else if (this.cache.size >= this.capacity) {
-      // 如果缓存容量已满，删除最近最少使用的缓存
-      const lastKey = Array.from(this.cache.keys()).slice(-1)[0]
-      this.cache.delete(lastKey)
     }
     this.cache.set(key, value)
+
+    // 如果缓存容量已满，删除最久远的缓存数据
+    if (this.cache.size >= this.capacity) {
+      // 获取最久一条数据的key
+      const lastKey = this.cache.keys().next().value
+      this.cache.delete(lastKey)
+    }
     // 如果delay===0，表示永久缓慢；
     // 如果delay > 0，表明临时缓存；延迟后立即删除缓存
     if (delay > 0) {
