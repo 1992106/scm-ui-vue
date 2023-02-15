@@ -4,6 +4,7 @@
       <a-button @click="handlePreview">预览图片</a-button>
       <a-button @click="handleUploadDialog">上传弹窗</a-button>
       <a-button @click="handlePreviewDialog">预览弹窗</a-button>
+      <a-button @click="handleDownload">下载图片</a-button>
     </a-space>
     <XPreview
       v-model:visible="previewState.visible"
@@ -20,6 +21,7 @@ import { defineComponent, onActivated, onMounted, onUnmounted, reactive } from '
 import XPreview from '@components/Preview'
 import XUploadDialog from '@components/UploadDialog'
 import XPreviewDialog from '@components/PreviewDialog'
+import { downloadByUrl } from '@src/utils'
 export default defineComponent({
   name: 'Dashboard',
   components: { XPreview, XUploadDialog, XPreviewDialog },
@@ -69,6 +71,14 @@ export default defineComponent({
       previewDialogState.visible = true
     }
 
+    // 下载图片
+    const handleDownload = () => {
+      downloadByUrl(
+        'https://patpatwebstatic.s3.us-west-2.amazonaws.com/origin/product/plm/20221206/4177da2213ae4b56aeb2fa5cd1b6a695.jpg',
+        '123.jpg'
+      )
+    }
+
     onMounted(() => {
       console.log('onMounted', 'Dashboard组件')
     })
@@ -84,7 +94,8 @@ export default defineComponent({
       uploadDialogState,
       handleUploadDialog,
       previewDialogState,
-      handlePreviewDialog
+      handlePreviewDialog,
+      handleDownload
     }
   }
 })

@@ -39,11 +39,6 @@ export const generateKey = config => {
 }
 
 export const generateKey2 = config => {
-  const { method, url, params, data } = config
-  return [method, url, qs.stringify(sortParams(params)), qs.stringify(sortParams(data))].join('&')
-}
-
-export const generateKey3 = config => {
   const target = {
     method: config.method,
     url: config.url,
@@ -51,6 +46,16 @@ export const generateKey3 = config => {
     ...(config.method === 'post' ? { data: sortParams(config.data) } : {})
   }
   return JSON.stringify(target)
+}
+
+export const generateKey3 = config => {
+  const { method, url, params, data } = config
+  return [method, url, qs.stringify(sortParams(params)), qs.stringify(sortParams(data))].join('&')
+}
+
+export const generateKey4 = config => {
+  const { method, url, params, data } = config
+  return [method, url, JSON.stringify(sortParams(params)), JSON.stringify(sortParams(data))].join(',')
 }
 
 export const sleep = delay => new Promise(resolve => setTimeout(resolve, delay))

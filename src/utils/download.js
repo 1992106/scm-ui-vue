@@ -25,10 +25,10 @@ const download = (url, fileName) => {
  * 下载图片/文件-文件流
  * @param content
  * @param fileName
- * @param type
+ * @param mime
  */
-const downloadByBlob = (content, fileName, type) => {
-  const blob = new Blob([content], { type: type })
+const downloadByBlob = (content, fileName, mime) => {
+  const blob = new Blob([content], { type: mime })
   // 生成ObjectURL
   const src = URL.createObjectURL(blob)
   // 下载
@@ -44,7 +44,7 @@ const downloadByBlob = (content, fileName, type) => {
  * @returns {Promise<void>}
  */
 const downloadByUrl = async (url, fileName) => {
-  const res = await fetch(url, {
+  const data = await fetch(url, {
     method: 'GET',
     responseType: 'blob',
     mode: 'cors',
@@ -52,7 +52,7 @@ const downloadByUrl = async (url, fileName) => {
   }).then(res => {
     return res.blob()
   })
-  downloadByBlob(res, fileName, res.type)
+  downloadByBlob(data, fileName, data.type)
 }
 
 /**

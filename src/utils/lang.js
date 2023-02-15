@@ -382,8 +382,9 @@ export const dateToDayjs = (value, valueFormat = 'YYYY-MM-DD') => {
 
 // 触发resize事件
 export const triggerResize = () => {
-  const event = document.createEvent('HTMLEvents')
-  event.initEvent('resize', true, true)
+  // const event = document.createEvent('HTMLEvents')
+  // event.initEvent('resize', true, true)
+  const event = new Event('resize')
   window.dispatchEvent(event)
 }
 
