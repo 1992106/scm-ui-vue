@@ -1,14 +1,6 @@
 import dayjs from 'dayjs'
-import { isObject, transform } from 'lodash-es'
-
-/**
- * 获取对象tag
- * @param value
- * @returns {string}
- */
-export const getTag = value => {
-  return Object.prototype.toString.call(value)
-}
+import { transform } from 'lodash-es'
+import { isEmpty, isObject } from '@utils/is'
 
 /**
  * 获取对象类型
@@ -16,37 +8,7 @@ export const getTag = value => {
  * @returns {string}
  */
 export const getType = value => {
-  return getTag(value).slice(8, -1).toLowerCase()
-}
-
-/**
- * 是否为空
- * @param value
- * @returns {boolean}
- */
-export const isEmpty = value => {
-  if (value == null) {
-    return true
-  }
-  if (Array.isArray(value) || typeof value === 'string' || value instanceof String) {
-    return value.length === 0
-  }
-  if (value instanceof Map || value instanceof Set) {
-    return value.size === 0
-  }
-  if (getTag(value) === '[object Object]') {
-    return Object.keys(value).length === 0
-  }
-  return false
-}
-
-/**
- * 是否是promise
- * @param obj
- * @returns {boolean}
- */
-export const isPromise = obj => {
-  return !!obj && (typeof obj === 'object' || typeof obj === 'function') && typeof obj.then === 'function'
+  return Object.prototype.toString.call(value).slice(8, -1).toLowerCase()
 }
 
 /**
@@ -62,35 +24,6 @@ export const toFixed = (value, length = 2) => {
     throw new Error('value不是数字')
   }
   return Math.round(Math.pow(10, length) * value) / Math.pow(10, length)
-}
-
-/**
- * 是否是base64 url
- * @param url
- * @returns {boolean}
- */
-export const isBase64 = url => {
-  if (url) {
-    return url.startsWith('data:image/')
-  }
-  return false
-}
-
-/**
- * 判断是否有查询字符串
- * @param url
- * @returns {boolean}
- */
-export const hasQueryString = url => {
-  if (url) {
-    // 过滤base64 url
-    if (isBase64(url)) {
-      return true
-    }
-    const searchParams = new URL(url)?.searchParams
-    return !!searchParams.toString()
-  }
-  return false
 }
 
 /**

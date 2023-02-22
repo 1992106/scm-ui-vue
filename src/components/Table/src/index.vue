@@ -86,7 +86,7 @@
   </div>
 </template>
 <script>
-import { defineComponent, computed, mergeProps, ref, reactive, toRefs, unref, nextTick } from 'vue'
+import { defineComponent, computed, mergeProps, ref, reactive, toRefs, unref, nextTick, toRef } from 'vue'
 import { CopyOutlined, FullscreenExitOutlined, FullscreenOutlined } from '@ant-design/icons-vue'
 import { Button, message, Space, Spin, Table } from 'ant-design-vue'
 import ColumnSetting from './ColumnSetting.vue'
@@ -297,7 +297,11 @@ export default defineComponent({
             column?.customRender ? column.customRender({ text, record, column, index }) : isEmpty(text) ? '--' : text
     })
     // 自动计算表格的宽高
-    const { scroll } = useScroll(xTable, { canResize: props.autoResize, extraHeight: props.extraHeight })
+    const { scroll } = useScroll(xTable, {
+      canResize: props.autoResize,
+      extraHeight: props.extraHeight,
+      data: toRef(props, 'dataSource')
+    })
     const getScroll = computed(() => mergeProps(defaultState.scroll, unref(scroll), props.scroll))
     // 是否显示较少页面内容
     const showLessItems = computed(() => {
@@ -442,7 +446,7 @@ export default defineComponent({
     })
 
     // 滚动行为
-    const { onScrollTop } = useScrollBehavior(xTable)
+    const { onScrollTop } = useScrollBehavior(xTable, { data: toRef(props, 'dataSource') })
 
     expose({
       xTable,

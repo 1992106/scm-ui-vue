@@ -104,20 +104,6 @@ export default defineComponent({
       }
     )
 
-    // xTable默认只支持分页、排序、筛选变化滚动置顶，不支持【搜索按钮/快捷搜索】滚动置顶
-    // 通过监听数据源，变化时滚动置顶【快捷搜索-滚动置顶】
-    watch(
-      () => props.tableProps?.dataSource,
-      () => {
-        // 当action必为空，表明是通过快捷搜索
-        if (!state.action) {
-          unref(xProTable)?.onScrollTop?.()
-        }
-        // 数据变化后，清空action
-        state.action = ''
-      }
-    )
-
     /**
      * 搜索栏-搜索按钮
      */

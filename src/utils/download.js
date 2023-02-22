@@ -1,5 +1,5 @@
 import myFetch from '@utils/fetch'
-import { getPixelSize, isBase64, isEmpty } from '@utils/lang'
+import { getPixelSize, isBase64, isEmpty } from '@src/utils'
 
 const { request } = myFetch
 
@@ -110,10 +110,6 @@ const compressImage = (src, width, height, quality = 1) => {
     image.onerror = err => {
       reject(err)
     }
-    // 判断是否有查询字符串，如果有则不拼接时间戳
-    // if (src && !hasQueryString(src)) {
-    //   src = `${src}?time=${Date.now()}`
-    // }
     image.src = src
   })
 }

@@ -1,44 +1,51 @@
-import { onActivated, onMounted, ref } from 'vue'
+import { onActivated, onMounted, ref, unref, watch } from 'vue'
 import { useEventListener } from '@hooks/useEventListener'
 import { unrefElement } from '@hooks/utils'
 
-export const useScrollBehavior = xTable => {
-  const scrollTop = ref(null)
+export const useScrollBehavior = (xTable, { data } = {}) => {
+  const refEl = ref(null)
+  const refX = ref(0)
+  const refY = ref(0)
 
-  // 监听滚动事件
+  let stopWatch
   onMounted(() => {
-    // 由于表格是动态生成，必须延迟绑定scroll事件
-    setTimeout(() => {
-      const el = unrefElement(xTable)?.querySelector('.ant-table-body')
-      if (el) {
-        useEventListener(el, 'scroll', e => {
+    stopWatch = watch(
+      () => unref(data).length,
+      () => {
+        refEl.value = unrefElement(xTable)?.querySelector('.ant-table-body')
+        // 监听滚动事件
+        useEventListener(refEl.value, 'scroll', e => {
           // 获取scrollTop的高度
-          scrollTop.value = e.target.scrollTop
+          refX.value = e.target.scrollLeft
+          refY.value = e.target.scrollTop
+          stopWatch && stopWatch()
         })
-      }
-    }, 1000)
+      },
+      { immediate: true }
+    )
   })
 
   // 当表格keep-alive缓存时，保持滚动行为
   onActivated(() => {
-    const el = unrefElement(xTable)?.querySelector('.ant-table-body')
-    if (el && scrollTop.value) {
-      el.scrollTop = scrollTop.value
+    if (refEl.value) {
+      refEl.value.scrollLeft = refX.value
+      refEl.value.scrollTop = refY.value
     }
   })
 
   // 滚动到顶部
-  const onScrollTop = (to = 0) => {
-    const el = unrefElement(xTable)?.querySelector('.ant-table-body')
-    if (el) {
-      el.scrollTop = to
+  const onScrollTop = (top = 0, left = 0) => {
+    if (refEl.value) {
+      refEl.value.scrollTop = top
+      refEl.value.scrollLeft = left
       // 动画效果实现滚动
       // scrollTop(el, el.scrollTop, to)
     }
   }
 
   return {
-    scrollTop,
+    refX,
+    refY,
     onScrollTop
   }
 }

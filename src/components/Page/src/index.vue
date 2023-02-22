@@ -36,7 +36,7 @@
             <div v-if="hasHeader" class="x-page__header">
               <slot name="header"></slot>
             </div>
-            <div class="scroll" @scroll="handleScroll">
+            <div class="scroll">
               <a-row v-bind="rowProps">
                 <template v-for="(item, index) in dataSource" :key="getValueByRowKey(rowKey, item, index)">
                   <a-col v-bind="colProps">
@@ -150,6 +150,7 @@ export default defineComponent({
       }
       emit('update:value', { ...params, ...(props.showPagination ? state.pages : {}) })
       emit('search', { ...params, ...(props.showPagination ? state.pages : {}) })
+      onScrollTop()
     }
 
     /**
@@ -181,6 +182,7 @@ export default defineComponent({
       // 分页搜索
       emit('update:value', { ...state.searchParams, ...state.pages })
       emit('search', { ...state.searchParams, ...state.pages })
+      onScrollTop()
     }
 
     // 是否显示插槽
@@ -198,7 +200,7 @@ export default defineComponent({
     const { canFullscreen, toggleFullscreen } = useFullscreen(xPage, { fullscreen: props.customZoom })
 
     // 滚动行为
-    const { handleScroll, onScrollTop } = useScrollBehavior(xPage, { data: toRef(props, 'dataSource') })
+    const { onScrollTop } = useScrollBehavior(xPage, { data: toRef(props, 'dataSource') })
 
     // 初始化调用一下，获取搜索参数
     const onInit = () => {
@@ -233,7 +235,6 @@ export default defineComponent({
       handleReset,
       handleClear,
       handlePagination,
-      handleScroll,
       canFullscreen,
       toggleFullscreen,
       getValueByRowKey

@@ -1,34 +1,34 @@
-import { onMounted, ref } from 'vue'
+import { nextTick, onMounted, ref, unref, watch } from 'vue'
 import { debounce } from 'lodash-es'
 import { useEventListener } from '@hooks/useEventListener'
 import { unrefElement } from '@hooks/utils'
 // import { getScrollBarSize } from '@src/utils'
 
-export const useScroll = (xTable, { canResize, extraHeight }) => {
+export const useScroll = (xTable, { canResize, data, extraHeight }) => {
   const scroll = ref({})
 
   const resizeFn = debounce(() => {
-    scroll.value = getTableScroll({ xTable, extraHeight })
+    nextTick(() => {
+      scroll.value = getTableScroll({ xTable, extraHeight })
+    })
   }, 200)
+
+  watch(
+    () => unref(data).length,
+    () => {
+      if (canResize) {
+        resizeFn()
+      }
+    },
+    { flush: 'post' }
+  )
 
   onMounted(() => {
     if (canResize) {
-      // 由于Table是动态异步生成，初始化直接调用resizeFn()无效，所以使用MutationObserver来实现
-      // resizeFn()
-      const el = unrefElement(xTable)
-      if (el && window.MutationObserver) {
-        const observer = new MutationObserver(resizeFn)
-        observer.observe(el, { attributes: true, childList: true, subtree: true })
-        setTimeout(() => {
-          observer && observer.disconnect()
-        }, 3000)
-      }
+      resizeFn()
+      useEventListener(window, 'resize', resizeFn)
     }
   })
-
-  if (canResize) {
-    useEventListener(window, 'resize', resizeFn)
-  }
 
   return {
     scroll

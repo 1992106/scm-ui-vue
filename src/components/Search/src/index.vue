@@ -9,7 +9,8 @@
       v-bind="$attrs"
       :layout="layout"
       :label-col="labelCol"
-      :wrapper-col="wrapperCol">
+      :wrapper-col="wrapperCol"
+      :style="formStyle">
       <a-row v-bind="rowProps">
         <template v-for="(column, index) in getColumns" :key="column?.field">
           <a-col v-show="canExpand || index < getIndex" v-bind="colProps">
@@ -270,6 +271,11 @@ export default defineComponent({
       }
     }
 
+    // 表单样式
+    const formStyle = computed(() => {
+      return props.labelCol?.span ? { 'margin-right': '20px' } : { margin: '0 20px' }
+    })
+
     /**
      * 是否显示【展开收起】按钮
      * @type {ComputedRef<unknown>}
@@ -364,6 +370,7 @@ export default defineComponent({
       handleSearch,
       handleReset,
       handleClear,
+      formStyle,
       hasShowExpand,
       getIndex,
       getPush,
@@ -389,7 +396,6 @@ export default defineComponent({
 
   .ant-form {
     padding-top: 10px;
-    margin-right: 20px;
 
     :deep(.ant-form-item) {
       margin-bottom: 10px;
