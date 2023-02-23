@@ -1,7 +1,7 @@
 import { useIntersectionObserver } from '@src/hooks/useIntersectionObserver'
 
 const setupLazyload = app => {
-  app.directive('clickOutside', {
+  app.directive('Lazyload', {
     bind: function (el, binding) {
       const { stop, observer } = useIntersectionObserver({
         target: el,
