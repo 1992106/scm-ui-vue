@@ -4,7 +4,7 @@ import { useEventListener } from '@hooks/useEventListener'
 import { unrefElement } from '@hooks/utils'
 // import { getScrollBarSize } from '@src/utils'
 
-export const useScroll = (xTable, { canResize, data, extraHeight }) => {
+export const useTableScroll = (xTable, { canResize, data, extraHeight }) => {
   const scroll = ref({})
 
   const resizeFn = debounce(() => {
@@ -13,19 +13,15 @@ export const useScroll = (xTable, { canResize, data, extraHeight }) => {
     })
   }, 200)
 
-  watch(
-    () => unref(data).length,
-    () => {
-      if (canResize) {
-        resizeFn()
-      }
-    },
-    { flush: 'post' }
-  )
-
   onMounted(() => {
     if (canResize) {
-      resizeFn()
+      watch(
+        () => [unrefElement(xTable), unref(data).length],
+        () => {
+          resizeFn()
+        },
+        { immediate: true, flush: 'post' }
+      )
       useEventListener(window, 'resize', resizeFn)
     }
   })

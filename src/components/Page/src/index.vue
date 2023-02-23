@@ -30,13 +30,13 @@
         </div>
       </div>
       <!--内容-->
-      <div class="x-page__container">
+      <x-scroll-container ref="XScrollContainer" class="x-page__container">
         <slot>
           <div v-if="dataSource.length" class="x-page__render">
             <div v-if="hasHeader" class="x-page__header">
               <slot name="header"></slot>
             </div>
-            <div class="scroll">
+            <x-scroll-container ref="XScroll" class="scroll">
               <a-row v-bind="rowProps">
                 <template v-for="(item, index) in dataSource" :key="getValueByRowKey(rowKey, item, index)">
                   <a-col v-bind="colProps">
@@ -44,7 +44,7 @@
                   </a-col>
                 </template>
               </a-row>
-            </div>
+            </x-scroll-container>
             <div v-if="hasFooter" class="x-page__footer">
               <slot name="footer"></slot>
             </div>
@@ -59,21 +59,21 @@
             <a-empty :image="simpleImage" :description="emptyText" />
           </div>
         </slot>
-      </div>
+      </x-scroll-container>
     </a-spin>
   </div>
 </template>
 
 <script>
-import { computed, defineComponent, onMounted, reactive, ref, toRef, toRefs, unref, watch, watchEffect } from 'vue'
+import { computed, defineComponent, onMounted, reactive, ref, toRefs, unref, watch, watchEffect } from 'vue'
 import { Empty, Spin } from 'ant-design-vue'
 import { FullscreenExitOutlined, FullscreenOutlined } from '@ant-design/icons-vue'
 import XSearch from '@components/Search'
 import XPagination from '@components/Pagination'
+import { XScrollContainer } from '@components/Container/index'
 import { getValueByRowKey } from '@components/Table/src/utils'
 import { useAppHeight } from '@components/hooks/useSearch'
 import { useFullscreen } from '@components/hooks/useFullscreen'
-import { useScrollBehavior } from './useScrollBehavior'
 import { isEmpty } from '@src/utils'
 export default defineComponent({
   name: 'XPage',
@@ -82,6 +82,7 @@ export default defineComponent({
     FullscreenExitOutlined,
     'x-search': XSearch,
     'x-pagination': XPagination,
+    'x-scroll-container': XScrollContainer,
     'a-spin': Spin,
     'a-empty': Empty
   },
@@ -112,6 +113,8 @@ export default defineComponent({
   setup(props, { emit, slots, expose }) {
     const xPage = ref(null)
     const xSearch = ref(null)
+    const XScrollContainer = ref(null)
+    const XScroll = ref(null)
 
     const state = reactive({
       searchParams: {},
@@ -150,7 +153,7 @@ export default defineComponent({
       }
       emit('update:value', { ...params, ...(props.showPagination ? state.pages : {}) })
       emit('search', { ...params, ...(props.showPagination ? state.pages : {}) })
-      onScrollTop()
+      handleScrollTo()
     }
 
     /**
@@ -182,7 +185,7 @@ export default defineComponent({
       // 分页搜索
       emit('update:value', { ...state.searchParams, ...state.pages })
       emit('search', { ...state.searchParams, ...state.pages })
-      onScrollTop()
+      handleScrollTo()
     }
 
     // 是否显示插槽
@@ -199,8 +202,14 @@ export default defineComponent({
     // 全屏功能
     const { canFullscreen, toggleFullscreen } = useFullscreen(xPage, { fullscreen: props.customZoom })
 
-    // 滚动行为
-    const { onScrollTop } = useScrollBehavior(xPage, { data: toRef(props, 'dataSource') })
+    // 滚动顶部
+    const handleScrollTo = () => {
+      if (unref(XScroll)) {
+        unref(XScroll)?.onScrollTo?.()
+      } else {
+        unref(XScrollContainer)?.onScrollTo?.()
+      }
+    }
 
     // 初始化调用一下，获取搜索参数
     const onInit = () => {
@@ -216,12 +225,14 @@ export default defineComponent({
       xPage,
       xSearch,
       onToggleFullscreen: toggleFullscreen,
-      onScrollTop
+      onScrollTo: handleScrollTo
     })
 
     return {
       xPage,
       xSearch,
+      XScrollContainer,
+      XScroll,
       simpleImage: Empty.PRESENTED_IMAGE_SIMPLE,
       ...toRefs(state),
       hasSearchBar,

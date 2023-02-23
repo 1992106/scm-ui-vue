@@ -110,7 +110,7 @@ export default defineComponent({
     const handleSearch = params => {
       onSearch(params)
       // 搜索按钮-滚动置顶
-      unref(xProTable)?.onScrollTop?.()
+      unref(xProTable)?.onScrollTo?.()
     }
 
     /**

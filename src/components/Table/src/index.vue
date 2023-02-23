@@ -92,8 +92,8 @@ import { Button, message, Space, Spin, Table } from 'ant-design-vue'
 import ColumnSetting from './ColumnSetting.vue'
 import CellRender from './CellRender'
 import { useFullscreen } from '@components/hooks/useFullscreen'
-import { useScroll } from './useScroll'
-import { useScrollBehavior } from './useScrollBehavior'
+import { useTableScroll } from './useTableScroll'
+import { useTableScrollTo } from './useTableScrollTo'
 import {
   columnsToStorage,
   getSortDirection,
@@ -297,7 +297,7 @@ export default defineComponent({
             column?.customRender ? column.customRender({ text, record, column, index }) : isEmpty(text) ? '--' : text
     })
     // 自动计算表格的宽高
-    const { scroll } = useScroll(xTable, {
+    const { scroll } = useTableScroll(xTable, {
       canResize: props.autoResize,
       extraHeight: props.extraHeight,
       data: toRef(props, 'dataSource')
@@ -446,12 +446,12 @@ export default defineComponent({
     })
 
     // 滚动行为
-    const { onScrollTop } = useScrollBehavior(xTable, { data: toRef(props, 'dataSource') })
+    const { onScrollTo } = useTableScrollTo(xTable, { data: toRef(props, 'dataSource') })
 
     expose({
       xTable,
       onToggleFullscreen: toggleFullscreen,
-      onScrollTop
+      onScrollTo
     })
 
     return {
