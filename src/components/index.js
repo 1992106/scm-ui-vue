@@ -4,6 +4,8 @@ export { default as XPreview } from './Preview'
 export { default as XPreviewDialog } from './PreviewDialog'
 export { default as XUpload } from './Upload'
 export { default as XUploadDialog } from './UploadDialog'
+// 容器组件
+export { XLazyContainer, XScrollContainer } from './Container'
 // dialog对话框
 export { default as XDrawer } from './Drawer'
 export { default as XModal } from './Modal'

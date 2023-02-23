@@ -2,6 +2,7 @@ import { defineComponent, ref, computed, PropType, watch } from 'vue'
 import { Empty, Image, Space } from 'ant-design-vue'
 import XPreview from '@components/Preview'
 import XPreviewDialog from '@components/PreviewDialog'
+import { XLazyContainer } from '@components/Container/index'
 import { isObject } from 'lodash-es'
 import { compressImage, getStyleSize } from '@src/utils'
 import './index.scss'
@@ -204,7 +205,7 @@ const XImage = defineComponent({
 
       return (
         <>
-          {renderImage}
+          <XLazyContainer>{renderImage}</XLazyContainer>
           {isPreview.value &&
             (props.mode === 'simple' ? (
               <XPreview v-model={[visible.value, 'visible']} current={current.value} urls={previewUrls.value} />
