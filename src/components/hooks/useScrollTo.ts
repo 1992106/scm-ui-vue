@@ -1,5 +1,5 @@
 import { ref, unref } from 'vue'
-import { isFunction, isNullOrUnDef, isWindow } from '@src/utils'
+import { isFunction, isNull, isWindow } from '@src/utils'
 
 export interface ScrollToParams {
   el: any
@@ -42,7 +42,7 @@ export function useScrollTo({ el, left, top, duration = 500, callback }: ScrollT
   const changeY = top - y
   const increment = 20
   let currentTime = 0
-  duration = isNullOrUnDef(duration) ? 500 : duration
+  duration = isNull(duration) ? 500 : duration
 
   const animateScroll = function () {
     if (!unref(isActiveRef)) {

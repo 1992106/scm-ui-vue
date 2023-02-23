@@ -1,18 +1,10 @@
 import { getCurrentScope, onScopeDispose, unref } from 'vue'
-
-export const isClient = typeof window !== 'undefined'
-export const isWindow = val => typeof window !== 'undefined' && toString.call(val) === '[object Window]'
+import { isClient } from '@src/utils'
 
 export const defaultWindow = isClient ? window : undefined
 export const defaultDocument = isClient ? window.document : undefined
 export const defaultNavigator = isClient ? window.navigator : undefined
 export const defaultLocation = isClient ? window.location : undefined
-
-export const isString = val => typeof val === 'string'
-export const isNumber = val => typeof val === 'number'
-export const isBoolean = val => typeof val === 'boolean'
-export const isFunction = val => typeof val === 'function'
-export const isObject = val => toString.call(val) === '[object Object]'
 
 export const noop = () => {}
 

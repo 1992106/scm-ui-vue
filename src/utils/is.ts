@@ -31,16 +31,8 @@ export function isUnDef<T = unknown>(val?: T): val is T {
   return val === undefined
 }
 
-export function isNull(val: unknown): val is null {
-  return val === null
-}
-
-export function isNullOrUnDef(val: unknown): val is null | undefined {
-  return isUnDef(val) || isNull(val)
-}
-
-export function isNullAndUnDef(val: unknown): val is null | undefined {
-  return isUnDef(val) && isNull(val)
+export function isNull(val: unknown): val is null | undefined {
+  return val == null
 }
 
 export function isObject(val: any): val is Record<any, any> {
@@ -92,6 +84,10 @@ export function isWindow(val: any): val is Window {
   return typeof window !== 'undefined' && is(val, 'Window')
 }
 
+export const isClient = typeof window !== 'undefined'
+
+export const isServer = typeof window === 'undefined'
+
 export function isElement(val: unknown): val is Element {
   return isObject(val) && !!val.tagName
 }
@@ -101,4 +97,9 @@ export function isBase64(url: string): boolean {
     return url.startsWith('data:image/')
   }
   return false
+}
+
+export function isUrl(path: string): boolean {
+  const reg = /^http(s)?:\/\/([\w-]+\.)+[\w-]+(\/[\w- ./?%&=]*)?/
+  return reg.test(path)
 }

@@ -1,5 +1,6 @@
 import { watch } from 'vue'
-import { isString, noop, tryOnScopeDispose, unrefElement } from './utils'
+import { noop, tryOnScopeDispose, unrefElement } from './utils'
+import { isString } from '@utils/is'
 
 export function useEventListener(...args) {
   let target
