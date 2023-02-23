@@ -1,5 +1,6 @@
 import { unref, ref, watch, isRef } from 'vue'
-import { isClient, tryOnScopeDispose } from './utils'
+import { tryOnScopeDispose } from './utils'
+import { isClient } from '@src/utils'
 
 export function useIntervalFn(cb, interval = 1000, options = {}) {
   const { immediate = true, immediateCallback = false } = options

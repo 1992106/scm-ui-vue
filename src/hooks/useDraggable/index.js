@@ -1,6 +1,7 @@
 import { computed, toRefs, unref, ref } from 'vue'
 import { useEventListener } from '../useEventListener'
-import { defaultWindow, isClient } from '../utils'
+import { defaultWindow } from '../utils'
+import { isClient } from '@src/utils'
 
 export function useDraggable(target, options = {}) {
   const draggingElement = options.draggingElement ?? defaultWindow
