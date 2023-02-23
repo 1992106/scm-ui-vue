@@ -1,32 +1,26 @@
 import { Ref, watchEffect, ref } from 'vue'
+import { unrefElement } from './utils'
 
 interface IntersectionObserverProps {
+  target: Ref<Element | null | undefined> | Element
   onIntersect: IntersectionObserverCallback
-  target: Ref<Element | null | undefined>
-  root?: Ref<any>
-  rootMargin?: string
-  threshold?: number
+  options?: IntersectionObserverInit
 }
 
-export function useIntersectionObserver({
-  onIntersect,
-  target,
-  root,
-  rootMargin = '0px',
-  threshold = 0.1
-}: IntersectionObserverProps) {
+export function useIntersectionObserver({ target, onIntersect, options = {} }: IntersectionObserverProps) {
   let cleanup = () => {}
   const observer: Ref<IntersectionObserver> = ref(null)
   const stopEffect = watchEffect(() => {
     cleanup()
 
+    const { root, rootMargin = '0px', threshold = 0.1 } = options
     observer.value = new IntersectionObserver(onIntersect, {
-      root: root ? root.value : null,
+      root,
       rootMargin,
       threshold
     })
 
-    const current = target.value
+    const current = unrefElement(target)
 
     current && observer.value.observe(current)
 

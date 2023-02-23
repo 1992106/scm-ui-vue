@@ -38,27 +38,17 @@ export default defineComponent({
      * The viewport where the component is located.
      * If the component is scrolling in the page container, the viewport is the container
      */
-    viewport: {
+    root: {
       type: (typeof window !== 'undefined' ? window.HTMLElement : Object) as PropType<HTMLElement>,
       default: () => null
     },
-    /**
-     * Preload threshold, css unit
-     */
-    threshold: { type: String, default: '0px' },
-    /**
-     * The scroll direction of the viewport, vertical represents the vertical direction, horizontal represents the horizontal direction
-     */
-    direction: {
-      type: String,
-      default: 'vertical',
-      validator: v => ['vertical', 'horizontal'].includes(v as string)
-    },
+    rootMargin: { type: String, default: '0px' },
+    threshold: { type: Number, default: 0 },
     /**
      * The label name of the outer container that wraps the component
      */
     tag: { type: String, default: 'div' },
-    name: { type: String, default: '' },
+    name: { type: String },
     waitingTime: { type: Number, default: 80 }
   },
   emits: ['done'],
@@ -90,22 +80,11 @@ export default defineComponent({
     }
 
     function initIntersectionObserver() {
-      const { timeout, direction, threshold } = props
+      const { timeout, root, rootMargin, threshold } = props
       if (timeout) return
-      // According to the scrolling direction to construct the viewport margin, used to load in advance
-      let rootMargin = '0px'
-      switch (direction) {
-        case 'vertical':
-          rootMargin = `${threshold} 0px`
-          break
-        case 'horizontal':
-          rootMargin = `0px ${threshold}`
-          break
-      }
 
       try {
         const { stop, observer } = useIntersectionObserver({
-          rootMargin,
           target: toRef(xLazy.value, '$el'),
           onIntersect: (entries: any[]) => {
             const isIntersecting = entries[0].isIntersecting || entries[0].intersectionRatio
@@ -116,7 +95,7 @@ export default defineComponent({
               }
             }
           },
-          root: toRef(props, 'viewport')
+          options: { root, rootMargin, threshold }
         })
       } catch (e) {
         init()
