@@ -111,7 +111,7 @@ export default defineComponent({
             const isIntersecting = entries[0].isIntersecting || entries[0].intersectionRatio
             if (isIntersecting) {
               init()
-              if (observer) {
+              if (observer.value) {
                 stop()
               }
             }
