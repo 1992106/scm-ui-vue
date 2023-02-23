@@ -76,7 +76,7 @@ xTable
 // 切换全屏
 onToggleFullscreen
 // 滚动顶部
-onScrollTop
+onScrollTo
 ```
 
 ### CellRender自定义render（默认内置图片、日期）
