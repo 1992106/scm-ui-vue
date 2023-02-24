@@ -36,6 +36,7 @@
                 <span>({{ imgList.length }})</span>
               </span>
               <a-button
+                v-if="imgZipFileVisible"
                 type="link"
                 size="small"
                 :disabled="downloadImgZipFileDisabled"
@@ -63,6 +64,7 @@
                     <span>({{ attachmentList.length }})</span>
                   </span>
                   <a-button
+                    v-if="attachmentZipFileVisible"
                     type="link"
                     size="small"
                     :disabled="downloadAttachmentZipFileDisabled"
@@ -143,7 +145,9 @@ export default defineComponent({
     current: { type: Number, default: 0 },
     previewList: { type: Array, default: () => [] },
     imgZipFile: { type: Object },
+    imgZipFileVisible: { type: Boolean, default: true },
     attachmentZipFile: { type: Object },
+    attachmentZipFileVisible: { type: Boolean, default: true },
     customRequest: { type: Function }
   },
   emits: ['update:visible', 'download', 'downloadImgZipFile', 'downloadAttachmentZipFile'],

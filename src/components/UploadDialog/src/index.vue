@@ -138,7 +138,9 @@
     :current="previewCurrent"
     :preview-list="previewList"
     :imgZipFile="imgZipFile"
-    :attachmentZipFile="attachmentZipFile"></x-preview-dialog>
+    :imgZipFileVisible="imgZipFileVisible"
+    :attachmentZipFile="attachmentZipFile"
+    :attachmentZipFileVisible="attachmentZipFileVisible"></x-preview-dialog>
 </template>
 <script>
 import { computed, defineComponent, reactive, toRefs, unref, watch } from 'vue'
@@ -170,7 +172,9 @@ export default defineComponent({
     visible: { type: Boolean, default: false },
     fileList: { type: Array, default: () => [] },
     imgZipFile: { type: Object }, // 图片压缩文件
+    imgZipFileVisible: { type: Boolean, default: true },
     attachmentZipFile: { type: Object }, // 附件压缩文件
+    attachmentZipFileVisible: { type: Boolean, default: true },
     customRequest: { type: Function },
     customSubmit: { type: Function },
     customUpload: { type: Function },

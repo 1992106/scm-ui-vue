@@ -80,7 +80,6 @@ export default defineComponent({
       },
       { immediate: true }
     )
-
     watch(
       () => props.list,
       list => {

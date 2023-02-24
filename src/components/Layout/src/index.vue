@@ -84,11 +84,7 @@ export default defineComponent({
     }
 
     const defaultKey = computed(() => {
-      let menus = state.menus
-      // 如果openKeys不为空，则说明是树结构
-      if (!isEmpty(props.openKeys)) {
-        menus = getAllLeafNodes(state.menus)
-      }
+      const menus = getAllLeafNodes(state.menus)
       // props.value有值，并且在state.menus中可以找到
       if (!isEmpty(props.value) && menus?.find(val => val?.value === props.value)) {
         return props.value
