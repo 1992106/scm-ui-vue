@@ -7,20 +7,20 @@ const domSymbol = Symbol('watermark-dom')
 
 export function useWatermark(appendEl: Ref<HTMLElement | null> = ref(document.body) as Ref<HTMLElement>) {
   const func = throttle(function () {
-    const el = unref(appendEl)
-    if (!el) return
-    const { clientHeight: height, clientWidth: width } = el
+    const pEl = unref(appendEl)
+    if (!pEl) return
+    const { clientHeight: height, clientWidth: width } = pEl
     updateWatermark({ height, width })
   }, 200)
   const id = domSymbol.toString()
   const watermarkEl = shallowRef<HTMLElement>()
 
   const clear = () => {
-    const domId = unref(watermarkEl)
+    const el = unref(watermarkEl) || document.getElementById(`${id}`)
     watermarkEl.value = undefined
-    const el = unref(appendEl)
-    if (!el) return
-    domId && el.removeChild(domId)
+    const pEl = unref(appendEl)
+    if (!pEl) return
+    el && pEl.removeChild(el)
   }
 
   function createBase64(str: string, data?: string) {
@@ -50,7 +50,7 @@ export function useWatermark(appendEl: Ref<HTMLElement | null> = ref(document.bo
       data?: string
     } = {}
   ) {
-    const el = unref(watermarkEl)
+    const el = unref(watermarkEl) || document.getElementById(`${id}`)
     if (!el) return
     if (!isNull(options.width)) {
       el.style.width = `${options.width}px`
@@ -64,7 +64,8 @@ export function useWatermark(appendEl: Ref<HTMLElement | null> = ref(document.bo
   }
 
   const createWatermark = (str: string, data: string) => {
-    if (unref(watermarkEl)) {
+    const el = unref(watermarkEl) || document.getElementById(`${id}`)
+    if (el) {
       updateWatermark({ str, data })
       return id
     }
@@ -76,11 +77,11 @@ export function useWatermark(appendEl: Ref<HTMLElement | null> = ref(document.bo
     div.style.left = '0px'
     div.style.position = 'absolute'
     div.style.zIndex = '100000'
-    const el = unref(appendEl)
-    if (!el) return id
-    const { clientHeight: height, clientWidth: width } = el
+    const pEl = unref(appendEl)
+    if (!pEl) return id
+    const { clientHeight: height, clientWidth: width } = pEl
     updateWatermark({ str, data, width, height })
-    el.appendChild(div)
+    pEl.appendChild(div)
     return id
   }
 
