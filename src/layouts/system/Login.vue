@@ -1,7 +1,7 @@
 <template>
   <div class="login">
     <div class="logo">
-      <img src="../../assets/logo.png" alt="patpat" />
+      <img src="../../assets/logo.png" alt="logo" />
       <span>SCM-UI</span>
     </div>
     <Form ref="formRef" :model="form" :rules="rules" class="form" @keypress.enter="handleSubmit">
@@ -45,12 +45,12 @@ export default defineComponent({
   },
   setup() {
     const router = useRouter()
-    const route = useRoute()
+    const currentRoute = useRoute()
     const store = useStore()
     const formRef = ref()
     const form = reactive({
-      account: '',
-      password: ''
+      account: 'admin',
+      password: 'admin'
     })
     const loading = ref(false)
 
@@ -87,7 +87,7 @@ export default defineComponent({
         loading.value = false
         if (token) {
           notification.success({ message: timeTxt(), description: `欢迎登录${setting.title}` })
-          let redirect = route.query?.redirect
+          let redirect = currentRoute.query?.redirect
           if (!redirect || redirect.includes('/login')) {
             redirect = '/index'
           }

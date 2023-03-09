@@ -7,11 +7,11 @@ import setting from '@src/config'
 import styles from './index.module.scss'
 
 const MyAvatar = defineComponent({
-  name: 'MyAvatar',
+  name: 'AppAvatar',
   setup() {
-    const store = useStore()
     const router = useRouter()
-    const route = useRoute()
+    const currentRoute = useRoute()
+    const store = useStore()
 
     const userInfo = computed(() => store.state.user.userInfo)
 
@@ -36,7 +36,7 @@ const MyAvatar = defineComponent({
 
     const handleLogin = async () => {
       await store.dispatch('user/logout')
-      await router.push(`/login?redirect=${route.path}`)
+      await router.push(`/login?redirect=${currentRoute.fullPath}`)
     }
 
     const MenuOverlay = (
