@@ -1,12 +1,14 @@
 import axios from 'axios'
 import { message, notification } from 'ant-design-vue'
 import router from '@src/router'
-import setting from '@src/config'
+import store from '@src/store'
 import { omit } from 'lodash-es'
+import setting from '@src/config'
 import { getAccessStorage } from '@utils/accessStorage'
 import { disposeParams, sleep } from './utils'
 import CancelBeforeRequest from './cancel/CancelBeforeRequest'
 
+let locked = false
 const queue = new CancelBeforeRequest()
 
 // 全局axios默认值
@@ -87,11 +89,19 @@ httpService.interceptors.response.use(
       const msg = data?.msg || (typeof data === 'string' ? data : '未知错误')
       // 401：token过期、403：权限变更
       if ([401, 403].includes(status)) {
-        const route = router.currentRoute
-        if (!route.value.fullPath.includes('/login')) {
-          router.push(`/login??redirect=${route.value.path}`)
+        store.dispatch('user/logout').then(() => {
+          const route = router.currentRoute
+          if (route.value.name !== 'Login') {
+            router.push(`/login?redirect=${route.value.fullPath}`)
+          }
+        })
+        if (!locked) {
+          locked = true
+          message.warning('登录失效，请重新登录！')
+          setTimeout(() => {
+            locked = false
+          }, 3000)
         }
-        message.warning('登录失效，请重新登录！')
       } else {
         // 是否支持重试
         const hasRetry = config?.options['$retry'] || config.options['$retryDelay']
