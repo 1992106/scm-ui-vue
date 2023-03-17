@@ -606,6 +606,8 @@ export default defineComponent({
 
   :deep(.vxe-grid--toolbar-wrapper) {
     .vxe-toolbar {
+      padding-top: 0;
+      padding-bottom: 0;
       height: auto;
 
       .toolbar {

@@ -13,11 +13,16 @@ export const disposeParams = config => {
   deepTrim(config[key])
 }
 
+// 获取查询参数
+const getQueryString = params => {
+  return Object.keys(params)
+    .sort()
+    .map(key => `${key}=${params[key]}`)
+    .join('&')
+}
+
 // 将请求参数排序，防止相同参数生成的hash不同
-const sortParams = params => {
-  if (typeof params === 'string') {
-    params = params ? JSON.parse(params) : {}
-  }
+const sortObject = params => {
   const result = {}
   Object.keys(params)
     .sort()
@@ -32,8 +37,8 @@ export const generateKey = config => {
   const target = {
     method: config.method,
     url: config.url,
-    ...(config.method === 'get' ? { params: sortParams(config.params) } : {}),
-    ...(config.method === 'post' ? { data: sortParams(config.data) } : {})
+    ...(config.method === 'get' ? { params: sortObject(config.params) } : {}),
+    ...(config.method === 'post' ? { data: sortObject(config.data) } : {})
   }
   return md5(qs.stringify(target))
 }
@@ -42,20 +47,20 @@ export const generateKey2 = config => {
   const target = {
     method: config.method,
     url: config.url,
-    ...(config.method === 'get' ? { params: sortParams(config.params) } : {}),
-    ...(config.method === 'post' ? { data: sortParams(config.data) } : {})
+    ...(config.method === 'get' ? { params: getQueryString(config.params) } : {}),
+    ...(config.method === 'post' ? { data: getQueryString(config.data) } : {})
   }
-  return JSON.stringify(target)
+  return getQueryString(target)
 }
 
 export const generateKey3 = config => {
   const { method, url, params, data } = config
-  return [method, url, qs.stringify(sortParams(params)), qs.stringify(sortParams(data))].join('&')
+  return [method, url, qs.stringify(sortObject(params)), qs.stringify(sortObject(data))].filter(Boolean).join('&')
 }
 
 export const generateKey4 = config => {
   const { method, url, params, data } = config
-  return [method, url, JSON.stringify(sortParams(params)), JSON.stringify(sortParams(data))].join(',')
+  return [method, url, getQueryString(params), getQueryString(data)].filter(Boolean).join('&')
 }
 
 export const sleep = delay => new Promise(resolve => setTimeout(resolve, delay))
