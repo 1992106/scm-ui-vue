@@ -1,6 +1,6 @@
 import { getCurrentInstance, onBeforeUnmount, ref, Ref, shallowRef, unref } from 'vue'
 import { throttle } from 'lodash-es'
-import { isNull } from '@src/utils/is'
+import { isNil } from '@src/utils/is'
 import { useEventListener } from '@hooks/useEventListener'
 
 const domSymbol = Symbol('watermark-dom')
@@ -52,13 +52,13 @@ export function useWatermark(appendEl: Ref<HTMLElement | null> = ref(document.bo
   ) {
     const el = unref(watermarkEl) || document.getElementById(`${id}`)
     if (!el) return
-    if (!isNull(options.width)) {
+    if (!isNil(options.width)) {
       el.style.width = `${options.width}px`
     }
-    if (!isNull(options.height)) {
+    if (!isNil(options.height)) {
       el.style.height = `${options.height}px`
     }
-    if (!isNull(options.str)) {
+    if (!isNil(options.str)) {
       el.style.background = `url(${createBase64(options.str, options.data)}) left top repeat`
     }
   }

@@ -40,11 +40,13 @@ export function notEmpty(value: any): boolean {
   return true
 }
 
-export function isNull(val: unknown): val is null | undefined | string {
+// 是否等于undefined或null或''
+export function isNil(val: unknown): val is null | undefined | string {
   return val == null || val === ''
 }
 
-export function notNull(val: unknown): val is null | undefined | string {
+// 是否不等于undefined或null或''
+export function notNil(val: unknown): val is null | undefined | string {
   return val != null && val !== ''
 }
 
@@ -56,8 +58,8 @@ export function isUnDef<T = unknown>(val?: T): val is T {
   return val === undefined
 }
 
-export function isDef<T = unknown>(val?: T): val is T {
-  return val !== undefined
+export function isNull<T = unknown>(val?: T): val is T {
+  return val === null
 }
 
 export function isObject(val: any): val is Record<any, any> {
