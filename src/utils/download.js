@@ -46,7 +46,6 @@ const downloadByBlob = (content, fileName, mime) => {
 const downloadByUrl = async (url, fileName) => {
   const data = await fetch(url, {
     method: 'GET',
-    responseType: 'blob',
     mode: 'cors',
     cache: 'no-cache'
   }).then(res => {
@@ -107,8 +106,8 @@ const compressImage = (src, width, height, quality = 1) => {
       const canvasURL = canvas.toDataURL('image/jpeg', quality)
       resolve(canvasURL)
     }
-    image.onerror = err => {
-      reject(err)
+    image.onerror = error => {
+      reject(error)
     }
     image.src = src
   })
@@ -134,8 +133,8 @@ const getImageInfo = file => {
         })
       }
     }
-    reader.onerror = function (err) {
-      reject(err)
+    reader.onerror = function (error) {
+      reject(error)
     }
   })
 }

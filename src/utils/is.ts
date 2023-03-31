@@ -7,20 +7,45 @@ export function isEmpty(value: any): boolean {
   if (value == null) {
     return true
   }
-
   if (isArray(value) || isString(value)) {
     return value.length === 0
   }
-
   if (value instanceof Map || value instanceof Set) {
     return value.size === 0
   }
-
   if (isObject(value)) {
     return Object.keys(value).length === 0
   }
-
   return false
+}
+
+/**
+ * 是否不为空
+ * @param value
+ * @returns {boolean}
+ */
+export function notEmpty(value: any): boolean {
+  if (value == null) {
+    return false
+  }
+  if (isArray(value) || isString(value)) {
+    return value.length > 0
+  }
+  if (value instanceof Map || value instanceof Set) {
+    return value.size > 0
+  }
+  if (isObject(value)) {
+    return Object.keys(value).length > 0
+  }
+  return true
+}
+
+export function isNull(val: unknown): val is null | undefined | string {
+  return val == null || val === ''
+}
+
+export function notNull(val: unknown): val is null | undefined | string {
+  return val != null && val !== ''
 }
 
 export function is(val: unknown, type: string) {
@@ -31,8 +56,8 @@ export function isUnDef<T = unknown>(val?: T): val is T {
   return val === undefined
 }
 
-export function isNull(val: unknown): val is null | undefined {
-  return val == null
+export function isDef<T = unknown>(val?: T): val is T {
+  return val !== undefined
 }
 
 export function isObject(val: any): val is Record<any, any> {
