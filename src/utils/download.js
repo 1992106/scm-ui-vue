@@ -45,7 +45,7 @@ const downloadByBlob = (content, fileName, mime) => {
  */
 const downloadByUrl = async (url, fileName) => {
   const data = await fetch(url, {
-    method: 'GET',
+    method: 'get',
     mode: 'cors',
     cache: 'no-cache'
   }).then(res => {
