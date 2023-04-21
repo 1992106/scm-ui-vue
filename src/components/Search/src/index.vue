@@ -169,6 +169,7 @@ export default defineComponent({
         props: {
           picker: 'date',
           allowClear: true,
+          format: 'YYYY-MM-DD',
           valueFormat: 'YYYY-MM-DD'
         },
         events: ['change']
@@ -177,6 +178,7 @@ export default defineComponent({
         props: {
           picker: 'date',
           allowClear: true,
+          format: 'YYYY-MM-DD',
           valueFormat: 'YYYY-MM-DD'
         },
         events: ['change']
