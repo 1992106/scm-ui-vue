@@ -12,7 +12,7 @@ export const hasMultiple = column => {
 
 // 是否是日期选择框
 export const hasDate = column => {
-  return ['ADatePicker', 'AWeekPicker', 'AMonthPicker', 'ARangePicker', 'ATimePicker'].includes(column?.type)
+  return ['ADatePicker', 'ARangePicker', 'ATimePicker'].includes(column?.type)
 }
 
 // 格式化日期：antd不支持new Date()，需要转化成dayjs
