@@ -101,7 +101,7 @@ import {
   mergeStorageAndColumns,
   storageToColumns
 } from '@components/Table/src/utils'
-import { cloneDeep } from 'lodash-es'
+import { cloneDeep, omit, pick } from 'lodash-es'
 import { copyToClipboard, isEmpty, recursive, triggerResize } from '@src/utils'
 
 export default defineComponent({
@@ -304,17 +304,19 @@ export default defineComponent({
     })
     const getScroll = computed(() => mergeProps(defaultState.scroll, unref(scroll), props.scroll))
     // 是否显示较少页面内容
+    const defaultShowLessItems = pick(props.pagination, ['showLessItems'])
     const showLessItems = computed(() => {
-      const _showLessItems = props.paginationConfig?.showLessItems ?? props.pagination?.showLessItems
+      const _showLessItems = props.paginationConfig?.showLessItems ?? defaultShowLessItems
       return typeof _showLessItems === 'undefined' ? false : _showLessItems
     })
     // 分页器
+    const defaultPagination = omit(props.pagination, ['page', 'current', 'pageSize'])
     const getPaginationConfig = computed(() => {
-      const { page, current, pageSize, ...restPagination } = props.pagination // current是为了兼容 antv 原始用法
+      const { page, current, pageSize } = props.pagination // current是为了兼容 antv 原始用法
       return props.showPagination
         ? mergeProps(
             unref(showLessItems) ? { size: 'small' } : defaultState.defaultPaginationConfig,
-            restPagination, // 为了兼容 antv 原始用法
+            defaultPagination, // 为了兼容 antv 原始用法
             props.paginationConfig,
             {
               total: props.total,
@@ -389,6 +391,7 @@ export default defineComponent({
         // 分页
         const { current, pageSize } = pagination
         emit('update:pagination', {
+          current, // current是为了兼容 antv 原始用法
           page: current,
           pageSize
         })

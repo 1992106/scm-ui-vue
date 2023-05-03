@@ -51,10 +51,10 @@ export default defineComponent({
 
     // 页码
     const pages = computed(() => {
-      const { page, pageSize } = props.pagination
+      const { page, current, pageSize } = props.pagination
       // 兼容 ant 和 设置默认值
       return {
-        page: page || attrs?.current || 1, // attrs?.current是为了兼容 antv 原始用法
+        page: page || current || attrs?.current || 1, // current和attrs?.current是为了兼容 antv 原始用法
         pageSize: pageSize || attrs?.pageSize || (unref(showLessItems) ? 10 : 20)
       }
     })
@@ -69,6 +69,7 @@ export default defineComponent({
 
     const handlePageChange = (current, pageSize) => {
       const pagination = {
+        current,
         page: current,
         pageSize
       }
