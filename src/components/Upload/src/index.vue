@@ -128,8 +128,8 @@ export default defineComponent({
       //   const uploadFile = {
       //     ...data,
       //     uid: data?.id || data?.key,
-      //     name: data?.name || data?.fileName,
-      //     type: data?.type || data?.mimeType,
+      //     name: data?.name || data?.fileName || data?.filename,
+      //     type: data?.type || data?.mimeType || data?.mimetype,
       //     status: 'done',
       //     thumbUrl: base64 || data?.thumbUrl,
       //     url: data?.url

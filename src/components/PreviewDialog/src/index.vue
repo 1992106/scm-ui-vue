@@ -50,7 +50,7 @@
                 :key="img?.uid || i"
                 class="dots__list-item"
                 @click="handleGoTo(img, i, 'img')">
-                <img :src="img?.thumbUrl || img?.url" :alt="img?.fileName" />
+                <img :src="img?.thumbUrl || img?.url" :alt="img?.name" />
               </div>
             </div>
           </div>

@@ -1,9 +1,9 @@
 import { message } from 'ant-design-vue'
 import { getImageInfo, isEmpty } from '@src/utils'
 
-const getType = file => file?.type || file?.mimeType
+const getType = file => file?.type || file?.mimeType || file?.mimetype
 
-const getName = file => file?.name || file?.fileName
+const getName = file => file?.name || file?.fileName || file?.filename
 
 const hasImageByType = type => {
   // 排除特殊图片格式：rgb/pcx/psd/dwg/mdi/pgm/cmx
@@ -136,8 +136,8 @@ export const formatFile = file => {
     ...(file?.id || file?.key
       ? {
           uid: file?.id || file?.key,
-          name: file?.name || file?.fileName,
-          type: file?.type || file?.mimeType,
+          name: file?.name || file?.fileName || file?.filename,
+          type: file?.type || file?.mimeType || file?.mimetype,
           status: 'done',
           thumbUrl: file?.baseUrl || file?.thumbUrl,
           url: file?.url
