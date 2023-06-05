@@ -4,6 +4,7 @@
       v-if="isPreview"
       :preview="{
         rootClassName: 'x-preview__root',
+        getContainer,
         current,
         visible: isPreview,
         onVisibleChange: handleVisibleChange
@@ -25,7 +26,8 @@ export default defineComponent({
   props: {
     visible: { type: Boolean as PropType<boolean>, default: false },
     current: { type: Number as PropType<number>, default: 0 },
-    urls: { type: Array as PropType<string[]>, required: true }
+    urls: { type: Array as PropType<string[]>, required: true },
+    getContainer: { type: [String, HTMLElement, Function] as PropType<string | HTMLElement | (() => HTMLElement)> }
   },
   emits: ['update:visible'],
   setup(props, { emit, expose }) {
