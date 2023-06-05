@@ -13,14 +13,6 @@ export const disposeParams = config => {
   deepTrim(config[key])
 }
 
-// 获取查询参数
-const getQueryString = params => {
-  return Object.keys(params)
-    .sort()
-    .map(key => `${key}=${params[key]}`)
-    .join('&')
-}
-
 // 将请求参数排序，防止相同参数生成的hash不同
 const sortObject = params => {
   const result = {}
@@ -34,33 +26,24 @@ const sortObject = params => {
 
 // 根据method,url,data/params生成唯一key
 export const generateKey = config => {
+  const { method, url, params, data } = config
   const target = {
-    method: config.method,
-    url: config.url,
-    ...(config.method === 'get' ? { params: sortObject(config.params) } : {}),
-    ...(config.method === 'post' ? { data: sortObject(config.data) } : {})
+    method,
+    url,
+    params: sortObject(params),
+    data: sortObject(data)
   }
   return md5(qs.stringify(target))
 }
 
 export const generateKey2 = config => {
-  const target = {
-    method: config.method,
-    url: config.url,
-    ...(config.method === 'get' ? { params: getQueryString(config.params) } : {}),
-    ...(config.method === 'post' ? { data: getQueryString(config.data) } : {})
-  }
-  return getQueryString(target)
+  const { method, url, params, data } = config
+  return [method, url, qs.stringify(params), qs.stringify(data)].join('&')
 }
 
 export const generateKey3 = config => {
   const { method, url, params, data } = config
-  return [method, url, qs.stringify(sortObject(params)), qs.stringify(sortObject(data))].filter(Boolean).join('&')
-}
-
-export const generateKey4 = config => {
-  const { method, url, params, data } = config
-  return [method, url, getQueryString(params), getQueryString(data)].filter(Boolean).join('&')
+  return [method, url, JSON.stringify(params), JSON.stringify(data)].join('&')
 }
 
 export const sleep = delay => new Promise(resolve => setTimeout(resolve, delay))
