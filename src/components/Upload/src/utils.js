@@ -1,5 +1,5 @@
 import { message } from 'ant-design-vue'
-import { getImageInfo, isEmpty } from '@src/utils'
+import { getImageSize, getVideoSize, isEmpty } from '@src/utils'
 
 const getType = file => file?.type || file?.mimeType || file?.mimetype
 
@@ -23,14 +23,14 @@ const hasImageByType = type => {
 
 const hasImageByName = name => {
   if (name) {
-    const suffix = /\.([0-9a-zA-Z]+)$/i.exec(name)?.[1]
+    const suffix = /\.([0-9a-zA-Z]+)$/i.exec(name)?.[1]?.toLowerCase()
     return ['png', 'jpg', 'jpeg', 'ico', 'gif', 'bmp', 'webp'].includes(suffix)
   }
 }
 
 const hasImageByUrl = url => {
   if (url) {
-    return /^.+(\.png|\.jpg|\.jpeg|\.ico|\.gif|\.bmp|\.webp)$/.test(url)
+    return /^.+(\.png|\.jpg|\.jpeg|\.ico|\.gif|\.bmp|\.webp)$/i.test(url)
   }
 }
 
@@ -88,42 +88,78 @@ export const getBeforeUpload = async (file, props) => {
       return false
     }
   }
-  // 图片宽高
+  // 图片、视频宽高或尺寸比
   if (
-    file.type.startsWith('image/') &&
-    (!isEmpty(props.minWidth) || !isEmpty(props.maxWidth) || !isEmpty(props.minHeight) || !isEmpty(props.maxHeight))
+    !isEmpty(props.ratio) ||
+    !isEmpty(props.width) ||
+    !isEmpty(props.minWidth) ||
+    !isEmpty(props.maxWidth) ||
+    !isEmpty(props.height) ||
+    !isEmpty(props.minHeight) ||
+    !isEmpty(props.maxHeight)
   ) {
-    const { width, height } = await getImageInfo(file)
-    // 最小宽度
-    if (!isEmpty(props.minWidth)) {
-      const isMinWidth = width >= props.minWidth
-      if (!isMinWidth) {
-        message.error(`宽度不能小于${props.minWidth}`)
-        return false
-      }
+    let result
+    if (file.type.startsWith('image/')) {
+      result = await getImageSize(file)
     }
-    // 最大宽度
-    if (!isEmpty(props.maxWidth)) {
-      const isMaxWidth = width <= props.maxWidth
-      if (!isMaxWidth) {
-        message.error(`宽度不能大于${props.maxWidth}`)
-        return false
-      }
+    if (file.type.startsWith('video/')) {
+      result = await getVideoSize(file)
     }
-    // 最小高度
-    if (!isEmpty(props.minHeight)) {
-      const isMinHeight = width >= props.minHeight
-      if (!isMinHeight) {
-        message.error(`高度不能小于${props.minHeight}`)
-        return false
+    if (result) {
+      const { width = 0, height = 0 } = result
+      // 比例
+      if (!isEmpty(props.ratio) && Array.isArray(props.ratio)) {
+        const [w, h] = props.ratio
+        if (w * height !== h * width) {
+          message.error(`尺寸比不等于${w}*${h}`)
+          return false
+        }
       }
-    }
-    // 最大高度
-    if (!isEmpty(props.maxHeight)) {
-      const isMaxHeight = height <= props.maxHeight
-      if (!isMaxHeight) {
-        message.error(`高度不能大于${props.maxHeight}`)
-        return false
+      // 宽度
+      if (!isEmpty(props.width)) {
+        if (width !== props.width) {
+          message.error(`宽度不等于${props.width}`)
+          return false
+        }
+      }
+      // 最小宽度
+      if (!isEmpty(props.minWidth)) {
+        const isMinWidth = width >= props.minWidth
+        if (!isMinWidth) {
+          message.error(`宽度不能小于${props.minWidth}`)
+          return false
+        }
+      }
+      // 最大宽度
+      if (!isEmpty(props.maxWidth)) {
+        const isMaxWidth = width <= props.maxWidth
+        if (!isMaxWidth) {
+          message.error(`宽度不能大于${props.maxWidth}`)
+          return false
+        }
+      }
+      // 高度
+      if (!isEmpty(props.height)) {
+        if (width !== props.height) {
+          message.error(`高度不等于${props.height}`)
+          return false
+        }
+      }
+      // 最小高度
+      if (!isEmpty(props.minHeight)) {
+        const isMinHeight = width >= props.minHeight
+        if (!isMinHeight) {
+          message.error(`高度不能小于${props.minHeight}`)
+          return false
+        }
+      }
+      // 最大高度
+      if (!isEmpty(props.maxHeight)) {
+        const isMaxHeight = height <= props.maxHeight
+        if (!isMaxHeight) {
+          message.error(`高度不能大于${props.maxHeight}`)
+          return false
+        }
       }
     }
   }

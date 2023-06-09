@@ -61,10 +61,13 @@ export default defineComponent({
       },
       default: 'upload'
     },
-    accept: { type: String }, // 'image/*'、'application/*'、'audio/*'、'video/*'、'text/'
+    accept: { type: String }, // 'image/*'、'application/*'、'audio/*'、'video/*'、'text/*'
     size: { type: Number },
+    ratio: { type: Array },
+    width: { type: Number },
     minWidth: { type: Number },
     maxWidth: { type: Number },
+    height: { type: Number },
     minHeight: { type: Number },
     maxHeight: { type: Number },
     maxCount: { type: Number }

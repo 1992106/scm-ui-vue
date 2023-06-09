@@ -186,12 +186,15 @@ export default defineComponent({
       },
       default: 'upload'
     },
-    accept: { type: String }, // 'image/*'、'application/*'、'audio/*'、'video/*'、'text/'
+    accept: { type: String }, // 'image/*'、'application/*'、'audio/*'、'video/*'、'text/*'
     directory: { type: Boolean },
     multiple: { type: Boolean },
     size: { type: Number, default: 500 },
+    ratio: { type: Array },
+    imgWidth: { type: Number },
     minWidth: { type: Number },
     maxWidth: { type: Number },
+    imgHeight: { type: Number },
     minHeight: { type: Number },
     maxHeight: { type: Number },
     required: { type: Boolean },
@@ -282,7 +285,8 @@ export default defineComponent({
       if (!isEmpty(props.beforeUpload) && isFunction(props.beforeUpload)) {
         return await props.beforeUpload(file)
       }
-      const bool = await getBeforeUpload(file, props)
+      const { imgWidth, imgHeight, ...restProps } = props
+      const bool = await getBeforeUpload(file, { width: imgWidth, height: imgHeight, ...restProps })
       if (bool) {
         // 把通过校验的文件手动添加到文件列表中
         handleUploading(file)

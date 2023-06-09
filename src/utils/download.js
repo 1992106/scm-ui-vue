@@ -118,24 +118,42 @@ const compressImage = (src, width, height, quality = 1) => {
  * @param file
  * @returns {Promise<unknown>}
  */
-const getImageInfo = file => {
+const getImageSize = file => {
   return new Promise((resolve, reject) => {
-    const reader = new FileReader()
-    reader.readAsDataURL(file)
-    reader.onload = function (event) {
-      const base64 = event.target.result
-      const img = document.createElement('img')
-      img.src = base64
-      img.onload = function () {
-        resolve({
-          width: img.width,
-          height: img.height
-        })
-      }
+    const url = URL.createObjectURL(file)
+    const img = new Image()
+    img.onload = function () {
+      resolve({
+        width: img.width,
+        height: img.height
+      })
     }
-    reader.onerror = function (error) {
+    img.onerror = function (error) {
       reject(error)
     }
+    img.src = url
+  })
+}
+
+/**
+ * 获取视频信息
+ * @param file
+ * @returns {Promise<unknown>}
+ */
+const getVideoSize = file => {
+  return new Promise((resolve, reject) => {
+    const url = URL.createObjectURL(file)
+    const video = document.createElement('video')
+    video.onloadedmetadata = () => {
+      resolve({
+        width: video.videoWidth,
+        height: video.videoHeight
+      })
+    }
+    video.onerror = error => {
+      reject(error)
+    }
+    video.src = url
   })
 }
 
@@ -149,4 +167,4 @@ const getBase64 = file => {
   })
 }
 
-export { download, downloadByBlob, downloadByUrl, exportFile, compressImage, getImageInfo, getBase64 }
+export { download, downloadByBlob, downloadByUrl, exportFile, compressImage, getImageSize, getVideoSize, getBase64 }
