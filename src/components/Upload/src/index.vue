@@ -99,7 +99,7 @@ export default defineComponent({
       const { file } = option
       const base64 = await getBase64(file).catch(err => console.error(err))
       await execRequest(customRequest(file), {
-        success: ({ data }) => {
+        success: ({ data = {} }) => {
           // 上传成功（status: 'done'）
           // 没有触发option.onSuccess()，手动设置状态为 'done'
           const uploadFile = formatFile({ ...data, baseUrl: base64 })
@@ -125,7 +125,7 @@ export default defineComponent({
       })
       // try {
       //   const base64 = await getBase64(file)
-      //   const { data } = await customRequest(file)
+      //   const { data = {} } = await customRequest(file)
       //   // 上传成功（status: 'done'）
       //   // 没有触发option.onSuccess()，手动设置状态为 'done'
       //   const uploadFile = {
