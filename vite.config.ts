@@ -96,7 +96,8 @@ export default ({ mode }) => {
           'vxe-table': 'vxe-table',
           vuedraggable: 'vuedraggable',
           dayjs: 'dayjs',
-          'lodash-es': 'lodash-es'
+          'lodash-es': 'lodash-es',
+          xlsx: 'xlsx'
         }
       },
       // 确保外部化处理那些你不想打包进库的依赖
@@ -109,7 +110,8 @@ export default ({ mode }) => {
         'vxe-table',
         'vuedraggable',
         'dayjs',
-        'lodash-es'
+        'lodash-es',
+        'xlsx'
       ]
     }
   }

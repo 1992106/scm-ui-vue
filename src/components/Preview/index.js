@@ -1,4 +1,4 @@
-// 导入组件
+// 预览组件
 import XPreview from './src/index.vue'
 
 // 为组件提供 install 安装方法，供按需引入

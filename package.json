@@ -1,6 +1,6 @@
 {
   "name": "scm-ui-vue",
-  "version": "0.0.23-4",
+  "version": "0.0.23-5",
   "main": "dist/scm-ui-vue.js",
   "module": "dist/scm-ui-vue.mjs",
   "unpkg": "dist/scm-ui-vue.umd.js",
@@ -38,7 +38,8 @@
     "vue-router": "^4.1.6",
     "vuedraggable": "^4.1.0",
     "vuex": "^4.1.0",
-    "vxe-table": "4.2.8"
+    "vxe-table": "4.2.8",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@commitlint/cli": "^17.1.2",
@@ -84,7 +85,8 @@
     "lodash-es": "^4.17.21",
     "vue": "^3.2.47",
     "vuedraggable": "^4.1.6",
-    "vxe-table": "4.2.8"
+    "vxe-table": "4.2.8",
+    "xlsx": "^0.18.5"
   },
   "repository": {
     "type": "git",

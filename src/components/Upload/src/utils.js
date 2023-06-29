@@ -169,9 +169,9 @@ export const getBeforeUpload = async (file, props) => {
 export const formatFile = file => {
   return {
     ...file,
-    ...(file?.id || file?.key
+    ...(!isEmpty(file?.id ?? file?.key)
       ? {
-          uid: file?.id || file?.key,
+          uid: file?.id ?? file?.key,
           name: file?.name || file?.fileName || file?.filename,
           type: file?.type || file?.mimeType || file?.mimetype,
           status: 'done',

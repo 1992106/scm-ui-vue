@@ -164,11 +164,12 @@ export default defineComponent({
      */
     const handleReset = params => {
       state.searchParams = params
-      // 重置会触发搜索事件，搜索方法会重置page和更新value
-      // if (props.showPagination) {
-      //   state.pages.page = 1
-      // }
-      // emit('update:value', { ...params, ...(props.showPagination ? state.pages : {}) })
+      // 通过ref调用重置方法时，默认不搜索
+      // 点击【搜索栏-重置按钮】会触发搜索事件，搜索方法会重置page和更新value
+      if (props.showPagination) {
+        state.pages.page = 1
+      }
+      emit('update:value', { ...params, ...(props.showPagination ? state.pages : {}) })
       emit('reset', { ...params, ...(props.showPagination ? state.pages : {}) })
     }
 
