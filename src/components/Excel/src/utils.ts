@@ -12,6 +12,9 @@ const DEF_SHEET_NAME = 'sheet'
 // 获取字符长度
 function getLength(str) {
   let len = str?.length ?? 0
+  if (typeof str === 'number') {
+    len = (str + '').length
+  }
   if (typeof str === 'string') {
     let l = 0
     for (let i = 0; i < len; i++) {
