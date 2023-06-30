@@ -201,8 +201,8 @@ export default defineComponent({
       type: Object,
       default: () => ({
         limit: 2000,
-        customRequest: Function,
-        customExport: Function
+        customRequest: null,
+        customExport: null
       })
     },
     // 本地Storage名称，拖拽列和自定义表头时本地储存

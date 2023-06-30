@@ -39,8 +39,7 @@ function setColumnWidth(data, worksheet, min = 4) {
   data.forEach(item => {
     Object.keys(item).forEach(key => {
       const len = getLength(item?.[key])
-      const length = len || min
-      obj[key] = Math.max(length, obj[key] ?? min)
+      obj[key] = Math.max(len, obj[key] ?? min)
     })
   })
   Object.keys(obj).forEach(key => {
