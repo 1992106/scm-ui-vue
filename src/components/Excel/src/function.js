@@ -13,17 +13,17 @@ export const createXImportExcel = options => {
 }
 
 export const exportExcel = options => {
-  const { columns, dataSource, data, header, fileName, sheetName, bookType } = options || {}
+  const { data, header, fileName, sheetName, bookType = 'xlsx', columns, dataSource } = options || {}
   const h = (columns || []).reduce((o, n) => {
     const { label, value } = n
     o[value] = label
     return o
   }, {})
   return jsonToSheetXlsx({
-    data: data || dataSource,
+    data: data || dataSource || [],
     header: header || h,
-    fileName: `${fileName}$_${formatDate(new Date())}.${bookType}`,
-    sheetName,
+    fileName: fileName ? `${fileName}_${formatDate(new Date())}.${bookType}` : undefined,
+    sheetName: sheetName ?? undefined,
     write2excelOpts: { bookType }
   })
 }

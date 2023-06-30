@@ -1,6 +1,7 @@
 import * as xlsx from 'xlsx'
 import type { WorkBook } from 'xlsx'
 import type { JsonToSheet, JsonToMultipleSheet, AoAToSheet, AoaToMultipleSheet } from './index'
+import { get } from 'lodash-es'
 import { isEmpty } from '@utils/is'
 
 const { utils, writeFile } = xlsx
@@ -8,18 +9,34 @@ const { utils, writeFile } = xlsx
 const DEF_FILE_NAME = 'excel.xlsx'
 const DEF_SHEET_NAME = 'sheet'
 
+// 获取字符长度
+function getLength(str) {
+  let len = str?.length ?? 0
+  if (typeof str === 'string') {
+    let l = 0
+    for (let i = 0; i < len; i++) {
+      if ((str?.charCodeAt(i) & 0xff00) != 0) {
+        l++
+      }
+      l++
+    }
+    len = l
+  }
+  return len
+}
+
 /**
  * @param data source data
  * @param worksheet worksheet object
  * @param min min width
  */
-function setColumnWidth(data, worksheet, min = 3) {
+function setColumnWidth(data, worksheet, min = 4) {
   const obj = {}
   worksheet['!cols'] = []
   data.forEach(item => {
     Object.keys(item).forEach(key => {
-      const cur = item[key]
-      const length = (cur?.length ?? 0) * 2 || min
+      const len = getLength(item?.[key])
+      const length = len || min
       obj[key] = Math.max(length, obj[key] ?? min)
     })
   })
@@ -38,14 +55,14 @@ function formatJsonData(data, header) {
   const keys = Object.keys(header)
   return data.map(item => {
     return keys.reduce((o, key) => {
-      o[key] = item[key]
+      o[key] = get(item, key)
       return o
     }, {})
   })
 }
 
 export function jsonToSheetXlsx<T = any>({
-  data,
+  data = [],
   header,
   fileName = DEF_FILE_NAME,
   sheetName = DEF_SHEET_NAME,
@@ -78,7 +95,7 @@ export function jsonToSheetXlsx<T = any>({
 }
 
 export function aoaToSheetXlsx<T = any>({
-  data,
+  data = [],
   header,
   fileName = DEF_FILE_NAME,
   sheetName = DEF_SHEET_NAME,

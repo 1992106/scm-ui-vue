@@ -1,13 +1,20 @@
 <template>
   <a-tooltip v-model:visible="visible" color="#fff" trigger="click" placement="bottomRight">
-    <button class="vxe-button type--button is--circle" type="button" title="列设置" @click="handleClick">
-      <Iconfont type="icon-setting" size="18"></Iconfont>
-    </button>
+    <a-button
+      shape="circle"
+      size="middle"
+      title="列设置"
+      class="vxe-button type--button is--circle"
+      @click="handleClick">
+      <template #icon>
+        <SettingOutlined />
+      </template>
+    </a-button>
     <template #title>
       <div class="x-grid__setting">
         <div class="setting-head">
           <a-checkbox v-model:checked="checkAll" :indeterminate="indeterminate" @change="handleCheckAll">
-            列展示
+            全选
           </a-checkbox>
           <a-button size="small" type="link" @click="handleReset">重置</a-button>
         </div>
@@ -91,6 +98,7 @@
 </template>
 <script>
 import { defineComponent, reactive, toRefs, watch } from 'vue'
+import { SettingOutlined } from '@ant-design/icons-vue'
 import Iconfont from '@components/IconFont'
 import draggable from 'vuedraggable'
 import { cloneDeep, omit } from 'lodash-es'
@@ -99,6 +107,7 @@ import { columnsToStorage, storageToColumns } from './utils'
 export default defineComponent({
   name: 'ColumnSetting',
   components: {
+    SettingOutlined,
     Iconfont,
     draggable
   },
@@ -153,7 +162,7 @@ export default defineComponent({
       () => [state.leftFixed, state.middleList, state.rightFixed],
       ([leftFixed, middleList, rightFixed]) => {
         const list = [...leftFixed, ...middleList, ...rightFixed]
-        state.checkAll = list.every(val => val.visible)
+        state.checkAll = list.length && list.every(val => val.visible)
         state.indeterminate = list.some(val => !val.visible) && !list.every(val => !val.visible)
       },
       { deep: true }

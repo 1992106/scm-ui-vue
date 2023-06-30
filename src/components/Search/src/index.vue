@@ -251,7 +251,7 @@ export default defineComponent({
           emitSearch()
         })
         .catch(err => {
-          console.log('from error', err)
+          console.error('search error', err)
         })
     }
 

@@ -69,6 +69,9 @@
       </div>
     </template>
     <template #toolbar_tools>
+      <template v-if="showExport">
+        <ExcelExport :columns="customColumns" :data="data" :exportConfig="exportConfig"></ExcelExport>
+      </template>
       <template v-if="customSetting">
         <ColumnSetting
           :columns="customColumns"
@@ -107,6 +110,7 @@
 <script>
 import { defineComponent, reactive, ref, computed, toRefs, unref, mergeProps, watch } from 'vue'
 import { Empty } from 'ant-design-vue'
+import ExcelExport from './ExcelExport.vue'
 import ColumnSetting from './ColumnSetting.vue'
 import XPagination from '@components/Pagination'
 import { columnsToStorage, getField, mergeStorageAndColumns, storageToColumns } from './utils'
@@ -115,6 +119,7 @@ import { isEmpty } from '@src/utils'
 export default defineComponent({
   name: 'XGrid',
   components: {
+    ExcelExport,
     ColumnSetting,
     'x-pagination': XPagination,
     'a-empty': Empty
@@ -190,6 +195,16 @@ export default defineComponent({
     customZoom: { type: Boolean, default: false },
     // 自定义设置
     customSetting: { type: Boolean, default: false },
+    // 自定义导出
+    showExport: { type: Boolean, default: false },
+    exportConfig: {
+      type: Object,
+      default: () => ({
+        limit: 2000,
+        customRequest: Function,
+        customExport: Function
+      })
+    },
     // 本地Storage名称，拖拽列和自定义表头时本地储存
     storageName: String
   },

@@ -10,14 +10,10 @@
         <div class="toolbar">
           <slot name="toolBar"></slot>
         </div>
-        <div v-if="customExport || customSetting || customZoom" class="custom">
+        <div v-if="showExport || customSetting || customZoom" class="custom">
           <a-space>
-            <template v-if="customExport">
-              <a-button shape="circle" size="middle" title="表格导出" @click="handleExportExcel">
-                <template #icon>
-                  <ExportOutlined />
-                </template>
-              </a-button>
+            <template v-if="showExport">
+              <ExcelExport :columns="customColumns" :dataSource="dataSource" :exportConfig="exportConfig"></ExcelExport>
             </template>
             <template v-if="customSetting">
               <ColumnSetting
@@ -94,18 +90,17 @@
 </template>
 <script>
 import { defineComponent, computed, mergeProps, ref, reactive, toRefs, unref, nextTick, toRef } from 'vue'
-import { CopyOutlined, ExportOutlined, FullscreenExitOutlined, FullscreenOutlined } from '@ant-design/icons-vue'
+import { CopyOutlined, FullscreenExitOutlined, FullscreenOutlined } from '@ant-design/icons-vue'
 import { Button, message, Space, Spin, Table } from 'ant-design-vue'
+import ExcelExport from './ExcelExport.vue'
 import ColumnSetting from './ColumnSetting.vue'
 import CellRender from './CellRender'
-import { createXExportExcel } from '@components/Excel'
 import { useFullscreen } from '@components/hooks/useFullscreen'
 import { useTableScroll } from './useTableScroll'
 import { useTableScrollTo } from './useTableScrollTo'
 import {
   columnsToStorage,
   getSortDirection,
-  getField,
   getValueByRowKey,
   mergeStorageAndColumns,
   storageToColumns
@@ -118,12 +113,12 @@ export default defineComponent({
   components: {
     FullscreenOutlined,
     FullscreenExitOutlined,
-    ExportOutlined,
     CopyOutlined,
     'a-table': Table,
     'a-spin': Spin,
     'a-space': Space,
     'a-button': Button,
+    ExcelExport,
     ColumnSetting,
     CellRender
   },
@@ -184,7 +179,15 @@ export default defineComponent({
     // 自定义设置
     customSetting: { type: Boolean, default: false },
     // 自定义导出
-    customExport: { type: Boolean, default: false },
+    showExport: { type: Boolean, default: false },
+    exportConfig: {
+      type: Object,
+      default: () => ({
+        limit: 2000,
+        customRequest: Function,
+        customExport: Function
+      })
+    },
     // 本地Storage名称，拖拽列和自定义表头时本地储存
     storageName: String
   },
@@ -451,17 +454,9 @@ export default defineComponent({
       }
     }
 
-    // 导出excel
-    const handleExportExcel = () => {
-      const columns = unref(getColumns).map(val => ({ label: val.title, value: getField(val), checked: val.visible }))
-      createXExportExcel({ dataSource: [], columns })
-    }
-
     // 是否显示插槽
     const hasSearchBar = computed(() => !!slots['searchBar'])
-    const hasToolBar = computed(
-      () => !!slots['toolBar'] || props.customExport || props.customSetting || props.customZoom
-    )
+    const hasToolBar = computed(() => !!slots['toolBar'] || props.showExport || props.customSetting || props.customZoom)
 
     // 全屏功能
     const { canFullscreen, toggleFullscreen } = useFullscreen(xTable, { fullscreen: props.customZoom }, () => {
@@ -497,7 +492,6 @@ export default defineComponent({
       handleExpandedRowsChange,
       handleResizeColumn,
       handleSettingColumn,
-      handleExportExcel,
       canFullscreen,
       toggleFullscreen
     }
