@@ -41,17 +41,13 @@ export function notEmpty(value: any): boolean {
 }
 
 // 是否等于undefined或null或''
-export function isNil(val: unknown): val is null | undefined | string {
+export function isBlank(val: unknown): val is null | undefined | string {
   return val == null || val === ''
 }
 
-// 是否不等于undefined或null或''
-export function notNil(val: unknown): val is null | undefined | string {
-  return val != null && val !== ''
-}
-
-export function is(val: unknown, type: string) {
-  return Object.prototype.toString.call(val) === `[object ${type}]`
+// 是否等于undefined或null
+export function isNil(val: unknown): val is null | undefined {
+  return val == null
 }
 
 export function isUnDef<T = unknown>(val?: T): val is T {
@@ -60,6 +56,10 @@ export function isUnDef<T = unknown>(val?: T): val is T {
 
 export function isNull<T = unknown>(val?: T): val is T {
   return val === null
+}
+
+export function is(val: unknown, type: string) {
+  return Object.prototype.toString.call(val) === `[object ${type}]`
 }
 
 export function isObject(val: any): val is Record<any, any> {
