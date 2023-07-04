@@ -5,7 +5,7 @@ import { isEmpty } from '@src/utils'
 export const getValueByRowKey = (rowKey, record, index) => {
   if (!rowKey) {
     console.warn('rowKey 不能为空')
-    return index
+    return Date.now().toString() + index
   }
   if (isFunction(rowKey)) {
     return rowKey(record)

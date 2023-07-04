@@ -116,7 +116,7 @@ export function useAppHeight(canResize) {
       const { proxy } = getCurrentInstance()
       appRef.value = proxy.$root?.$el?.parentNode
       setHeight()
-      window.addEventListener('canResize', setHeight)
+      window.addEventListener('resize', setHeight)
     }
   })
 
