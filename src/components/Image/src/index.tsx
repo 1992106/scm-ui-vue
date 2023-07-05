@@ -182,6 +182,7 @@ const XImage = defineComponent({
       }
 
       if (thumbUrls.value.length > 1) {
+        const now = Date.now().toString()
         // 相册模式
         renderImage = (
           // antdv 暂不支持wrap={true}属性
@@ -189,7 +190,7 @@ const XImage = defineComponent({
             {compressUrls.value.map((src, index) => (
               <Image
                 {...attrs}
-                key={index}
+                key={now + index}
                 style={{ cursor: 'pointer' }}
                 width={width}
                 height={height}
