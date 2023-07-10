@@ -9,8 +9,8 @@ const { utils, writeFile } = xlsx
 const DEF_FILE_NAME = 'excel.xlsx'
 const DEF_SHEET_NAME = 'sheet'
 
-// 获取字符长度
-function getLength(str) {
+// 获取字符的字节长度
+function getByteLength(str) {
   let len = str?.length ?? 0
   if (typeof str === 'number') {
     len = (str + '').length
@@ -38,7 +38,7 @@ function setColumnWidth(data, worksheet, min = 4) {
   worksheet['!cols'] = []
   data.forEach(item => {
     Object.keys(item).forEach(key => {
-      const len = getLength(item?.[key])
+      const len = getByteLength(item?.[key])
       obj[key] = Math.max(len, obj[key] ?? min)
     })
   })
