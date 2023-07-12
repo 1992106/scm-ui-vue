@@ -3,13 +3,15 @@ import type { WorkBook } from 'xlsx'
 import type { JsonToSheet, JsonToMultipleSheet, AoAToSheet, AoaToMultipleSheet } from './index'
 import { get } from 'lodash-es'
 import { isEmpty } from '@utils/is'
+import { formatDate } from '@src/utils'
 
 const { utils, writeFile } = xlsx
 
-const DEF_FILE_NAME = 'excel.xlsx'
+const DEF_BOOK_TYPE = 'xlsx'
 const DEF_SHEET_NAME = 'sheet'
+const DEF_FILE_NAME = `${formatDate(new Date())}.${DEF_BOOK_TYPE}`
 
-// 获取字符的字节长度
+// 获取字节长度
 function getByteLength(str) {
   let len = str?.length ?? 0
   if (typeof str === 'number') {
@@ -28,11 +30,7 @@ function getByteLength(str) {
   return len
 }
 
-/**
- * @param data source data
- * @param worksheet worksheet object
- * @param min min width
- */
+// 设置列宽
 function setColumnWidth(data, worksheet, min = 4) {
   const obj = {}
   worksheet['!cols'] = []
@@ -69,7 +67,7 @@ export function jsonToSheetXlsx<T = any>({
   fileName = DEF_FILE_NAME,
   sheetName = DEF_SHEET_NAME,
   json2sheetOpts = {},
-  write2excelOpts = { bookType: 'xlsx' }
+  write2excelOpts = { bookType: DEF_BOOK_TYPE }
 }: JsonToSheet<T>) {
   let arrData = [...data]
   if (!isEmpty(header)) {
@@ -101,7 +99,7 @@ export function aoaToSheetXlsx<T = any>({
   header,
   fileName = DEF_FILE_NAME,
   sheetName = DEF_SHEET_NAME,
-  write2excelOpts = { bookType: 'xlsx' }
+  write2excelOpts = { bookType: DEF_BOOK_TYPE }
 }: AoAToSheet<T>) {
   const arrData = [...data]
   if (!isEmpty(header)) {
@@ -134,14 +132,14 @@ export function aoaToSheetXlsx<T = any>({
 export function jsonToMultipleSheetXlsx<T = any>({
   sheetList,
   fileName = DEF_FILE_NAME,
-  write2excelOpts = { bookType: 'xlsx' }
+  write2excelOpts = { bookType: DEF_BOOK_TYPE }
 }: JsonToMultipleSheet<T>) {
   const workbook: WorkBook = {
     SheetNames: [],
     Sheets: {}
   }
   sheetList.forEach((p, index) => {
-    let arrData = [...p.data]
+    let arrData = [...(p.data || [])]
     if (!isEmpty(p.header)) {
       arrData = formatJsonData(arrData, p.header)
       arrData.unshift(p.header)
@@ -168,14 +166,14 @@ export function jsonToMultipleSheetXlsx<T = any>({
 export function aoaToMultipleSheetXlsx<T = any>({
   sheetList,
   fileName = DEF_FILE_NAME,
-  write2excelOpts = { bookType: 'xlsx' }
+  write2excelOpts = { bookType: DEF_BOOK_TYPE }
 }: AoaToMultipleSheet<T>) {
   const workbook: WorkBook = {
     SheetNames: [],
     Sheets: {}
   }
   sheetList.forEach((p, index) => {
-    const arrData = [...p.data]
+    const arrData = [...(p.data || [])]
     if (!isEmpty(p.header)) {
       arrData.unshift(p.header)
     }

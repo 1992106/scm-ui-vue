@@ -86,7 +86,7 @@ export default defineComponent({
         { value: 'xls', label: '*.xls' },
         { value: 'csv', label: '*.csv' }
       ],
-      datas: [],
+      excelData: [],
       indeterminate: false,
       checkAll: false,
       checkList: props.columns.map(column => ({ ...column, checked: column.checked ?? true }))
@@ -103,7 +103,7 @@ export default defineComponent({
       state.spinning = true
       await execRequest(customRequest(), {
         success: ({ data }) => {
-          state.datas = data?.list || data || []
+          state.excelData = data?.list || data || []
         },
         fail: () => {}
       })
@@ -178,7 +178,7 @@ export default defineComponent({
     // 前端实现导出文件
     const handleXlsx = async () => {
       const { data, dataSource, customRequest } = props
-      const datas = !isEmpty(customRequest) ? state.datas : data || dataSource || []
+      const excelData = !isEmpty(customRequest) ? state.excelData : data || dataSource || []
       const checkedList = state.checkList.filter(val => val.checked)
       const columns = checkedList.length ? checkedList : props.columns
       const header = columns.reduce((o, n) => {
@@ -188,13 +188,13 @@ export default defineComponent({
       }, {})
       const { fileName, sheetName, bookType } = modelRef
       jsonToSheetXlsx({
-        data: datas,
+        data: excelData,
         header,
         fileName: `${fileName}_${formatDate(new Date())}.${bookType}`,
         sheetName,
         write2excelOpts: { bookType }
       })
-      emit('done', datas)
+      emit('done', excelData)
       // TODO: 使用函数方法调用时，通过emit('update:visible', false)不生效，必须手动关闭
       state.modalVisible = false // 只是为了兼容使用函数方法调用，才需要手动关闭
       handleCancel()
