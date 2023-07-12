@@ -63,7 +63,7 @@ function formatJsonData(data, header) {
 
 export function jsonToSheetXlsx<T = any>({
   data = [],
-  header,
+  header = {} as T,
   fileName = DEF_FILE_NAME,
   sheetName = DEF_SHEET_NAME,
   json2sheetOpts = {},
@@ -96,7 +96,7 @@ export function jsonToSheetXlsx<T = any>({
 
 export function aoaToSheetXlsx<T = any>({
   data = [],
-  header,
+  header = [],
   fileName = DEF_FILE_NAME,
   sheetName = DEF_SHEET_NAME,
   write2excelOpts = { bookType: DEF_BOOK_TYPE }
