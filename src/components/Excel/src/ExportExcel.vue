@@ -67,7 +67,8 @@ export default defineComponent({
     width: { type: [String, Number], default: 520 },
     visible: { type: Boolean, default: false },
     columns: { type: Array, default: () => [] },
-    dataSource: { type: Array, default: () => [] },
+    data: { type: Array },
+    dataSource: { type: Array },
     customRequest: { type: Function }, // 通过接口获取数据，前端实现导出
     customExport: { type: Function }, // 直接后端导出
     fileName: { type: String },
@@ -85,7 +86,7 @@ export default defineComponent({
         { value: 'xls', label: '*.xls' },
         { value: 'csv', label: '*.csv' }
       ],
-      data: [],
+      datas: [],
       indeterminate: false,
       checkAll: false,
       checkList: props.columns.map(column => ({ ...column, checked: column.checked ?? true }))
@@ -102,7 +103,7 @@ export default defineComponent({
       state.spinning = true
       await execRequest(customRequest(), {
         success: ({ data }) => {
-          state.data = data?.list || data || []
+          state.datas = data?.list || data || []
         },
         fail: () => {}
       })
@@ -176,8 +177,8 @@ export default defineComponent({
 
     // 前端实现导出文件
     const handleXlsx = async () => {
-      const { dataSource, customRequest } = props
-      const data = !isEmpty(customRequest) ? state.data : dataSource
+      const { data, dataSource, customRequest } = props
+      const datas = !isEmpty(customRequest) ? state.datas : data || dataSource || []
       const checkedList = state.checkList.filter(val => val.checked)
       const columns = checkedList.length ? checkedList : props.columns
       const header = columns.reduce((o, n) => {
@@ -187,13 +188,13 @@ export default defineComponent({
       }, {})
       const { fileName, sheetName, bookType } = modelRef
       jsonToSheetXlsx({
-        data,
+        data: datas,
         header,
         fileName: `${fileName}_${formatDate(new Date())}.${bookType}`,
         sheetName,
         write2excelOpts: { bookType }
       })
-      emit('done', data)
+      emit('done', datas)
       // TODO: 使用函数方法调用时，通过emit('update:visible', false)不生效，必须手动关闭
       state.modalVisible = false // 只是为了兼容使用函数方法调用，才需要手动关闭
       handleCancel()

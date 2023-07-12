@@ -94,3 +94,26 @@ export const storageToColumns = (storageColumns, columns) => {
     }
   })
 }
+
+export const getXlsxColumns = (columns = []) => {
+  const allColumns = generateLeaf(columns)
+  // 过滤导出字段exports为空数组
+  // 过滤操作栏
+  const restColumns = allColumns.filter(
+    val => !((Array.isArray(val.exports) && val.exports.length === 0) || val.title?.startsWith('操作'))
+  )
+  // 导出字段exports：若exports有值，则拍平为导出字段
+  return restColumns.flatMap(val => {
+    return !isEmpty(val.exports)
+      ? val.exports.map(v => ({
+          label: v.label || v.title,
+          value: v.value || getField(v),
+          checked: v.visible ?? true
+        }))
+      : {
+          label: val.label || val.title,
+          value: val.value || getField(val),
+          checked: val.visible ?? true
+        }
+  })
+}

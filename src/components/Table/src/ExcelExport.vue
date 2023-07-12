@@ -22,8 +22,7 @@ import { message } from 'ant-design-vue'
 import { ExportOutlined } from '@ant-design/icons-vue'
 import { cloneDeep } from 'lodash-es'
 import { createXExportExcel } from '@components/Excel'
-import { generateLeaf, getField } from '@components/Table/src/utils'
-import { isEmpty } from '@src/utils'
+import { getXlsxColumns } from '@components/Table/src/utils'
 
 export default defineComponent({
   name: 'ExcelExport',
@@ -49,26 +48,7 @@ export default defineComponent({
       state.visible = !state.visible
       if (state.visible) {
         const cloneColumns = cloneDeep(props.columns)
-        const allColumns = generateLeaf(cloneColumns)
-        // 过滤导出字段exports为空数组
-        // 过滤操作栏
-        const columns = allColumns.filter(
-          val => !((Array.isArray(val.exports) && val.exports.length === 0) || val.title?.startsWith('操作'))
-        )
-        // 导出字段exports：若exports有值，则拍平为导出字段
-        state.customColumns = columns.flatMap(val => {
-          return !isEmpty(val.exports)
-            ? val.exports.map(v => ({
-                label: v.label || v.title,
-                value: v.value || getField(v),
-                checked: v.visible ?? true
-              }))
-            : {
-                label: val.label || val.title,
-                value: val.value || getField(val),
-                checked: val.visible ?? true
-              }
-        })
+        state.customColumns = getXlsxColumns(cloneColumns)
       }
     }
 
