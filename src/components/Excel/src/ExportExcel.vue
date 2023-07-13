@@ -21,7 +21,7 @@
       <a-form-item label="工作表名" v-bind="validateInfos['sheetName']">
         <a-input v-model:value="modelRef.sheetName" placeholder="请输入工作表名"></a-input>
       </a-form-item>
-      <a-form-item v-if="columns.length" label="导出字段">
+      <a-form-item v-if="checkList.length" label="导出字段">
         <div class="box">
           <div class="checkbox-head">
             <a-checkbox v-model:checked="checkAll" :indeterminate="indeterminate" @change="handleCheckAllChange">
@@ -66,9 +66,10 @@ export default defineComponent({
     title: { type: String, default: '导出数据' },
     width: { type: [String, Number], default: 520 },
     visible: { type: Boolean, default: false },
-    columns: { type: Array, default: () => [] },
     data: { type: Array },
     dataSource: { type: Array },
+    columns: { type: Array, default: () => [] },
+    header: { type: Object, default: () => ({}) },
     customRequest: { type: Function }, // 通过接口获取数据，前端实现导出
     customExport: { type: Function }, // 直接后端导出
     fileName: { type: String },
@@ -89,7 +90,14 @@ export default defineComponent({
       excelData: [],
       indeterminate: false,
       checkAll: false,
-      checkList: props.columns.map(column => ({ ...column, checked: column.checked ?? true }))
+      checkList:
+        (!isEmpty(props.columns)
+          ? props.columns.map(column => ({ ...column, checked: column.checked ?? true }))
+          : undefined) ||
+        (!isEmpty(props.header)
+          ? Object.keys(props.header).map(key => ({ label: props.header[key], value: key, checked: true }))
+          : undefined) ||
+        []
     })
 
     watchEffect(() => {
@@ -155,7 +163,7 @@ export default defineComponent({
       if (!isFunction(customExport)) return
       const { fileName, sheetName, bookType } = modelRef
       const checkedList = state.checkList.filter(val => val.checked)
-      const columns = checkedList.length ? checkedList : props.columns
+      const columns = checkedList.length ? checkedList : state.checkList // 如果不勾选，默认是导出全部字段
       await execRequest(
         customExport({
           fileName: `${fileName}_${formatDate(new Date())}.${bookType}`,
@@ -180,7 +188,7 @@ export default defineComponent({
       const { data, dataSource, customRequest } = props
       const excelData = !isEmpty(customRequest) ? state.excelData : data || dataSource || []
       const checkedList = state.checkList.filter(val => val.checked)
-      const columns = checkedList.length ? checkedList : props.columns
+      const columns = checkedList.length ? checkedList : state.checkList // 如果不勾选，默认是导出全部字段
       const header = columns.reduce((o, n) => {
         const { label, value } = n
         o[value] = label
@@ -225,7 +233,6 @@ export default defineComponent({
 
     return {
       ...toRefs(state),
-      handleRequest,
       handleCheckAllChange,
       modelRef,
       validateInfos,

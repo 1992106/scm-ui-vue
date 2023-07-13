@@ -15,6 +15,7 @@ export const createXImportExcel = options => {
 }
 
 const formatHeader = (data, dataSource, columns) => {
+  if (!columns) return {}
   const allColumns =
     (data ? getXlsxColumnsByGrid(columns || []) : undefined) || // 兼容 x-grid
     (dataSource ? getXlsxColumnsByTable(columns || []) : undefined) || // 兼容 x-table

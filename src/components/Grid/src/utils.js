@@ -112,12 +112,12 @@ export const getXlsxColumns = (columns = []) => {
       ? val.exports.map(v => ({
           label: v.label || v.title,
           value: v.value || getField(v),
-          checked: v.visible ?? true
+          checked: v.checked ?? v.visible ?? true
         }))
       : {
           label: val.label || val.title,
           value: val.value || getField(val),
-          checked: val.visible ?? true
+          checked: val.checked ?? val.visible ?? true
         }
   })
 }
