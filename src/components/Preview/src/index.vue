@@ -25,7 +25,7 @@ export default defineComponent({
   inheritAttrs: false,
   props: {
     visible: { type: Boolean as PropType<boolean>, default: false },
-    current: { type: Number as PropType<number>, default: 0 },
+    current: { type: Number as PropType<number> },
     urls: { type: Array as PropType<string[]>, required: true },
     getContainer: { type: [String, HTMLElement, Function] as PropType<string | HTMLElement | (() => HTMLElement)> }
   },
@@ -40,12 +40,12 @@ export default defineComponent({
 
     const current = ref(0)
     watchEffect(() => {
-      current.value = props.current
+      current.value = props.current ?? 0
     })
 
     const urls = ref([])
     watchEffect(() => {
-      urls.value = props.urls
+      urls.value = props.urls ?? []
     })
 
     // 关闭预览时触发
