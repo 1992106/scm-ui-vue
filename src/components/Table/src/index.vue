@@ -10,9 +10,9 @@
         <div class="toolbar">
           <slot name="toolBar"></slot>
         </div>
-        <div v-if="showExport || customSetting || customZoom" class="custom">
+        <div v-if="customExport || customSetting || customZoom" class="custom">
           <a-space>
-            <template v-if="showExport">
+            <template v-if="customExport">
               <ExcelExport :columns="customColumns" :dataSource="dataSource" :exportConfig="exportConfig"></ExcelExport>
             </template>
             <template v-if="customSetting">
@@ -179,7 +179,7 @@ export default defineComponent({
     // 自定义设置
     customSetting: { type: Boolean, default: false },
     // 自定义导出
-    showExport: { type: Boolean, default: false },
+    customExport: { type: Boolean, default: false },
     exportConfig: {
       type: Object,
       default: () => ({
@@ -456,7 +456,9 @@ export default defineComponent({
 
     // 是否显示插槽
     const hasSearchBar = computed(() => !!slots['searchBar'])
-    const hasToolBar = computed(() => !!slots['toolBar'] || props.showExport || props.customSetting || props.customZoom)
+    const hasToolBar = computed(
+      () => !!slots['toolBar'] || props.customExport || props.customSetting || props.customZoom
+    )
 
     // 全屏功能
     const { canFullscreen, toggleFullscreen } = useFullscreen(xTable, { fullscreen: props.customZoom }, () => {

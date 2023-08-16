@@ -69,7 +69,7 @@
       </div>
     </template>
     <template #toolbar_tools>
-      <template v-if="showExport">
+      <template v-if="customExport">
         <ExcelExport :columns="customColumns" :data="data" :exportConfig="exportConfig"></ExcelExport>
       </template>
       <template v-if="customSetting">
@@ -196,7 +196,7 @@ export default defineComponent({
     // 自定义设置
     customSetting: { type: Boolean, default: false },
     // 自定义导出
-    showExport: { type: Boolean, default: false },
+    customExport: { type: Boolean, default: false },
     exportConfig: {
       type: Object,
       default: () => ({

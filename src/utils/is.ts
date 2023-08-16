@@ -3,6 +3,8 @@
  * @param value
  * @returns {boolean}
  */
+import { RefType } from 'vue/macros'
+
 export function isEmpty(value: any): boolean {
   if (value == null) {
     return true
@@ -63,7 +65,7 @@ export function is(val: unknown, type: string) {
 }
 
 export function isObject(val: any): val is Record<any, any> {
-  return val !== null && is(val, 'Object')
+  return val !== null && typeof val === 'object'
 }
 
 export function isArray(val: any): val is Array<any> {
@@ -71,11 +73,15 @@ export function isArray(val: any): val is Array<any> {
 }
 
 export function isString(val: unknown): val is string {
-  return is(val, 'String')
+  return typeof val === 'string'
+}
+
+export function isSymbol(val: unknown): val is symbol {
+  return typeof val === 'symbol'
 }
 
 export function isNumber(val: unknown): val is number {
-  return is(val, 'Number')
+  return typeof val === 'number'
 }
 
 export function isBoolean(val: unknown): val is boolean {
@@ -83,7 +89,7 @@ export function isBoolean(val: unknown): val is boolean {
 }
 
 export function isDate(val: unknown): val is Date {
-  return is(val, 'Date')
+  return val instanceof Date
 }
 
 export function isSet(val: unknown): val is Map<any, any> {

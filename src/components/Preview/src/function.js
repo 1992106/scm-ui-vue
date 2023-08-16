@@ -1,6 +1,7 @@
 import XPreview from './index.vue'
-import { produce } from '@src/plugins/produce'
+import useComponent from '@src/plugins/useComponent'
 
 export const createXPreview = options => {
-  produce(XPreview, { visible: true }, options)
+  const produce = useComponent(XPreview)(options)
+  return produce(options)
 }

@@ -154,7 +154,7 @@ export const getBeforeUpload = async (file, props) => {
     }
     // 最小高度
     if (!isEmpty(props.minHeight)) {
-      const isMinHeight = width >= props.minHeight
+      const isMinHeight = height >= props.minHeight
       if (!isMinHeight) {
         message.error(`高度不能小于${props.minHeight}`)
         return false

@@ -1,17 +1,19 @@
 import XExportExcel from './ExportExcel.vue'
 import XImportExcel from './ImportExcel.vue'
 import { jsonToMultipleSheetXlsx, jsonToSheetXlsx } from './utils'
-import { produce } from '@src/plugins/produce'
+import useComponent from '@src/plugins/useComponent'
 import { formatDate } from '@src/utils'
 import { getXlsxColumns as getXlsxColumnsByTable } from '@components/Table/src/utils'
 import { getXlsxColumns as getXlsxColumnsByGrid } from '@components/Grid/src/utils'
 
 export const createXExportExcel = options => {
-  produce(XExportExcel, { visible: true }, options)
+  const produce = useComponent(XExportExcel)
+  return produce(options)
 }
 
 export const createXImportExcel = options => {
-  produce(XImportExcel, { visible: true }, options)
+  const produce = useComponent(XImportExcel)
+  return produce(options)
 }
 
 const formatHeader = (data, dataSource, columns) => {

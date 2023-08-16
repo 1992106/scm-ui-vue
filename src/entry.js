@@ -14,5 +14,7 @@ export * from '@components/index'
 
 // 函数组件
 export * from '@components/create'
+// use组件
+export { default as useComponent } from './plugins/useComponent'
 
 // export { VXETablePluginSCM } from './plugins/VXETablePluginSCM'

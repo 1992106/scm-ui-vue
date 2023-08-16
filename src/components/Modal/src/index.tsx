@@ -1,20 +1,11 @@
 import { computed, defineComponent, PropType, ref, toRefs, unref, watchEffect } from 'vue'
 import { Modal, Spin } from 'ant-design-vue'
+import type { SpinProps } from 'ant-design-vue'
 import { FullscreenExitOutlined, FullscreenOutlined } from '@ant-design/icons-vue'
 import { useModalDragMove } from './useModalDrag'
 import './index.scss'
 
-type SpinProps = {
-  prefixCls?: string
-  spinning?: boolean
-  size?: 'default' | 'small' | 'large'
-  wrapperClassName?: string
-  tip?: string
-  delay?: number
-  indicator?: any
-}
-
-const ModalProps = {
+const modalProps = {
   visible: Boolean,
   destroyOnClose: Boolean,
   wrapClassName: String,
@@ -25,7 +16,7 @@ const XModal = defineComponent({
   name: 'XModal',
   inheritAttrs: false,
   props: {
-    ...ModalProps,
+    ...modalProps,
     draggable: { type: Boolean, default: true },
     showFullscreen: { type: Boolean, default: true },
     fullscreen: { type: Boolean, default: false },
@@ -64,15 +55,15 @@ const XModal = defineComponent({
       [props.wrapClassName, `${unref(canFullscreen) ? 'x-modal__fullscreen' : ''}`].filter(Boolean).join(' ')
     )
 
-    const handleCancel = () => {
+    const handleCancel = (e: Event) => {
       if (!props.manual) {
         emit('update:visible', false)
       }
-      emit('cancel')
+      emit('cancel', e)
     }
 
-    const handleOk = () => {
-      emit('ok')
+    const handleOk = (e: Event) => {
+      emit('ok', e)
     }
 
     const renderTitle = computed(() => {

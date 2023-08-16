@@ -189,7 +189,7 @@ export default defineComponent({
     accept: { type: String }, // 'image/*'、'application/*'、'audio/*'、'video/*'、'text/*'
     directory: { type: Boolean },
     multiple: { type: Boolean },
-    size: { type: Number, default: 500 },
+    size: { type: Number, default: 500 }, // M
     ratio: { type: Array },
     imgWidth: { type: Number },
     minWidth: { type: Number },
@@ -285,8 +285,15 @@ export default defineComponent({
       if (!isEmpty(props.beforeUpload) && isFunction(props.beforeUpload)) {
         return await props.beforeUpload(file)
       }
-      const { imgWidth, imgHeight, ...restProps } = props
-      const bool = await getBeforeUpload(file, { width: imgWidth, height: imgHeight, ...restProps })
+      const { size, ratio, imgWidth, minWidth, maxWidth, imgHeight, minHeight, maxHeight } = props
+      const bool = await getBeforeUpload(file, {
+        width: imgWidth,
+        minWidth,
+        maxWidth,
+        height: imgHeight,
+        minHeight,
+        maxHeight
+      })
       if (bool) {
         // 把通过校验的文件手动添加到文件列表中
         handleUploading(file)

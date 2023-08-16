@@ -8,3 +8,6 @@ XDrawer.install = function (app) {
 
 // 默认导出组件
 export default XDrawer
+
+// 函数组件
+export { default as useXDrawer } from './src/useDrawer'

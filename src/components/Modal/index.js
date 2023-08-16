@@ -8,3 +8,6 @@ XModal.install = function (app) {
 
 // 默认导出组件
 export default XModal
+
+// 函数组件
+export { default as useXModal } from './src/useModal'
