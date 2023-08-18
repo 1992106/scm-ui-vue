@@ -3,8 +3,6 @@
  * @param value
  * @returns {boolean}
  */
-import { RefType } from 'vue/macros'
-
 export function isEmpty(value: any): boolean {
   if (value == null) {
     return true
