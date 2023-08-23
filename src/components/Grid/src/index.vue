@@ -333,14 +333,7 @@ export default defineComponent({
      */
     // 单选
     const handleRadioChange = ({ row, rowIndex, $rowIndex, column, columnIndex, $columnIndex, $event }) => {
-      const $xGrid = unref(xGrid)
-      let selectedValue
-      if (props.radioConfig?.reserve) {
-        selectedValue = $xGrid?.getRadioReserveRecord()
-      } else {
-        selectedValue = $xGrid?.getRadioRecord()
-      }
-      emit('update:selected-value', [selectedValue])
+      emit('update:selected-value', [row])
       emit('radio-change', { row, rowIndex, $rowIndex, column, columnIndex, $columnIndex, $event })
     }
     // 勾选
