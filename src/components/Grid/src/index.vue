@@ -416,7 +416,7 @@ export default defineComponent({
           }
         })
       },
-      { immediate: true, deep: true, flush: 'post' }
+      { immediate: true, deep: true }
     )
     // 单元格点击事件
     const handleCellClick = ({
