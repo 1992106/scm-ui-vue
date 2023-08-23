@@ -108,7 +108,7 @@
   </vxe-grid>
 </template>
 <script>
-import { defineComponent, reactive, ref, computed, toRefs, unref, mergeProps, watch } from 'vue'
+import { defineComponent, reactive, ref, computed, toRefs, unref, mergeProps, watch, nextTick } from 'vue'
 import { Empty } from 'ant-design-vue'
 import ExcelExport from './ExcelExport.vue'
 import ColumnSetting from './ColumnSetting.vue'
@@ -212,6 +212,7 @@ export default defineComponent({
     'search',
     'update:pagination',
     'update:selected-value',
+    'edit-updated',
     'radio-change',
     'checkbox-change',
     'checkbox-all',
@@ -291,7 +292,6 @@ export default defineComponent({
       set: val => {
         emit('update:pagination', val)
         emit('search', null, 'paginate')
-        // xGrid.value.loadData()
       }
     })
     // 插槽
@@ -333,7 +333,14 @@ export default defineComponent({
      */
     // 单选
     const handleRadioChange = ({ row, rowIndex, $rowIndex, column, columnIndex, $columnIndex, $event }) => {
-      emit('update:selected-value', [row])
+      const $xGrid = unref(xGrid)
+      let selectedValue
+      if (props.radioConfig?.reserve) {
+        selectedValue = $xGrid?.getRadioReserveRecord()
+      } else {
+        selectedValue = $xGrid?.getRadioRecord()
+      }
+      emit('update:selected-value', [selectedValue])
       emit('radio-change', { row, rowIndex, $rowIndex, column, columnIndex, $columnIndex, $event })
     }
     // 勾选
@@ -350,11 +357,11 @@ export default defineComponent({
       $columnIndex,
       $event
     }) => {
-      let selectedValue
+      const $xGrid = unref(xGrid)
+      const selectedValue = $xGrid?.getCheckboxRecords()
       if (props.checkboxConfig?.reserve) {
-        selectedValue = reserves
-      } else {
-        selectedValue = records
+        const reserveRecords = $xGrid?.getCheckboxReserveRecords()
+        selectedValue.push(...reserveRecords)
       }
       emit('update:selected-value', selectedValue)
       emit('checkbox-change', {
@@ -372,49 +379,49 @@ export default defineComponent({
       })
     }
     // 全选
-    const handleCheckboxAll = ({ checked, $event }) => {
+    const handleCheckboxAll = ({ records, reserves, indeterminates, checked, $event }) => {
       const $xGrid = unref(xGrid)
-      let selectedValue
+      const selectedValue = $xGrid?.getCheckboxRecords()
       if (props.checkboxConfig?.reserve) {
-        selectedValue = $xGrid.getCheckboxReserveRecords()
-      } else {
-        selectedValue = $xGrid.getCheckboxRecords()
+        const reserveRecords = $xGrid?.getCheckboxReserveRecords()
+        selectedValue.push(...reserveRecords)
       }
       emit('update:selected-value', selectedValue)
-      emit('checkbox-all', { checked, $event })
+      emit('checkbox-all', { records, reserves, indeterminates, checked, $event })
     }
     // 监听selectedValue，实现双向绑定
     watch(
       () => props.selectedValue,
       selectedValue => {
-        const $xGrid = unref(xGrid)
-        if (isEmpty(selectedValue)) {
-          // 多选框
-          if (unref(selectedType) === 'checkbox') {
-            if (props.checkboxConfig?.reserve) {
-              $xGrid?.clearCheckboxReserve()
-            } else {
+        // flush: 'post' 在某些情况下不生效，故使用nextTick
+        nextTick(() => {
+          const $xGrid = unref(xGrid)
+          if (isEmpty(selectedValue)) {
+            // 多选框
+            if (unref(selectedType) === 'checkbox') {
               $xGrid?.clearCheckboxRow()
+              if (props.checkboxConfig?.reserve) {
+                $xGrid?.clearCheckboxReserve()
+              }
             }
-          }
-          // 单选框
-          if (unref(selectedType) === 'radio') {
-            if (props.radioConfig?.reserve) {
-              $xGrid?.clearRadioReserve()
-            } else {
+            // 单选框
+            if (unref(selectedType) === 'radio') {
               $xGrid?.clearRadioRow()
+              if (props.radioConfig?.reserve) {
+                $xGrid?.clearRadioReserve()
+              }
+            }
+          } else {
+            // 多选框
+            if (unref(selectedType) === 'checkbox') {
+              $xGrid?.setCheckboxRow(selectedValue, true)
+            }
+            // 单选框
+            if (unref(selectedType) === 'radio') {
+              $xGrid?.setRadioRow(selectedValue[0])
             }
           }
-        } else {
-          // 多选框
-          if (unref(selectedType) === 'checkbox') {
-            $xGrid.setCheckboxRow(selectedValue, true)
-          }
-          // 单选框
-          if (unref(selectedType) === 'radio') {
-            $xGrid.setRadioRow(selectedValue[0])
-          }
-        }
+        })
       },
       { immediate: true, deep: true }
     )
@@ -460,13 +467,14 @@ export default defineComponent({
     }
     // 编辑
     const handleEditClosed = ({ row, rowIndex, $rowIndex, column, columnIndex, $columnIndex }) => {
-      const field = column.property
       // 判断单元格值是否被修改
       const $xGrid = unref(xGrid)
+      const field = column.property
       if ($xGrid.isUpdateByRow(row, field)) {
-        emit('edit-closed', { row, field, rowIndex, $rowIndex, column, columnIndex, $columnIndex })
-        // $xGrid.reloadRow(row, null, field)
+        emit('edit-updated', { row, field, rowIndex, $rowIndex, column, columnIndex, $columnIndex })
+        // $xGrid.reloadRow(row, {})
       }
+      emit('edit-closed', { row, rowIndex, $rowIndex, column, columnIndex, $columnIndex })
     }
     // 编辑校验
     const handleValidError = ({ rule, row, rowIndex, $rowIndex, column, columnIndex, $columnIndex }) => {
@@ -486,8 +494,9 @@ export default defineComponent({
       emit('filter-change', { column, property, values, datas, filterList, $event })
       if (unref(getFilterConfig)?.remote) {
         emit('search', filters, 'filter')
+      } else {
+        // xGrid.value?.updateData()
       }
-      // xGrid.value.loadData()
     }
     // 筛选面板显示隐藏
     const handleFilterVisible = ({ column, property, visible, filterList, $event }) => {
@@ -506,6 +515,8 @@ export default defineComponent({
       emit('sort-change', { column, property, order, sortBy, sortList, $event })
       if (unref(getSortConfig)?.remote) {
         emit('search', sorts, 'sort')
+      } else {
+        // xGrid.value?.updateData()
       }
     }
     // 清除所有排序条件
@@ -545,7 +556,7 @@ export default defineComponent({
     const handleSettingChange = columns => {
       const $xGrid = unref(xGrid)
       state.customColumns = columns
-      $xGrid.reloadColumn(columns)
+      $xGrid?.reloadColumn(columns)
       setColumnsToStorage()
     }
     // 设置本地缓存

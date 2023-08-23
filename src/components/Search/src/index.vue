@@ -418,6 +418,7 @@ export default defineComponent({
       :deep(.ant-form-item) {
         .ant-form-item-control-input-content {
           .ant-input-number,
+          .ant-input-number-group-wrapper,
           .ant-picker {
             width: 100%;
           }

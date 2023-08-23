@@ -131,8 +131,8 @@ export default defineComponent({
      * @param {*} params
      */
     const handleReset = params => {
-      unref(xProGrid).xGrid?.clearFilter()
-      unref(xProGrid).xGrid?.clearSort()
+      unref(xProGrid)?.xGrid?.clearFilter()
+      unref(xProGrid)?.xGrid?.clearSort()
       onReset(params)
       // 通过ref调用重置方法时，默认不搜索
       // 点击【搜索栏-重置按钮】会触发搜索事件，搜索方法会重置page和更新value
