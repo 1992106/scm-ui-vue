@@ -53,7 +53,7 @@ import { DownOutlined, UpOutlined } from '@ant-design/icons-vue'
 import { omit, pick } from 'lodash-es'
 import { isEmpty } from '@src/utils'
 import {
-  formatDateToDayjs,
+  formatDefaultDate,
   formatFormModel,
   formatFormRules,
   formatFormValues,
@@ -101,11 +101,11 @@ export default defineComponent({
         const allColumn = pick(column, columnKeys)
         // props
         const otherProps = omit(column, [...columnKeys, 'props', 'events'])
+        const allProps = mergeProps(otherProps, props)
         // 格式化时间
         if (hasDate(column)) {
-          formatDateToDayjs(props)
+          formatDefaultDate(allProps)
         }
-        const allProps = mergeProps(otherProps, props)
 
         return { ...allColumn, modelValue: getModelValue(column?.type), props: allProps, events }
       })

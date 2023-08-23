@@ -15,11 +15,16 @@ export const hasDate = column => {
   return ['ADatePicker', 'ARangePicker', 'ATimePicker'].includes(column?.type)
 }
 
-// 格式化日期：antd不支持new Date()，需要转化成dayjs
-export const formatDateToDayjs = props => {
-  const { defaultValue, defaultPickerValue } = props
-  defaultValue && (props.defaultValue = dateToDayjs(defaultValue))
-  defaultPickerValue && (props.defaultPickerValue = dateToDayjs(defaultPickerValue))
+// 格式化日期：antd默认不支持new Date()，需要转化成dayjs
+export const formatDefaultDate = props => {
+  const { defaultValue, defaultPickerValue, valueFormat } = props
+  if (valueFormat) {
+    defaultValue && (props.defaultValue = dayjsToDate(defaultValue))
+    defaultPickerValue && (props.defaultPickerValue = dayjsToDate(defaultPickerValue))
+  } else {
+    defaultValue && (props.defaultValue = dateToDayjs(defaultValue))
+    defaultPickerValue && (props.defaultPickerValue = dateToDayjs(defaultPickerValue))
+  }
 }
 
 /**
@@ -66,10 +71,10 @@ export const formatFormModel = columns => {
     let value = ['defaultValue', 'defaultPickerValue'].map(val => next?.props?.[val]).find(Boolean)
     if (isEmpty(value)) {
       value = hasMultiple(next) ? [] : undefined
-    }
-    // TODO: AAutoComplete组件默认值为undefined时，点击重置无效
-    if (next?.type === 'AAutoComplete') {
-      value = ''
+      // TODO: AAutoComplete组件默认值为undefined时，点击重置无效
+      if (next?.type === 'AAutoComplete') {
+        value = ''
+      }
     }
     prev[next?.field] = value
     return prev

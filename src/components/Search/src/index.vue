@@ -62,7 +62,7 @@ import { omit, pick } from 'lodash-es'
 import { isEmpty, triggerResize } from '@src/utils'
 import { mergeEvents, cleanDisabled } from './utils'
 import {
-  formatDateToDayjs,
+  formatDefaultDate,
   formatFormModel,
   formatFormRules,
   formatFormValues,
@@ -216,11 +216,11 @@ export default defineComponent({
           // props
           const defaultProps = defaultAllState.props || {}
           const otherProps = omit(column, [...columnKeys, 'props', 'events'])
+          const allProps = mergeProps(defaultProps, otherProps, props)
           // 格式化时间
           if (hasDate(column)) {
-            formatDateToDayjs(props)
+            formatDefaultDate(allProps)
           }
-          const allProps = mergeProps(defaultProps, otherProps, props)
           // events
           const defaultEvents = defaultAllState.events || []
           const allEvents = mergeEvents(defaultEventsMap, defaultEvents, events)

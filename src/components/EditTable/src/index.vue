@@ -45,7 +45,7 @@
 import { computed, defineComponent, reactive, ref, toRefs, watchEffect } from 'vue'
 import XTable from '@components/Table'
 import { isEmpty } from '@src/utils'
-import { formatDateToDayjs, getModelValue, hasDate } from '@components/Form/src/utils'
+import { formatDefaultDate, getModelValue, hasDate } from '@components/Form/src/utils'
 export default defineComponent({
   name: 'XEditTable',
   components: {
@@ -71,7 +71,7 @@ export default defineComponent({
         const { props = {}, events = {} } = column
         // 格式化时间
         if (hasDate(column)) {
-          formatDateToDayjs(props)
+          formatDefaultDate(props)
         }
 
         return { ...column, modelValue: getModelValue(column?.type), props: props, events }
