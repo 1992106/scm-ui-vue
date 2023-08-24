@@ -66,17 +66,17 @@ export default defineComponent({
     title: { type: String, default: '导出数据' },
     width: { type: [String, Number], default: 520 },
     visible: { type: Boolean, default: false },
-    data: { type: Array },
-    dataSource: { type: Array },
+    data: { type: Array }, // 【前端导出：通过数据直接导出】 兼容x-table
+    dataSource: { type: Array }, // 兼容x-grid组件
     columns: { type: Array, default: () => [] },
     header: { type: Object, default: () => ({}) },
-    customRequest: { type: Function }, // 通过接口获取数据，前端实现导出
-    customExport: { type: Function }, // 直接后端导出
+    customRequest: { type: Function }, // 【前端导出：通过接口获取数据导出】
+    customExport: { type: Function }, // 【后端导出：把参数传给后端，由直接后端导出】
     fileName: { type: String },
     sheetName: { type: String },
     bookType: { type: String, default: 'xlsx' }
   },
-  emits: ['update:visible', 'done'],
+  emits: ['update:visible', 'success', 'error'],
   setup(props, { emit, expose }) {
     const state = reactive({
       modalVisible: props.visible,
@@ -101,10 +101,10 @@ export default defineComponent({
     })
 
     watchEffect(() => {
-      // 使用函数方法调用时不会触发
       state.modalVisible = props.visible
     })
 
+    // 通过接口获取数据
     const handleRequest = async () => {
       const { customRequest } = props
       if (!isFunction(customRequest)) return
@@ -157,7 +157,7 @@ export default defineComponent({
 
     const { resetFields, validate, validateInfos } = Form.useForm(modelRef, rulesRef)
 
-    // 后端实现导出文件
+    // 后端导出：把参数传给后端，由直接后端导出
     const handlerExport = async () => {
       const { customExport } = props
       if (!isFunction(customExport)) return
@@ -172,18 +172,18 @@ export default defineComponent({
           columns
         }),
         {
-          success: ({ data }) => {
-            emit('done', data)
-            // TODO: 使用函数方法调用时，通过emit('update:visible', false)不生效，必须手动关闭
-            state.modalVisible = false // 只是为了兼容使用函数方法调用，才需要手动关闭
+          success: result => {
+            emit('success', result)
             handleCancel()
           },
-          fail: () => {}
+          fail: error => {
+            emit('error', error)
+          }
         }
       )
     }
 
-    // 前端实现导出文件
+    // 前端导出：1、通过接口获取数据导出；2、通过数据直接导出
     const handleXlsx = async () => {
       const { data, dataSource, customRequest } = props
       const excelData = !isEmpty(customRequest) ? state.excelData : data || dataSource || []
@@ -195,17 +195,19 @@ export default defineComponent({
         return o
       }, {})
       const { fileName, sheetName, bookType } = modelRef
-      jsonToSheetXlsx({
-        data: excelData,
-        header,
-        fileName: `${fileName}_${formatDate(new Date())}.${bookType}`,
-        sheetName,
-        write2excelOpts: { bookType }
-      })
-      emit('done', excelData)
-      // TODO: 使用函数方法调用时，通过emit('update:visible', false)不生效，必须手动关闭
-      state.modalVisible = false // 只是为了兼容使用函数方法调用，才需要手动关闭
-      handleCancel()
+      try {
+        jsonToSheetXlsx({
+          data: excelData,
+          header,
+          fileName: `${fileName}_${formatDate(new Date())}.${bookType}`,
+          sheetName,
+          write2excelOpts: { bookType }
+        })
+        emit('success', excelData)
+        handleCancel()
+      } catch (error) {
+        emit('error', error)
+      }
     }
 
     const handleOk = async () => {

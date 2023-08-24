@@ -10,4 +10,4 @@ XPreview.install = function (app) {
 export default XPreview
 
 // 函数组件
-export { createXPreview } from './src/function'
+export { useXPreview } from './src/function'

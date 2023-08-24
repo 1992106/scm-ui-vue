@@ -1,11 +1,18 @@
 import * as xlsx from 'xlsx'
-import type { WorkBook } from 'xlsx'
-import type { JsonToSheet, JsonToMultipleSheet, AoAToSheet, AoaToMultipleSheet } from './index'
+import type { WorkBook, WorkSheet, Range } from 'xlsx'
+import type {
+  JsonToSheet,
+  JsonToMultipleSheet,
+  AoAToSheet,
+  AoaToMultipleSheet,
+  ExcelData,
+  MultipleExcelData
+} from './index'
 import { get } from 'lodash-es'
 import { isEmpty } from '@utils/is'
 import { formatDate } from '@src/utils'
 
-const { utils, writeFile } = xlsx
+const { utils, writeFile, read } = xlsx
 
 const DEF_BOOK_TYPE = 'xlsx'
 const DEF_SHEET_NAME = 'sheet'
@@ -187,4 +194,105 @@ export function aoaToMultipleSheetXlsx<T = any>({
   /* output format determined by fileName */
   writeFile(workbook, fileName, write2excelOpts)
   /* at this point, out.xlsb will have been downloaded */
+}
+
+/**
+ * @description: 格式表头
+ */
+function shapeWorkSheel(sheet: WorkSheet, range: Range) {
+  let str = ' ',
+    char = 65,
+    customWorkSheet = {
+      t: 's',
+      v: str,
+      r: '<t> </t><phoneticPr fontId="1" type="noConversion"/>',
+      h: str,
+      w: str
+    }
+  if (!sheet || !sheet['!ref']) return []
+  let c = 0,
+    r = 1
+  while (c < range.e.c + 1) {
+    while (r < range.e.r + 1) {
+      if (!sheet[String.fromCharCode(char) + r]) {
+        sheet[String.fromCharCode(char) + r] = customWorkSheet
+      }
+      r++
+    }
+    r = 1
+    str += ' '
+    customWorkSheet = {
+      t: 's',
+      v: str,
+      r: '<t> </t><phoneticPr fontId="1" type="noConversion"/>',
+      h: str,
+      w: str
+    }
+    c++
+    char++
+  }
+}
+
+/**
+ * @description: 第一行作为头部
+ */
+function getHeaderRow(sheet: WorkSheet) {
+  if (!sheet || !sheet['!ref']) return []
+  const headers: string[] = []
+  // A3:B7=>{s:{c:0, r:2}, e:{c:1, r:6}}
+  const range: Range = utils.decode_range(sheet['!ref'])
+  shapeWorkSheel(sheet, range)
+  const R = range.s.r
+  /* start in the first row */
+  for (let C = range.s.c; C <= range.e.c; ++C) {
+    /* walk every column in the range */
+    const cell = sheet[utils.encode_cell({ c: C, r: R })]
+    /* find the cell in the first row */
+    let hdr = 'UNKNOWN ' + C // <-- replace with your desired default
+    if (cell && cell.t) hdr = utils.format_cell(cell)
+    headers.push(hdr)
+  }
+  return headers
+}
+
+/**
+ * @description: 获得excel数据
+ */
+function getExcelData(workbook: WorkBook): ExcelData[] {
+  const excelData: ExcelData[] = []
+  for (const sheetName of workbook.SheetNames) {
+    const worksheet = workbook.Sheets[sheetName]
+    const header: string[] = getHeaderRow(worksheet)
+    const data = utils.sheet_to_json(worksheet, {
+      raw: true
+    }) as object[]
+
+    excelData.push({
+      header,
+      data,
+      sheetName
+    })
+  }
+  return excelData
+}
+
+/**
+ * @description: 读取excel数据
+ */
+export function readerData(rawFile: File): Promise<MultipleExcelData> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onload = async e => {
+      try {
+        const data = e.target && e.target.result
+        const workbook = read(data, { type: 'array', cellDates: true })
+        /* DO SOMETHING WITH workbook HERE */
+        const excelData = getExcelData(workbook)
+        resolve({ fileName: rawFile.name, sheetList: excelData })
+      } catch (error) {
+        reject(error)
+      }
+    }
+    reader.readAsArrayBuffer(rawFile)
+  })
 }

@@ -21,7 +21,7 @@ import { defineComponent, reactive, toRefs } from 'vue'
 import { message } from 'ant-design-vue'
 import { ExportOutlined } from '@ant-design/icons-vue'
 import { cloneDeep } from 'lodash-es'
-import { createXExportExcel } from '@components/Excel'
+import { useXExportExcel } from '@components/Excel'
 import { getXlsxColumns } from '@components/Table/src/utils'
 
 export default defineComponent({
@@ -61,19 +61,19 @@ export default defineComponent({
           message.info('当前页数据为空！')
           return
         }
-        createXExportExcel({
+        useXExportExcel({
           dataSource,
           columns: state.customColumns,
           title: `导出当前页条数据(${dataSource.length})条`
         })
       } else if (key === 'limit') {
-        createXExportExcel({
+        useXExportExcel({
           customRequest: customRequest,
           columns: state.customColumns,
           title: `导出${limit}条数据`
         })
       } else if (key === 'all') {
-        createXExportExcel({
+        useXExportExcel({
           customExport: customExport,
           title: `导出全量数据`
         })

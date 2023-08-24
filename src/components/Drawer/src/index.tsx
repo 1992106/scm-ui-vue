@@ -1,6 +1,7 @@
 import { computed, defineComponent, inject, PropType, unref } from 'vue'
 import { Button, Drawer, Space, Spin } from 'ant-design-vue'
 import type { ButtonProps, SpinProps } from 'ant-design-vue'
+import { isEmpty } from '@utils/is'
 import './index.scss'
 
 type ButtonType = 'link' | 'default' | 'primary' | 'ghost' | 'dashed' | 'text'
@@ -18,21 +19,22 @@ const XDrawer = defineComponent({
   props: {
     ...drawerProps,
     manual: { type: Boolean, default: false },
-    spinProps: { type: [Boolean, Object] as PropType<boolean | SpinProps>, default: false },
+    spinProps: { type: [Boolean, Object] as PropType<boolean | SpinProps>, default: () => ({}) },
     confirmLoading: { type: Boolean, default: false },
     okType: { type: String as PropType<ButtonType>, default: 'primary' },
     okText: { type: String },
     okButtonProps: { type: Object as PropType<ButtonProps>, default: () => ({}) },
     cancelText: { type: String },
     cancelButtonProps: { type: Object as PropType<ButtonProps>, default: () => ({}) },
-    afterClose: { type: Function }
+    afterClose: { type: Function, default: () => {} }
   },
   emits: ['update:visible', 'cancel', 'ok', 'close', 'afterVisibleChange'],
   setup(props, { emit, slots, attrs, expose }) {
     const { antLocale } = inject('localeData', { antLocale: {} })
     // 加载
+    const showSpin = computed(() => !isEmpty(props.spinProps))
     const spinProps = computed(() => {
-      return typeof props.spinProps === 'object' ? props.spinProps : { spinning: props.spinProps }
+      return typeof props.spinProps === 'object' ? props.spinProps : { spinning: props.spinProps || false }
     })
 
     const handleAfterVisibleChange = (visible: boolean) => {
@@ -86,7 +88,7 @@ const XDrawer = defineComponent({
         footer={unref(renderFooter)}
         onClose={handleCancel}
         onAfterVisibleChange={handleAfterVisibleChange}>
-        <Spin {...unref(spinProps)}>{slots?.default?.()}</Spin>
+        {unref(showSpin) ? <Spin {...unref(spinProps)}>{slots?.default?.()}</Spin> : slots?.default?.()}
       </Drawer>
     )
   }

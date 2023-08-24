@@ -3,6 +3,7 @@ import { Modal, Spin } from 'ant-design-vue'
 import type { SpinProps } from 'ant-design-vue'
 import { FullscreenExitOutlined, FullscreenOutlined } from '@ant-design/icons-vue'
 import { useModalDragMove } from './useModalDrag'
+import { isEmpty } from '@utils/is'
 import './index.scss'
 
 const modalProps = {
@@ -21,13 +22,14 @@ const XModal = defineComponent({
     showFullscreen: { type: Boolean, default: true },
     fullscreen: { type: Boolean, default: false },
     manual: { type: Boolean, default: false },
-    spinProps: { type: [Boolean, Object] as PropType<boolean | SpinProps>, default: false }
+    spinProps: { type: [Boolean, Object] as PropType<boolean | SpinProps>, default: () => ({}) }
   },
   emits: ['update:visible', 'cancel', 'ok', 'fullScreen'],
   setup(props, { emit, slots, attrs, expose }) {
     // 加载
+    const showSpin = computed(() => !isEmpty(props.spinProps))
     const spinProps = computed(() => {
-      return typeof props.spinProps === 'object' ? props.spinProps : { spinning: props.spinProps }
+      return typeof props.spinProps === 'object' ? props.spinProps : { spinning: props.spinProps || false }
     })
 
     // 拖拽
@@ -97,7 +99,7 @@ const XModal = defineComponent({
         footer={slots?.footer?.() || attrs?.footer}
         onCancel={handleCancel}
         onOk={handleOk}>
-        <Spin {...unref(spinProps)}>{slots?.default?.()}</Spin>
+        {unref(showSpin) ? <Spin {...unref(spinProps)}>{slots?.default?.()}</Spin> : slots?.default?.()}
       </Modal>
     )
   }

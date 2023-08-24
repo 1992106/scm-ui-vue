@@ -18,6 +18,7 @@
       .ant-modal-body {
         flex: 1;
         overflow-y: auto;
+
         .ant-spin-nested-loading,
         .ant-spin-container {
           height: 100%;
@@ -35,6 +36,7 @@
     .ant-modal-header {
       padding-right: 96px;
       position: relative;
+
       .x-modal__fullscreen-action {
         display: block;
         width: 40px;

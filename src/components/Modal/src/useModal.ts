@@ -1,18 +1,27 @@
 import { type Component, createApp, h, getCurrentInstance, ref, isVNode, type VNode } from 'vue'
 import { ConfigProvider } from 'ant-design-vue'
 import XModal from './index'
-import { isPromise } from '@utils/is'
+import { isFunction, isPromise, isString } from '@utils/is'
 
 interface ModalOptions {
   visible?: boolean
   onOk?: () => void
   onCancel?: () => void
   afterClose?: () => void
-  title?: string | VNode
-  closeIcon?: VNode
-  footer?: null | VNode
-  content?: VNode | Component
+  manual?: boolean
+  title?: string | VNode | (() => VNode)
+  closeIcon?: VNode | (() => VNode)
+  footer?: null | VNode | (() => VNode)
+  content?: string | VNode | Component | (() => VNode)
   globalConfig?: object
+}
+
+function renderSomeContent(someContent) {
+  let result = someContent
+  if (isFunction(someContent)) {
+    result = someContent()
+  }
+  return isVNode(result) || isString(result) ? result : h(result)
 }
 
 function useXModal() {
@@ -25,9 +34,10 @@ function useXModal() {
       title,
       closeIcon,
       footer,
+      manual = false,
       globalConfig = useXModal.defaultGlobalConfig || {},
       ...props
-    } = options
+    } = options || {}
     const openValue = ref(visible ?? true)
 
     const container = document.createElement('div')
@@ -44,22 +54,32 @@ function useXModal() {
                 XModal,
                 {
                   ...props,
+                  manual,
                   footer,
                   visible: openValue.value,
                   onOk(e) {
                     const _ok = options?.onOk?.(e)
                     if (!isPromise(_ok)) {
-                      openValue.value = false
+                      // 成功关闭 [null, data]或[null, null]
+                      if (Array.isArray(_ok) && _ok.length === 2 && _ok[0] == null) {
+                        openValue.value = false
+                      }
                       return
                     }
                     _ok.then(
-                      () => (openValue.value = false),
+                      () => {
+                        if (!manual) {
+                          openValue.value = false
+                        }
+                      },
                       err => console.error(err)
                     )
                   },
                   onCancel(e) {
                     options?.onCancel?.(e)
-                    openValue.value = false
+                    if (!manual) {
+                      openValue.value = false
+                    }
                   },
                   afterClose() {
                     options?.afterClose?.()
@@ -68,10 +88,10 @@ function useXModal() {
                   }
                 },
                 {
-                  ...(content ? { default: () => (isVNode(content) ? content : h(content)) } : {}),
-                  ...(title ? { title: () => title } : {}),
-                  ...(closeIcon ? { closeIcon: () => closeIcon } : {}),
-                  ...(footer ? { footer: () => footer } : {})
+                  ...(content ? { default: () => renderSomeContent(content) } : {}),
+                  ...(title ? { title: () => renderSomeContent(title) } : {}),
+                  ...(closeIcon ? { closeIcon: () => renderSomeContent(closeIcon) } : {}),
+                  ...(footer ? { footer: () => renderSomeContent(footer) } : {})
                 }
               )
           }

@@ -24,5 +24,5 @@ emits: ['update:visible']
 <x-preview v-model:visible="previewVisible" :current="previewCurrent" :urls="previewUrls"></x-preview>
 
 // 使用函数方法
-createXPreview({ current: previewCurrent, urls: previewUrls })
+useXPreview({ current: previewCurrent, urls: previewUrls })
 ```

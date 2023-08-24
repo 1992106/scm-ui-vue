@@ -1,218 +1,318 @@
 <template>
-  <div>
-    <input v-show="false" ref="inputRef" type="file" accept=".xlsx,.xls" @change="handleInputClick" />
-    <div @click="handleUpload">
-      <slot></slot>
-    </div>
-  </div>
+  <x-modal
+    v-bind="$attrs"
+    v-model:visible="modalVisible"
+    class="x-import__dialog"
+    :title="title"
+    :width="width"
+    :spin-props="spinning"
+    :confirm-loading="confirmLoading"
+    destroy-on-close
+    @ok="handleOk"
+    @cancel="handleCancel">
+    <slot>
+      <div>
+        请按照数据模版的格式准备导入数据，模版中的表头名称不可更改及删除。
+        <span v-if="limit > 0">每次限制导入 {{ limit }} 行。</span>
+        <span v-if="extra" class="color-error">{{ extra }}</span>
+      </div>
+      <div style="margin-top: 10px">
+        <a-button type="link" :loading="downloadLoading" @click="handleDownload">下载导入模版</a-button>
+      </div>
+      <a-divider orientation="left" orientation-margin="0px" style="margin-top: 10px">将准备好的数据导入</a-divider>
+    </slot>
+    <a-form :label-col="{ span: 5 }" :wrapper-col="{ span: 16 }">
+      <a-form-item label="导入文件" v-bind="validateInfos['fileList']">
+        <template v-if="customUpload">
+          <x-upload
+            v-model:file-list="modelRef.fileList"
+            accept=".csv,.xls,.xlsx"
+            list-type="text"
+            :maxCount="1"
+            :show-upload-list="{ showPreviewIcon: false, showRemoveIcon: true, showDownloadIcon: false }"
+            :custom-request="customUpload">
+            <a-button>
+              <UploadOutlined />
+              选择文件
+            </a-button>
+          </x-upload>
+        </template>
+        <template v-else>
+          <a-upload
+            :file-list="modelRef.fileList"
+            accept=".csv,.xls,.xlsx"
+            :before-upload="beforeUpload"
+            @remove="handleRemove">
+            <a-button>
+              <UploadOutlined />
+              选择文件
+            </a-button>
+          </a-upload>
+        </template>
+      </a-form-item>
+      <a-form-item v-if="showInput" label="导入名称" v-bind="validateInfos['name']">
+        <a-input v-model:value="modelRef.name" placeholder="请输入名称" />
+      </a-form-item>
+      <a-form-item v-if="showTextarea" label="导入备注" v-bind="validateInfos['content']">
+        <a-textarea
+          v-model:value="modelRef.content"
+          placeholder="请输入备注"
+          :show-count="true"
+          :rows="4"
+          :maxlength="maxlength" />
+      </a-form-item>
+    </a-form>
+  </x-modal>
 </template>
-<script lang="ts">
-import { defineComponent, ref, unref } from 'vue'
-import * as XLSX from 'xlsx'
-import dayjs from 'dayjs'
-
-import type { ExcelData } from './index'
-
+<script>
+import { createVNode, defineComponent, reactive, toRefs, watchEffect } from 'vue'
+import { Button, Divider, Form, FormItem, Input, message, Modal, Textarea, Upload } from 'ant-design-vue'
+import { UploadOutlined } from '@ant-design/icons-vue'
+import XModal from '@src/components/Modal'
+import XUpload from '@src/components/Upload'
+import { isFunction } from 'lodash-es'
+import { download, execRequest, isEmpty } from '@src/utils'
+import { readerData } from './utils'
 export default defineComponent({
   name: 'XImportExcel',
-  props: {
-    // 日期时间格式。如果不提供或者提供空值，将返回原始Date对象
-    dateFormat: {
-      type: String
-    },
-    // 时区调整。实验性功能，仅为了解决读取日期时间值有偏差的问题。目前仅提供了+08:00时区的偏差修正值
-    // https://github.com/SheetJS/sheetjs/issues/1470#issuecomment-501108554
-    timeZone: {
-      type: Number,
-      default: 8
-    },
-    // 是否直接返回选中文件
-    isReturnFile: {
-      type: Boolean,
-      default: false
-    }
+  components: {
+    UploadOutlined,
+    'x-modal': XModal,
+    'x-upload': XUpload,
+    'a-upload': Upload,
+    'a-form': Form,
+    'a-form-item': FormItem,
+    'a-input': Input,
+    'a-textarea': Textarea,
+    'a-button': Button,
+    'a-divider': Divider,
+    // eslint-disable-next-line vue/no-unused-components
+    Modal
   },
-  emits: ['success', 'error', 'cancel'],
-  setup(props, { emit }) {
-    const inputRef = ref<HTMLInputElement | null>(null)
-    const loadingRef = ref<boolean>(false)
-    const cancelRef = ref<boolean>(true)
+  inheritAttrs: false,
+  props: {
+    title: { type: String, default: '导入数据' },
+    width: { type: Number, default: 520 },
+    visible: { type: Boolean, default: false },
+    customSubmit: { type: Function }, // 【前端导入：在前端解析文件，把解析的数据传给后端】
+    customImport: { type: Function }, // 【后端导入：1、把上传文件给后端解析；2、先上传文件到s3，再把key传给后端】
+    customUpload: { type: Function },
+    customDownload: { type: Function },
+    customSuccess: { type: Function },
+    customError: { type: Function },
+    limit: { type: Number, default: 500 },
+    extra: { type: String },
+    showInput: { type: Boolean, default: false },
+    inputRequired: { type: Boolean, default: false },
+    showTextarea: { type: Boolean, default: false },
+    textareaRequired: { type: Boolean, default: false },
+    maxlength: { type: Number, default: 200 }
+  },
+  emits: ['update:visible', 'success', 'error'],
+  setup(props, { emit, expose }) {
+    const state = reactive({
+      modalVisible: props.visible,
+      spinning: false,
+      downloadLoading: false,
+      confirmLoading: false
+    })
 
-    function shapeWorkSheel(sheet: XLSX.WorkSheet, range: XLSX.Range) {
-      let str = ' ',
-        char = 65,
-        customWorkSheet = {
-          t: 's',
-          v: str,
-          r: '<t> </t><phoneticPr fontId="1" type="noConversion"/>',
-          h: str,
-          w: str
-        }
-      if (!sheet || !sheet['!ref']) return []
-      let c = 0,
-        r = 1
-      while (c < range.e.c + 1) {
-        while (r < range.e.r + 1) {
-          if (!sheet[String.fromCharCode(char) + r]) {
-            sheet[String.fromCharCode(char) + r] = customWorkSheet
+    watchEffect(() => {
+      state.modalVisible = props.visible
+    })
+
+    // 下载模版
+    const handleDownload = async () => {
+      const { customDownload } = props
+      if (!isFunction(customDownload)) return
+      state.downloadLoading = true
+      message.info('正在下载中...')
+      await execRequest(customDownload(), {
+        success: ({ data }) => {
+          if (data) {
+            download(data?.url || data)
           }
-          r++
         }
-        r = 1
-        str += ' '
-        customWorkSheet = {
-          t: 's',
-          v: str,
-          r: '<t> </t><phoneticPr fontId="1" type="noConversion"/>',
-          h: str,
-          w: str
-        }
-        c++
-        char++
-      }
+      })
+      state.downloadLoading = false
     }
 
-    /**
-     * @description: 第一行作为头部
-     */
-    function getHeaderRow(sheet: XLSX.WorkSheet) {
-      if (!sheet || !sheet['!ref']) return []
-      const headers: string[] = []
-      // A3:B7=>{s:{c:0, r:2}, e:{c:1, r:6}}
-      const range: XLSX.Range = XLSX.utils.decode_range(sheet['!ref'])
-      shapeWorkSheel(sheet, range)
-      const R = range.s.r
-      /* start in the first row */
-      for (let C = range.s.c; C <= range.e.c; ++C) {
-        /* walk every column in the range */
-        const cell = sheet[XLSX.utils.encode_cell({ c: C, r: R })]
-        /* find the cell in the first row */
-        let hdr = 'UNKNOWN ' + C // <-- replace with your desired default
-        if (cell && cell.t) hdr = XLSX.utils.format_cell(cell)
-        headers.push(hdr)
-      }
-      return headers
+    const beforeUpload = async file => {
+      modelRef.fileList = [file]
+      return false
     }
 
-    /**
-     * @description: 获得excel数据
-     */
-    function getExcelData(workbook: XLSX.WorkBook) {
-      const excelData: ExcelData[] = []
-      const { dateFormat, timeZone } = props
-      for (const sheetName of workbook.SheetNames) {
-        const worksheet = workbook.Sheets[sheetName]
-        const header: string[] = getHeaderRow(worksheet)
-        let results = XLSX.utils.sheet_to_json(worksheet, {
-          raw: true,
-          dateNF: dateFormat //Not worked
-        }) as object[]
-        results = results.map((row: object) => {
-          for (let field in row) {
-            if (row[field] instanceof Date) {
-              if (timeZone === 8) {
-                row[field].setSeconds(row[field].getSeconds() + 43)
+    const handleRemove = () => {
+      modelRef.fileList = []
+    }
+
+    const modelRef = reactive({
+      fileList: [],
+      name: '',
+      content: ''
+    })
+
+    const rulesRef = reactive({
+      fileList: [{ required: true, type: 'array', message: '请上传文件' }],
+      ...(props.showInput ? { name: [{ required: props.inputRequired, message: '请输入名称' }] } : {}),
+      ...(props.showTextarea ? { content: [{ required: props.textareaRequired, message: '请输入备注' }] } : {})
+    })
+
+    const { resetFields, validate, validateInfos } = Form.useForm(modelRef, rulesRef)
+
+    // 后端导入：2种方案
+    // 1、直接把上传的文件给后端，由后端解析
+    // 2、先把文件上传到s3，再把s3的key传给后端
+    const handleImport = async () => {
+      const { customUpload, customImport, showInput, showTextarea, customSuccess, customError } = props
+      if (!isFunction(customImport)) return
+      const { name, content, fileList } = modelRef
+      if (customUpload) {
+        // 先把文件上传到s3，再把s3的key传给后端
+        const file = fileList.filter(val => val?.status === 'done')?.[0]
+        await execRequest(
+          customImport({
+            ...(!isEmpty(file) ? { id: file?.uid, file } : {}),
+            ...(showInput ? { name } : {}),
+            ...(showTextarea ? { content } : {})
+          }),
+          {
+            success: result => {
+              if (customSuccess) {
+                customSuccess(result)
+              } else {
+                emit('success', result)
+                handleCancel()
               }
-              if (dateFormat) {
-                row[field] = dayjs(row[field]).format(dateFormat)
+            },
+            fail: error => {
+              if (customError) {
+                customError(error)
+              } else {
+                emit('error', error)
               }
             }
           }
-          return row
+        )
+      } else {
+        // 直接把上传的文件给后端，由后端解析
+        const file = fileList?.[0]
+        const params = {
+          ...(!isEmpty(file) ? { file } : {}),
+          ...(showInput ? { name } : {}),
+          ...(showTextarea ? { content } : {})
+        }
+        const formData = new FormData()
+        Object.keys(params).forEach(key => {
+          formData.append(key, params[key])
         })
-
-        excelData.push({
-          header,
-          results,
-          meta: {
-            sheetName
+        await execRequest(customImport(params), {
+          success: result => {
+            if (customSuccess) {
+              customSuccess(result)
+            } else {
+              const { data, msg, message } = result || {}
+              const tip = data?.msg || data?.message || msg || message
+              const total = data?.total ?? data
+              Modal.success({
+                title: '导入成功',
+                content: tip ? tip : total === 0 ? '未导入任何数据' : total > 0 ? `成功导入${total}条数据` : '',
+                onOk: () => {
+                  emit('success', result)
+                  handleCancel()
+                }
+              })
+            }
+          },
+          fail: error => {
+            if (customError) {
+              customError(error)
+            } else {
+              const { data, msg, message } = error || {}
+              const tip = data?.msg || data?.message || msg || message
+              const url = data?.url || data
+              Modal.error({
+                title: '导入失败',
+                content: () =>
+                  createVNode('div', null, [
+                    createVNode('p', null, tip || '请删除文件，再重新上传'),
+                    url
+                      ? createVNode('a', { href: 'javascript:void(0)', onClick: () => download(url) }, '下载失败文件')
+                      : null
+                  ]),
+                onOk: () => {
+                  emit('error', error)
+                }
+              })
+            }
           }
         })
       }
-      return excelData
     }
 
-    /**
-     * @description: 读取excel数据
-     */
-    function readerData(rawFile: File) {
-      loadingRef.value = true
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader()
-        reader.onload = async e => {
-          try {
-            const data = e.target && e.target.result
-            const workbook = XLSX.read(data, { type: 'array', cellDates: true })
-            /* DO SOMETHING WITH workbook HERE */
-            const excelData = getExcelData(workbook)
-            emit('success', excelData)
-            resolve('')
-          } catch (error) {
-            reject(error)
-            emit('error')
-          } finally {
-            loadingRef.value = false
+    // 前端导入：在前端解析文件，把解析的数据传给后端
+    const handleSubmit = async () => {
+      const { customSubmit, showInput, showTextarea } = props
+      if (!isFunction(customSubmit)) return
+      const { name, content, fileList } = modelRef
+      const file = fileList?.[0]
+      try {
+        const { fileName, sheetList } = await readerData(file)
+        await execRequest(
+          customSubmit({
+            fileName,
+            ...(sheetList?.[0] || {}),
+            ...(showInput ? { name } : {}),
+            ...(showTextarea ? { content } : {})
+          }),
+          {
+            success: result => {
+              emit('success', result)
+              handleCancel()
+            },
+            fail: error => {
+              emit('error', error)
+            }
           }
-        }
-        reader.readAsArrayBuffer(rawFile)
-      })
-    }
-
-    async function upload(rawFile: File) {
-      const inputRefDom = unref(inputRef)
-      if (inputRefDom) {
-        // fix can't select the same excel
-        inputRefDom.value = ''
-      }
-      await readerData(rawFile)
-    }
-
-    /**
-     * @description: 触发选择文件管理器
-     */
-    function handleInputClick(e: Event) {
-      const target = e && (e.target as HTMLInputElement)
-      const files = target?.files
-      const rawFile = files && files[0] // only setting files[0]
-
-      target.value = ''
-
-      if (!rawFile) return
-
-      cancelRef.value = false
-      if (props.isReturnFile) {
-        emit('success', rawFile)
-        return
-      }
-      upload(rawFile)
-    }
-
-    /**
-     * @description 文件选择器关闭后,判断取消状态
-     */
-    function handleFocusChange() {
-      const timeId = setInterval(() => {
-        if (cancelRef.value === true) {
-          emit('cancel')
-        }
-        clearInterval(timeId)
-        window.removeEventListener('focus', handleFocusChange)
-      }, 1000)
-    }
-
-    /**
-     * @description: 点击上传按钮
-     */
-    function handleUpload() {
-      const inputRefDom = unref(inputRef)
-      if (inputRefDom) {
-        cancelRef.value = true
-        inputRefDom.click()
-        window.addEventListener('focus', handleFocusChange)
+        )
+      } catch (error) {
+        emit('error', error)
       }
     }
 
-    return { handleUpload, handleInputClick, inputRef }
+    const handleOk = async () => {
+      validate()
+        .then(async () => {
+          state.confirmLoading = true
+          if (props.customImport) {
+            await handleImport()
+          } else if (props.customSubmit) {
+            await handleSubmit()
+          }
+          state.confirmLoading = false
+        })
+        .catch(err => {
+          console.error('import error', err)
+        })
+    }
+
+    const handleCancel = () => {
+      resetFields()
+      emit('update:visible', false)
+    }
+
+    expose({})
+
+    return {
+      ...toRefs(state),
+      beforeUpload,
+      handleRemove,
+      modelRef,
+      validateInfos,
+      handleDownload,
+      handleOk,
+      handleCancel
+    }
   }
 })
 </script>

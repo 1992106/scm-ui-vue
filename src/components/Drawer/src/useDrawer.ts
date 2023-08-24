@@ -1,7 +1,7 @@
 import { type Component, createApp, h, getCurrentInstance, ref, isVNode, type VNode } from 'vue'
 import { ConfigProvider } from 'ant-design-vue'
 import XDrawer from './index'
-import { isPromise } from '@utils/is'
+import { isFunction, isPromise, isString } from '@utils/is'
 
 interface DrawerOptions {
   visible?: boolean
@@ -10,10 +10,21 @@ interface DrawerOptions {
   afterClose?: () => void
   onClose?: () => void // 兼容 antdv
   onAfterVisibleChange?: () => void // 兼容 antdv
-  title?: string | VNode
-  footer?: null | VNode
-  content?: VNode | Component
+  manual?: boolean
+  title?: string | VNode | (() => VNode)
+  closeIcon?: VNode | (() => VNode)
+  extra?: VNode | (() => VNode)
+  footer?: null | VNode | (() => VNode)
+  content?: string | VNode | Component | (() => VNode)
   globalConfig?: object
+}
+
+function renderSomeContent(someContent) {
+  let result = someContent
+  if (isFunction(someContent)) {
+    result = someContent()
+  }
+  return isVNode(result) || isString(result) ? result : h(result)
 }
 
 function useXDrawer() {
@@ -27,11 +38,12 @@ function useXDrawer() {
       closeIcon,
       extra,
       footer,
-      globalConfig = useXDrawer.defaultGlobalConfig,
       onClose,
       onAfterVisibleChange,
+      manual = false,
+      globalConfig = useXDrawer.defaultGlobalConfig,
       ...props
-    } = options
+    } = options || {}
     const openValue = ref(visible ?? true)
 
     const container = document.createElement('div')
@@ -48,23 +60,33 @@ function useXDrawer() {
                 XDrawer,
                 {
                   ...props,
+                  manual,
                   footer,
                   visible: openValue.value,
                   onOk(e) {
                     const _ok = options?.onOk?.(e)
                     if (!isPromise(_ok)) {
-                      openValue.value = false
+                      // 成功关闭 [null, data]或[null, null]
+                      if (Array.isArray(_ok) && _ok.length === 2 && _ok[0] == null) {
+                        openValue.value = false
+                      }
                       return
                     }
                     _ok.then(
-                      () => (openValue.value = false),
+                      () => {
+                        if (!manual) {
+                          openValue.value = false
+                        }
+                      },
                       err => console.error(err)
                     )
                   },
                   onCancel(e) {
                     options?.onCancel?.(e)
                     onClose?.()
-                    openValue.value = false
+                    if (!manual) {
+                      openValue.value = false
+                    }
                   },
                   afterClose() {
                     options?.afterClose?.()
@@ -74,11 +96,11 @@ function useXDrawer() {
                   }
                 },
                 {
-                  ...(content ? { default: () => (isVNode(content) ? content : h(content)) } : {}),
-                  ...(title ? { title: () => title } : {}),
-                  ...(closeIcon ? { closeIcon: () => closeIcon } : {}),
-                  ...(extra ? { extra: () => extra } : {}),
-                  ...(footer ? { footer: () => footer } : {})
+                  ...(content ? { default: () => renderSomeContent(content) } : {}),
+                  ...(title ? { title: () => renderSomeContent(title) } : {}),
+                  ...(closeIcon ? { closeIcon: () => renderSomeContent(closeIcon) } : {}),
+                  ...(extra ? { extra: () => renderSomeContent(extra) } : {}),
+                  ...(footer ? { footer: () => renderSomeContent(footer) } : {})
                 }
               )
           }
@@ -98,8 +120,8 @@ function useXDrawer() {
     }
 
     function open() {
-      onAfterVisibleChange?.(true)
       openValue.value = true
+      onAfterVisibleChange?.(true)
       instance.mount(container)
     }
     function close() {

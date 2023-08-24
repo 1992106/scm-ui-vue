@@ -14,4 +14,11 @@ XImportExcel.install = function (app) {
 export { XExportExcel, XImportExcel }
 
 // 函数组件
-export { createXExportExcel, createXImportExcel, exportExcel, exportMultipleExcel } from './src/function'
+export {
+  useXExportExcel,
+  exportExcel,
+  exportMultipleExcel,
+  useXImportExcel,
+  importExcel,
+  importMultipleExcel
+} from './src/function'

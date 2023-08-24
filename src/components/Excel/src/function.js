@@ -1,19 +1,27 @@
 import XExportExcel from './ExportExcel.vue'
 import XImportExcel from './ImportExcel.vue'
-import { jsonToMultipleSheetXlsx, jsonToSheetXlsx } from './utils'
+import { jsonToMultipleSheetXlsx, jsonToSheetXlsx, readerData } from './utils'
 import useComponent from '@src/plugins/useComponent'
 import { formatDate } from '@src/utils'
 import { getXlsxColumns as getXlsxColumnsByTable } from '@components/Table/src/utils'
 import { getXlsxColumns as getXlsxColumnsByGrid } from '@components/Grid/src/utils'
 
-export const createXExportExcel = options => {
+export const useXExportExcel = (options, successFn, errorFn) => {
   const produce = useComponent(XExportExcel)
-  return produce(options)
+  return produce({
+    ...options,
+    ...(successFn ? { onSuccess: successFn } : {}),
+    ...(errorFn ? { onError: errorFn } : {})
+  })
 }
 
-export const createXImportExcel = options => {
+export const useXImportExcel = (options, successFn, errorFn) => {
   const produce = useComponent(XImportExcel)
-  return produce(options)
+  return produce({
+    ...options,
+    ...(successFn ? { onSuccess: successFn } : {}),
+    ...(errorFn ? { onError: errorFn } : {})
+  })
 }
 
 const formatHeader = (data, dataSource, columns) => {
@@ -56,5 +64,17 @@ export const exportMultipleExcel = options => {
     sheetList: sheets,
     fileName: fileName ? `${fileName}_${formatDate(new Date())}.${bookType}` : undefined,
     write2excelOpts: { bookType }
+  })
+}
+
+export const importExcel = file => {
+  return readerData(file).then(({ fileName, sheetList }) => {
+    return { fileName, ...(sheetList?.[0] || {}) }
+  })
+}
+
+export const importMultipleExcel = file => {
+  return readerData(file).then(({ fileName, sheetList }) => {
+    return sheetList.map(row => ({ ...row, fileName }))
   })
 }

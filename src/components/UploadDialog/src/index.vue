@@ -287,6 +287,8 @@ export default defineComponent({
       }
       const { size, ratio, imgWidth, minWidth, maxWidth, imgHeight, minHeight, maxHeight } = props
       const bool = await getBeforeUpload(file, {
+        size,
+        ratio,
         width: imgWidth,
         minWidth,
         maxWidth,

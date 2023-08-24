@@ -1,9 +1,15 @@
-import type { JSON2SheetOpts, WritingOptions, BookType } from 'xlsx'
+import type { JSON2SheetOpts, WritingOptions } from 'xlsx'
 
 export interface ExcelData<T = any> {
   header: string[]
-  results: T[]
-  meta: { sheetName: string }
+  data: T[]
+  sheetName: string
+  fileName?: string
+}
+
+export interface MultipleExcelData<T = any> {
+  sheetList: ExcelData<T>[]
+  fileName?: string
 }
 
 export interface JsonToSheet<T = any> {
@@ -21,11 +27,6 @@ export interface AoAToSheet<T = any> {
   fileName?: string
   sheetName?: string
   write2excelOpts?: WritingOptions
-}
-
-export interface ExportModalResult {
-  fileName: string
-  bookType: BookType
 }
 
 export interface JsonToMultipleSheet<T = any> {

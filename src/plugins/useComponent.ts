@@ -18,7 +18,7 @@ export interface Options {
   [key: string]: unknown
 }
 
-export interface CommandComponent {
+export interface UseComponent {
   (options: Options): VNode
   unmount: () => void
 }
@@ -46,7 +46,11 @@ const initInstance = <T extends Component>(
   appContext: AppContext | null = null
 ) => {
   const { globalConfig = useComponent.defaultGlobalConfig || {}, ...restProps } = props
-  const vNode = createVNode(ConfigProvider, { ...globalConfig }, { default: () => createVNode(Component, restProps) })
+  const vNode = createVNode(
+    ConfigProvider,
+    { ...globalConfig, notUpdateGlobalConfig: true },
+    { default: () => createVNode(Component, restProps) }
+  )
   vNode.appContext = appContext
   render(vNode, container)
 
@@ -54,7 +58,7 @@ const initInstance = <T extends Component>(
   return vNode
 }
 
-const useComponent = <T extends Component>(Component: T): CommandComponent => {
+const useComponent = <T extends Component>(Component: T): UseComponent => {
   const appContext = getCurrentInstance()?.appContext
   if (appContext) {
     const currentProvides = (getCurrentInstance() as any)?.provides
@@ -69,7 +73,7 @@ const useComponent = <T extends Component>(Component: T): CommandComponent => {
   }
 
   const withComponent = (options: Options): VNode => {
-    const { visible, onCancel, onOk, onClose, onDone, ...props } = options
+    const { visible, onCancel, onOk, onClose, onDone, ...props } = options || {}
     // v-model:visible
     const openValue = ref(visible ?? true)
     const setVisible = visible => {

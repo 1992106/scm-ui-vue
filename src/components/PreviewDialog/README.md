@@ -27,7 +27,4 @@ emits: ['update:visible', 'download', 'downloadImgZipFile', 'downloadAttachmentZ
 
 ```vue
 <x-preview-dialog v-model:visible="previewVisible" :current="previewCurrent" :fileList="previewList"></x-preview-dialog>
-
-// 使用函数方法
-<!--createXPreview({ current: previewCurrent, fileList: previewList })-->
 ```
