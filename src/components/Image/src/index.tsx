@@ -1,5 +1,5 @@
 import { defineComponent, ref, computed, PropType, watch } from 'vue'
-import { Empty, Image, Space } from 'ant-design-vue'
+import { Empty, Image, Space, Skeleton } from 'ant-design-vue'
 import XPreview from '@components/Preview'
 import XPreviewDialog from '@components/PreviewDialog'
 import { XLazyContainer } from '@components/Container/index'
@@ -169,6 +169,7 @@ const XImage = defineComponent({
         // 单图模式
         renderImage = (
           <Image
+            crossorigin='anonymous'
             {...attrs}
             style={{ cursor: 'pointer' }}
             width={width}
@@ -189,6 +190,7 @@ const XImage = defineComponent({
           <Space style={{ flexWrap: 'wrap' }}>
             {compressUrls.value.map((src, index) => (
               <Image
+                crossorigin='anonymous'
                 {...attrs}
                 key={now + index}
                 style={{ cursor: 'pointer' }}
@@ -206,7 +208,12 @@ const XImage = defineComponent({
 
       return (
         <>
-          <XLazyContainer>{renderImage}</XLazyContainer>
+          <XLazyContainer>
+            {{
+              default: () => renderImage,
+              skeleton: () => <Skeleton.Image class='x-image__skeleton' style={{ width: width, height: height }} />
+            }}
+          </XLazyContainer>
           {isPreview.value &&
             (props.mode === 'simple' ? (
               <XPreview v-model={[visible.value, 'visible']} current={current.value} urls={previewUrls.value} />
