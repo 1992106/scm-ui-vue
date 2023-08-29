@@ -100,6 +100,7 @@ export default defineComponent({
       page => {
         if (page && page === 1) {
           state.pagination.page = 1
+          state.pagination.current = 1
         }
       }
     )
@@ -125,6 +126,7 @@ export default defineComponent({
       // 点击【搜索栏-重置按钮】会触发搜索事件，搜索方法会重置page和更新value
       if (unref(showPagination)) {
         state.pagination.page = 1
+        state.pagination.current = 1
       }
       emit('update:value', { ...params, ...(unref(showPagination) ? state.pagination : {}) })
       emit('reset', { ...params, ...(unref(showPagination) ? state.pagination : {}) })
@@ -143,6 +145,7 @@ export default defineComponent({
       // 【搜索、筛选、排序】需要重置页码为1
       if (unref(showPagination) && params.page) {
         state.pagination.page = params.page || 1
+        state.pagination.current = params.current || 1
       }
       state.action = action
       emit('update:value', {

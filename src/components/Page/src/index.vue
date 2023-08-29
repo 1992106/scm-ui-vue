@@ -130,7 +130,15 @@ export default defineComponent({
     // 页码赋值
     watchEffect(() => {
       if (!isEmpty(props.pagination)) {
-        state.pages = props.pagination
+        if ('page' in props.pagination) {
+          state.pages.page = props.pagination.page
+        }
+        if ('current' in props.pagination) {
+          state.pages.current = props.pagination.current
+        }
+        if ('pageSize' in props.pagination) {
+          state.pages.pageSize = props.pagination.pageSize
+        }
       }
     })
 
@@ -140,6 +148,7 @@ export default defineComponent({
       page => {
         if (page && page === 1) {
           state.pages.page = 1
+          state.pages.current = 1
         }
       }
     )
@@ -150,6 +159,7 @@ export default defineComponent({
       // 点击【搜索栏-搜索按钮】搜索时，重置页码为1
       if (props.showPagination) {
         state.pages.page = 1
+        state.pages.current = 1
       }
       emit('update:value', { ...params, ...(props.showPagination ? state.pages : {}) })
       emit('search', { ...params, ...(props.showPagination ? state.pages : {}) })
@@ -168,6 +178,7 @@ export default defineComponent({
       // 点击【搜索栏-重置按钮】会触发搜索事件，搜索方法会重置page和更新value
       if (props.showPagination) {
         state.pages.page = 1
+        state.pages.current = 1
       }
       emit('update:value', { ...params, ...(props.showPagination ? state.pages : {}) })
       emit('reset', { ...params, ...(props.showPagination ? state.pages : {}) })
