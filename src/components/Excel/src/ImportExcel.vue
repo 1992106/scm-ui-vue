@@ -131,8 +131,9 @@ export default defineComponent({
       message.info('正在下载中...')
       await execRequest(customDownload(), {
         success: ({ data }) => {
-          if (data) {
-            download(data?.url || data)
+          const url = data?.url || data
+          if (url) {
+            download(url)
           }
         }
       })

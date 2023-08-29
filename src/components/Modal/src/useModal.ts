@@ -106,7 +106,7 @@ function useXModal() {
       instance.config.globalProperties = appContext.config.globalProperties
       Reflect.set(instance._context, 'components', appContext.components)
       Reflect.set(instance._context, 'directives', appContext.directives)
-      Reflect.set(instance._context, 'components', { ...appContext.provides, ...currentProvides })
+      Reflect.set(instance._context, 'provides', { ...appContext.provides, ...currentProvides })
     }
 
     function open() {

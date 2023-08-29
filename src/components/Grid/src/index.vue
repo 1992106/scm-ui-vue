@@ -33,7 +33,7 @@
     :edit-rules="editRules"
     :tooltip-config="tooltipConfig"
     :expand-config="expandConfig"
-    :tree-config="getTreeConfig"
+    :tree-config="treeConfig"
     :toolbar-config="{
       zoom: customZoom,
       custom: false,
@@ -178,7 +178,7 @@ export default defineComponent({
     // 展开行配置项（不支持虚拟滚动）
     expandConfig: Object,
     // 树形结构配置项
-    treeConfig: { type: Object, default: () => ({ children: 'children' }) },
+    treeConfig: Object,
     // 横向虚拟滚动配置
     scrollX: Object,
     // 纵向虚拟滚动配置
@@ -323,7 +323,6 @@ export default defineComponent({
     const getEditConfig = computed(() => mergeProps(defaultState.defaultEditConfig, props.editConfig))
     const getScrollX = computed(() => mergeProps(defaultState.defaultScrollX, props.scrollX))
     const getScrollY = computed(() => mergeProps(defaultState.defaultScrollY, props.scrollY))
-    const getTreeConfig = computed(() => (props.stripe ? null : props.treeConfig))
     const selectedType = computed(() => props.columns.find(column => column?.type)?.type)
     const canPagination = computed(
       () => props.data?.length > 0 && state.customColumns?.filter(val => val?.visible !== false).length > 0
@@ -591,7 +590,6 @@ export default defineComponent({
       getEditConfig,
       getScrollX,
       getScrollY,
-      getTreeConfig,
       canPagination,
       handleRadioChange,
       handleCheckboxChange,
