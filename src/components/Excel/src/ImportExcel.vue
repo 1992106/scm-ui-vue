@@ -19,10 +19,10 @@
       <div style="margin-top: 10px">
         <a-button type="link" :loading="downloadLoading" @click="handleDownload">下载导入模版</a-button>
       </div>
-      <a-divider orientation="left" orientation-margin="0px" style="margin-top: 10px">将准备好的数据导入</a-divider>
+      <a-divider orientation="left" orientation-margin="0px" style="margin-bottom: 24px">将准备好的数据导入</a-divider>
     </slot>
     <a-form :label-col="{ span: 5 }" :wrapper-col="{ span: 16 }">
-      <a-form-item label="导入文件" v-bind="validateInfos['fileList']">
+      <a-form-item label="选择文件" v-bind="validateInfos['fileList']">
         <template v-if="customUpload">
           <x-upload
             v-model:file-list="modelRef.fileList"
@@ -33,7 +33,7 @@
             :custom-request="customUpload">
             <a-button>
               <UploadOutlined />
-              选择文件
+              上传
             </a-button>
           </x-upload>
         </template>
@@ -45,18 +45,18 @@
             @remove="handleRemove">
             <a-button>
               <UploadOutlined />
-              选择文件
+              上传
             </a-button>
           </a-upload>
         </template>
       </a-form-item>
-      <a-form-item v-if="showInput" label="导入名称" v-bind="validateInfos['name']">
-        <a-input v-model:value="modelRef.name" placeholder="请输入名称" />
+      <a-form-item v-if="showInput" :label="inputLabel" v-bind="validateInfos['name']">
+        <a-input v-model:value="modelRef.name" :placeholder="`请输入${inputLabel}`" />
       </a-form-item>
-      <a-form-item v-if="showTextarea" label="导入备注" v-bind="validateInfos['content']">
+      <a-form-item v-if="showTextarea" :label="textareaLabel" v-bind="validateInfos['content']">
         <a-textarea
           v-model:value="modelRef.content"
-          placeholder="请输入备注"
+          :placeholder="`请输入${textareaLabel}`"
           :show-count="true"
           :rows="4"
           :maxlength="maxlength" />
@@ -104,8 +104,10 @@ export default defineComponent({
     extra: { type: String },
     showInput: { type: Boolean, default: false },
     inputRequired: { type: Boolean, default: false },
+    inputLabel: { type: String, default: '导入名称' },
     showTextarea: { type: Boolean, default: false },
     textareaRequired: { type: Boolean, default: false },
+    textareaLabel: { type: String, default: '导入备注' },
     maxlength: { type: Number, default: 200 }
   },
   emits: ['update:visible', 'success', 'error'],
@@ -154,8 +156,10 @@ export default defineComponent({
 
     const rulesRef = reactive({
       fileList: [{ required: true, type: 'array', message: '请上传文件' }],
-      ...(props.showInput ? { name: [{ required: props.inputRequired, message: '请输入名称' }] } : {}),
-      ...(props.showTextarea ? { content: [{ required: props.textareaRequired, message: '请输入备注' }] } : {})
+      ...(props.showInput ? { name: [{ required: props.inputRequired, message: `请输入${props.inputLabel}` }] } : {}),
+      ...(props.showTextarea
+        ? { content: [{ required: props.textareaRequired, message: `请输入${props.textareaLabel}` }] }
+        : {})
     })
 
     const { resetFields, validate, validateInfos } = Form.useForm(modelRef, rulesRef)
@@ -206,7 +210,7 @@ export default defineComponent({
         Object.keys(params).forEach(key => {
           formData.append(key, params[key])
         })
-        await execRequest(customImport(params), {
+        await execRequest(customImport(formData), {
           success: result => {
             if (customSuccess) {
               customSuccess(result)

@@ -61,7 +61,8 @@ const initInstance = <T extends Component>(
 const useComponent = <T extends Component>(Component: T): UseComponent => {
   const appContext = getCurrentInstance()?.appContext
   if (appContext) {
-    const currentProvides = (getCurrentInstance() as any)?.provides
+    // 获取当前组件树的provides
+    const currentProvides = (getCurrentInstance() as any)?.provides || {}
     Reflect.set(appContext, 'provides', { ...appContext.provides, ...currentProvides })
   }
 

@@ -26,6 +26,8 @@ function renderSomeContent(someContent) {
 
 function useXModal() {
   const appContext = getCurrentInstance()?.appContext
+  // 获取当前组件树的provides
+  const currentProvides = (getCurrentInstance() as any)?.provides || {}
 
   function createModal(options?: ModalOptions | any) {
     const {
@@ -102,12 +104,9 @@ function useXModal() {
     // 注入应用的上下文
     if (appContext) {
       instance.config.globalProperties = appContext.config.globalProperties
-      instance.mixin({
-        ...appContext.mixins,
-        components: appContext.components,
-        directives: appContext.directives,
-        provides: appContext.provides
-      })
+      Reflect.set(instance._context, 'components', appContext.components)
+      Reflect.set(instance._context, 'directives', appContext.directives)
+      Reflect.set(instance._context, 'components', { ...appContext.provides, ...currentProvides })
     }
 
     function open() {
