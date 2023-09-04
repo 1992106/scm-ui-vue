@@ -122,8 +122,7 @@ function useXModal() {
         for (const prop in currentConfig) {
           if (Reflect.has(modalVM.component.props, prop)) {
             Object.assign(modalVM.component.props, { [prop]: currentConfig[prop] })
-          }
-          if (Reflect.has(modalVM.component.attrs, prop)) {
+          } else {
             Object.assign(modalVM.component.attrs, { [prop]: currentConfig[prop] })
           }
         }

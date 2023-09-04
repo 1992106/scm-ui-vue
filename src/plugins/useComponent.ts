@@ -53,11 +53,11 @@ const initInstance = <T extends Component>(
     {
       default: () => {
         vNode = createVNode(Component, restProps)
-        vNode.appContext = appContext
         return vNode
       }
     }
   )
+  instance.appContext = appContext
   render(instance, container)
 
   getAppendToElement(restProps).appendChild(container)

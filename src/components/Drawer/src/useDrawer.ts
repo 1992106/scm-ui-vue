@@ -131,8 +131,7 @@ function useXDrawer() {
         for (const prop in currentConfig) {
           if (Reflect.has(drawerVM.component.props, prop)) {
             Object.assign(drawerVM.component.props, { [prop]: currentConfig[prop] })
-          }
-          if (Reflect.has(drawerVM.component.attrs, prop)) {
+          } else {
             Object.assign(drawerVM.component.attrs, { [prop]: currentConfig[prop] })
           }
         }
