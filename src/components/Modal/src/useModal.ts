@@ -16,6 +16,11 @@ interface ModalOptions {
   globalConfig?: object
 }
 
+function isReject(result) {
+  // 失败：[error, undefined]或[null, undefined]
+  return Array.isArray(result) && result.length === 2 && result[0] != null
+}
+
 function renderSomeContent(someContent) {
   let result = someContent
   if (isFunction(someContent)) {
@@ -45,14 +50,15 @@ function useXModal() {
     const container = document.createElement('div')
     document.body.appendChild(container)
 
+    let modalVM
     const instance = createApp({
       render() {
         return h(
           ConfigProvider,
           { ...globalConfig, notUpdateGlobalConfig: true },
           {
-            default: () =>
-              h(
+            default: () => {
+              modalVM = h(
                 XModal,
                 {
                   ...props,
@@ -62,15 +68,11 @@ function useXModal() {
                   onOk(e) {
                     const _ok = options?.onOk?.(e)
                     if (!isPromise(_ok)) {
-                      // 成功关闭 [null, data]或[null, null]
-                      if (Array.isArray(_ok) && _ok.length === 2 && _ok[0] == null) {
-                        openValue.value = false
-                      }
                       return
                     }
                     _ok.then(
-                      () => {
-                        if (!manual) {
+                      res => {
+                        if (!isReject(res) && !manual) {
                           openValue.value = false
                         }
                       },
@@ -96,6 +98,8 @@ function useXModal() {
                   ...(footer ? { footer: () => renderSomeContent(footer) } : {})
                 }
               )
+              return modalVM
+            }
           }
         )
       }
@@ -107,6 +111,24 @@ function useXModal() {
       Reflect.set(instance._context, 'components', appContext.components)
       Reflect.set(instance._context, 'directives', appContext.directives)
       Reflect.set(instance._context, 'provides', { ...appContext.provides, ...currentProvides })
+    }
+
+    function update(configUpdate) {
+      let currentConfig = { ...configUpdate }
+      if (typeof configUpdate === 'function') {
+        currentConfig = configUpdate(options)
+      }
+      if (modalVM) {
+        for (const prop in currentConfig) {
+          if (Reflect.has(modalVM.component.props, prop)) {
+            Object.assign(modalVM.component.props, { [prop]: currentConfig[prop] })
+          }
+          if (Reflect.has(modalVM.component.attrs, prop)) {
+            Object.assign(modalVM.component.attrs, { [prop]: currentConfig[prop] })
+          }
+        }
+        modalVM.component.update()
+      }
     }
 
     function open() {
@@ -122,7 +144,8 @@ function useXModal() {
 
     return {
       open,
-      close
+      close,
+      update
     }
   }
 

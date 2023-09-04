@@ -19,6 +19,11 @@ interface DrawerOptions {
   globalConfig?: object
 }
 
+function isReject(result) {
+  // 失败：[error, undefined]或[null, undefined]
+  return Array.isArray(result) && result.length === 2 && result[0] != null
+}
+
 function renderSomeContent(someContent) {
   let result = someContent
   if (isFunction(someContent)) {
@@ -51,14 +56,15 @@ function useXDrawer() {
     const container = document.createElement('div')
     document.body.appendChild(container)
 
+    let drawerVM
     const instance = createApp({
       render() {
         return h(
           ConfigProvider,
           { ...globalConfig, notUpdateGlobalConfig: true },
           {
-            default: () =>
-              h(
+            default: () => {
+              drawerVM = h(
                 XDrawer,
                 {
                   ...props,
@@ -68,15 +74,11 @@ function useXDrawer() {
                   onOk(e) {
                     const _ok = options?.onOk?.(e)
                     if (!isPromise(_ok)) {
-                      // 成功关闭 [null, data]或[null, null]
-                      if (Array.isArray(_ok) && _ok.length === 2 && _ok[0] == null) {
-                        openValue.value = false
-                      }
                       return
                     }
                     _ok.then(
-                      () => {
-                        if (!manual) {
+                      res => {
+                        if (!isReject(res) && !manual) {
                           openValue.value = false
                         }
                       },
@@ -105,6 +107,8 @@ function useXDrawer() {
                   ...(footer ? { footer: () => renderSomeContent(footer) } : {})
                 }
               )
+              return drawerVM
+            }
           }
         )
       }
@@ -116,6 +120,24 @@ function useXDrawer() {
       Reflect.set(instance._context, 'components', appContext.components)
       Reflect.set(instance._context, 'directives', appContext.directives)
       Reflect.set(instance._context, 'provides', { ...appContext.provides, ...currentProvides })
+    }
+
+    function update(configUpdate) {
+      let currentConfig = { ...configUpdate }
+      if (typeof configUpdate === 'function') {
+        currentConfig = configUpdate(options)
+      }
+      if (drawerVM) {
+        for (const prop in currentConfig) {
+          if (Reflect.has(drawerVM.component.props, prop)) {
+            Object.assign(drawerVM.component.props, { [prop]: currentConfig[prop] })
+          }
+          if (Reflect.has(drawerVM.component.attrs, prop)) {
+            Object.assign(drawerVM.component.attrs, { [prop]: currentConfig[prop] })
+          }
+        }
+        drawerVM.component.update()
+      }
     }
 
     function open() {
@@ -132,7 +154,8 @@ function useXDrawer() {
 
     return {
       open,
-      close
+      close,
+      update
     }
   }
 

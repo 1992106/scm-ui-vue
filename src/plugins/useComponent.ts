@@ -46,13 +46,19 @@ const initInstance = <T extends Component>(
   appContext: AppContext | null = null
 ) => {
   const { globalConfig = useComponent.defaultGlobalConfig || {}, ...restProps } = props
-  const vNode = createVNode(
+  let vNode
+  const instance = createVNode(
     ConfigProvider,
     { ...globalConfig, notUpdateGlobalConfig: true },
-    { default: () => createVNode(Component, restProps) }
+    {
+      default: () => {
+        vNode = createVNode(Component, restProps)
+        return vNode
+      }
+    }
   )
   vNode.appContext = appContext
-  render(vNode, container)
+  render(instance, container)
 
   getAppendToElement(restProps).appendChild(container)
   return vNode
