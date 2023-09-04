@@ -31,11 +31,8 @@ function renderSomeContent(someContent) {
 
 function useXModal() {
   const appContext = getCurrentInstance()?.appContext
-  if (appContext) {
-    // 获取当前组件树的provides
-    const currentProvides = (getCurrentInstance() as any)?.provides || {}
-    Reflect.set(appContext, 'provides', { ...appContext.provides, ...currentProvides })
-  }
+  // 获取当前组件树的provides
+  const currentProvides = (getCurrentInstance() as any)?.provides || {}
 
   function createModal(options?: ModalOptions | any) {
     const {
@@ -101,13 +98,20 @@ function useXModal() {
                   ...(footer ? { footer: () => renderSomeContent(footer) } : {})
                 }
               )
-              modalVM.appContext = appContext
               return modalVM
             }
           }
         )
       }
     })
+
+    // 注入应用的上下文
+    if (appContext) {
+      instance.config.globalProperties = appContext.config.globalProperties
+      Reflect.set(instance._context, 'components', appContext.components)
+      Reflect.set(instance._context, 'directives', appContext.directives)
+      Reflect.set(instance._context, 'provides', { ...appContext.provides, ...currentProvides })
+    }
 
     function update(configUpdate) {
       let currentConfig = { ...configUpdate }
