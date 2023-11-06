@@ -89,12 +89,13 @@
   },
   "repository": {
     "type": "git",
-    "url": "git@github.com:1992106/scm-component-vue.git"
+    "url": "git@github.com:1992106/scm-ui-vue.git"
   },
   "homepage": "https://github.com/1992106/scm-ui-vue",
   "keywords": [
     "vue3",
     "vite",
+    "scm-ui",
     "scm-component"
   ],
   "license": "MIT",
