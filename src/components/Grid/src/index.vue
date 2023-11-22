@@ -70,7 +70,11 @@
     </template>
     <template #toolbar_tools>
       <template v-if="customExport">
-        <ExcelExport :columns="customColumns" :data="data" :exportConfig="exportConfig"></ExcelExport>
+        <ExcelExport
+          :columns="customColumns"
+          :data="data"
+          :exportConfig="exportConfig"
+          @export="$emit('export')"></ExcelExport>
       </template>
       <template v-if="customSetting">
         <ColumnSetting
@@ -200,6 +204,7 @@ export default defineComponent({
     exportConfig: {
       type: Object,
       default: () => ({
+        remote: true,
         limit: 2000,
         customRequest: null,
         customExport: null
@@ -226,7 +231,8 @@ export default defineComponent({
     'sort-change',
     'clear-sort',
     'toggle-row-expand',
-    'toggle-tree-expand'
+    'toggle-tree-expand',
+    'export'
   ],
   setup(props, { emit, slots, expose }) {
     /**

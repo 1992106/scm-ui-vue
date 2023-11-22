@@ -1,8 +1,14 @@
 <template>
-  <a-tooltip v-model:visible="visible" color="#fff" trigger="click" placement="bottomRight">
-    <a-button shape="circle" size="middle" title="导出" class="vxe-button type--button is--circle" @click="handleClick">
+  <a-tooltip :visible="visible" color="#fff" trigger="click" placement="bottomRight">
+    <a-button
+      shape="circle"
+      size="middle"
+      title="导出"
+      class="vxe-button type--button is--circle"
+      @blur="visible = false"
+      @click="handleClick">
       <template #icon>
-        <ExportOutlined />
+        <DownloadOutlined />
       </template>
     </a-button>
     <template #title>
@@ -19,7 +25,7 @@
 <script>
 import { defineComponent, reactive, toRefs } from 'vue'
 import { message } from 'ant-design-vue'
-import { ExportOutlined } from '@ant-design/icons-vue'
+import { DownloadOutlined } from '@ant-design/icons-vue'
 import { cloneDeep } from 'lodash-es'
 import { useXExportExcel } from '@components/Excel'
 import { getXlsxColumns } from '@components/Grid/src/utils'
@@ -27,7 +33,7 @@ import { getXlsxColumns } from '@components/Grid/src/utils'
 export default defineComponent({
   name: 'ExcelExport',
   components: {
-    ExportOutlined
+    DownloadOutlined
   },
   props: {
     // 自定义列
@@ -37,18 +43,22 @@ export default defineComponent({
     // 导出配置
     exportConfig: { type: Object }
   },
-  emits: ['change'],
-  setup: function (props) {
+  emits: ['export'],
+  setup: function (props, { emit }) {
     const state = reactive({
       visible: false,
       customColumns: []
     })
 
     const handleClick = () => {
-      state.visible = !state.visible
-      if (state.visible) {
-        const cloneColumns = cloneDeep(props.columns)
-        state.customColumns = getXlsxColumns(cloneColumns)
+      if (props.exportConfig.remote === true) {
+        emit('export')
+      } else {
+        state.visible = !state.visible
+        if (state.visible) {
+          const cloneColumns = cloneDeep(props.columns)
+          state.customColumns = getXlsxColumns(cloneColumns)
+        }
       }
     }
 

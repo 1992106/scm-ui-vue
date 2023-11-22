@@ -7,7 +7,12 @@
     :size="size"
     @change="handleChange"
     @edit="handleEdit">
-    <a-tab-pane v-for="tab in tabs" :key="tab?.value" :disabled="tab?.disabled" :closable="tab?.closable">
+    <a-tab-pane
+      v-for="tab in tabs"
+      :key="tab?.value"
+      :disabled="tab?.disabled"
+      :closable="tab?.closable"
+      :forceRender="tab?.forceRender">
       <template #tab>
         <slot name="tab">
           {{ tab?.label }}
@@ -18,13 +23,19 @@
         <slot></slot>
       </template>
     </a-tab-pane>
-    <template #leftExtra>
+    <template #addIcon>
+      <slot name="addIcon"></slot>
+    </template>
+    <template #moreIcon>
+      <slot name="moreIcon"></slot>
+    </template>
+    <template v-if="hasLeftExtra" #leftExtra>
       <slot name="leftExtra"></slot>
     </template>
-    <template #rightExtra>
+    <template v-if="hasRightExtra" #rightExtra>
       <slot name="rightExtra"></slot>
     </template>
-    <template #renderTabBar="{ DefaultTabBar, ...props }">
+    <template v-if="hasRenderTabBar" #renderTabBar="{ DefaultTabBar, ...props }">
       <slot name="renderTabBar" v-bind="{ DefaultTabBar, ...props }">
         <component :is="DefaultTabBar" v-bind="props" />
       </slot>
@@ -50,7 +61,7 @@ export default defineComponent({
     }
   },
   emits: ['update:value', 'change', 'edit'],
-  setup(props, { emit, expose }) {
+  setup(props, { emit, slots, expose }) {
     const state = reactive({
       tabs: [],
       activeKey: ''
@@ -88,12 +99,20 @@ export default defineComponent({
       { immediate: true }
     )
 
+    // 是否显示插槽
+    const hasLeftExtra = computed(() => !!slots['leftExtra'])
+    const hasRightExtra = computed(() => !!slots['rightExtra'])
+    const hasRenderTabBar = computed(() => !!slots['renderTabBar'])
+
     expose({})
 
     return {
       ...toRefs(state),
       handleChange,
-      handleEdit
+      handleEdit,
+      hasLeftExtra,
+      hasRightExtra,
+      hasRenderTabBar
     }
   }
 })

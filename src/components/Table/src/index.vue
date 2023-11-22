@@ -13,7 +13,11 @@
         <div v-if="customExport || customSetting || customZoom" class="custom">
           <a-space>
             <template v-if="customExport">
-              <ExcelExport :columns="customColumns" :dataSource="dataSource" :exportConfig="exportConfig"></ExcelExport>
+              <ExcelExport
+                :columns="customColumns"
+                :dataSource="dataSource"
+                :exportConfig="exportConfig"
+                @export="$emit('export')"></ExcelExport>
             </template>
             <template v-if="customSetting">
               <ColumnSetting
@@ -183,6 +187,7 @@ export default defineComponent({
     exportConfig: {
       type: Object,
       default: () => ({
+        remote: true,
         limit: 2000,
         customRequest: null,
         customExport: null
@@ -202,7 +207,8 @@ export default defineComponent({
     'change',
     'expand',
     'expandedRowsChange',
-    'resizeColumn'
+    'resizeColumn',
+    'export'
   ],
   setup(props, { emit, slots, expose }) {
     /**

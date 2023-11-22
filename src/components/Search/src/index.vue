@@ -29,10 +29,12 @@
           <a-form-item :label-col="{ span: 0 }" :wrapper-col="{ span: 24 }">
             <a-space>
               <template v-if="showSearch">
-                <a-button type="primary" @click.prevent="handleSearch">{{ searchText }}</a-button>
+                <a-button type="primary" :disabled="searchDisabled" @click.prevent="handleSearch">
+                  {{ searchText }}
+                </a-button>
               </template>
               <template v-if="showReset">
-                <a-button @click="handleReset">{{ resetText }}</a-button>
+                <a-button :disabled="resetDisabled" @click.prevent="handleReset">{{ resetText }}</a-button>
               </template>
               <div v-if="hasShowExpand" class="expand" @click="handleExpand">
                 <template v-if="canExpand">
@@ -101,8 +103,10 @@ export default defineComponent({
     // 按钮
     showSearch: { type: Boolean, default: true },
     searchText: { type: String, default: '搜索' },
+    searchDisabled: { type: Boolean, default: false },
     showReset: { type: Boolean, default: true },
     resetText: { type: String, default: '重置' },
+    resetDisabled: { type: Boolean, default: false },
     // 是否显示【展开/收起】按钮
     showExpand: { type: Boolean, default: true },
     // 默认收起
