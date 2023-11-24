@@ -13,7 +13,9 @@
       :style="formStyle">
       <a-row v-bind="rowProps">
         <template v-for="(column, index) in getColumns" :key="column?.field">
-          <a-col v-show="canExpand || index < getIndex" v-bind="colProps">
+          <a-col
+            v-show="canExpand || index < getIndex"
+            v-bind="{ ...colProps, ...(column?.colProps ? column.colProps : {}) }">
             <a-form-item :label="column?.title" v-bind="validateInfos[column.field]">
               <slot name="formItemRender" :record="modelRef" :column="column" :index="index">
                 <component
@@ -215,7 +217,7 @@ export default defineComponent({
           const { props = {}, events = {} } = cleanDisabled(column) // disabled: true => false
           const defaultAllState = defaultState[column?.type] || {}
           // column
-          const columnKeys = ['type', 'title', 'field', 'rules', 'children']
+          const columnKeys = ['type', 'title', 'field', 'rules', 'children', 'colProps']
           const allColumn = pick(column, columnKeys)
           // props
           const defaultProps = defaultAllState.props || {}
