@@ -59,7 +59,7 @@
   </div>
 </template>
 <script>
-import { computed, defineComponent, mergeProps, nextTick, reactive, ref, unref } from 'vue'
+import { computed, defineComponent, mergeProps, nextTick, reactive, ref, toRaw, unref } from 'vue'
 import { Form } from 'ant-design-vue'
 import { DownOutlined, UpOutlined } from '@ant-design/icons-vue'
 import { omit, pick } from 'lodash-es'
@@ -211,28 +211,26 @@ export default defineComponent({
     }
     // 获取格式化后的columns
     const getColumns = computed(() => {
-      return props.columns
-        .filter(column => column?.visible !== false)
-        .map(column => {
-          const { props = {}, events = {} } = cleanDisabled(column) // disabled: true => false
-          const defaultAllState = defaultState[column?.type] || {}
-          // column
-          const columnKeys = ['type', 'title', 'field', 'rules', 'children', 'colProps']
-          const allColumn = pick(column, columnKeys)
-          // props
-          const defaultProps = defaultAllState.props || {}
-          const otherProps = omit(column, [...columnKeys, 'props', 'events'])
-          const allProps = mergeProps(defaultProps, otherProps, props)
-          // 格式化时间
-          if (hasDate(column)) {
-            formatDefaultDate(allProps)
-          }
-          // events
-          const defaultEvents = defaultAllState.events || []
-          const allEvents = mergeEvents(defaultEventsMap, defaultEvents, events)
+      return props.columns.map(column => {
+        const { props = {}, events = {} } = cleanDisabled(column) // disabled: true => false
+        const defaultAllState = defaultState[column?.type] || {}
+        // column
+        const columnKeys = ['type', 'title', 'field', 'rules', 'children', 'colProps']
+        const allColumn = pick(column, columnKeys)
+        // props
+        const defaultProps = defaultAllState.props || {}
+        const otherProps = omit(column, [...columnKeys, 'props', 'events'])
+        const allProps = mergeProps(defaultProps, otherProps, props)
+        // 格式化时间
+        if (hasDate(column)) {
+          formatDefaultDate(allProps)
+        }
+        // events
+        const defaultEvents = defaultAllState.events || []
+        const allEvents = mergeEvents(defaultEventsMap, defaultEvents, events)
 
-          return { ...allColumn, modelValue: getModelValue(column?.type), props: allProps, events: allEvents }
-        })
+        return { ...allColumn, modelValue: getModelValue(column?.type), props: allProps, events: allEvents }
+      })
     })
 
     const modelRef = reactive({})
@@ -244,7 +242,7 @@ export default defineComponent({
     )
 
     const emitData = () => {
-      return formatFormValues(unref(getColumns), modelRef)
+      return toRaw(formatFormValues(unref(getColumns), modelRef))
     }
 
     const emitSearch = () => {

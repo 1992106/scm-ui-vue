@@ -50,7 +50,9 @@ export const cleanEmpty = object => {
 
 // 拍平columns
 export const flatColumns = (columns, result = []) => {
-  ;(columns || []).forEach(node => {
+  // 过滤无效字段
+  const list = columns.filter(val => val?.field)
+  ;(list || []).forEach(node => {
     if (node.children) {
       flatColumns(node.children, result)
     } else {
@@ -76,7 +78,7 @@ export const formatFormModel = columns => {
         value = ''
       }
     }
-    prev[next?.field] = value
+    prev[next.field] = value
     return prev
   }, {})
 }
@@ -86,7 +88,7 @@ export const formatFormRules = columns => {
   const allColumns = flatColumns(columns)
   return allColumns.reduce((prev, next) => {
     if (next?.rules) {
-      prev[next?.field] = next?.rules
+      prev[next.field] = next?.rules
     }
     return prev
   }, {})
@@ -96,8 +98,8 @@ export const formatFormRules = columns => {
 export const formatFormValues = (columns, modelRef) => {
   const allColumns = flatColumns(columns)
   const params = allColumns.reduce((prev, next) => {
-    const value = modelRef[next?.field]
-    prev[next?.field] = hasDate(next) ? dayjsToDate(value, next?.props?.valueFormat) : value
+    const value = modelRef[next.field]
+    prev[next.field] = hasDate(next) ? dayjsToDate(value, next?.props?.valueFormat) : value
     return prev
   }, {})
   return cleanEmpty(params)

@@ -1,46 +1,48 @@
 <template>
-  <a-tabs
-    v-bind="$attrs"
-    v-model:activeKey="activeKey"
-    class="x-tabs"
-    :type="type"
-    :size="size"
-    @change="handleChange"
-    @edit="handleEdit">
-    <a-tab-pane
-      v-for="tab in tabs"
-      :key="tab?.value"
-      :disabled="tab?.disabled"
-      :closable="tab?.closable"
-      :forceRender="tab?.forceRender">
-      <template #tab>
-        <slot name="tab">
-          {{ tab?.label }}
-          <span v-if="tab?.count" class="count">({{ tab?.count }})</span>
-        </slot>
+  <div class="x-tabs">
+    <a-tabs
+      v-bind="$attrs"
+      v-model:activeKey="activeKey"
+      :type="type"
+      :size="size"
+      @change="handleChange"
+      @edit="handleEdit">
+      <a-tab-pane
+        v-for="tab in tabs"
+        :key="tab.value"
+        :disabled="tab?.disabled"
+        :closable="tab?.closable"
+        :forceRender="tab?.forceRender">
+        <template #closeIcon>
+          <slot name="closeIcon"></slot>
+        </template>
+        <template #tab>
+          <slot name="tab">
+            {{ tab?.label }}
+            <span v-if="tab?.count" class="count">({{ tab?.count }})</span>
+          </slot>
+        </template>
+      </a-tab-pane>
+      <template #addIcon>
+        <slot name="addIcon"></slot>
       </template>
-      <template v-if="tab?.value === activeKey">
-        <slot></slot>
+      <template #moreIcon>
+        <slot name="moreIcon"></slot>
       </template>
-    </a-tab-pane>
-    <template #addIcon>
-      <slot name="addIcon"></slot>
-    </template>
-    <template #moreIcon>
-      <slot name="moreIcon"></slot>
-    </template>
-    <template v-if="hasLeftExtra" #leftExtra>
-      <slot name="leftExtra"></slot>
-    </template>
-    <template v-if="hasRightExtra" #rightExtra>
-      <slot name="rightExtra"></slot>
-    </template>
-    <template v-if="hasRenderTabBar" #renderTabBar="{ DefaultTabBar, ...props }">
-      <slot name="renderTabBar" v-bind="{ DefaultTabBar, ...props }">
-        <component :is="DefaultTabBar" v-bind="props" />
-      </slot>
-    </template>
-  </a-tabs>
+      <template v-if="hasLeftExtra" #leftExtra>
+        <slot name="leftExtra"></slot>
+      </template>
+      <template v-if="hasRightExtra" #rightExtra>
+        <slot name="rightExtra"></slot>
+      </template>
+      <template v-if="hasRenderTabBar" #renderTabBar="{ DefaultTabBar, ...props }">
+        <slot name="renderTabBar" v-bind="{ DefaultTabBar, ...props }"></slot>
+      </template>
+    </a-tabs>
+    <div class="x-tabs__container">
+      <slot></slot>
+    </div>
+  </div>
 </template>
 <script>
 import { computed, defineComponent, reactive, toRefs, watch } from 'vue'
@@ -120,9 +122,11 @@ export default defineComponent({
 <style lang="scss" scoped>
 .x-tabs {
   height: 100%;
+  display: flex;
+  flex-direction: column;
   background-color: #f0f2f5;
 
-  &.ant-tabs {
+  & > .ant-tabs {
     :deep(.ant-tabs-nav) {
       padding: 5px 16px 10px;
       margin-bottom: 10px;
@@ -132,14 +136,13 @@ export default defineComponent({
     .count {
       margin-left: 5px;
     }
+  }
 
-    :deep(.ant-tabs-content-holder) {
-      height: calc(100% - 62px);
-
-      .ant-tabs-content {
-        height: 100%;
-      }
-    }
+  &__container {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    background-color: #fff;
   }
 }
 </style>
