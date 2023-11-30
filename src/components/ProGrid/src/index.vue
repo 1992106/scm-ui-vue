@@ -27,7 +27,7 @@
                 :key="menu.value"
                 :title="menu?.title"
                 :disabled="menu?.disabled">
-                <slot v-if="hasMenu" name="menu" v-bind="menu">
+                <slot name="menu" v-bind="menu">
                   {{ menu?.label }}
                   <span v-if="menu?.count" class="count">{{ menu.count }}</span>
                 </slot>
@@ -226,7 +226,6 @@ export default defineComponent({
     // 是否显示插槽
     const hasSearchBar = computed(() => !isEmpty(props['searchProps']))
     const hasTop = computed(() => !!slots['top'] || !isEmpty(props['menuProps']))
-    const hasMenu = computed(() => !!slots['menu'])
     const hasBottom = computed(() => !!slots['bottom'])
     const hasToolBar = computed(() => !!slots['toolBar'])
     const hasHeaderBar = computed(() => !!slots['headerBar'])
@@ -257,7 +256,6 @@ export default defineComponent({
       ...toRefs(state),
       hasSearchBar,
       hasTop,
-      hasMenu,
       hasBottom,
       hasToolBar,
       hasHeaderBar,

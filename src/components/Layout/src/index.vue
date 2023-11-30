@@ -30,7 +30,7 @@
                   :key="sub?.value"
                   :title="sub?.title"
                   :disabled="sub?.disabled">
-                  <slot v-if="hasSubMenu" name="subMenu" v-bind="sub">
+                  <slot name="subMenu" v-bind="sub">
                     {{ sub?.label }}
                     <span v-if="sub?.count" class="count">{{ sub.count }}</span>
                   </slot>
@@ -39,7 +39,7 @@
             </template>
             <template v-else>
               <a-menu-item :key="menu?.value" :title="menu?.title" :disabled="menu?.disabled">
-                <slot v-if="hasMenu" name="menu" v-bind="menu">
+                <slot name="menu" v-bind="menu">
                   {{ menu?.label }}
                   <span v-if="menu?.count" class="count">{{ menu.count }}</span>
                 </slot>
@@ -69,7 +69,7 @@ export default defineComponent({
     spinProps: { type: [Boolean, Object], default: false }
   },
   emits: ['update:value', 'update:openKeys', 'menuClick', 'openChange'],
-  setup(props, { emit, slots, expose }) {
+  setup(props, { emit, expose }) {
     // 加载
     const spinProps = computed(() => {
       return typeof props.spinProps === 'object' ? props.spinProps : { spinning: props.spinProps }
@@ -115,16 +115,11 @@ export default defineComponent({
       { immediate: true }
     )
 
-    const hasMenu = computed(() => !!slots['menu'])
-    const hasSubMenu = computed(() => !!slots['subMenu'])
-
     expose({})
 
     return {
       ...toRefs(state),
       spinProps,
-      hasMenu,
-      hasSubMenu,
       handleOpen,
       handleClick
     }
