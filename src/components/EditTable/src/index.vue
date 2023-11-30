@@ -27,8 +27,8 @@
               ]">
               <component
                 :is="column.type"
-                v-model:[column.modelValue]="record[column.dataIndex]"
                 v-bind="column?.props || {}"
+                v-model:[column.modelValue]="record[column.dataIndex]"
                 v-on="column?.events || {}"></component>
             </a-form-item>
           </template>

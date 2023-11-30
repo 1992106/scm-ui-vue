@@ -1,39 +1,48 @@
 <template>
   <a-layout class="x-layout">
     <a-layout-sider
-      v-model:collapsed="collapsed"
       theme="light"
-      v-bind="$attrs"
-      collapsible
+      :collapsible="true"
       :collapsed-width="0"
       :zero-width-trigger-style="{ top: '40px' }"
+      v-bind="$attrs"
+      v-model:collapsed="collapsed"
       :width="width">
       <a-spin v-bind="spinProps">
         <a-menu
-          v-model:openKeys="expandKeys"
-          v-model:selectedKeys="selectedKeys"
           mode="vertical"
           theme="light"
+          :multiple="false"
           v-bind="menuProps"
+          v-model:openKeys="expandKeys"
+          v-model:selectedKeys="selectedKeys"
           @openChange="handleOpen"
           @click="handleClick">
-          <!--<a-menu-item v-for="menu in menus" :key="menu?.value" :disabled="menu?.disabled">
+          <!--<a-menu-item v-for="menu in list" :key="menu?.value" :disabled="menu?.disabled">
             {{ menu?.label }}
             <span v-if="menu?.count" class="count">{{ menu?.count }}</span>
           </a-menu-item>-->
-          <template v-for="menu in menus" :key="menu?.value">
+          <template v-for="menu in list" :key="menu?.value">
             <template v-if="menu?.children">
               <a-sub-menu :key="menu?.value" :title="menu?.label">
-                <a-menu-item v-for="sub in menu.children" :key="sub?.value" :disabled="sub?.disabled">
-                  {{ sub?.label }}
-                  <span v-if="sub?.count" class="count">{{ sub?.count }}</span>
+                <a-menu-item
+                  v-for="sub in menu.children"
+                  :key="sub?.value"
+                  :title="sub?.title"
+                  :disabled="sub?.disabled">
+                  <slot v-if="hasSubMenu" name="subMenu" v-bind="sub">
+                    {{ sub?.label }}
+                    <span v-if="sub?.count" class="count">{{ sub.count }}</span>
+                  </slot>
                 </a-menu-item>
               </a-sub-menu>
             </template>
             <template v-else>
-              <a-menu-item :key="menu?.value" :disabled="menu?.disabled">
-                {{ menu?.label }}
-                <span v-if="menu?.count" class="count">{{ menu?.count }}</span>
+              <a-menu-item :key="menu?.value" :title="menu?.title" :disabled="menu?.disabled">
+                <slot v-if="hasMenu" name="menu" v-bind="menu">
+                  {{ menu?.label }}
+                  <span v-if="menu?.count" class="count">{{ menu.count }}</span>
+                </slot>
               </a-menu-item>
             </template>
           </template>
@@ -59,8 +68,8 @@ export default defineComponent({
     menuProps: { type: Object, default: () => ({}) },
     spinProps: { type: [Boolean, Object], default: false }
   },
-  emits: ['update:value', 'click', 'update:openKeys', 'openChange'],
-  setup(props, { emit, expose }) {
+  emits: ['update:value', 'update:openKeys', 'menuClick', 'openChange'],
+  setup(props, { emit, slots, expose }) {
     // 加载
     const spinProps = computed(() => {
       return typeof props.spinProps === 'object' ? props.spinProps : { spinning: props.spinProps }
@@ -68,7 +77,6 @@ export default defineComponent({
 
     const state = reactive({
       collapsed: false,
-      menus: [],
       expandKeys: [], // 当前展开的 SubMenu 菜单项 key 数组
       selectedKeys: [] // 当前选中的菜单项 key 数组
     })
@@ -80,11 +88,11 @@ export default defineComponent({
 
     const handleClick = $event => {
       emit('update:value', $event?.key)
-      emit('click', $event)
+      emit('menuClick', $event)
     }
 
     const defaultKey = computed(() => {
-      const menus = getAllLeafNodes(state.menus)
+      const menus = getAllLeafNodes(props.list)
       // props.value有值，并且在state.menus中可以找到
       if (!isEmpty(props.value) && menus?.find(val => val?.value === props.value)) {
         return props.value
@@ -106,19 +114,17 @@ export default defineComponent({
       },
       { immediate: true }
     )
-    watch(
-      () => props.list,
-      list => {
-        state.menus = list
-      },
-      { immediate: true }
-    )
+
+    const hasMenu = computed(() => !!slots['menu'])
+    const hasSubMenu = computed(() => !!slots['subMenu'])
 
     expose({})
 
     return {
       ...toRefs(state),
       spinProps,
+      hasMenu,
+      hasSubMenu,
       handleOpen,
       handleClick
     }

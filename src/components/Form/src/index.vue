@@ -1,5 +1,5 @@
 <template>
-  <a-form ref="xForm" v-bind="$attrs" class="x-form" :layout="layout" :label-col="labelCol" :wrapper-col="wrapperCol">
+  <a-form ref="xForm" class="x-form" v-bind="$attrs" :layout="layout" :label-col="labelCol" :wrapper-col="wrapperCol">
     <!--栅格化布局-->
     <template v-if="gird">
       <a-row v-bind="rowProps">
@@ -9,8 +9,8 @@
               <slot name="formItemRender" :record="modelRef" :column="column" :index="index">
                 <component
                   :is="column.type"
-                  v-model:[column.modelValue]="modelRef[column.field]"
                   v-bind="column?.props || {}"
+                  v-model:[column.modelValue]="modelRef[column.field]"
                   v-on="column?.events || {}"></component>
               </slot>
             </a-form-item>
@@ -32,8 +32,8 @@
           <slot name="formItemRender" :record="modelRef" :column="column" :index="index">
             <component
               :is="column.type"
-              v-model:[column.modelValue]="modelRef[column.field]"
               v-bind="column?.props || {}"
+              v-model:[column.modelValue]="modelRef[column.field]"
               v-on="column?.events || {}"></component>
           </slot>
         </a-form-item>

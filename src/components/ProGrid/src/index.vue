@@ -15,7 +15,25 @@
           <slot name="formItemRender" v-bind="scope"></slot>
         </template>
         <template v-if="hasTop" #top>
-          <slot name="top"></slot>
+          <slot name="top">
+            <a-menu
+              v-bind="menuProps"
+              v-model:selectedKeys="selectedKeys"
+              mode="horizontal"
+              theme="light"
+              @click="handleClick">
+              <a-menu-item
+                v-for="menu in menuProps.list"
+                :key="menu.value"
+                :title="menu?.title"
+                :disabled="menu?.disabled">
+                <slot v-if="hasMenu" name="menu" v-bind="menu">
+                  {{ menu?.label }}
+                  <span v-if="menu?.count" class="count">{{ menu.count }}</span>
+                </slot>
+              </a-menu-item>
+            </a-menu>
+          </slot>
         </template>
         <template v-if="hasBottom" #bottom>
           <slot name="bottom"></slot>
@@ -46,6 +64,7 @@
 </template>
 <script>
 import { computed, defineComponent, onMounted, reactive, ref, toRef, toRefs, unref, watch, watchEffect } from 'vue'
+import { Menu } from 'ant-design-vue'
 import XGrid from '@components/Grid'
 import XSearch from '@components/Search'
 import { useSearch } from '@components/hooks/useSearch'
@@ -54,20 +73,25 @@ export default defineComponent({
   name: 'XProGrid',
   components: {
     'x-grid': XGrid,
-    'x-search': XSearch
+    'x-search': XSearch,
+    'a-menu': Menu,
+    'a-menu-item': Menu.Item
   },
   inheritAttrs: true,
   props: {
     value: Object,
+    activeKey: String,
+    menuProps: { type: Object, default: () => ({}) },
     searchProps: { type: Object, default: () => ({}) },
     gridProps: { type: Object, default: () => ({}) }
   },
-  emits: ['update:value', 'search', 'reset', 'clear'],
+  emits: ['update:value', 'update:activeKey', 'search', 'reset', 'clear', 'menuClick'],
   setup(props, { emit, slots, expose }) {
     const xProGrid = ref(null)
     const xSearch = ref(null)
 
     const state = reactive({
+      selectedKeys: [],
       pagination: {
         page: 1,
         pageSize: 20
@@ -117,6 +141,24 @@ export default defineComponent({
         }
       }
     )
+
+    watchEffect(() => {
+      if (!isEmpty(props.activeKey) && props.menuProps.list?.find(val => val?.value === props.activeKey)) {
+        state.selectedKeys = [props.activeKey]
+      } else {
+        const defaultKey = props.menuProps.list?.[0]?.value
+        state.selectedKeys = !isEmpty(defaultKey) ? [defaultKey] : []
+      }
+    })
+
+    const handleClick = $event => {
+      if (unref(showPagination)) {
+        state.pagination.page = 1
+        state.pagination.current = 1
+      }
+      emit('update:activeKey', $event?.value)
+      emit('menuClick', $event)
+    }
 
     /**
      * 搜索栏-搜索按钮
@@ -183,7 +225,8 @@ export default defineComponent({
 
     // 是否显示插槽
     const hasSearchBar = computed(() => !isEmpty(props['searchProps']))
-    const hasTop = computed(() => !!slots['top'])
+    const hasTop = computed(() => !!slots['top'] || !isEmpty(props['menuProps']))
+    const hasMenu = computed(() => !!slots['menu'])
     const hasBottom = computed(() => !!slots['bottom'])
     const hasToolBar = computed(() => !!slots['toolBar'])
     const hasHeaderBar = computed(() => !!slots['headerBar'])
@@ -214,11 +257,13 @@ export default defineComponent({
       ...toRefs(state),
       hasSearchBar,
       hasTop,
+      hasMenu,
       hasBottom,
       hasToolBar,
       hasHeaderBar,
       hasFooterBar,
       getGridSlots,
+      handleClick,
       handleQuery,
       handleSearch,
       handleReset,
@@ -232,6 +277,16 @@ export default defineComponent({
   :deep(.vxe-grid--toolbar-wrapper) {
     .vxe-toolbar {
       padding: 0 10px;
+    }
+  }
+  .ant-menu-vertical {
+    .count {
+      float: right;
+    }
+
+    :deep(.ant-menu-item) {
+      line-height: 24px;
+      height: 24px;
     }
   }
 }

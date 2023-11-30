@@ -20,8 +20,8 @@
               <slot name="formItemRender" :record="modelRef" :column="column" :index="index">
                 <component
                   :is="column.type"
-                  v-model:[column.modelValue]="modelRef[column.field]"
                   v-bind="column?.props || {}"
+                  v-model:[column.modelValue]="modelRef[column.field]"
                   v-on="column?.events || {}"></component>
               </slot>
             </a-form-item>

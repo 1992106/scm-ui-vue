@@ -7,19 +7,14 @@
       :size="size"
       @change="handleChange"
       @edit="handleEdit">
-      <a-tab-pane
-        v-for="tab in tabs"
-        :key="tab.value"
-        :disabled="tab?.disabled"
-        :closable="tab?.closable"
-        :forceRender="tab?.forceRender">
+      <a-tab-pane v-for="tab in list" :key="tab.value" :disabled="tab?.disabled" :closable="tab?.closable">
         <template #closeIcon>
           <slot name="closeIcon"></slot>
         </template>
         <template #tab>
           <slot name="tab">
             {{ tab?.label }}
-            <span v-if="tab?.count" class="count">({{ tab?.count }})</span>
+            <span v-if="tab?.count" class="count">({{ tab.count }})</span>
           </slot>
         </template>
       </a-tab-pane>
@@ -65,7 +60,6 @@ export default defineComponent({
   emits: ['update:value', 'change', 'edit'],
   setup(props, { emit, slots, expose }) {
     const state = reactive({
-      tabs: [],
       activeKey: ''
     })
 
@@ -80,23 +74,16 @@ export default defineComponent({
 
     const defaultKey = computed(() => {
       // props.value有值，并且在state.tabs中可以找到
-      if (!isEmpty(props.value) && state.tabs?.find(val => val?.value === props.value)) {
+      if (!isEmpty(props.value) && props.list?.find(val => val?.value === props.value)) {
         return props.value
       }
-      return state.tabs?.[0]?.value
+      return props.list?.[0]?.value
     })
     watch(
       () => defaultKey.value,
       val => {
         state.activeKey = val
         emit('update:value', val)
-      },
-      { immediate: true }
-    )
-    watch(
-      () => props.list,
-      list => {
-        state.tabs = list
       },
       { immediate: true }
     )
@@ -121,9 +108,9 @@ export default defineComponent({
 </script>
 <style lang="scss" scoped>
 .x-tabs {
-  height: 100%;
   display: flex;
   flex-direction: column;
+  height: 100%;
   background-color: #f0f2f5;
 
   & > .ant-tabs {
