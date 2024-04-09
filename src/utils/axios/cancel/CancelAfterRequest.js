@@ -1,5 +1,5 @@
-import { getHashByConfig } from '@utils/axios/utils'
 import axios from 'axios'
+import { generateKey } from '@utils/axios/utils'
 
 const CancelToken = axios.CancelToken
 
@@ -11,7 +11,7 @@ const CancelToken = axios.CancelToken
  如果存在，则执行自身的cancel函数进行请求拦截，不重复发送请求，不存在就正常发送并且将该api添加到数组中。
  等请求完结后删除数组中的这个api.
  */
-class AfterRequestCancel {
+class CancelAfterRequest {
   constructor() {
     this.queue = new Set()
   }
@@ -25,19 +25,23 @@ class AfterRequestCancel {
 
   // 移除请求
   removeQueue(config, c) {
-    const uniqueKey = getHashByConfig(config)
+    const uniqueKey = generateKey(config)
     if (this.queue.has(uniqueKey)) {
-      c ? c(uniqueKey) : this.queue.delete(uniqueKey)
+      // queue中存在当前请求
+      // 如果有取消方法（在请求请求时），则直接取消当前请求
+      // 如果没有取消方法（在请求响应时），则只需要删除key
+      c ? c() : this.queue.delete(uniqueKey)
     } else {
+      // queue中不存在当前请求，并且有取消方法；则说明是新请求添加key
       c && this.queue.add(uniqueKey)
     }
   }
 }
 
-export default AfterRequestCancel
+export default CancelAfterRequest
 
 // 例子：取消后面重复的请求，保留第一次的请求
-const queue = new AfterRequestCancel()
+const queue = new CancelAfterRequest()
 
 axios.interceptors.request.use(
   function (config) {
@@ -59,7 +63,7 @@ axios.interceptors.response.use(
     }
   },
   function (error) {
-    queue.removeQueue(error.response.config, 'res')
+    queue.removeQueue(error.response.config)
     return Promise.reject(error)
   }
 )

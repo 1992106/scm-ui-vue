@@ -1,18 +1,10 @@
-// 忽略请求：忽略前面重复的请求，保留最后一次请求
-// 一般用于分页搜索/tab标签切换
-/*
- https://github.com/slorber/awesome-only-resolves-last-promise
- https://github.com/slorber/awesome-imperative-promise
- https://mp.weixin.qq.com/s/M2-XXPdLKlTqzGefz7UPvA
- 不依赖请求的 API，更加通用，更容易抽象和封装。本质上所有的异步方法都可以使用 onlyResolvesLast 来忽略过期的调用。
- */
-export function onlyResolvesLast(fn) {
-  // 保存上一个请求的 cancel 方法
-  let cancelPrevious = null
+// 忽略请求：忽略后面重复的请求，保留第一次请求
+// 一般用于提交表单数据时，防止重复
+export function onlyResolvesFirst(fn) {
+  // 保存第一个请求的 promise 实例
+  let pendingPromise = null
 
   const wrappedFn = (...args) => {
-    // 当前请求执行前，先 cancel 上一个请求
-    cancelPrevious && cancelPrevious()
     // 执行当前请求
     const result = fn.apply(this, args)
 
@@ -51,32 +43,42 @@ export function onlyResolvesLast(fn) {
       }
     }
     const { promise, cancel } = createImperativePromise(result)
-    cancelPrevious = cancel
-
+    if (pendingPromise === null) {
+      // 第一次请求完成后，重置promiseFirst
+      pendingPromise = promise.finally(() => (pendingPromise = null))
+    } else {
+      // 后面重复的请求，都全部取消
+      cancel()
+    }
     return promise
   }
 
   return wrappedFn
 }
 // 使用Promise.race实现
-export function onlyResolvesLast2(fn) {
-  let cancel = null
+export function onlyResolvesFirst2(fn) {
+  let pendingPromise = null
 
   const wrappedFn = (...args) => {
-    cancel && cancel()
-
+    let cancel = null
     // 执行当前请求
     const result = fn.apply(this, args)
 
     const cancelPromise = new Promise((_, reject) => (cancel = reject))
-    return Promise.race([result, cancelPromise])
+    const promise = Promise.race([result, cancelPromise])
+    if (pendingPromise === null) {
+      pendingPromise = promise.finally(() => (pendingPromise = null))
+    } else {
+      cancel && cancel()
+    }
+    return promise
   }
 
   return wrappedFn
 }
 
 // 使用唯一 id 标识每次请求
-export function onlyResolvesLastById(fn) {
+export function onlyResolvesFirstById(fn) {
   // 利用闭包保存最新的请求 id
   let id = 0
 
@@ -90,20 +92,22 @@ export function onlyResolvesLastById(fn) {
 
     return new Promise((resolve, reject) => {
       // result 可能不是 promise，需要包装成 promise
-      Promise.resolve(result).then(
-        value => {
-          // 只处理最新一次请求
-          if (fetchId === id) {
-            resolve(value)
+      Promise.resolve(result)
+        .then(
+          value => {
+            // 只处理第一次请求
+            if (fetchId === 1) {
+              resolve(value)
+            }
+          },
+          error => {
+            // 只处理第一次请求
+            if (fetchId === 1) {
+              reject(error)
+            }
           }
-        },
-        error => {
-          // 只处理最新一次请求
-          if (fetchId === id) {
-            reject(error)
-          }
-        }
-      )
+        )
+        .finally(() => (id = 0)) // 第一次请求完成后，重置id=0
     })
   }
 
@@ -116,10 +120,10 @@ const fn = duration =>
     setTimeout(r, duration)
   })
 
-const wrappedFn = onlyResolvesLast(fn)
+const wrappedFn = onlyResolvesFirst(fn)
 
 wrappedFn(100).then(() => console.log(1))
 wrappedFn(500).then(() => console.log(2))
 wrappedFn(1000).then(() => console.log(3))
 
-// 输出 3
+// 输出 1

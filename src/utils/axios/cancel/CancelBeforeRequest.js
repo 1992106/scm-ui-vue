@@ -1,5 +1,5 @@
-import { getHashByConfig } from '@utils/axios/utils'
 import axios from 'axios'
+import { generateKey } from '@utils/axios/utils'
 
 const CancelToken = axios.CancelToken
 
@@ -18,7 +18,9 @@ class CancelBeforeRequest {
 
   // 添加请求
   addQueue(config) {
-    const uniqueKey = getHashByConfig(config)
+    // 在请求开始前，对之前的请求做检查取消操作
+    this.removeQueue(config, 'req')
+    const uniqueKey = generateKey(config)
     config.cancelToken = new CancelToken(cancel => {
       this.queue.set(uniqueKey, cancel)
     })
@@ -26,12 +28,13 @@ class CancelBeforeRequest {
 
   // 移除请求
   removeQueue(config, type) {
-    const uniqueKey = getHashByConfig(config)
+    const uniqueKey = generateKey(config)
     if (this.queue.has(uniqueKey)) {
-      // 如果queue中存在当前请求，则取消当前请求并移除
+      // 如果queue中存在当前请求，则取消上一次请求并删除key
       const cancel = this.queue.get(uniqueKey)
-      // 请求拦截时取消请求；响应拦截时不需要取消
-      if (type === 'req') cancel(uniqueKey)
+      // 请求拦截时先取消请求，再删除key
+      // 响应拦截时不需要取消请求，只需要删除key
+      if (type === 'req') cancel()
       this.queue.delete(uniqueKey)
     }
   }
@@ -52,7 +55,6 @@ const queue = new CancelBeforeRequest()
 
 axios.interceptors.request.use(
   function (config) {
-    queue.removeQueue(config, 'req')
     queue.addQueue(config)
     return config
   },

@@ -7,9 +7,11 @@ import setting from '@src/config'
 import { getAccessStorage } from '@utils/accessStorage'
 import { disposeParams, sleep } from './utils'
 import CancelBeforeRequest from './cancel/CancelBeforeRequest'
+// import CancelAfterRequest from './cancel/CancelAfterRequest'
 
 let locked = false
 const queue = new CancelBeforeRequest()
+// const queue = new CancelAfterRequest()
 
 // 全局axios默认值
 axios.defaults.baseURL = setting.api_url
@@ -28,8 +30,6 @@ httpService.interceptors.request.use(
     // 是否支持取消
     const hasCancel = config?.options['$cancel']
     if (hasCancel) {
-      // 在请求开始前，对之前的请求做检查取消操作
-      queue.removeQueue(config, 'req')
       // 将当前请求添加到中
       queue.addQueue(config)
     }
