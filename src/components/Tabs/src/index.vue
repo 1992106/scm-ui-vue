@@ -7,12 +7,12 @@
       :size="size"
       @change="handleChange"
       @edit="handleEdit">
-      <a-tab-pane v-for="tab in list" :key="tab.value" :disabled="tab?.disabled" :closable="tab?.closable">
+      <a-tab-pane v-for="(tab, index) in list" :key="tab.value" :disabled="tab?.disabled" :closable="tab?.closable">
         <template #closeIcon>
-          <slot name="closeIcon"></slot>
+          <slot name="closeIcon" :tab="tab" :index="index"></slot>
         </template>
         <template #tab>
-          <slot name="tab">
+          <slot name="tab" :tab="tab" :index="index">
             {{ tab?.label }}
             <span v-if="tab?.count" class="count">({{ tab.count }})</span>
           </slot>

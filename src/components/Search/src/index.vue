@@ -27,7 +27,7 @@
             </a-form-item>
           </a-col>
         </template>
-        <a-col class="actions" v-bind="colProps" :push="getPush">
+        <a-col class="actions" v-bind="colProps" style="margin-left: auto">
           <a-form-item :label-col="{ span: 0 }" :wrapper-col="{ span: 24 }">
             <a-space>
               <template v-if="showSearch">
@@ -290,7 +290,7 @@ export default defineComponent({
       if (props.showExpand && props.colProps?.span) {
         // 判断是否多行，如果只有一行，则不需要【展开/收起】按钮
         const max = 24 / props.colProps.span
-        return props.columns.length >= max
+        return props.columns.length > max - 1
       } else {
         return false
       }
@@ -301,22 +301,6 @@ export default defineComponent({
         return 24 / props.colProps.span - 1
       } else {
         return getColumns.value.length
-      }
-    })
-
-    const getPush = computed(() => {
-      if (props.showExpand && props.colProps?.span) {
-        const max = 24 / props.colProps.span
-        const length = getColumns.value.length
-        let multiple
-        if (length < max) {
-          multiple = max - length - 1
-        } else {
-          multiple = canExpand.value ? max - (length % max) - 1 : 0
-        }
-        return multiple * props.colProps.span
-      } else {
-        return 0
       }
     })
 
@@ -379,7 +363,6 @@ export default defineComponent({
       formStyle,
       hasShowExpand,
       getIndex,
-      getPush,
       canExpand,
       handleExpand
     }

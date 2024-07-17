@@ -5,9 +5,9 @@
       :collapsible="true"
       :collapsed-width="0"
       :zero-width-trigger-style="{ top: '40px' }"
+      :width="width"
       v-bind="$attrs"
-      v-model:collapsed="collapsed"
-      :width="width">
+      v-model:collapsed="collapsed">
       <a-spin v-bind="spinProps">
         <a-menu
           mode="vertical"

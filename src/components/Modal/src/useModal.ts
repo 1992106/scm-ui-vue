@@ -1,4 +1,4 @@
-import { type Component, createApp, h, getCurrentInstance, ref, isVNode, type VNode } from 'vue'
+import { type Component, createApp, h, getCurrentInstance, ref, isVNode, type VNode, unref } from 'vue'
 import { ConfigProvider } from 'ant-design-vue'
 import XModal from './index'
 import { isFunction, isPromise, isString } from '@utils/is'
@@ -45,7 +45,8 @@ function useXModal() {
       globalConfig = useXModal.defaultGlobalConfig || {},
       ...props
     } = options || {}
-    const openValue = ref(visible ?? true)
+    const openValue = ref(unref(visible) ?? true)
+    const loading = ref(false)
 
     const container = document.createElement('div')
     document.body.appendChild(container)
@@ -64,20 +65,26 @@ function useXModal() {
                   ...props,
                   manual,
                   footer,
+                  confirmLoading: loading.value,
                   visible: openValue.value,
                   onOk(e) {
                     const _ok = options?.onOk?.(e)
                     if (!isPromise(_ok)) {
                       return
                     }
-                    _ok.then(
-                      res => {
-                        if (!isReject(res) && !manual) {
-                          openValue.value = false
-                        }
-                      },
-                      err => console.error(err)
-                    )
+                    loading.value = true
+                    _ok
+                      .then(
+                        res => {
+                          if (!isReject(res) && !manual) {
+                            openValue.value = false
+                          }
+                        },
+                        err => console.error(err)
+                      )
+                      .finally(() => {
+                        loading.value = false
+                      })
                   },
                   onCancel(e) {
                     options?.onCancel?.(e)
